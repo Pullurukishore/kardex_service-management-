@@ -14,6 +14,13 @@ const s3 = new AWS.S3({
 });
 */
 
+// Mock s3 object for compilation - replace with real AWS SDK when needed
+const s3 = {
+  upload: (params: any) => ({ promise: () => Promise.resolve({ Location: 'mock-url' }) }),
+  deleteObject: (params: any) => ({ promise: () => Promise.resolve() }),
+  getSignedUrl: (operation: string, params: any) => 'mock-signed-url'
+};
+
 export interface PhotoData {
   filename: string;
   dataUrl: string;

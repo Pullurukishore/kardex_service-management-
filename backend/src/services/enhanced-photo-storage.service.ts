@@ -36,13 +36,19 @@ export class EnhancedPhotoStorageService {
         const originalPhoto = photos[i];
         
         // Create attachment record with Cloudinary public_id in filename for reference
+        // Only create attachment if we have a ticketId (since it's required in schema)
+        if (!context.ticketId) {
+          console.warn('Skipping attachment creation for activity photos - ticketId required in schema');
+          continue;
+        }
+
         const attachment = await prisma.attachment.create({
           data: {
             filename: `${originalPhoto.filename}_${cloudinaryResult.public_id.split('/').pop()}`,
             path: cloudinaryResult.secure_url,
             mimeType: `image/${cloudinaryResult.format}`,
             size: cloudinaryResult.bytes,
-            ticketId: context.ticketId || null, // Use null for activity photos
+            ticketId: context.ticketId,
             uploadedById: context.userId
           }
         });
