@@ -33,7 +33,9 @@ import {
   Navigation,
   TrendingUp,
   BarChart3,
-  Camera
+  Camera,
+  Image as ImageIcon,
+  Download
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/api-client';
 import { format, parseISO, differenceInMinutes } from 'date-fns';
@@ -100,7 +102,7 @@ interface AttendanceDetail {
         name: string;
       };
     }>;
-    activityLogs: Array<{
+    activityLogs?: Array<{
       id: number;
       activityType: 'TICKET_WORK' | 'TRAVEL' | 'MEETING' | 'TRAINING' | 'OTHER' | 'WORK_FROM_HOME' | 'BD_VISIT' | 'PO_DISCUSSION' | 'SPARE_REPLACEMENT' | 'MAINTENANCE' | 'DOCUMENTATION' | 'INSTALLATION' | 'MAINTENANCE_PLANNED' | 'REVIEW_MEETING' | 'RELOCATION';
       title: string;
@@ -123,6 +125,28 @@ interface AttendanceDetail {
       };
     }>;
   };
+  activityLogs?: Array<{
+    id: number;
+    activityType: 'TICKET_WORK' | 'TRAVEL' | 'MEETING' | 'TRAINING' | 'OTHER' | 'WORK_FROM_HOME' | 'BD_VISIT' | 'PO_DISCUSSION' | 'SPARE_REPLACEMENT' | 'MAINTENANCE' | 'DOCUMENTATION' | 'INSTALLATION' | 'MAINTENANCE_PLANNED' | 'REVIEW_MEETING' | 'RELOCATION';
+    title: string;
+    description?: string;
+    startTime: string;
+    endTime?: string;
+    duration?: number;
+    location?: string;
+    latitude?: number;
+    longitude?: number;
+    ActivityStage: ActivityStage[];
+    ticket?: {
+      id: number;
+      title: string;
+      status: string;
+      customer: {
+        companyName: string;
+      };
+      statusHistory: TicketStatusHistory[];
+    };
+  }>;
   gaps: Array<{
     start: string;
     end: string;
@@ -202,6 +226,31 @@ const STAGE_CONFIG = {
   CUSTOMER_HANDOVER: { label: 'Customer Handover', color: 'bg-teal-100 text-teal-800', icon: User },
   PREPARATION: { label: 'Preparation', color: 'bg-violet-100 text-violet-800', icon: Activity },
   CLEANUP: { label: 'Cleanup', color: 'bg-lime-100 text-lime-800', icon: Activity },
+};
+
+// Helper function to safely get activity config
+const getActivityConfig = (activityType: string) => {
+  return ACTIVITY_TYPE_CONFIG[activityType as keyof typeof ACTIVITY_TYPE_CONFIG] || ACTIVITY_TYPE_CONFIG.OTHER;
+};
+
+// Helper function to shorten long addresses
+const shortenAddress = (address: string | undefined): string => {
+  if (!address) return '';
+  
+  // Split by comma and get first 2-3 parts (area, city)
+  const parts = address.split(',').map(p => p.trim());
+  
+  // Return first 2 parts or first 3 if they're short
+  if (parts.length <= 2) return address;
+  
+  const shortened = parts.slice(0, 2).join(', ');
+  
+  // If shortened is still too long (>50 chars), just take first part
+  if (shortened.length > 50) {
+    return parts[0];
+  }
+  
+  return shortened;
 };
 
 const TICKET_STATUS_CONFIG = {
@@ -364,35 +413,53 @@ export default function AttendanceDetailView({
   const statusConfig = STATUS_CONFIG[attendance.status] || STATUS_CONFIG.CHECKED_OUT;
   const StatusIcon = statusConfig.icon;
   const isAutoCheckout = attendance.notes?.includes('Auto-checkout');
-  const activities = attendance.user.activityLogs || [];
+  const activities = attendance.activityLogs || attendance.user?.activityLogs || [];
   const gaps = attendance.gaps || [];
   
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+          .break-words {
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+          }
+          .break-all {
+            word-break: break-all;
+          }
+        }
+      `}</style>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
           <Link href={backUrl}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Attendance
+            <Button variant="outline" size="sm" className="w-fit">
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Attendance</span>
+              <span className="sm:hidden">Back</span>
             </Button>
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{pageTitle}</h1>
-            <p className="text-gray-600 mt-1">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 truncate">{pageTitle}</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1 truncate">
               {pageSubtitle || `${attendance.user.name || attendance.user.email} - ${formatDate(attendance.checkInAt)}`}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge className={`${statusConfig.color} border`}>
-            <StatusIcon className="h-4 w-4 mr-1" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0">
+          <Badge className={`${statusConfig.color} border text-xs sm:text-sm whitespace-nowrap`}>
+            <StatusIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             {statusConfig.label}
           </Badge>
           {isAutoCheckout && (
-            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
+            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 text-xs sm:text-sm whitespace-nowrap">
               <Zap className="h-3 w-3 mr-1" />
               Auto Checkout
             </Badge>
@@ -401,22 +468,47 @@ export default function AttendanceDetailView({
       </div>
 
       {/* Main Content with Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="activities">Activities ({activities.length})</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          <TabsTrigger value="audit">History</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-gray-100 rounded-lg">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-2.5 min-w-0 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <div className="flex flex-col items-center gap-1">
+              <Info className="h-4 w-4 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline text-xs font-medium">Overview</span>
+              <span className="sm:hidden text-xs font-medium">Info</span>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger value="activities" className="text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-2.5 min-w-0 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <div className="flex flex-col items-center gap-1">
+              <Activity className="h-4 w-4 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline text-xs font-medium">Activities</span>
+              <span className="sm:hidden text-xs font-medium">Activity</span>
+              <Badge className="text-[10px] px-1 py-0 bg-blue-100 text-blue-700 border-0">{activities.length}</Badge>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-2.5 min-w-0 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <div className="flex flex-col items-center gap-1">
+              <Clock className="h-4 w-4 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline text-xs font-medium">Timeline</span>
+              <span className="sm:hidden text-xs font-medium">Time</span>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger value="audit" className="text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-2.5 min-w-0 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <div className="flex flex-col items-center gap-1">
+              <FileText className="h-4 w-4 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline text-xs font-medium">History</span>
+              <span className="sm:hidden text-xs font-medium">Log</span>
+            </div>
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Check-In Details */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-green-600" />
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                   Check-In Details
                 </CardTitle>
               </CardHeader>
@@ -465,9 +557,9 @@ export default function AttendanceDetailView({
 
             {/* Check-Out Details */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-red-600" />
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
                   Check-Out Details
                 </CardTitle>
               </CardHeader>
@@ -519,14 +611,14 @@ export default function AttendanceDetailView({
           </div>
 
           {/* Summary Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Timer className="h-8 w-8 text-blue-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total Hours</p>
-                    <p className="text-2xl font-bold text-gray-900">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total Hours</p>
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
                       {(() => {
                         // Use backend totalHours if available, otherwise calculate from times
                         const backendHours = attendance.totalHours;
@@ -547,36 +639,36 @@ export default function AttendanceDetailView({
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Activity className="h-8 w-8 text-green-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Activities</p>
-                    <p className="text-2xl font-bold text-gray-900">{activities.length}</p>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Activities</p>
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900">{activities.length}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <AlertTriangle className="h-8 w-8 text-yellow-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Gaps</p>
-                    <p className="text-2xl font-bold text-gray-900">{gaps.length}</p>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Gaps</p>
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900">{gaps.length}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <User className="h-8 w-8 text-purple-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Zone</p>
-                    <p className="text-sm font-bold text-gray-900">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <User className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Zone</p>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">
                       {attendance.user.serviceZones.length > 0 
                         ? attendance.user.serviceZones.map(sz => sz.serviceZone.name).join(', ')
                         : 'No Zone'
@@ -616,8 +708,8 @@ export default function AttendanceDetailView({
             </Card>
           ) : (
             <div className="grid gap-4">
-              {activities.map((activity, index) => {
-                const activityConfig = ACTIVITY_TYPE_CONFIG[activity.activityType] || ACTIVITY_TYPE_CONFIG.OTHER;
+              {activities.map((activity: any, index: number) => {
+                const activityConfig = getActivityConfig(activity.activityType);
                 const ActivityIcon = activityConfig.icon;
                 
                 return (
@@ -658,26 +750,33 @@ export default function AttendanceDetailView({
                             <div className="mt-3">
                               <h5 className="text-sm font-medium text-gray-700 mb-2">Activity Stages:</h5>
                               <div className="space-y-2">
-                                {activity.ActivityStage.map((stage, stageIndex) => {
+                                {activity.ActivityStage.map((stage: any, stageIndex: number) => {
                                   const stageConfig = STAGE_CONFIG[stage.stage as keyof typeof STAGE_CONFIG] || { label: stage.stage, color: 'bg-gray-100 text-gray-800', icon: Activity };
                                   const StageIcon = stageConfig.icon;
                                   return (
-                                    <div key={stage.id} className="flex items-center gap-2 text-sm">
-                                      <div className={`p-1 rounded ${stageConfig.color}`}>
-                                        <StageIcon className="h-3 w-3" />
+                                    <div key={stage.id} className="space-y-1">
+                                      <div className="flex items-center gap-2 text-sm flex-wrap">
+                                        <div className={`p-1 rounded ${stageConfig.color}`}>
+                                          <StageIcon className="h-3 w-3" />
+                                        </div>
+                                        <span className="font-medium">{stageConfig.label}</span>
+                                        <span className="text-gray-500">
+                                          {formatTime(stage.startTime)}
+                                          {stage.endTime && ` - ${formatTime(stage.endTime)}`}
+                                        </span>
+                                        {stage.duration && (
+                                          <span className="text-gray-400">({formatDuration(stage.duration)})</span>
+                                        )}
+                                        {stage.latitude && stage.longitude && (
+                                          <span className="text-gray-400 text-xs">
+                                            @ {typeof stage.latitude === 'number' ? stage.latitude.toFixed(6) : stage.latitude}, {typeof stage.longitude === 'number' ? stage.longitude.toFixed(6) : stage.longitude}
+                                          </span>
+                                        )}
                                       </div>
-                                      <span className="font-medium">{stageConfig.label}</span>
-                                      <span className="text-gray-500">
-                                        {formatTime(stage.startTime)}
-                                        {stage.endTime && ` - ${formatTime(stage.endTime)}`}
-                                      </span>
-                                      {stage.duration && (
-                                        <span className="text-gray-400">({formatDuration(stage.duration)})</span>
-                                      )}
                                       {stage.location && (
-                                        <div className="flex items-center gap-1 text-gray-400">
+                                        <div className="flex items-center gap-1 text-xs text-gray-500 ml-7">
                                           <MapPin className="h-3 w-3" />
-                                          <span className="truncate max-w-32">{stage.location}</span>
+                                          <span>{shortenAddress(stage.location)}</span>
                                         </div>
                                       )}
                                     </div>
@@ -692,7 +791,7 @@ export default function AttendanceDetailView({
                             <div className="mt-3">
                               <h5 className="text-sm font-medium text-gray-700 mb-2">Ticket Work States:</h5>
                               <div className="space-y-2">
-                                {activity.ticket.statusHistory.map((statusChange, statusIndex) => {
+                                {activity.ticket.statusHistory.map((statusChange: any, statusIndex: number) => {
                                   const statusConfig = TICKET_STATUS_CONFIG[statusChange.status as keyof typeof TICKET_STATUS_CONFIG] || { label: statusChange.status, color: 'bg-gray-100 text-gray-800' };
                                   return (
                                     <div key={statusChange.id} className="flex items-center gap-2 text-sm">
@@ -795,7 +894,7 @@ export default function AttendanceDetailView({
                 )}
 
                 {/* Activities and Gaps */}
-                {activities.map((activity, index) => (
+                {activities.map((activity: any, index: number) => (
                   <div key={activity.id}>
                     {/* Gap before activity */}
                     {index > 0 && gaps[index - 1] && (
@@ -829,8 +928,8 @@ export default function AttendanceDetailView({
                         <div className="flex items-center gap-2">
                           <Activity className="h-4 w-4 text-blue-600" />
                           <span className="font-medium">{activity.title}</span>
-                          <Badge variant="outline" className={`text-xs ${ACTIVITY_TYPE_CONFIG[activity.activityType]?.color || 'bg-gray-100 text-gray-800'}`}>
-                            {ACTIVITY_TYPE_CONFIG[activity.activityType]?.label || activity.activityType}
+                          <Badge variant="outline" className={`text-xs ${getActivityConfig(activity.activityType).color}`}>
+                            {getActivityConfig(activity.activityType).label}
                           </Badge>
                           <span className="text-sm text-gray-500">
                             {formatTime(activity.startTime)}
@@ -863,7 +962,7 @@ export default function AttendanceDetailView({
                         {/* Activity Stages in Timeline */}
                         {activity.ActivityStage && activity.ActivityStage.length > 0 && (
                           <div className="mt-2 ml-6 space-y-2">
-                            {activity.ActivityStage.map((stage, stageIndex) => {
+                            {activity.ActivityStage.map((stage: any, stageIndex: number) => {
                               const stageConfig = STAGE_CONFIG[stage.stage as keyof typeof STAGE_CONFIG] || { label: stage.stage, color: 'bg-gray-100 text-gray-800', icon: Activity };
                               const StageIcon = stageConfig.icon;
                               return (
@@ -885,38 +984,208 @@ export default function AttendanceDetailView({
                                       )}
                                     </div>
                                     {stage.location && (
-                                      <p className="text-xs text-gray-500 mt-1">📍 {stage.location}</p>
+                                      <p className="text-xs text-gray-500 mt-1 break-words">📍 {shortenAddress(stage.location)}</p>
                                     )}
                                     {stage.notes && (
-                                      <p className="text-xs text-gray-600 mt-1 italic">"{stage.notes}"</p>
+                                      <div className="mt-1">
+                                        {(() => {
+                                          // Check if notes contain Cloudinary URLs
+                                          const urlRegex = /https:\/\/res\.cloudinary\.com\/[^\s,]+/g;
+                                          const urls = stage.notes.match(urlRegex) || [];
+                                          
+                                          if (urls.length > 0) {
+                                            // Extract text without URLs
+                                            const textWithoutUrls = stage.notes.replace(urlRegex, '').replace(/\s+/g, ' ').trim();
+                                            
+                                            return (
+                                              <>
+                                                {textWithoutUrls && (
+                                                  <p className="text-xs text-gray-600 italic mb-2">"{textWithoutUrls}"</p>
+                                                )}
+                                                
+                                                {/* Photos from notes */}
+                                                <div className="mt-2 border-0 bg-transparent">
+                                                  <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-2">
+                                                      <ImageIcon className="h-4 w-4 text-blue-600" />
+                                                      <span className="text-sm font-medium text-gray-900">
+                                                        Verification Photos ({urls.length})
+                                                      </span>
+                                                    </div>
+                                                    <Badge variant="outline" className="text-xs">
+                                                      {stage.stage.replace(/_/g, ' ')}
+                                                    </Badge>
+                                                  </div>
+                                                  
+                                                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                                    {urls.slice(0, 6).map((url: string, photoIndex: number) => (
+                                                      <div key={`note-photo-${photoIndex}`} className="group relative">
+                                                        <div className="aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                                                          <img
+                                                            src={url}
+                                                            alt={`Verification photo ${photoIndex + 1}`}
+                                                            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                                          />
+                                                        </div>
+                                                        
+                                                        {/* Overlay with actions */}
+                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 rounded-lg flex items-center justify-center">
+                                                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                                                            <Button
+                                                              size="sm"
+                                                              variant="secondary"
+                                                              className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                                              onClick={() => window.open(url, '_blank')}
+                                                            >
+                                                              <ExternalLink className="h-3 w-3" />
+                                                            </Button>
+                                                            <Button
+                                                              size="sm"
+                                                              variant="secondary"
+                                                              className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                                              onClick={async () => {
+                                                                try {
+                                                                  const response = await fetch(url);
+                                                                  const blob = await response.blob();
+                                                                  const downloadUrl = window.URL.createObjectURL(blob);
+                                                                  const link = document.createElement('a');
+                                                                  link.href = downloadUrl;
+                                                                  link.download = `verification-photo-${photoIndex + 1}.jpg`;
+                                                                  document.body.appendChild(link);
+                                                                  link.click();
+                                                                  document.body.removeChild(link);
+                                                                  window.URL.revokeObjectURL(downloadUrl);
+                                                                } catch (error) {
+                                                                  console.error('Download failed:', error);
+                                                                  // Fallback to direct link
+                                                                  window.open(url, '_blank');
+                                                                }
+                                                              }}
+                                                            >
+                                                              <Download className="h-3 w-3" />
+                                                            </Button>
+                                                          </div>
+                                                        </div>
+                                                        
+                                                        {/* Photo info */}
+                                                        <div className="mt-2 text-center">
+                                                          <p className="text-xs text-gray-500 truncate">
+                                                            Photo {photoIndex + 1}
+                                                          </p>
+                                                          <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
+                                                            <Calendar className="h-3 w-3" />
+                                                            <span>{formatTime(stage.startTime)}</span>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    ))}
+                                                  </div>
+                                                  
+                                                  {urls.length > 6 && (
+                                                    <div className="mt-3 text-center">
+                                                      <Badge variant="secondary" className="text-xs">
+                                                        +{urls.length - 6} more photos
+                                                      </Badge>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </>
+                                            );
+                                          } else {
+                                            // No URLs, show normal notes
+                                            return (
+                                              <p className="text-xs text-gray-600 italic">"{stage.notes}"</p>
+                                            );
+                                          }
+                                        })()}
+                                      </div>
                                     )}
-                                    {/* Stage Photos */}
+                                    {/* Stage Photos - Styled like PhotoGallery */}
                                     {stage.photos && stage.photos.length > 0 && (
-                                      <div className="mt-2">
-                                        <div className="flex items-center gap-1 mb-2">
-                                          <Camera className="h-3 w-3 text-blue-600" />
-                                          <span className="text-xs font-medium text-blue-600">
-                                            {stage.photos.length} Photo{stage.photos.length > 1 ? 's' : ''}
-                                          </span>
+                                      <div className="mt-3 border-0 bg-transparent">
+                                        <div className="flex items-center justify-between mb-3">
+                                          <div className="flex items-center gap-2">
+                                            <ImageIcon className="h-4 w-4 text-blue-600" />
+                                            <span className="text-sm font-medium text-gray-900">
+                                              Stage Photos ({stage.photos.length})
+                                            </span>
+                                          </div>
+                                          <Badge variant="outline" className="text-xs">
+                                            {stage.stage.replace(/_/g, ' ')}
+                                          </Badge>
                                         </div>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                          {stage.photos.map((photo) => (
-                                            <div key={photo.id} className="relative group">
-                                              <img
-                                                src={photo.thumbnailUrl || photo.cloudinaryUrl}
-                                                alt={photo.filename}
-                                                className="w-full h-16 object-cover rounded-md border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer"
-                                                onClick={() => window.open(photo.cloudinaryUrl, '_blank')}
-                                              />
-                                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-md transition-opacity flex items-center justify-center">
-                                                <ExternalLink className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                          {stage.photos.slice(0, 6).map((photo: any, photoIndex: number) => (
+                                            <div key={photo.id} className="group relative">
+                                              <div className="aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                                                <img
+                                                  src={photo.thumbnailUrl || photo.cloudinaryUrl}
+                                                  alt={`Stage photo ${photoIndex + 1}`}
+                                                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                                />
                                               </div>
-                                              <div className="text-xs text-gray-400 mt-1 truncate">
-                                                {format(parseISO(photo.createdAt), 'HH:mm')}
+                                              
+                                              {/* Overlay with actions */}
+                                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 rounded-lg flex items-center justify-center">
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                                                  <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                                    onClick={() => window.open(photo.cloudinaryUrl, '_blank')}
+                                                  >
+                                                    <ExternalLink className="h-3 w-3" />
+                                                  </Button>
+                                                  <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                                    onClick={async () => {
+                                                      try {
+                                                        const response = await fetch(photo.cloudinaryUrl);
+                                                        const blob = await response.blob();
+                                                        const downloadUrl = window.URL.createObjectURL(blob);
+                                                        const link = document.createElement('a');
+                                                        link.href = downloadUrl;
+                                                        link.download = photo.filename;
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                        window.URL.revokeObjectURL(downloadUrl);
+                                                      } catch (error) {
+                                                        console.error('Download failed:', error);
+                                                        // Fallback to direct link
+                                                        window.open(photo.cloudinaryUrl, '_blank');
+                                                      }
+                                                    }}
+                                                  >
+                                                    <Download className="h-3 w-3" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                              
+                                              {/* Photo info */}
+                                              <div className="mt-2 text-center">
+                                                <p className="text-xs text-gray-500 truncate">
+                                                  {photo.filename}
+                                                </p>
+                                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                  <Calendar className="h-3 w-3" />
+                                                  <span>{new Date(photo.createdAt).toLocaleString()}</span>
+                                                </div>
                                               </div>
                                             </div>
                                           ))}
                                         </div>
+                                        
+                                        {stage.photos.length > 6 && (
+                                          <div className="mt-3 text-center">
+                                            <Badge variant="secondary" className="text-xs">
+                                              +{stage.photos.length - 6} more photos
+                                            </Badge>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
                                   </div>
@@ -930,7 +1199,7 @@ export default function AttendanceDetailView({
                         {activity.activityType === 'TICKET_WORK' && activity.ticket?.statusHistory && activity.ticket.statusHistory.length > 0 && (
                           <div className="mt-2 ml-6 space-y-2">
                             <div className="text-xs font-medium text-gray-600 mb-1">Ticket Status Changes:</div>
-                            {activity.ticket.statusHistory.map((statusChange, statusIndex) => {
+                            {activity.ticket.statusHistory.map((statusChange: any, statusIndex: number) => {
                               const statusConfig = TICKET_STATUS_CONFIG[statusChange.status as keyof typeof TICKET_STATUS_CONFIG] || { label: statusChange.status, color: 'bg-gray-100 text-gray-800' };
                               return (
                                 <div key={statusChange.id} className="flex items-start gap-3">
@@ -947,7 +1216,7 @@ export default function AttendanceDetailView({
                                       <span className="text-gray-600">by {statusChange.changedBy.name}</span>
                                     </div>
                                     {statusChange.notes && (
-                                      <p className="text-xs text-gray-600 mt-1 italic">"{statusChange.notes}"</p>
+                                      <p className="text-xs text-gray-600 mt-1">{statusChange.notes}</p>
                                     )}
                                   </div>
                                 </div>
@@ -993,15 +1262,15 @@ export default function AttendanceDetailView({
         <TabsContent value="audit" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
                 Activity History
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 A timeline of all actions and changes made during this work session ({auditLogs.length} events)
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               {auditLogs.length === 0 ? (
                 <div className="text-center py-8">
                   <Info className="h-8 w-8 mx-auto text-gray-400 mb-2" />
@@ -1021,100 +1290,104 @@ export default function AttendanceDetailView({
                     const ActionIcon = actionConfig.icon;
                     
                     return (
-                      <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2 rounded-lg ${actionConfig.color}`}>
-                            <ActionIcon className="h-4 w-4" />
+                      <div key={log.id} className="border rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start gap-2 sm:gap-3">
+                          <div className={`p-1.5 sm:p-2 rounded-lg ${actionConfig.color} flex-shrink-0`}>
+                            <ActionIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                           </div>
-                          <div className="flex-1 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className={actionConfig.color}>
-                                  {actionConfig.label}
-                                </Badge>
-                                {/* Add simple description */}
-                                <span className="text-sm text-gray-700 ml-2 font-medium">
-                                  {log.action === 'ATTENDANCE_CHECKED_IN' && '→ Employee started their work day'}
-                                  {log.action === 'ATTENDANCE_CHECKED_OUT' && '→ Employee ended their work day'}
-                                  {log.action === 'ATTENDANCE_RE_CHECKED_IN' && '→ Employee resumed work after break'}
-                                  {log.action === 'ACTIVITY_LOG_ADDED' && '→ New work activity was recorded'}
-                                  {log.action === 'ACTIVITY_STAGE_UPDATED' && '→ Work activity progress was updated'}
-                                  {log.action === 'AUTO_CHECKOUT_PERFORMED' && '→ System automatically ended work day'}
-                                  {log.action === 'TICKET_STATUS_CHANGED' && '→ Ticket status was changed'}
-                                  {log.action === 'ATTENDANCE_UPDATED' && '→ Attendance record was modified'}
-                                  {log.action === 'ATTENDANCE_MANUAL_CHECKOUT' && '→ Admin manually ended work session'}
-                                  {log.action === 'LOCATION_UPDATED' && '→ Location information was updated'}
-                                  {log.action === 'NOTES_UPDATED' && '→ Notes or comments were added'}
-                                </span>
-                                {log.entityType && log.entityId && (
-                                  <span className="text-xs text-gray-500">
-                                    {log.entityType === 'ATTENDANCE' ? 'Attendance Record' : 
-                                     log.entityType === 'ACTIVITY_LOG' ? 'Activity' :
-                                     log.entityType === 'TICKET' ? 'Ticket' : log.entityType} #{log.entityId}
+                          <div className="flex-1 space-y-2 min-w-0">
+                            <div className="space-y-2">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                  <Badge variant="outline" className={`${actionConfig.color} text-xs w-fit`}>
+                                    {actionConfig.label}
+                                  </Badge>
+                                  {/* Add simple description */}
+                                  <span className="text-xs sm:text-sm text-gray-700 font-medium break-words">
+                                    {log.action === 'ATTENDANCE_CHECKED_IN' && '→ Employee started their work day'}
+                                    {log.action === 'ATTENDANCE_CHECKED_OUT' && '→ Employee ended their work day'}
+                                    {log.action === 'ATTENDANCE_RE_CHECKED_IN' && '→ Employee resumed work after break'}
+                                    {log.action === 'ACTIVITY_LOG_ADDED' && '→ New work activity was recorded'}
+                                    {log.action === 'ACTIVITY_STAGE_UPDATED' && '→ Work activity progress was updated'}
+                                    {log.action === 'AUTO_CHECKOUT_PERFORMED' && '→ System automatically ended work day'}
+                                    {log.action === 'TICKET_STATUS_CHANGED' && '→ Ticket status was changed'}
+                                    {log.action === 'ATTENDANCE_UPDATED' && '→ Attendance record was modified'}
+                                    {log.action === 'ATTENDANCE_MANUAL_CHECKOUT' && '→ Admin manually ended work session'}
+                                    {log.action === 'LOCATION_UPDATED' && '→ Location information was updated'}
+                                    {log.action === 'NOTES_UPDATED' && '→ Notes or comments were added'}
                                   </span>
-                                )}
-                              </div>
-                              <div className="text-right text-sm text-gray-500">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  {format(parseISO(log.performedAt), 'MMM dd, HH:mm:ss')}
+                                </div>
+                                <div className="text-xs sm:text-sm text-gray-500 flex-shrink-0">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    <span className="whitespace-nowrap">{format(parseISO(log.performedAt), 'MMM dd, HH:mm')}</span>
+                                  </div>
                                 </div>
                               </div>
+                              
+                              {log.entityType && log.entityId && (
+                                <div className="text-xs text-gray-500 break-words">
+                                  {log.entityType === 'ATTENDANCE' ? 'Attendance Record' : 
+                                   log.entityType === 'ACTIVITY_LOG' ? 'Activity' :
+                                   log.entityType === 'TICKET' ? 'Ticket' : log.entityType} #{log.entityId}
+                                </div>
+                              )}
                             </div>
                             
-                            <div className="flex items-center gap-2 text-sm">
-                              <User className="h-3 w-3 text-gray-400" />
-                              <span className="text-gray-600">
+                            <div className="flex items-start gap-2 text-xs sm:text-sm">
+                              <User className="h-3 w-3 text-gray-400 flex-shrink-0 mt-0.5" />
+                              <div className="text-gray-600 min-w-0 break-words">
                                 <span className="text-gray-500">Done by: </span>
                                 {log.performedBy ? (
                                   <>
                                     <span className="font-medium text-gray-800">{log.performedBy.name}</span>
                                     {log.performedBy.email && (
-                                      <span className="text-gray-500 ml-1 text-xs">({log.performedBy.email})</span>
+                                      <span className="text-gray-500 ml-1 text-xs break-all">({log.performedBy.email})</span>
                                     )}
                                   </>
                                 ) : (
                                   <span className="font-medium text-blue-600">🤖 System (Automatic)</span>
                                 )}
-                              </span>
+                              </div>
                             </div>
 
                             {/* Details Section */}
                             {(log.details || log.oldValue || log.newValue) && (
-                              <div className="mt-2 p-3 bg-gray-50 rounded-md text-sm">
+                              <div className="mt-2 p-2 sm:p-3 bg-gray-50 rounded-md text-xs sm:text-sm">
                                 {log.details && typeof log.details === 'object' && (
                                   <div className="space-y-2">
                                     {/* Create user-friendly summary based on action type */}
                                     {log.action === 'ATTENDANCE_CHECKED_IN' && (
-                                      <div className="text-sm text-gray-700">
+                                      <div className="text-xs sm:text-sm text-gray-700">
                                         <p className="font-medium">✅ Successfully checked in</p>
-                                        {log.details.location && <p>📍 Location: {log.details.location}</p>}
+                                        {log.details.location && <p className="break-words">📍 Location: {log.details.location}</p>}
                                         {log.details.checkInTime && <p>🕐 Time: {format(parseISO(log.details.checkInTime as string), 'HH:mm:ss')}</p>}
                                       </div>
                                     )}
                                     
                                     {log.action === 'ATTENDANCE_CHECKED_OUT' && (
-                                      <div className="text-sm text-gray-700">
+                                      <div className="text-xs sm:text-sm text-gray-700">
                                         <p className="font-medium">🚪 Successfully checked out</p>
-                                        {log.details.location && <p>📍 Location: {log.details.location}</p>}
+                                        {log.details.location && <p className="break-words">📍 Location: {log.details.location}</p>}
                                         {log.details.checkOutTime && <p>🕐 Time: {format(parseISO(log.details.checkOutTime as string), 'HH:mm:ss')}</p>}
                                         {log.details.totalHours && <p>⏱️ Total Hours: {log.details.totalHours}h</p>}
                                       </div>
                                     )}
                                     
                                     {log.action === 'ACTIVITY_LOG_ADDED' && (
-                                      <div className="text-sm text-gray-700">
+                                      <div className="text-xs sm:text-sm text-gray-700">
                                         <p className="font-medium">📝 New activity logged</p>
-                                        {log.details.activityType && <p>🏷️ Type: {log.details.activityType.replace(/_/g, ' ')}</p>}
-                                        {log.details.title && <p>📋 Title: {log.details.title}</p>}
+                                        {log.details.activityType && <p className="break-words">🏷️ Type: {log.details.activityType.replace(/_/g, ' ')}</p>}
+                                        {log.details.title && <p className="break-words">📋 Title: {log.details.title}</p>}
+                                        {log.details.location && <p className="break-words text-xs">📍 Location: {log.details.location}</p>}
                                       </div>
                                     )}
                                     
                                     {log.action === 'ACTIVITY_STAGE_UPDATED' && (
-                                      <div className="text-sm text-gray-700">
+                                      <div className="text-xs sm:text-sm text-gray-700">
                                         <p className="font-medium">🔄 Activity stage changed</p>
-                                        {log.details.stage && <p>📊 New Stage: {log.details.stage.replace(/_/g, ' ')}</p>}
-                                        {log.details.location && <p>📍 Location: {log.details.location}</p>}
+                                        {log.details.stage && <p className="break-words">📊 New Stage: {log.details.stage.replace(/_/g, ' ')}</p>}
+                                        {log.details.location && <p className="break-words text-xs">📍 Location: {log.details.location}</p>}
                                       </div>
                                     )}
                                     
@@ -1140,26 +1413,32 @@ export default function AttendanceDetailView({
                                     {!['ATTENDANCE_CHECKED_IN', 'ATTENDANCE_CHECKED_OUT', 'ATTENDANCE_RE_CHECKED_IN', 'ACTIVITY_LOG_ADDED', 'ACTIVITY_STAGE_UPDATED', 'AUTO_CHECKOUT_PERFORMED'].includes(log.action) && (
                                       <div className="space-y-1">
                                         {Object.entries(log.details).map(([key, value]) => {
-                                          // Format value based on key type
-                                          let displayValue: string = String(value);
-                                          let displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                          // Skip null/undefined values
+                                          if (value === null || value === undefined) return null;
                                           
-                                          if (key.includes('Time') || key.includes('At')) {
-                                            try {
-                                              displayValue = format(parseISO(value as string), 'MMM dd, HH:mm:ss');
-                                            } catch {
-                                              displayValue = String(value);
-                                            }
-                                          } else if (typeof value === 'object' && value !== null) {
+                                          // Format key for display
+                                          const displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                          
+                                          // Format value for display
+                                          let displayValue: string;
+                                          if (typeof value === 'object') {
                                             displayValue = JSON.stringify(value);
+                                            // Truncate long JSON
+                                            if (displayValue.length > 100) {
+                                              displayValue = displayValue.substring(0, 100) + '...';
+                                            }
                                           } else {
                                             displayValue = String(value);
+                                            // Truncate long strings
+                                            if (displayValue.length > 80) {
+                                              displayValue = displayValue.substring(0, 80) + '...';
+                                            }
                                           }
                                           
                                           return (
-                                            <div key={key} className="flex justify-between">
-                                              <span className="font-medium text-gray-600">{displayKey}:</span>
-                                              <span className="text-gray-800">{displayValue}</span>
+                                            <div key={key} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-2">
+                                              <span className="font-medium text-gray-600 text-xs">{displayKey}:</span>
+                                              <span className="text-gray-800 text-xs break-all font-mono bg-gray-50 px-1 rounded">{displayValue}</span>
                                             </div>
                                           );
                                         })}
@@ -1168,40 +1447,9 @@ export default function AttendanceDetailView({
                                   </div>
                                 )}
                                 
-                                {log.oldValue && log.newValue && 
-                                 // Only show old/new values for meaningful changes, not simple status changes
-                                 !(log.action === 'ATTENDANCE_CHECKED_IN' || log.action === 'ATTENDANCE_CHECKED_OUT' || log.action === 'ATTENDANCE_RE_CHECKED_IN' || log.action === 'ATTENDANCE_AUTO_CHECKOUT') && (
-                                  <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-red-600 text-xs">Previous:</span>
-                                      <code className="text-xs bg-red-50 px-2 py-1 rounded">
-                                        {typeof log.oldValue === 'string' && log.oldValue.includes('T') ? 
-                                          (() => {
-                                            try {
-                                              return format(parseISO(log.oldValue), 'MMM dd, HH:mm:ss');
-                                            } catch {
-                                              return log.oldValue;
-                                            }
-                                          })() : 
-                                          (typeof log.oldValue === 'object' ? JSON.stringify(log.oldValue) : log.oldValue)
-                                        }
-                                      </code>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-green-600 text-xs">Updated:</span>
-                                      <code className="text-xs bg-green-50 px-2 py-1 rounded">
-                                        {typeof log.newValue === 'string' && log.newValue.includes('T') ? 
-                                          (() => {
-                                            try {
-                                              return format(parseISO(log.newValue), 'MMM dd, HH:mm:ss');
-                                            } catch {
-                                              return log.newValue;
-                                            }
-                                          })() : 
-                                          (typeof log.newValue === 'object' ? JSON.stringify(log.newValue) : log.newValue)
-                                        }
-                                      </code>
-                                    </div>
+                                {log.details && typeof log.details === 'string' && (
+                                  <div className="text-xs text-gray-600 font-mono bg-gray-100 p-2 rounded break-all overflow-hidden">
+                                    {log.details.length > 200 ? log.details.substring(0, 200) + '...' : log.details}
                                   </div>
                                 )}
                               </div>

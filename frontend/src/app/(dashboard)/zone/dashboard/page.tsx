@@ -132,11 +132,13 @@ export default async function ZoneDashboardPage() {
           }}
         />
 
-        <DashboardErrorBoundary fallback={DashboardErrorFallback}>
-          <Suspense fallback={<ZoneDashboardLoading />}>
-            <ZoneDashboardClient initialZoneDashboardData={safeZoneDashboardData} />
-          </Suspense>
-        </DashboardErrorBoundary>
+        <div className="overflow-x-hidden">
+          <DashboardErrorBoundary fallback={DashboardErrorFallback}>
+            <Suspense fallback={<ZoneDashboardLoading />}>
+              <ZoneDashboardClient initialZoneDashboardData={safeZoneDashboardData} />
+            </Suspense>
+          </DashboardErrorBoundary>
+        </div>
       </>
     );
   } catch (error) {

@@ -120,51 +120,51 @@ export default function ExecutiveSummaryCards({ dashboardData }: ExecutiveSummar
   ];
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg">
-            <Award className="w-6 h-6 text-white" />
+    <div className="mb-6 sm:mb-8 w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3 w-full max-w-full">
+        <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="p-1.5 sm:p-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex-shrink-0">
+            <Award className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
-          Executive Summary
+          <span className="truncate">Executive Summary</span>
         </h2>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-green-100 text-green-800 px-3 py-1">
-            <Database className="w-4 h-4 mr-1" />
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Badge className="bg-green-100 text-green-800 px-2 sm:px-3 py-1 text-xs sm:text-sm whitespace-nowrap">
+            <Database className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             Live Data
           </Badge>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 w-full max-w-full">
         {metrics.map((metric, i) => (
           <Card 
             key={i} 
-            className={`${metric.bgColor || 'bg-white'} border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}
+            className={`${metric.bgColor || 'bg-white'} border-0 shadow-md sm:shadow-lg hover:shadow-lg sm:hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full max-w-full overflow-hidden`}
           >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-slate-600 flex items-center gap-1">
-                    <metric.icon className="w-4 h-4" />
-                    {metric.title}
+            <CardContent className="p-4 sm:p-5 lg:p-6 w-full max-w-full">
+              <div className="flex items-start justify-between gap-3 w-full max-w-full">
+                <div className="space-y-1 sm:space-y-2 min-w-0 flex-1 overflow-hidden">
+                  <p className="text-xs sm:text-sm font-medium text-slate-600 flex items-center gap-1">
+                    <metric.icon className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                    <span className="truncate">{metric.title}</span>
                   </p>
-                  <p className="text-3xl font-bold text-slate-900">{metric.value}</p>
-                  <p className="text-xs text-slate-500">{metric.description}</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 leading-tight break-words overflow-wrap-anywhere">{metric.value}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">{metric.description}</p>
                   {metric.change !== undefined && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 min-w-0">
                       {metric.isPositive ? (
-                        <TrendingUp className="w-4 h-4 text-green-600" />
+                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" />
                       ) : (
-                        <TrendingDown className="w-4 h-4 text-red-600" />
+                        <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 flex-shrink-0" />
                       )}
-                      <span className={`text-xs font-medium ${metric.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className={`text-xs font-medium ${metric.isPositive ? 'text-green-600' : 'text-red-600'} truncate`}>
                         {formatChange(metric.change, metric.isPositive)}
                       </span>
                     </div>
                   )}
                 </div>
-                <div className={`p-3 rounded-xl bg-gradient-to-r ${metric.color} shadow-lg`}>
-                  {metric.icon && React.createElement(metric.icon, { className: "w-6 h-6 text-white" })}
+                <div className={`p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r ${metric.color} shadow-md sm:shadow-lg flex-shrink-0`}>
+                  {metric.icon && React.createElement(metric.icon, { className: "w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" })}
                 </div>
               </div>
             </CardContent>

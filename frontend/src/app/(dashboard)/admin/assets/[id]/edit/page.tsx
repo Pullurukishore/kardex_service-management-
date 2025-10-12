@@ -153,27 +153,28 @@ export default function EditAssetPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" asChild>
+        <Button variant="ghost" asChild className="p-2 sm:px-4">
           <Link href={`/admin/customers/${asset.customer.id}/assets`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Customer Assets
+            <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Back to Customer Assets</span>
+            <span className="sm:hidden">Back</span>
           </Link>
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Edit Asset</CardTitle>
-          <CardDescription>
+      <Card className="mx-0 sm:mx-auto">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="text-lg sm:text-xl">Edit Asset</CardTitle>
+          <CardDescription className="text-sm">
             Update asset details for {asset.customer.companyName}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
                   name="machineId"
@@ -256,12 +257,12 @@ export default function EditAssetPage() {
                 control={form.control}
                 name="notes"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="sm:col-span-2 lg:col-span-3">
                     <FormLabel>Notes</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Additional notes about this asset..."
-                        className="resize-none"
+                        className="resize-none min-h-[80px] sm:min-h-[100px]"
                         {...field}
                       />
                     </FormControl>
@@ -270,7 +271,7 @@ export default function EditAssetPage() {
                 )}
               />
 
-              <div className="flex justify-end space-x-4 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-4 sm:col-span-2 lg:col-span-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -283,10 +284,15 @@ export default function EditAssetPage() {
                     }
                   }}
                   disabled={isLoading}
+                  className="w-full sm:w-auto order-2 sm:order-1"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full sm:w-auto order-1 sm:order-2"
+                >
                   {isLoading ? 'Updating...' : 'Update Asset'}
                 </Button>
               </div>

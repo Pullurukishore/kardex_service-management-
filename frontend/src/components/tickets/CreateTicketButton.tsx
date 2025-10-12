@@ -2,25 +2,44 @@
 
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface CreateTicketButtonProps {
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
   children?: React.ReactNode;
+  redirectTo?: string; // Optional custom redirect path
 }
 
 export default function CreateTicketButton({ 
   variant = 'default', 
   size = 'default',
   className = '',
-  children 
+  children,
+  redirectTo 
 }: CreateTicketButtonProps) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleClick = () => {
-    router.push('/admin/tickets/create');
+    // If custom redirect is provided, use it
+    if (redirectTo) {
+      router.push(redirectTo);
+      return;
+    }
+
+    // Auto-detect the correct route based on current path
+    if (pathname.startsWith('/zone')) {
+      router.push('/zone/tickets/create');
+    } else if (pathname.startsWith('/admin')) {
+      router.push('/admin/tickets/create');
+    } else if (pathname.startsWith('/service-person')) {
+      router.push('/service-person/tickets/create');
+    } else {
+      // Default fallback to admin
+      router.push('/admin/tickets/create');
+    }
   };
 
   return (

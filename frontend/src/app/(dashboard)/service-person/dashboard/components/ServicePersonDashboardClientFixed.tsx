@@ -12,7 +12,6 @@ import { LocationResult } from '@/services/LocationService';
 
 // Types
 interface DashboardStats {
-  todayHours: number;
   activeActivities: number;
   assignedTickets: number;
   completedToday: number;
@@ -98,7 +97,6 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
   
   // Removed tab state - using unified dashboard
   const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
-    todayHours: 0,
     activeActivities: 0,
     assignedTickets: 0,
     completedToday: 0,
@@ -205,33 +203,7 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
         return end >= startOfToday && end <= endOfToday;
       }).length;
 
-      // Today hours: sum of durations for portions of activities that overlap with today
-      let totalMsToday = 0;
-      for (const a of activitiesData) {
-        const start = a.startTime ? new Date(a.startTime) : null;
-        if (!start) continue;
-
-        // For active activities (no endTime), use current time as end
-        // For completed activities, use their endTime
-        const end = a.endTime ? new Date(a.endTime) : now;
-
-        // Calculate overlap with today's boundaries
-        const overlapStart = start > startOfToday ? start : startOfToday;
-        const overlapEnd = end < endOfToday ? end : endOfToday;
-
-        // Only count if there's actual overlap with today
-        if (overlapEnd > overlapStart && overlapStart < endOfToday && overlapEnd > startOfToday) {
-          const overlapMs = overlapEnd.getTime() - overlapStart.getTime();
-          totalMsToday += overlapMs;
-          console.log(`Activity ${a.id} (${a.title}): ${overlapMs / (1000 * 60 * 60)} hours today`);
-        }
-      }
-
-      const todayHours = totalMsToday / (1000 * 60 * 60);
-      console.log(`Total hours calculated: ${todayHours} from ${activitiesData.length} activities`);
-
       const stats = {
-        todayHours,
         activeActivities,
         assignedTickets: ticketsData.length,
         completedToday,
@@ -384,17 +356,7 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
 
       {/* Enhanced Mobile Stats Cards */}
       <div className="max-w-7xl mx-auto px-3 mt-4 mb-4 sm:px-6 sm:mt-6 sm:mb-8 w-full box-border">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 w-full box-border">
-          <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-blue-500 touch-manipulation active:scale-95 transition-transform">
-            <div className="flex items-center gap-3">
-              <div className="text-2xl sm:text-3xl flex-shrink-0 bg-blue-50 p-2 rounded-lg">⏰</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-1">Today's Hours</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">{dashboardStats.todayHours.toFixed(1)}h</p>
-              </div>
-            </div>
-          </div>
-          
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-6 w-full box-border">
           <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4 border-l-4 border-green-500 touch-manipulation active:scale-95 transition-transform">
             <div className="flex items-center gap-3">
               <div className="text-2xl sm:text-3xl flex-shrink-0 bg-green-50 p-2 rounded-lg">🔄</div>

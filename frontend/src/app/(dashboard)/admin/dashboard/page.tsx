@@ -137,15 +137,17 @@ export default async function DashboardPage() {
           }}
         />
 
-        <DashboardErrorBoundary fallback={DashboardErrorFallback}>
-          <Suspense fallback={<DashboardLoading />}>
-            <DashboardClient 
-              initialDashboardData={safeDashboardData}
-              initialStatusDistribution={statusDistribution || { distribution: [] }}
-              initialTicketTrends={ticketTrends || { trends: [] }}
-            />
-          </Suspense>
-        </DashboardErrorBoundary>
+        <div className="overflow-x-hidden">
+          <DashboardErrorBoundary fallback={DashboardErrorFallback}>
+            <Suspense fallback={<DashboardLoading />}>
+              <DashboardClient 
+                initialDashboardData={safeDashboardData}
+                initialStatusDistribution={statusDistribution || { distribution: [] }}
+                initialTicketTrends={ticketTrends || { trends: [] }}
+              />
+            </Suspense>
+          </DashboardErrorBoundary>
+        </div>
       </>
     );
   } catch (error) {

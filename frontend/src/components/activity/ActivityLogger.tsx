@@ -1174,7 +1174,12 @@ function ActivityLoggerComponent({
                       </Button>
                       <Button
                         onClick={handleStartActivity}
-                        disabled={submitting}
+                        disabled={
+                          submitting || 
+                          !formData.activityType || 
+                          !formData.title || 
+                          (!activityLocation && !enhancedLocation)
+                        }
                         className={`${isMobile ? 'w-full h-12 text-base order-1 touch-manipulation' : ''}`}
                       >
                         {submitting ? (

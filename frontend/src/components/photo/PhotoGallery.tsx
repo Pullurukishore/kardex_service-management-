@@ -102,7 +102,43 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = photo.filename;
+      
+      // Use the original filename from database if it looks like a proper filename
+      let downloadFilename;
+      
+      if (photo.filename && 
+          photo.filename.trim() !== '' && 
+          !photo.filename.includes('verification-photo') &&
+          (photo.filename.includes('onsite_photo') || photo.filename.includes('.'))
+      ) {
+        // Use the original filename from database
+        downloadFilename = photo.filename;
+        
+        // Clean up the filename if it has timestamp suffix
+        if (downloadFilename.includes('T') && downloadFilename.includes('Z')) {
+          // Remove the ISO timestamp part (e.g., _2025-10-10T13-31-18-619Z_1)
+          const timestampPattern = /_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z.*$/;
+          downloadFilename = downloadFilename.replace(timestampPattern, '');
+          
+          // Ensure it has .jpg extension if it doesn't already
+          if (!downloadFilename.endsWith('.jpg') && !downloadFilename.includes('.')) {
+            downloadFilename += '.jpg';
+          }
+        }
+      } else {
+        // Fallback: extract from Cloudinary URL
+        const urlParts = photo.cloudinaryUrl.split('/');
+        const cloudinaryFilename = urlParts[urlParts.length - 1];
+        const cleanFilename = cloudinaryFilename.split('?')[0];
+        
+        downloadFilename = cleanFilename.includes('.') 
+          ? cleanFilename 
+          : `${cleanFilename}.jpg`;
+      }
+      
+      console.log('Final download filename:', downloadFilename);
+      
+      link.download = downloadFilename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -110,15 +146,26 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
       toast({
         title: 'Download Started',
-        description: `Downloading ${photo.filename}`,
+        description: `Downloading ${downloadFilename}`,
       });
     } catch (error) {
       console.error('Download failed:', error);
-      toast({
-        title: 'Download Failed',
-        description: 'Failed to download the photo',
-        variant: 'destructive',
-      });
+      
+      // Fallback: try to open in new tab
+      try {
+        window.open(photo.cloudinaryUrl, '_blank');
+        toast({
+          title: 'Download Failed',
+          description: 'Opened photo in new tab instead. You can right-click to save.',
+          variant: 'destructive',
+        });
+      } catch (fallbackError) {
+        toast({
+          title: 'Download Failed',
+          description: 'Failed to download the photo. Please try again.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 

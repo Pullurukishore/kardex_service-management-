@@ -104,17 +104,18 @@ export default function AssetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Assets</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Assets</h1>
           <p className="text-sm text-muted-foreground">
             Manage all assets across customers
           </p>
         </div>
         <Button 
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
           onClick={() => router.push('/admin/customers')}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Asset to Customer
+          <span className="hidden sm:inline">Add Asset to Customer</span>
+          <span className="sm:hidden">Add Asset</span>
         </Button>
       </div>
 
@@ -126,15 +127,15 @@ export default function AssetsPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by machine ID, model, serial number, or customer..."
+                  placeholder="Search assets..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 h-10 sm:h-9"
                 />
               </div>
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px] h-10 sm:h-9">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
@@ -151,7 +152,7 @@ export default function AssetsPage() {
 
       {/* Assets Grid */}
       {assets.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {assets.map((asset) => (
             <Link 
               key={asset.id} 
@@ -159,47 +160,47 @@ export default function AssetsPage() {
               className="block"
             >
               <Card className="border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm hover:shadow-md">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <HardDrive className="h-5 w-5 text-blue-600" />
+                <CardHeader className="pb-3 px-4 sm:px-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0">
+                      <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                        <HardDrive className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base font-semibold truncate">
+                        <CardTitle className="text-sm sm:text-base font-semibold truncate">
                           {asset.machineId}
                         </CardTitle>
-                        <p className="text-sm text-gray-600 truncate">
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">
                           {asset.model || 'No model specified'}
                         </p>
                       </div>
                     </div>
-                    <Badge className={getStatusBadgeStyles(asset.status)}>
+                    <Badge className={`${getStatusBadgeStyles(asset.status)} text-xs flex-shrink-0`}>
                       {asset.status}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 px-4 sm:px-6">
                   <div className="space-y-2">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Building2 className="h-4 w-4 mr-2" />
+                    <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                      <Building2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                       <span className="truncate">{asset.customer.companyName}</span>
                     </div>
                     {asset.serialNo && (
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">Serial:</span> {asset.serialNo}
+                      <div className="text-xs sm:text-sm text-gray-600">
+                        <span className="font-medium">Serial:</span> <span className="break-all">{asset.serialNo}</span>
                       </div>
                     )}
                     {asset.location && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2" />
+                      <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                        <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
                         <span className="truncate">{asset.location}</span>
                       </div>
                     )}
                     {asset.purchaseDate && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span>Purchased: {format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}</span>
+                      <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                        <span className="truncate">Purchased: {format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}</span>
                       </div>
                     )}
                     <div className="flex justify-between items-center pt-2 border-t">
@@ -207,7 +208,7 @@ export default function AssetsPage() {
                         {asset._count.tickets} ticket{asset._count.tickets !== 1 ? 's' : ''}
                       </span>
                       {asset.warrantyEnd && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 truncate ml-2">
                           Warranty: {format(new Date(asset.warrantyEnd), 'MMM yyyy')}
                         </span>
                       )}

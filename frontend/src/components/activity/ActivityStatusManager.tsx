@@ -246,21 +246,40 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
   const getNextAvailableStages = (activity: Activity): string[] => {
     const activityType = getActivityType(activity.activityType);
     const currentStage = getCurrentStage(activity);
+    const currentIndex = activityType.stages.indexOf(currentStage);
     
-    // For TICKET_WORK, show all available states (no restrictions)
-    if (activity.activityType === 'TICKET_WORK') {
-      // Return all stages except the current one and exclude final state if already reached
-      return activityType.stages.filter(stage => 
-        stage !== currentStage && 
-        !(currentStage === 'CLOSED_PENDING' && stage === 'CLOSED_PENDING')
-      );
+    // Smart stage progression: Show next 2-3 logical stages + COMPLETED
+    // This reduces confusion while maintaining flexibility
+    
+    if (currentIndex === -1) {
+      // If current stage not found, show all stages
+      return activityType.stages;
     }
     
-    // Default linear progression for other activity types
-    const currentIndex = activityType.stages.indexOf(currentStage);
-    if (currentIndex === -1) return activityType.stages;
+    // For TICKET_WORK, show all stages (it's already flexible by nature)
+    if (activity.activityType === 'TICKET_WORK') {
+      return activityType.stages.filter(stage => stage !== currentStage);
+    }
     
-    const nextStages = activityType.stages.slice(currentIndex + 1);
+    // For other activities: Show next 2-3 stages + COMPLETED option
+    const nextStages: string[] = [];
+    
+    // Add immediate next stage
+    if (currentIndex + 1 < activityType.stages.length) {
+      nextStages.push(activityType.stages[currentIndex + 1]);
+    }
+    
+    // Add one more stage ahead (for flexibility)
+    if (currentIndex + 2 < activityType.stages.length) {
+      nextStages.push(activityType.stages[currentIndex + 2]);
+    }
+    
+    // Always allow jumping to COMPLETED (for quick finish)
+    const completedStage = activityType.stages[activityType.stages.length - 1];
+    if (completedStage === 'COMPLETED' && !nextStages.includes('COMPLETED')) {
+      nextStages.push('COMPLETED');
+    }
+    
     return nextStages;
   };
 
@@ -271,26 +290,17 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
   };
 
   // Check if a stage requires photo capture (for verification and documentation)
+  // Optimized to balance accountability with user experience
   const requiresPhoto = (stage: string): boolean => {
     const photoRequiredStages = [
-      // Location verification stages
-      'ARRIVED',
-      'ONSITE_VISIT_REACHED',
-      
-      // Work progress stages
-      'WORK_IN_PROGRESS', 
-      'ONSITE_VISIT_IN_PROGRESS',
-      'EXECUTION',
-      
-      // Assessment and completion stages
-      'ASSESSMENT',
-      'TESTING',
-      'CUSTOMER_HANDOVER',
-      
-      // Documentation stages
-      'DOCUMENTATION',
-      'ONSITE_VISIT_RESOLVED',
-      'COMPLETED'
+      // Critical verification stages only
+      'ARRIVED',                      // Proof of arrival at location
+      'ONSITE_VISIT_REACHED',        // Proof of onsite arrival (TICKET_WORK)
+      'ONSITE_VISIT_RESOLVED',       // Proof of issue resolution (TICKET_WORK)
+      'EXECUTION',                    // During work execution (SPARE_REPLACEMENT, RELOCATION, MAINTENANCE, INSTALLATION)
+      'CUSTOMER_HANDOVER',           // Final handover proof (INSTALLATION)
+      'WORK_IN_PROGRESS',            // Work session proof (TRAINING, DOCUMENTATION, WORK_FROM_HOME, OTHER)
+      'COMPLETED'                     // Final completion proof (most activities)
     ];
     return photoRequiredStages.includes(stage);
   };
@@ -758,8 +768,12 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
             </Button>
             <Button
               onClick={handleStageUpdate}
-              disabled={!selectedStage || isUpdatingStage || 
-                (requiresPhoto(selectedStage) && capturedPhotos.length === 0)}
+              disabled={
+                !selectedStage || 
+                isUpdatingStage || 
+                (requiresLocation(selectedStage) && !enhancedStageLocation) ||
+                (requiresPhoto(selectedStage) && capturedPhotos.length === 0)
+              }
               className="flex-1 h-11 bg-purple-600 hover:bg-purple-700 text-sm font-semibold"
             >
               {isUpdatingStage ? (

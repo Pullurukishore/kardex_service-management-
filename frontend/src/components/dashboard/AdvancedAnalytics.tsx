@@ -26,30 +26,35 @@ export default function AdvancedAnalytics({
     <div className="mb-8">
       <Card className="bg-gradient-to-br from-white to-slate-50 border-0 shadow-lg">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg">
-                  <PieChart className="w-5 h-5 text-white" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
+                <div className="p-1.5 sm:p-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex-shrink-0">
+                  <PieChart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                Advanced Analytics Dashboard
+                <span className="truncate">Advanced Analytics Dashboard</span>
               </CardTitle>
-              <CardDescription className="text-base mt-2">Comprehensive ticket analytics, trends, and performance insights</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-purple-100 text-purple-800 px-3 py-1">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                Analytics
-              </Badge>
+              <CardDescription className="text-sm sm:text-base mt-2">
+                Comprehensive ticket analytics, trends, and performance insights
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="status" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="status">Status Distribution</TabsTrigger>
-              <TabsTrigger value="trends">Weekly Trends</TabsTrigger>
-              <TabsTrigger value="performance">Performance Metrics</TabsTrigger>
+              <TabsTrigger value="status" className="text-xs sm:text-sm">
+                <span className="hidden sm:inline">Status Distribution</span>
+                <span className="sm:hidden">Status</span>
+              </TabsTrigger>
+              <TabsTrigger value="trends" className="text-xs sm:text-sm">
+                <span className="hidden sm:inline">Weekly Trends</span>
+                <span className="sm:hidden">Trends</span>
+              </TabsTrigger>
+              <TabsTrigger value="performance" className="text-xs sm:text-sm">
+                <span className="hidden sm:inline">Performance Metrics</span>
+                <span className="sm:hidden">Performance</span>
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="status" className="mt-6">

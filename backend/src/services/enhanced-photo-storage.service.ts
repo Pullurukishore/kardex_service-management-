@@ -36,32 +36,40 @@ export class EnhancedPhotoStorageService {
         const originalPhoto = photos[i];
         
         // Create attachment record with Cloudinary public_id in filename for reference
-        // Only create attachment if we have a ticketId (since it's required in schema)
-        if (!context.ticketId) {
-          console.warn('Skipping attachment creation for activity photos - ticketId required in schema');
-          continue;
-        }
+        if (context.ticketId) {
+          // For ticket photos, store in Attachment table
+          const attachment = await prisma.attachment.create({
+            data: {
+              filename: `${originalPhoto.filename}_${cloudinaryResult.public_id.split('/').pop()}`,
+              path: cloudinaryResult.secure_url,
+              mimeType: `image/${cloudinaryResult.format}`,
+              size: cloudinaryResult.bytes,
+              ticketId: context.ticketId,
+              uploadedById: context.userId
+            }
+          });
 
-        const attachment = await prisma.attachment.create({
-          data: {
-            filename: `${originalPhoto.filename}_${cloudinaryResult.public_id.split('/').pop()}`,
-            path: cloudinaryResult.secure_url,
-            mimeType: `image/${cloudinaryResult.format}`,
+          storedPhotos.push({
+            id: attachment.id,
+            filename: attachment.filename,
+            cloudinaryUrl: cloudinaryResult.secure_url,
+            thumbnailUrl: CloudinaryService.getThumbnailUrl(cloudinaryResult.public_id),
+            publicId: cloudinaryResult.public_id,
             size: cloudinaryResult.bytes,
-            ticketId: context.ticketId,
-            uploadedById: context.userId
-          }
-        });
-
-        storedPhotos.push({
-          id: attachment.id,
-          filename: attachment.filename,
-          cloudinaryUrl: cloudinaryResult.secure_url,
-          thumbnailUrl: CloudinaryService.getThumbnailUrl(cloudinaryResult.public_id),
-          publicId: cloudinaryResult.public_id,
-          size: cloudinaryResult.bytes,
-          createdAt: attachment.createdAt
-        });
+            createdAt: attachment.createdAt
+          });
+        } else {
+          // For activity photos, store only in Cloudinary (no database record)
+          storedPhotos.push({
+            id: Date.now() + i, // Temporary ID for activity photos
+            filename: `${originalPhoto.filename}_${cloudinaryResult.public_id.split('/').pop()}`,
+            cloudinaryUrl: cloudinaryResult.secure_url,
+            thumbnailUrl: CloudinaryService.getThumbnailUrl(cloudinaryResult.public_id),
+            publicId: cloudinaryResult.public_id,
+            size: cloudinaryResult.bytes,
+            createdAt: new Date() // Use current date for activity photos
+          });
+        }
       }
 
       console.log(`Successfully stored ${storedPhotos.length} photos for ${context.type}`);

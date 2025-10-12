@@ -2,16 +2,12 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
   Timer,
   MapPin,
   CheckCircle,
   AlertTriangle,
-  Activity,
-  Settings,
   Wrench,
   TrendingUp,
   TrendingDown,
@@ -82,23 +78,13 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg">
             <Wrench className="w-6 h-6 text-white" />
           </div>
           Field Service Analytics (FSA)
         </h2>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-blue-100 text-blue-800 px-3 py-1">
-            <Activity className="w-4 h-4 mr-1" />
-            Real-time
-          </Badge>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Settings className="w-4 h-4" />
-            Configure
-          </Button>
-        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, i) => (

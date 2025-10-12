@@ -93,11 +93,11 @@ export default function DashboardClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 sm:p-4 md:p-8 flex flex-col items-center justify-center">
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
+          <div className="mx-auto flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-red-100">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-5 w-5 sm:h-6 sm:w-6 text-red-600"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
@@ -111,11 +111,11 @@ export default function DashboardClient({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Error loading dashboard</h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <h3 className="mt-3 sm:mt-4 text-base sm:text-lg font-medium text-gray-900">Error loading dashboard</h3>
+          <p className="mt-2 text-sm text-gray-600 leading-relaxed">
             {error}
           </p>
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <button
               type="button"
               onClick={handleRefresh}
@@ -124,7 +124,7 @@ export default function DashboardClient({
             >
               {isRefreshing ? (
                 <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                   Refreshing...
                 </>
               ) : (
@@ -138,64 +138,66 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6 lg:p-8">
-      {/* Executive Header - Always visible */}
-      <ExecutiveHeader 
-        onRefresh={handleRefresh} 
-        isRefreshing={isRefreshing} 
-      />
-
-      {/* Initial loading state */}
-      {isRefreshing && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-lg">
-            <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
-            <span className="text-sm font-medium text-gray-700">Updating data...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Executive Summary Cards - Critical above-the-fold content */}
-      <ExecutiveSummaryCards 
-        dashboardData={dashboardData} 
-      />
-
-      {/* Lazy-loaded analytics components with intersection observer */}
-      <LazyDashboardSection className="mb-8">
-        <DynamicFieldServiceAnalytics 
-          dashboardData={dashboardData} 
-        />
-      </LazyDashboardSection>
-
-      <LazyDashboardSection>
-        <DynamicPerformanceAnalytics 
-          dashboardData={dashboardData} 
-        />
-      </LazyDashboardSection>
-
-      <LazyDashboardSection>
-        <DynamicAdvancedAnalytics 
-          dashboardData={dashboardData}
-          statusDistribution={statusDistribution}
-          ticketTrends={ticketTrends}
-          loading={isRefreshing}
-        />
-      </LazyDashboardSection>
-
-      <LazyDashboardSection>
-        <RecentTickets 
-          dashboardData={dashboardData} 
-          loading={isRefreshing}
-        />
-      </LazyDashboardSection>
-
-      <LazyDashboardSection>
-        <DynamicZonePerformanceAnalytics 
-          dashboardData={dashboardData} 
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 sm:p-4 md:p-6 lg:p-8 overflow-x-hidden w-full max-w-full">
+      <div className="w-full max-w-full overflow-x-hidden">
+        {/* Executive Header - Always visible */}
+        <ExecutiveHeader 
           onRefresh={handleRefresh} 
           isRefreshing={isRefreshing} 
         />
-      </LazyDashboardSection>
+
+        {/* Initial loading state */}
+        {isRefreshing && (
+          <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50">
+            <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-lg">
+              <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 animate-spin text-indigo-600" />
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Updating data...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Executive Summary Cards - Critical above-the-fold content */}
+        <ExecutiveSummaryCards 
+          dashboardData={dashboardData} 
+        />
+
+        {/* Lazy-loaded analytics components with intersection observer */}
+        <LazyDashboardSection className="mb-6 sm:mb-8">
+          <DynamicFieldServiceAnalytics 
+            dashboardData={dashboardData} 
+          />
+        </LazyDashboardSection>
+
+        <LazyDashboardSection className="mb-6 sm:mb-8">
+          <DynamicPerformanceAnalytics 
+            dashboardData={dashboardData} 
+          />
+        </LazyDashboardSection>
+
+        <LazyDashboardSection className="mb-6 sm:mb-8">
+          <DynamicAdvancedAnalytics 
+            dashboardData={dashboardData}
+            statusDistribution={statusDistribution}
+            ticketTrends={ticketTrends}
+            loading={isRefreshing}
+          />
+        </LazyDashboardSection>
+
+        <LazyDashboardSection className="mb-6 sm:mb-8">
+          <RecentTickets 
+            dashboardData={dashboardData} 
+            loading={isRefreshing}
+          />
+        </LazyDashboardSection>
+
+        <LazyDashboardSection className="mb-6 sm:mb-8">
+          <DynamicZonePerformanceAnalytics 
+            dashboardData={dashboardData} 
+            onRefresh={handleRefresh} 
+            isRefreshing={isRefreshing} 
+          />
+        </LazyDashboardSection>
+      </div>
     </div>
   );
 }

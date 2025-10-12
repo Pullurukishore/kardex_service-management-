@@ -17,6 +17,21 @@ const nextConfig = {
   
   // Webpack configuration for performance
   webpack: (config, { isServer, dev }) => {
+    // Remove console logs in production
+    if (!dev) {
+      config.optimization.minimizer = config.optimization.minimizer || [];
+      const TerserPlugin = require('terser-webpack-plugin');
+      config.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: process.env.NEXT_PUBLIC_ENABLE_LOGS !== 'true',
+            },
+          },
+        })
+      );
+    }
+
     // Advanced code splitting for better performance
     if (!isServer && !dev) {
       config.optimization.splitChunks = {

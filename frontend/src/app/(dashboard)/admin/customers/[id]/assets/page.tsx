@@ -182,38 +182,45 @@ export default function CustomerAssetsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col space-y-4 sm:space-y-0">
+            {/* Back Button */}
+            <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push(`/admin/customers/${customer.id}`)}
-                className="flex items-center"
+                className="flex items-center p-2 sm:px-4"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Customer
+                <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Back to Customer</span>
+                <span className="sm:hidden">Back</span>
               </Button>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+            </div>
+            
+            {/* Title and Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
                   {customer.companyName} - Assets
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-sm sm:text-base text-gray-600 mt-1">
                   Manage all assets for this customer
                 </p>
               </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Badge className="bg-blue-100 text-blue-800 px-3 py-1">
-                {filteredAssets.length} of {customer._count.assets} assets
-              </Badge>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => router.push(`/admin/customers/${customer.id}/assets/new`)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Asset
-              </Button>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 flex-shrink-0">
+                <Badge className="bg-blue-100 text-blue-800 px-3 py-1 text-center">
+                  {filteredAssets.length} of {customer._count.assets} assets
+                </Badge>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                  onClick={() => router.push(`/admin/customers/${customer.id}/assets/new`)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Asset
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -226,16 +233,16 @@ export default function CustomerAssetsPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search by serial number, model, or location..."
+                    placeholder="Search assets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-10"
                   />
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40 h-10">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -246,7 +253,7 @@ export default function CustomerAssetsPage() {
                   </SelectContent>
                 </Select>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40 h-10">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -263,30 +270,31 @@ export default function CustomerAssetsPage() {
 
         {/* Assets Grid */}
         {filteredAssets.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredAssets.map((asset: any) => (
               <Card key={asset.id} className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-3 bg-blue-100 rounded-lg">
-                        <HardDrive className="h-6 w-6 text-blue-600" />
+                <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                      <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
+                        <HardDrive className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-lg truncate" title={asset.serialNo}>
+                        <h3 className="font-semibold text-gray-900 text-sm sm:text-lg truncate" title={asset.serialNo}>
                           {asset.serialNo || 'N/A'}
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Asset ID: {asset.id}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1">Asset ID: {asset.id}</p>
                       </div>
                     </div>
-                    <Badge className={`${getStatusBadgeStyles(asset.status)} flex items-center gap-1`}>
+                    <Badge className={`${getStatusBadgeStyles(asset.status)} flex items-center gap-1 text-xs flex-shrink-0`}>
                       {getStatusIcon(asset.status)}
-                      {asset.status}
+                      <span className="hidden sm:inline">{asset.status}</span>
+                      <span className="sm:hidden">{asset.status.charAt(0)}</span>
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
+                <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
+                  <div className="space-y-2 sm:space-y-3">
                     <div>
                       <p className="text-sm font-medium text-gray-700">Model</p>
                       <p className="text-sm text-gray-900 break-words" title={asset.model}>
@@ -329,7 +337,7 @@ export default function CustomerAssetsPage() {
                     )}
                   </div>
                   
-                  <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 sm:pt-4 border-t space-y-2 sm:space-y-0">
                     <div className="text-xs text-gray-500">
                       Asset ID: {asset.id}
                     </div>
@@ -338,24 +346,26 @@ export default function CustomerAssetsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => router.push(`/admin/assets/${asset.id}/edit`)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-blue-600 hover:text-blue-800 flex-1 sm:flex-none"
                       >
                         <Pencil className="h-4 w-4 mr-1" />
-                        Edit
+                        <span className="hidden sm:inline">Edit</span>
+                        <span className="sm:hidden">Edit</span>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteAsset(asset.id, asset.serialNo || asset.model || `Asset ${asset.id}`)}
                         disabled={deletingAssetId === asset.id}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-red-600 hover:text-red-800 flex-1 sm:flex-none"
                       >
                         {deletingAssetId === asset.id ? (
                           <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                         ) : (
                           <Trash2 className="h-4 w-4 mr-1" />
                         )}
-                        {deletingAssetId === asset.id ? 'Deleting...' : 'Delete'}
+                        <span className="hidden sm:inline">{deletingAssetId === asset.id ? 'Deleting...' : 'Delete'}</span>
+                        <span className="sm:hidden">{deletingAssetId === asset.id ? '...' : 'Del'}</span>
                       </Button>
                     </div>
                   </div>

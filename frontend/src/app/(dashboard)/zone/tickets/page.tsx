@@ -253,58 +253,32 @@ export default function ZoneTicketsPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="container mx-auto py-6 space-y-6"
+      className="space-y-4 md:space-y-6"
     >
-      {/* Desktop Header with Gradient */}
+      {/* Header with Gradient - Mobile Responsive */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 p-6 text-white"
+        className="relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 p-4 md:p-6 text-white"
       >
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative flex items-center justify-between">
+        <div className="relative header-mobile">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Zone Tickets</h1>
-            <p className="text-indigo-100">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Zone Tickets</h1>
+            <p className="text-indigo-100 text-sm md:text-base">
               Manage and track tickets in your service zone
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center text-indigo-100">
-              <MapPin className="h-4 w-4 mr-1" />
-              <span className="text-sm">Your Zone</span>
-            </div>
-            <Button 
-              onClick={() => router.push('/zone/tickets/create')}
-              className="bg-white text-indigo-600 hover:bg-indigo-50 shadow-lg"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              New Ticket
-            </Button>
-          </div>
+          <Button 
+            onClick={() => router.push('/zone/tickets/create')}
+            className="bg-white text-indigo-600 hover:bg-indigo-50 shadow-lg btn-touch"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">New Ticket</span>
+            <span className="sm:hidden">New</span>
+          </Button>
         </div>
-      </motion.div>
-
-      {/* Mobile Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="md:hidden"
-      >
-        <MobilePageHeader
-          title="Zone Tickets"
-          description="Manage and track tickets in your service zone"
-          action={
-            <Button 
-              onClick={() => router.push('/zone/tickets/create')}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
-            >
-              <Plus className="mr-2 h-4 w-4" /> New
-            </Button>
-          }
-        />
       </motion.div>
 
       {/* Stats Cards */}

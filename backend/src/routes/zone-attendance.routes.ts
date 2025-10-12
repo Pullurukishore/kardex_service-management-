@@ -22,4 +22,7 @@ router.get('/service-zones', zoneAttendanceController.getServiceZones);
 // Export attendance data as CSV (zone-specific)
 router.get('/export', zoneAttendanceController.exportAttendance);
 
+// Get detailed attendance record (zone-specific)
+router.get('/:id', zoneAttendanceController.getAttendanceDetail);
+
 export default router;

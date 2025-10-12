@@ -266,7 +266,7 @@ export default function AssetDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
           <Button 
             variant="ghost" 
             onClick={() => {
@@ -277,41 +277,45 @@ export default function AssetDetailPage() {
                 router.push('/admin/assets'); // Fallback to general assets page
               }
             }} 
-            className="p-2"
+            className="p-2 flex-shrink-0"
             title="Back to Customer Assets"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{asset.machineId}</h1>
-            <p className="text-sm text-muted-foreground">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{asset.machineId}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Asset Details • ID: {asset.id}
             </p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
           <Button 
             variant="outline" 
             onClick={() => router.push(`/admin/assets/${id}/edit`)}
-            className="bg-white hover:bg-gray-50"
+            className="bg-white hover:bg-gray-50 flex-1 sm:flex-none"
           >
-            <Pencil className="mr-2 h-4 w-4" /> Edit
+            <Pencil className="mr-2 h-4 w-4" /> 
+            <span className="hidden sm:inline">Edit</span>
+            <span className="sm:hidden">Edit</span>
           </Button>
           <Button 
             variant="destructive" 
             onClick={handleDelete}
             disabled={deleting}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 hover:bg-red-700 flex-1 sm:flex-none"
           >
             {deleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                <span className="hidden sm:inline">Deleting...</span>
+                <span className="sm:hidden">...</span>
               </>
             ) : (
               <>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                <span className="hidden sm:inline">Delete</span>
+                <span className="sm:hidden">Del</span>
               </>
             )}
           </Button>
@@ -341,7 +345,7 @@ export default function AssetDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Main Asset Info */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="border-0 shadow-lg">
@@ -366,8 +370,8 @@ export default function AssetDetailPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-6">
                   <div className="bg-gray-50 rounded-lg p-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
@@ -478,47 +482,78 @@ export default function AssetDetailPage() {
             </CardHeader>
             <CardContent className="pt-6">
               {asset.tickets?.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Priority</TableHead>
-                      <TableHead>Assigned To</TableHead>
-                      <TableHead>Created</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {asset.tickets.map((ticket) => (
-                      <TableRow key={ticket.id}>
-                        <TableCell>
-                          <Link 
-                            href={`/admin/tickets/${ticket.id}`}
-                            className="font-medium hover:underline hover:text-primary"
-                          >
-                            {ticket.title}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getTicketStatusBadgeStyles(ticket.status)}>
-                            {ticket.status.replace(/_/g, ' ')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getPriorityBadgeStyles(ticket.priority)}>
-                            {ticket.priority}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {ticket.assignedTo ? ticket.assignedTo.name || ticket.assignedTo.email : 'Unassigned'}
-                        </TableCell>
-                        <TableCell>
-                          {format(new Date(ticket.createdAt), 'MMM dd, yyyy')}
-                        </TableCell>
+                <div className="block sm:hidden space-y-3">
+                  {/* Mobile Card View */}
+                  {asset.tickets.map((ticket) => (
+                    <div key={ticket.id} className="border rounded-lg p-3 space-y-2">
+                      <Link 
+                        href={`/admin/tickets/${ticket.id}`}
+                        className="font-medium hover:underline hover:text-primary text-sm block"
+                      >
+                        {ticket.title}
+                      </Link>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className={`${getTicketStatusBadgeStyles(ticket.status)} text-xs`}>
+                          {ticket.status.replace(/_/g, ' ')}
+                        </Badge>
+                        <Badge className={`${getPriorityBadgeStyles(ticket.priority)} text-xs`}>
+                          {ticket.priority}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div>Assigned: {ticket.assignedTo ? ticket.assignedTo.name || ticket.assignedTo.email : 'Unassigned'}</div>
+                        <div>Created: {format(new Date(ticket.createdAt), 'MMM dd, yyyy')}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              
+              {asset.tickets?.length > 0 ? (
+                <div className="hidden sm:block overflow-x-auto">
+                  {/* Desktop Table View */}
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[150px]">Title</TableHead>
+                        <TableHead className="min-w-[100px]">Status</TableHead>
+                        <TableHead className="min-w-[80px]">Priority</TableHead>
+                        <TableHead className="min-w-[120px]">Assigned To</TableHead>
+                        <TableHead className="min-w-[100px]">Created</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {asset.tickets.map((ticket) => (
+                        <TableRow key={ticket.id}>
+                          <TableCell>
+                            <Link 
+                              href={`/admin/tickets/${ticket.id}`}
+                              className="font-medium hover:underline hover:text-primary"
+                            >
+                              {ticket.title}
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getTicketStatusBadgeStyles(ticket.status)}>
+                              {ticket.status.replace(/_/g, ' ')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getPriorityBadgeStyles(ticket.priority)}>
+                              {ticket.priority}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="truncate max-w-[150px]">
+                            {ticket.assignedTo ? ticket.assignedTo.name || ticket.assignedTo.email : 'Unassigned'}
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(ticket.createdAt), 'MMM dd, yyyy')}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               ) : (
                 <div className="text-center py-6">
                   <Ticket className="mx-auto h-10 w-10 text-muted-foreground" />
@@ -589,19 +624,19 @@ export default function AssetDetailPage() {
             </CardHeader>
             <CardContent className="pt-6">
               {asset.serviceHistory && asset.serviceHistory.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {asset.serviceHistory.slice(0, 5).map((service) => (
-                    <div key={service.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium text-gray-900">{service.serviceType}</h4>
-                        <span className="text-xs text-gray-500">
+                    <div key={service.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1">
+                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">{service.serviceType}</h4>
+                        <span className="text-xs text-gray-500 flex-shrink-0">
                           {format(new Date(service.performedAt), 'MMM dd, yyyy')}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{service.description}</p>
-                      <div className="flex justify-between items-center text-xs text-gray-500">
-                        <span>By: {service.performedBy.name || service.performedBy.email}</span>
-                        {service.duration && <span>{service.duration} min</span>}
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2">{service.description}</p>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs text-gray-500 gap-1">
+                        <span className="truncate">By: {service.performedBy.name || service.performedBy.email}</span>
+                        {service.duration && <span className="flex-shrink-0">{service.duration} min</span>}
                       </div>
                     </div>
                   ))}

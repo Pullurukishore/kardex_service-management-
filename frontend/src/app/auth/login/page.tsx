@@ -178,14 +178,17 @@ export default function LoginPage() {
         <div className="text-center p-8">
           <div className="mb-6">
             <div className="mb-2">
-              <Image
-                src="/kardex.png"
-                alt="Kardex Logo"
-                width={200}
-                height={80}
-                className="mx-auto"
-                priority
-              />
+              {/* White background container for logo visibility */}
+              <div className="bg-white rounded-2xl p-4 shadow-lg mx-auto inline-block">
+                <Image
+                  src="/kardex.png"
+                  alt="Kardex Logo"
+                  width={200}
+                  height={80}
+                  className="mx-auto"
+                  priority
+                />
+              </div>
             </div>
           </div>
           

@@ -13,7 +13,6 @@ import {
   Activity,
   Globe,
   RefreshCw,
-  Download,
   PieChart,
   Target,
   Award,
@@ -118,26 +117,27 @@ export default function ZonePerformanceAnalytics({
   return (
     <Card className="mt-8 bg-gradient-to-br from-white to-slate-50 border-0 shadow-lg">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-3 text-2xl">
-              <div className="p-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg">
-                <MapPin className="w-6 h-6 text-white" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg flex-shrink-0">
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              Zone Performance Analytics
+              <span className="truncate">Zone Performance Analytics</span>
             </CardTitle>
-            <CardDescription className="text-base mt-2">
-              Comprehensive analysis of service zones, resource allocation, and operational efficiency
+            <CardDescription className="text-sm sm:text-base mt-2">
+              Comprehensive analysis of service zones and operational efficiency
             </CardDescription>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge className="bg-cyan-100 text-cyan-800 px-3 py-1">
-              <Globe className="w-4 h-4 mr-1" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0">
+            <Badge className="bg-cyan-100 text-cyan-800 px-2 sm:px-3 py-1 text-xs sm:text-sm whitespace-nowrap">
+              <Globe className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               {dashboardData?.adminStats?.zoneWiseTickets?.length || 0} Zones
             </Badge>
-            <Button variant="outline" size="sm" onClick={onRefresh} disabled={isRefreshing}>
-              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
+            <Button variant="outline" size="sm" onClick={onRefresh} disabled={isRefreshing} className="text-xs sm:text-sm">
+              <RefreshCw className={`mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Refresh</span>
+              <span className="sm:hidden">Refresh</span>
             </Button>
           </div>
         </div>
@@ -249,29 +249,21 @@ export default function ZonePerformanceAnalytics({
         <div className="mt-8 space-y-6">
           <Card className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-0 shadow-xl">
             <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-3 text-2xl font-bold">
-                  <div className="p-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg">
-                    <PieChart className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    Zone Performance Summary
-                  </span>
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-indigo-100 text-indigo-800 px-3 py-1">
-                    <Activity className="w-4 h-4 mr-1" />
-                    Real-time Analytics
-                  </Badge>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Download className="w-4 h-4" />
-                    Export Summary
-                  </Button>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl font-bold">
+                    <div className="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg sm:rounded-xl shadow-lg flex-shrink-0">
+                      <PieChart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent truncate">
+                      Zone Performance Summary
+                    </span>
+                  </CardTitle>
+                  <CardDescription className="text-sm sm:text-base mt-2">
+                    Comprehensive overview of zone performance metrics
+                  </CardDescription>
                 </div>
               </div>
-              <CardDescription className="text-base mt-2">
-                Comprehensive overview of zone performance metrics and resource distribution
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

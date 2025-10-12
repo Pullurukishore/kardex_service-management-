@@ -13,6 +13,7 @@ export default function AttendanceViewPage() {
       apiEndpoint={`/admin/attendance/${attendanceId}`}
       backUrl="/admin/attendance"
       pageTitle="Attendance Details"
+      
     />
   );
 }

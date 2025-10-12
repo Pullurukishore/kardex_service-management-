@@ -64,27 +64,19 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-[#507295] via-[#5a7ba0] to-[#4a6b8a] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Enhanced Logo Card */}
-        <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/30 p-8 mb-6 overflow-hidden">
-          {/* Subtle background pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(80,114,149,0.3) 1px, transparent 1px)',
-              backgroundSize: '20px 20px'
-            }}></div>
-          </div>
-          
+        <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-200/50 p-8 mb-6 overflow-hidden">
           {/* Content */}
           <div className="relative text-center">
-            {/* Logo container with enhanced styling */}
+            {/* Logo container with clean styling */}
             <div className="mb-6 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#507295]/10 via-transparent to-[#507295]/10 rounded-2xl blur-xl"></div>
-              <div className="relative bg-white rounded-2xl p-4 shadow-lg border border-gray-100/50">
+              {/* Clean logo background */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <Image
                   src="/kardex.png"
                   alt="Kardex Logo"
-                  width={240}
-                  height={96}
-                  className="mx-auto drop-shadow-md filter brightness-105 contrast-110"
+                  width={280}
+                  height={112}
+                  className="mx-auto"
                   priority
                 />
               </div>
@@ -97,26 +89,17 @@ export default function Home() {
             </div>
             
             {/* Enhanced typography */}
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#507295] to-[#4a6b8a] bg-clip-text text-transparent mb-3">
+            <h1 className="text-2xl font-bold text-[#507295] mb-3">
               Ticket Management System
             </h1>
-            <p className="text-gray-600/80 text-sm font-medium">
+            <p className="text-gray-600 text-sm font-medium">
               Streamlined service management solutions
             </p>
           </div>
-          
-          {/* Decorative corner elements */}
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#507295]/10 to-transparent rounded-bl-full"></div>
-          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-[#aac01d]/10 to-transparent rounded-tr-full"></div>
         </div>
         
         {/* Enhanced Loading Card */}
-        <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl p-6 border border-white/30 overflow-hidden">
-          {/* Subtle animated background */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#507295]/20 via-[#aac01d]/10 to-[#507295]/20 animate-pulse"></div>
-          </div>
-          
+        <div className="relative bg-white rounded-3xl shadow-xl p-6 border border-gray-200/50 overflow-hidden">
           <div className="relative text-center">
             {/* Enhanced loading spinner */}
             <div className="mb-4">
@@ -147,10 +130,6 @@ export default function Home() {
               <div className="w-2.5 h-2.5 bg-gradient-to-r from-[#507295] to-[#4a6b8a] rounded-full animate-bounce shadow-sm" style={{ animationDelay: '0.2s' }}></div>
             </div>
           </div>
-          
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-12 h-12 bg-gradient-to-br from-[#aac01d]/10 to-transparent rounded-br-full"></div>
-          <div className="absolute bottom-0 right-0 w-10 h-10 bg-gradient-to-tl from-[#507295]/10 to-transparent rounded-tl-full"></div>
         </div>
         
         {/* Enhanced Footer */}

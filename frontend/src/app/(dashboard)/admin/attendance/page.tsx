@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
   Clock,
   MapPin,
@@ -31,12 +32,18 @@ import {
   Info,
   UserCheck,
   UserX,
-  Zap
+  Zap,
+  ChevronDown,
+  SlidersHorizontal,
+  RotateCcw,
+  ArrowUpDown,
+  Grid3X3,
+  List,
+  ChevronUp
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/api-client';
 import { format, parseISO, startOfDay, endOfDay, isToday, isYesterday } from 'date-fns';
 import Link from 'next/link';
-import { memo, useMemo, useCallback } from 'react';
 
 // Types based on backend schema
 interface AttendanceRecord {
@@ -148,6 +155,14 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addActivityModalOpen, setAddActivityModalOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'compact'>('cards');
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'status' | 'hours'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showLoadMore, setShowLoadMore] = useState(false);
+  const pullToRefreshRef = useRef<HTMLDivElement>(null);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
 
   // Get date range based on selection
   const getDateRange = () => {
@@ -180,15 +195,39 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
     };
   };
 
-  // Memoize processed records for better performance
+  // Memoize processed and sorted records for better performance
   const processedRecords = useMemo(() => {
-    return attendanceRecords.map(record => ({
+    const processed = attendanceRecords.map(record => ({
       ...record,
       statusConfig: STATUS_CONFIG[record.status] || STATUS_CONFIG.CHECKED_OUT,
       isAutoCheckout: record.notes?.includes('Auto-checkout'),
       formattedHours: record.totalHours ? `${Number(record.totalHours).toFixed(1)}h` : 'Calculating...'
     }));
-  }, [attendanceRecords]);
+
+    // Sort records based on selected criteria
+    return processed.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'name':
+          comparison = (a.user.name || a.user.email).localeCompare(b.user.name || b.user.email);
+          break;
+        case 'date':
+          comparison = new Date(a.checkInAt || a.createdAt).getTime() - new Date(b.checkInAt || b.createdAt).getTime();
+          break;
+        case 'status':
+          comparison = a.status.localeCompare(b.status);
+          break;
+        case 'hours':
+          comparison = (a.totalHours || 0) - (b.totalHours || 0);
+          break;
+        default:
+          comparison = 0;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }, [attendanceRecords, sortBy, sortOrder]);
 
   // Fetch attendance data
   const fetchAttendanceData = useCallback(async (refresh = false) => {
@@ -313,6 +352,37 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
     return format(date, 'MMM dd, HH:mm');
   }, []);
 
+  // Pull to refresh functionality
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      setIsPulling(true);
+      setPullDistance(0);
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (isPulling && window.scrollY === 0) {
+      const touch = e.touches[0];
+      const distance = Math.max(0, Math.min(150, touch.clientY - 50));
+      setPullDistance(distance);
+    }
+  }, [isPulling]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (isPulling && pullDistance > 80) {
+      fetchAttendanceData(true);
+    }
+    setIsPulling(false);
+    setPullDistance(0);
+  }, [isPulling, pullDistance, fetchAttendanceData]);
+
+  // Load more functionality
+  const handleLoadMore = useCallback(() => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  }, [currentPage, totalPages]);
+
 
   useEffect(() => {
     fetchAttendanceData();
@@ -330,11 +400,52 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
     return () => clearTimeout(delayedSearch);
   }, [searchQuery]);
 
+  // Update showLoadMore based on pagination
+  useEffect(() => {
+    setShowLoadMore(currentPage < totalPages && attendanceRecords.length > 0);
+  }, [currentPage, totalPages, attendanceRecords.length]);
+
   // Removed full-screen loading state to prevent CLS
   // Using skeleton loaders instead to maintain layout
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <style jsx>{`
+        .btn-touch {
+          min-height: 44px;
+          min-width: 44px;
+        }
+        .card-mobile {
+          touch-action: manipulation;
+        }
+        @media (max-width: 768px) {
+          .header-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+          .stats-mobile {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+          }
+          .table-mobile {
+            overflow-x: hidden;
+          }
+        }
+        @media (min-width: 769px) {
+          .header-mobile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .stats-mobile {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+          }
+        }
+      `}</style>
       <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Modern Header with Gradient Background - Mobile Responsive */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 p-4 md:p-8 shadow-2xl">
@@ -396,121 +507,255 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16"></div>
         </div>
 
-        {/* Modern Statistics Overview with Gradients - Mobile Responsive */}
-        <div className="stats-mobile">
+        {/* Enhanced Statistics Overview */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Records Card */}
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl h-32">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-100">Total Records</CardTitle>
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <BarChart3 className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loading || !stats ? (
+          <Card className="relative overflow-hidden border border-blue-200 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="space-y-2">
-                  <div className="h-8 bg-white/20 rounded animate-pulse"></div>
-                  <div className="h-4 bg-white/10 rounded animate-pulse w-24"></div>
-                </div>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold mb-1">{stats.totalRecords}</div>
-                  <p className="text-xs text-blue-100 flex items-center gap-1">
+                  <p className="text-sm font-medium text-blue-700">Total Records</p>
+                  {loading || !stats ? (
+                    <div className="h-8 w-16 bg-blue-300 rounded animate-pulse"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-blue-900">{stats.totalRecords || attendanceRecords.length}</p>
+                  )}
+                  <p className="text-xs text-blue-600 flex items-center gap-1">
                     <TrendingUp className="h-3 w-3" />
-                    {dateRange === 'today' ? 'Today' : `Last ${dateRange}`}
+                    {dateRange === 'today' ? 'Today' : dateRange === 'yesterday' ? 'Yesterday' : 'Selected period'}
                   </p>
-                </>
-              )}
+                </div>
+                <div className="p-3 bg-blue-500 rounded-full group-hover:bg-blue-600 transition-colors">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </CardContent>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
           </Card>
 
-          {/* Checked In Card */}
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl h-32">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-100">Active Users</CardTitle>
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <UserCheck className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loading || !stats ? (
+          {/* Active Users Card */}
+          <Card className="relative overflow-hidden border border-green-200 bg-gradient-to-br from-green-50 via-green-100 to-green-200 hover:shadow-lg transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="space-y-2">
-                  <div className="h-8 bg-white/20 rounded animate-pulse"></div>
-                  <div className="h-4 bg-white/10 rounded animate-pulse w-20"></div>
-                </div>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold mb-1">{stats.statusBreakdown.CHECKED_IN || 0}</div>
-                  <p className="text-xs text-green-100 flex items-center gap-1">
+                  <p className="text-sm font-medium text-green-700">Active Users</p>
+                  {loading || !stats ? (
+                    <div className="h-8 w-16 bg-green-300 rounded animate-pulse"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-green-900">
+                      {stats?.statusBreakdown?.CHECKED_IN || 
+                       attendanceRecords.filter(r => r.status === 'CHECKED_IN').length}
+                    </p>
+                  )}
+                  <p className="text-xs text-green-600 flex items-center gap-1">
                     <Activity className="h-3 w-3" />
                     Currently active
                   </p>
-                </>
-              )}
+                </div>
+                <div className="p-3 bg-green-500 rounded-full group-hover:bg-green-600 transition-colors">
+                  <UserCheck className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </CardContent>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
           </Card>
 
           {/* Average Hours Card */}
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-500 to-violet-600 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl h-32">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-100">Average Hours</CardTitle>
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Timer className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loading || !stats ? (
+          <Card className="relative overflow-hidden border border-purple-200 bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 hover:shadow-lg transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="space-y-2">
-                  <div className="h-8 bg-white/20 rounded animate-pulse"></div>
-                  <div className="h-4 bg-white/10 rounded animate-pulse w-28"></div>
-                </div>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold mb-1">{stats.averageHours.toFixed(1)}h</div>
-                  <p className="text-xs text-purple-100 flex items-center gap-1">
-                    <BarChart3 className="h-3 w-3" />
-                    Per person today
+                  <p className="text-sm font-medium text-purple-700">Average Hours</p>
+                  {loading || !stats ? (
+                    <div className="h-8 w-16 bg-purple-300 rounded animate-pulse"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-purple-900">
+                      {stats?.averageHours ? `${stats.averageHours.toFixed(1)}h` : 
+                       attendanceRecords.length > 0 ? 
+                       `${(attendanceRecords.reduce((sum, r) => sum + (r.totalHours || 0), 0) / attendanceRecords.length).toFixed(1)}h` : 
+                       '0.0h'}
+                    </p>
+                  )}
+                  <p className="text-xs text-purple-600 flex items-center gap-1">
+                    <Timer className="h-3 w-3" />
+                    Per person {dateRange === 'today' ? 'today' : 'average'}
                   </p>
-                </>
-              )}
+                </div>
+                <div className="p-3 bg-purple-500 rounded-full group-hover:bg-purple-600 transition-colors">
+                  <Timer className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </CardContent>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
           </Card>
 
           {/* Issues Card */}
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-orange-500 to-red-500 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl h-32">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-orange-100">Issues</CardTitle>
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <AlertTriangle className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loading || !stats ? (
+          <Card className="relative overflow-hidden border border-orange-200 bg-gradient-to-br from-orange-50 via-orange-100 to-orange-200 hover:shadow-lg transition-all duration-300 group">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="space-y-2">
-                  <div className="h-8 bg-white/20 rounded animate-pulse"></div>
-                  <div className="h-4 bg-white/10 rounded animate-pulse w-32"></div>
-                </div>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold mb-1">
-                    {(stats.statusBreakdown.LATE || 0) + (stats.statusBreakdown.ABSENT || 0)}
-                  </div>
-                  <p className="text-xs text-orange-100 flex items-center gap-1">
+                  <p className="text-sm font-medium text-orange-700">Issues</p>
+                  {loading || !stats ? (
+                    <div className="h-8 w-16 bg-orange-300 rounded animate-pulse"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-orange-900">
+                      {(stats?.statusBreakdown?.LATE || 0) + 
+                       (stats?.statusBreakdown?.ABSENT || 0) + 
+                       (stats?.statusBreakdown?.EARLY_CHECKOUT || 0) ||
+                       attendanceRecords.filter(r => ['LATE', 'ABSENT', 'EARLY_CHECKOUT'].includes(r.status)).length}
+                    </p>
+                  )}
+                  <p className="text-xs text-orange-600 flex items-center gap-1">
                     <AlertTriangle className="h-3 w-3" />
                     Require attention
                   </p>
-                </>
-              )}
+                </div>
+                <div className="p-3 bg-orange-500 rounded-full group-hover:bg-orange-600 transition-colors">
+                  <AlertTriangle className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </CardContent>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
           </Card>
         </div>
 
-        {/* Modern Filters Panel */}
-        <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        {/* Mobile Filters - Same as Desktop */}
+        <Card className="md:hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-t-xl">
+            <CardTitle className="flex items-center gap-3 text-slate-800">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Filter className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-xl font-semibold">Smart Filters</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-blue-500" />
+                  Date Range
+                </label>
+                <Select value={dateRange} onValueChange={(v) => setDateRange(v as 'today' | 'yesterday' | 'specific')}>
+                  <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="today">📅 Today</SelectItem>
+                    <SelectItem value="yesterday">📆 Yesterday</SelectItem>
+                    <SelectItem value="specific">🗓️ Specific Date</SelectItem>
+                  </SelectContent>
+                </Select>
+                {dateRange === 'specific' && (
+                  <div className="mt-3">
+                    <Input
+                      type="date"
+                      value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setSelectedDate(e.target.value ? new Date(e.target.value) : undefined)}
+                      className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                    />
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <User className="h-4 w-4 text-green-500" />
+                  Service Person
+                </label>
+                <Select value={selectedUser} onValueChange={setSelectedUser}>
+                  <SelectTrigger className="border-slate-200 focus:border-green-500 focus:ring-green-500/20 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80 overflow-auto">
+                    <SelectItem value="all">👥 All Service Persons</SelectItem>
+                    {servicePersons.map((person) => (
+                      <SelectItem key={person.id} value={person.id.toString()}>
+                        👤 {person.name || person.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-purple-500" />
+                  Status
+                </label>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="border-slate-200 focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">🔄 All Status</SelectItem>
+                    {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>
+                        {config.label}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="AUTO_CHECKED_OUT">⚡ Auto Checked Out</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-orange-500" />
+                  Activity Type
+                </label>
+                <Select value={selectedActivityType} onValueChange={setSelectedActivityType}>
+                  <SelectTrigger className="border-slate-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">📋 All Types</SelectItem>
+                    <SelectItem value="TICKET_WORK">🎫 Ticket Work</SelectItem>
+                    <SelectItem value="TRAVEL">🚗 Travel</SelectItem>
+                    <SelectItem value="MEETING">👥 Meeting</SelectItem>
+                    <SelectItem value="TRAINING">📚 Training</SelectItem>
+                    <SelectItem value="OTHER">📝 Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-red-500" />
+                  Zone / Region
+                </label>
+                <Select value={selectedZone} onValueChange={setSelectedZone}>
+                  <SelectTrigger className="border-slate-200 focus:border-red-500 focus:ring-red-500/20 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">🌍 All Zones</SelectItem>
+                    {serviceZones.map((zone) => (
+                      <SelectItem key={zone.id} value={zone.id.toString()}>
+                        📍 {zone.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <Search className="h-4 w-4 text-indigo-500" />
+                  Search
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-indigo-400" />
+                  <Input
+                    placeholder="Search by name or email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Desktop Filters Panel */}
+        <Card className="hidden md:block border-0 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-t-xl">
             <CardTitle className="flex items-center gap-3 text-slate-800">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -781,7 +1026,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                                   <div className="min-h-[20px] mt-1">
                                     {record.user.serviceZones.length > 0 ? (
                                       <div className="flex flex-wrap gap-1">
-                                        {record.user.serviceZones.slice(0, 2).map((sz, idx) => (
+                                        {record.user.serviceZones.slice(0, 2).map((sz: any, idx: number) => (
                                           <span key={idx} className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">
                                             📍 {sz.serviceZone.name}
                                           </span>
@@ -1045,22 +1290,45 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                 </table>
               </div>
               
-              {/* Mobile Card View */}
-              <div className="md:hidden p-4 space-y-4">
+              {/* Mobile Card View with Pull-to-Refresh */}
+              <div 
+                className="md:hidden p-4 space-y-4"
+                ref={pullToRefreshRef}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Pull to Refresh Indicator */}
+                {isPulling && (
+                  <div 
+                    className="flex items-center justify-center py-4 transition-all duration-300"
+                    style={{ transform: `translateY(${pullDistance}px)` }}
+                  >
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <RefreshCw className={`h-5 w-5 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+                      <span className="text-sm font-medium">
+                        {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {loading ? (
                   // Mobile skeleton cards
                   Array.from({ length: 3 }).map((_, index) => (
-                    <div key={`mobile-skeleton-${index}`} className="card-mobile animate-pulse">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                    <div key={`mobile-skeleton-${index}`} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm animate-pulse">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
                         <div className="flex-1">
-                          <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
-                          <div className="h-3 bg-gray-100 rounded w-24"></div>
+                          <div className="h-4 bg-gray-200 rounded w-28 mb-1"></div>
+                          <div className="h-3 bg-gray-100 rounded w-20"></div>
                         </div>
+                        <div className="h-6 w-16 bg-gray-200 rounded"></div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="h-16 bg-gray-100 rounded"></div>
-                        <div className="h-16 bg-gray-100 rounded"></div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="h-12 bg-gray-100 rounded"></div>
+                        <div className="h-12 bg-gray-100 rounded"></div>
+                        <div className="h-12 bg-gray-100 rounded"></div>
                       </div>
                     </div>
                   ))
@@ -1075,115 +1343,153 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                     </div>
                   </div>
                 ) : (
-                  processedRecords.map((record) => {
-                    const StatusIcon = record.statusConfig.icon;
-                    
-                    return (
-                      <div key={record.id} className="card-mobile bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                        {/* Header */}
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                            {(record.user.name || record.user.email).charAt(0).toUpperCase()}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-slate-800 text-sm truncate">
-                              {record.user.name || record.user.email}
+                  <>
+                    {processedRecords.map((record: any) => {
+                      const StatusIcon = record.statusConfig.icon;
+                      
+                      return viewMode === 'compact' ? (
+                        // Compact View - More records visible
+                        <div key={record.id} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                              {(record.user.name || record.user.email).charAt(0).toUpperCase()}
                             </div>
-                            <div className="text-xs text-slate-500">
-                              {record.checkInAt ? format(parseISO(record.checkInAt), 'MMM dd, yyyy') : format(new Date(), 'MMM dd, yyyy')}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-slate-800 text-sm truncate">
+                                {record.user.name || record.user.email}
+                              </div>
+                              <div className="flex items-center gap-3 text-xs text-slate-500">
+                                <span>{record.checkInAt ? format(parseISO(record.checkInAt), 'HH:mm') : '--:--'}</span>
+                                <span>→</span>
+                                <span>{record.checkOutAt ? format(parseISO(record.checkOutAt), 'HH:mm') : 'Active'}</span>
+                                <span className="font-medium text-indigo-600">
+                                  {record.totalHours ? `${Number(record.totalHours).toFixed(1)}h` : '--'}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <StatusIcon className="h-4 w-4" />
-                            <Badge className={`text-xs px-2 py-1 ${record.statusConfig.color}`}>
-                              {record.statusConfig.label}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`text-xs px-2 py-1 ${record.statusConfig.color}`}>
+                                {record.status === 'CHECKED_IN' ? '🟢' : record.status === 'CHECKED_OUT' ? '🔵' : record.status === 'AUTO_CHECKED_OUT' ? '⚡' : '❌'}
+                              </Badge>
+                              <Link href={`/admin/attendance/${record.id}/view`}>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-blue-50">
+                                  <Eye className="h-3 w-3 text-blue-600" />
+                                </Button>
+                              </Link>
+                            </div>
                           </div>
                         </div>
-                        
-                        {/* Time Info Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          {/* Check-in */}
-                          <div className="bg-purple-50 p-3 rounded-lg">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Clock className="h-4 w-4 text-purple-600" />
-                              <span className="text-xs font-medium text-purple-700">Check-in</span>
+                      ) : (
+                        // Card View - Detailed information
+                        <div key={record.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                          {/* Header */}
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                              {(record.user.name || record.user.email).charAt(0).toUpperCase()}
                             </div>
-                            {record.checkInAt ? (
-                              <div className="text-sm font-semibold text-slate-800">
-                                {format(parseISO(record.checkInAt), 'HH:mm')}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-semibold text-slate-800 text-sm truncate">
+                                {record.user.name || record.user.email}
                               </div>
-                            ) : (
-                              <div className="text-sm text-red-600">No check-in</div>
-                            )}
+                              <div className="text-xs text-slate-500">
+                                {record.checkInAt ? format(parseISO(record.checkInAt), 'MMM dd, yyyy') : format(new Date(), 'MMM dd, yyyy')}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <StatusIcon className="h-4 w-4" />
+                              <Badge className={`text-xs px-2 py-1 ${record.statusConfig.color}`}>
+                                {record.statusConfig.label}
+                              </Badge>
+                            </div>
                           </div>
                           
-                          {/* Check-out */}
-                          <div className="bg-orange-50 p-3 rounded-lg">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Clock className="h-4 w-4 text-orange-600" />
-                              <span className="text-xs font-medium text-orange-700">Check-out</span>
+                          {/* Quick Stats Grid */}
+                          <div className="grid grid-cols-3 gap-3 mb-3">
+                            {/* Check-in */}
+                            <div className="bg-purple-50 p-2 rounded text-center">
+                              <div className="text-xs text-purple-600 mb-1">In</div>
+                              <div className="text-sm font-semibold text-slate-800">
+                                {record.checkInAt ? format(parseISO(record.checkInAt), 'HH:mm') : '--:--'}
+                              </div>
                             </div>
-                            {record.checkOutAt ? (
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm font-semibold text-slate-800">
-                                  {format(parseISO(record.checkOutAt), 'HH:mm')}
-                                </span>
-                                {record.isAutoCheckout && (
-                                  <Zap className="h-3 w-3 text-purple-600" />
+                            
+                            {/* Check-out */}
+                            <div className="bg-orange-50 p-2 rounded text-center">
+                              <div className="text-xs text-orange-600 mb-1">Out</div>
+                              <div className="text-sm font-semibold text-slate-800">
+                                {record.checkOutAt ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{format(parseISO(record.checkOutAt), 'HH:mm')}</span>
+                                    {record.isAutoCheckout && <Zap className="h-3 w-3 text-purple-600" />}
+                                  </div>
+                                ) : (
+                                  <span className="text-yellow-600">Active</span>
                                 )}
                               </div>
-                            ) : (
-                              <div className="text-sm text-yellow-600">Still active</div>
-                            )}
+                            </div>
+                            
+                            {/* Total Hours */}
+                            <div className="bg-indigo-50 p-2 rounded text-center">
+                              <div className="text-xs text-indigo-600 mb-1">Hours</div>
+                              <div className="text-sm font-semibold text-indigo-700">
+                                {record.totalHours ? `${Number(record.totalHours).toFixed(1)}h` : '--'}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        
-                        {/* Total Hours & Activities */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2">
-                            <Timer className="h-4 w-4 text-indigo-600" />
-                            <span className="text-sm text-slate-600">Total:</span>
-                            <span className="font-semibold text-indigo-700">
-                              {record.totalHours ? `${Number(record.totalHours).toFixed(1)}h` : 'Calculating...'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-red-600" />
-                            <span className="text-sm text-slate-600">Activities:</span>
-                            <span className="font-semibold text-red-700">{record.activityCount}</span>
-                          </div>
-                        </div>
-                        
-                        {/* Actions */}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div className="flex items-center gap-2">
-                            {record.checkInLatitude && record.checkInLongitude && (
+                          
+                          {/* Actions */}
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 text-xs text-slate-500">
+                                <Activity className="h-3 w-3" />
+                                <span>{record.activityCount} activities</span>
+                              </div>
+                              {record.checkInLatitude && record.checkInLongitude && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600"
+                                  onClick={() => window.open(`https://maps.google.com/?q=${record.checkInLatitude},${record.checkInLongitude}`, '_blank')}
+                                >
+                                  <Map className="h-3 w-3 mr-1" />
+                                  Map
+                                </Button>
+                              )}
+                            </div>
+                            <Link href={`/admin/attendance/${record.id}/view`}>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600"
-                                onClick={() => window.open(`https://maps.google.com/?q=${record.checkInLatitude},${record.checkInLongitude}`, '_blank')}
+                                className="h-7 px-3 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600"
                               >
-                                <Map className="h-3 w-3 mr-1" />
-                                Location
+                                <Eye className="h-3 w-3 mr-1" />
+                                Details
                               </Button>
-                            )}
+                            </Link>
                           </div>
-                          <Link href={`/admin/attendance/${record.id}/view`}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-3 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 btn-touch"
-                            >
-                              <Eye className="h-3 w-3 mr-1" />
-                              View Details
-                            </Button>
-                          </Link>
                         </div>
+                      );
+                    })}
+                    
+                    {/* Load More Button */}
+                    {showLoadMore && (
+                      <div className="flex justify-center pt-4">
+                        <Button
+                          onClick={handleLoadMore}
+                          variant="outline"
+                          className="w-full h-12 bg-white hover:bg-slate-50 border-slate-200 text-slate-700 font-medium"
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 mr-2" />
+                          )}
+                          {loading ? 'Loading...' : `Load More (${totalPages - currentPage} pages left)`}
+                        </Button>
                       </div>
-                    );
-                  })
+                    )}
+                  </>
                 )}
               </div>
             </div>

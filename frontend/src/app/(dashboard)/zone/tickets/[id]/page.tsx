@@ -194,66 +194,89 @@ export default function TicketDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
         {/* Left Column - Main Ticket Info */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-t-lg border-b">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center space-x-3">
-                    <CardTitle className="text-xl">{ticket.title}</CardTitle>
-                    <div className="flex items-center space-x-2">
-                      <StatusBadge status={ticket.status} />
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 px-3 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 transition-all duration-200 shadow-sm hover:shadow-md" 
-                        onClick={() => setIsStatusDialogOpen(true)}
-                      >
-                        <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                        Change Status
-                      </Button>
-                    </div>
+            <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-t-lg border-b p-4 md:p-6">
+              <div className="space-y-3">
+                <div className="flex flex-col space-y-2">
+                  <CardTitle className="text-lg md:text-xl break-words">{ticket.title}</CardTitle>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge status={ticket.status} />
                     <PriorityBadge priority={ticket.priority} />
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Created {formatDistanceToNow(new Date(ticket.createdAt))} ago
                   </p>
                 </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9 px-3 text-xs md:text-sm bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 transition-all duration-200 shadow-sm hover:shadow-md btn-touch" 
+                    onClick={() => setIsStatusDialogOpen(true)}
+                  >
+                    <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                    Change Status
+                  </Button>
+                  {(ticket.status === 'ONSITE_VISIT_REACHED' || ticket.status === 'ONSITE_VISIT_IN_PROGRESS' || ticket.status === 'ONSITE_VISIT_RESOLVED') && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-9 px-3 text-xs md:text-sm bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-200 hover:border-green-300 text-green-700 hover:text-green-800 transition-all duration-200 shadow-sm hover:shadow-md btn-touch" 
+                      onClick={() => setActiveTab('photos')}
+                    >
+                      <Camera className="h-3.5 w-3.5 mr-1.5" />
+                      <span className="hidden sm:inline">View Photos</span>
+                      <span className="sm:hidden">Photos</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 md:p-6">
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium mb-2">Description</h3>
-                  <p className="text-muted-foreground">{ticket.description}</p>
+                  <h3 className="font-medium mb-2 text-sm md:text-base">Description</h3>
+                  <p className="text-muted-foreground text-sm break-words">{ticket.description}</p>
                 </div>
+
+                {ticket.callType && (
+                  <div>
+                    <h3 className="font-medium mb-2 text-sm md:text-base">Call Type</h3>
+                    <Badge variant={ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' ? 'default' : 'secondary'} className="text-xs">
+                      {ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' 
+                        ? 'Under Maintenance Contract' 
+                        : 'Not Under Contract'}
+                    </Badge>
+                  </div>
+                )}
 
                 {ticket.contact && (
                   <div>
-                    <h3 className="font-medium mb-2">Contact Information</h3>
+                    <h3 className="font-medium mb-2 text-sm md:text-base">Contact Information</h3>
                     <div className="space-y-2">
-                      <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground flex-shrink-0">
                           <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                           <circle cx="12" cy="7" r="4"/>
                         </svg>
-                        <span>{ticket.contact.name}</span>
+                        <span className="text-sm break-words">{ticket.contact.name}</span>
                       </div>
-                      <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground flex-shrink-0">
                           <rect width="20" height="16" x="2" y="4" rx="2"/>
                           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                         </svg>
-                        <span>{ticket.contact.email}</span>
+                        <span className="text-sm break-all">{ticket.contact.email}</span>
                       </div>
                       {ticket.contact.phone && (
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-muted-foreground flex-shrink-0">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                           </svg>
-                          <span>{ticket.contact.phone}</span>
+                          <span className="text-sm">{ticket.contact.phone}</span>
                         </div>
                       )}
                     </div>
@@ -262,16 +285,16 @@ export default function TicketDetailPage() {
 
                 {ticket.asset && (
                   <div>
-                    <h3 className="font-medium mb-2">Asset Details</h3>
+                    <h3 className="font-medium mb-2 text-sm md:text-base">Asset Details</h3>
                     <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Model:</span>
-                        <span>{ticket.asset.model}</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                        <span className="text-muted-foreground text-sm">Model:</span>
+                        <span className="text-sm font-medium break-words">{ticket.asset.model}</span>
                       </div>
                       {(ticket.asset as any).serialNo && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Serial Number:</span>
-                          <span>{(ticket.asset as any).serialNo}</span>
+                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                          <span className="text-muted-foreground text-sm">Serial Number:</span>
+                          <span className="text-sm font-medium break-all">{(ticket.asset as any).serialNo}</span>
                         </div>
                       )}
                     </div>
@@ -297,26 +320,27 @@ export default function TicketDetailPage() {
         </div>
 
         {/* Right Column - Sidebar Content */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-t-lg border-b">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-900">Details</CardTitle>
-                <div className="flex items-center space-x-1 flex-wrap gap-1">
+            <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-t-lg border-b p-4 md:p-6">
+              <div className="flex flex-col space-y-3">
+                <CardTitle className="text-amber-900 text-base md:text-lg">Details</CardTitle>
+                <div className="flex flex-wrap gap-2">
                   <Button 
                     variant={activeTab === 'details' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => setActiveTab('details')}
-                    className="text-xs px-2"
+                    className="text-xs px-2 py-1 h-8 btn-touch"
                   >
                     <FileText className="h-3 w-3 mr-1" />
-                    Details
+                    <span className="hidden sm:inline">Details</span>
+                    <span className="sm:hidden">Info</span>
                   </Button>
                   <Button 
                     variant={activeTab === 'comments' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => setActiveTab('comments')}
-                    className="text-xs px-2"
+                    className="text-xs px-2 py-1 h-8 btn-touch"
                   >
                     <MessageSquare className="h-3 w-3 mr-1" />
                     Comments
@@ -325,7 +349,7 @@ export default function TicketDetailPage() {
                     variant={activeTab === 'reports' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => setActiveTab('reports')}
-                    className="text-xs px-2"
+                    className="text-xs px-2 py-1 h-8 btn-touch"
                   >
                     <Upload className="h-3 w-3 mr-1" />
                     Reports
@@ -334,7 +358,7 @@ export default function TicketDetailPage() {
                     variant={activeTab === 'photos' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => setActiveTab('photos')}
-                    className="text-xs px-2"
+                    className="text-xs px-2 py-1 h-8 btn-touch"
                   >
                     <Camera className="h-3 w-3 mr-1" />
                     Photos
@@ -342,7 +366,7 @@ export default function TicketDetailPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="overflow-hidden">
+            <CardContent className="overflow-hidden p-4 md:p-6">
               <div className="max-w-full">
                 {activeTab === 'details' ? (
    <TicketDetails ticket={ticket} onStatusChange={async (status) => {

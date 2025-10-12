@@ -305,6 +305,63 @@ export const attendanceController = {
         });
       }
 
+      // Find all active activities for this user today (activities without endTime)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const activeActivities = await prisma.dailyActivityLog.findMany({
+        where: {
+          userId,
+          startTime: {
+            gte: today,
+            lt: tomorrow,
+          },
+          endTime: null, // Only activities that haven't been ended
+        },
+      });
+
+      // Auto-complete all active activities with checkout time
+      const autoCompletedActivities = [];
+      for (const activity of activeActivities) {
+        const activityStartTime = new Date(activity.startTime);
+        const durationMinutes = Math.round((checkOutTime.getTime() - activityStartTime.getTime()) / (1000 * 60));
+        
+        const updatedActivity = await prisma.dailyActivityLog.update({
+          where: { id: activity.id },
+          data: {
+            endTime: checkOutTime,
+            duration: durationMinutes,
+          },
+        });
+
+        autoCompletedActivities.push(updatedActivity);
+
+        // Create audit log for auto-completed activity
+        await prisma.auditLog.create({
+          data: {
+            action: 'ACTIVITY_LOG_UPDATED',
+            entityType: 'ACTIVITY_LOG',
+            entityId: activity.id,
+            userId: userId,
+            performedById: userId,
+            performedAt: checkOutTime,
+            updatedAt: checkOutTime,
+            details: {
+              reason: 'Auto-completed on checkout',
+              endTime: checkOutTime,
+              duration: durationMinutes,
+              activityType: activity.activityType,
+              title: activity.title,
+            },
+            ipAddress: req.ip,
+            userAgent: req.get('User-Agent'),
+            status: 'SUCCESS',
+          },
+        });
+      }
+
       const updatedAttendance = await prisma.attendance.update({
         where: { id: attendance.id },
         data: {
@@ -344,6 +401,7 @@ export const attendanceController = {
             totalHours: Math.round(totalHours * 100) / 100,
             isEarlyCheckout: checkOutTime < sevenPM,
             notes: notes || null,
+            autoCompletedActivities: autoCompletedActivities.length,
           },
           ipAddress: req.ip,
           userAgent: req.get('User-Agent'),
@@ -354,6 +412,10 @@ export const attendanceController = {
       res.json({
         message: 'Successfully checked out',
         attendance: updatedAttendance,
+        autoCompletedActivities: autoCompletedActivities.length,
+        ...(autoCompletedActivities.length > 0 && {
+          info: `${autoCompletedActivities.length} active ${autoCompletedActivities.length === 1 ? 'activity was' : 'activities were'} automatically completed.`
+        }),
       });
     } catch (error) {
       console.error('Check-out error:', error);
@@ -750,6 +812,54 @@ export const attendanceController = {
         const checkInTime = new Date(attendance.checkInAt);
         const totalHours = (autoCheckoutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
 
+        // Auto-complete all active activities for this user
+        const activeActivities = await prisma.dailyActivityLog.findMany({
+          where: {
+            userId: attendance.userId,
+            startTime: {
+              gte: today,
+              lt: tomorrow,
+            },
+            endTime: null,
+          },
+        });
+
+        let autoCompletedCount = 0;
+        for (const activity of activeActivities) {
+          const activityStartTime = new Date(activity.startTime);
+          const durationMinutes = Math.round((autoCheckoutTime.getTime() - activityStartTime.getTime()) / (1000 * 60));
+          
+          await prisma.dailyActivityLog.update({
+            where: { id: activity.id },
+            data: {
+              endTime: autoCheckoutTime,
+              duration: durationMinutes,
+            },
+          });
+
+          // Create audit log for auto-completed activity
+          await prisma.auditLog.create({
+            data: {
+              action: 'ACTIVITY_LOG_UPDATED',
+              entityType: 'ACTIVITY_LOG',
+              entityId: activity.id,
+              userId: attendance.userId,
+              performedAt: autoCheckoutTime,
+              updatedAt: autoCheckoutTime,
+              details: {
+                reason: 'Auto-completed on auto-checkout at 7 PM',
+                endTime: autoCheckoutTime,
+                duration: durationMinutes,
+                activityType: activity.activityType,
+                title: activity.title,
+              },
+              status: 'SUCCESS',
+            },
+          });
+
+          autoCompletedCount++;
+        }
+
         const updated = await prisma.attendance.update({
           where: { id: attendance.id },
           data: {
@@ -783,6 +893,7 @@ export const attendanceController = {
               totalHours: Math.round(totalHours * 100) / 100,
               reason: 'Automatic checkout at 7 PM',
               originalCheckInAt: attendance.checkInAt,
+              autoCompletedActivities: autoCompletedCount,
             },
             status: 'SUCCESS',
           },

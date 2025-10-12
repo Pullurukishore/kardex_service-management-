@@ -1,6 +1,9 @@
 // Load environment variables first, before any other imports
 import 'dotenv/config';
 
+// Disable console logs in production (must be imported early)
+import './utils/console-wrapper';
+
 import { createServer, Server as HttpServer, IncomingMessage } from 'http';
 import { WebSocket, WebSocketServer } from 'ws';
 import { app } from './app';

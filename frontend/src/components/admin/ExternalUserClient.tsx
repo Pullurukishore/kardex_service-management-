@@ -143,8 +143,77 @@ export default function ExternalUserClient({
         <div className="divide-y divide-gray-200">
           {initialExternalUsers?.length > 0 ? (
             initialExternalUsers.map((user) => (
-              <div key={user.id} className="p-6 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
+              <div key={user.id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+                {/* Mobile Layout */}
+                <div className="block sm:hidden space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-10 w-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                      <div className="h-5 w-5 bg-white rounded"></div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-base font-semibold text-gray-900 truncate">
+                        {user.name || 'External User'}
+                      </h4>
+                      <div className="flex items-center text-sm text-gray-600 mt-1">
+                        <span className="mr-1">📧</span>
+                        <span className="truncate">{user.email}</span>
+                      </div>
+                      {user.phone && (
+                        <div className="flex items-center text-sm text-gray-600 mt-1">
+                          <span className="mr-1">📱</span>
+                          <span>{user.phone}</span>
+                        </div>
+                      )}
+                      {user.customer && (
+                        <div className="flex items-center text-sm text-gray-600 mt-1">
+                          <span className="mr-1">🏢</span>
+                          <span className="truncate">{user.customer.companyName}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      user.isActive 
+                        ? 'bg-green-100 text-green-800 border border-green-200' 
+                        : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                        user.isActive ? 'bg-green-400' : 'bg-red-400'
+                      }`}></div>
+                      {user.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    
+                    <div className="flex items-center space-x-1">
+                      <Link 
+                        href={`/admin/manage-external/${user.id}/edit`}
+                        className="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        title="Edit External User"
+                      >
+                        ✏️
+                      </Link>
+                      <Link 
+                        href={`/admin/manage-external/${user.id}/password`}
+                        className="p-3 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        title="Change Password"
+                      >
+                        🔑
+                      </Link>
+                      <button 
+                        onClick={() => handleDeleteClick(user)}
+                        disabled={deleting === user.id}
+                        className="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        title="Delete External User"
+                      >
+                        {deleting === user.id ? '⏳' : '🗑️'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden sm:flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="h-12 w-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                       <div className="h-6 w-6 bg-white rounded"></div>
@@ -213,7 +282,7 @@ export default function ExternalUserClient({
                 </div>
                 
                 {user.lastActiveAt && (
-                  <div className="mt-3 text-xs text-gray-500">
+                  <div className="mt-3 text-xs text-gray-500 sm:mt-3">
                     Last active: {new Date(user.lastActiveAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
