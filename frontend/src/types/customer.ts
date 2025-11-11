@@ -54,3 +54,11 @@ export interface CustomerFormData {
   contactName: string;
   contactPhone: string;
 }
+
+export interface CustomerStats {
+  total: number;
+  active: number;
+  inactive: number;
+  totalAssets: number;
+  totalTickets: number;
+}

@@ -27,10 +27,13 @@ import {
   BarChart3,
   Users,
   FileText,
-  Target
+  Target,
+  Download,
+  FileSpreadsheet
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { ReportData, ServicePersonReport } from './types';
+import { STATUS_COLORS } from './types';
 
 interface ServicePersonAttendanceReportProps {
   reportData: ReportData;
@@ -59,6 +62,11 @@ const FLAG_CONFIG = {
 export function ServicePersonAttendanceReport({ reportData }: ServicePersonAttendanceReportProps) {
   const [selectedPerson, setSelectedPerson] = useState<ServicePersonReport | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [expandedDays, setExpandedDays] = useState<{[key: string]: boolean}>({});
+
+  const toggleDay = (dayKey: string) => {
+    setExpandedDays(prev => ({ ...prev, [dayKey]: !prev[dayKey] }));
+  };
 
   const reports = Array.isArray(reportData.reports) ? reportData.reports : [];
   
@@ -103,90 +111,88 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
     setDetailModalOpen(true);
   };
 
+  const handleExport = async (format: 'excel' | 'pdf') => {
+    if (!selectedPerson) return;
+
+    try {
+      // Get token from multiple sources (same as ReportsClient)
+      const getToken = () => {
+        if (typeof window !== 'undefined') {
+          const localStorageToken = localStorage.getItem('accessToken') || localStorage.getItem('token');
+          if (localStorageToken) return localStorageToken;
+          
+          // Check cookies as fallback
+          const getCookie = (name: string) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop()?.split(';').shift();
+            return null;
+          };
+          
+          return getCookie('accessToken') || getCookie('token') || localStorage.getItem('cookie_accessToken');
+        }
+        return null;
+      };
+
+      const token = getToken();
+      
+      console.log('Export token check:', { 
+        hasToken: !!token, 
+        tokenPrefix: token?.substring(0, 20),
+        personId: selectedPerson.id 
+      });
+      
+      if (!token) {
+        console.error('No authentication token found');
+        alert('Authentication required. Please log in again.');
+        return;
+      }
+
+      const params = new URLSearchParams({
+        fromDate: dateRange.from || '',
+        toDate: dateRange.to || '',
+        servicePersonId: String(selectedPerson.id || ''),
+        format: format
+      });
+
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/admin/service-person-reports/export/detailed-person?${params}`;
+      console.log('Export URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Export failed:', { 
+          status: response.status, 
+          statusText: response.statusText, 
+          body: errorText 
+        });
+        throw new Error(`Export failed: ${response.status} ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `${selectedPerson.name.replace(/\s+/g, '_')}_Attendance_${format === 'excel' ? 'Report.xlsx' : 'Report.pdf'}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Export error:', error);
+      alert(`Failed to export ${format.toUpperCase()}. Please try again.`);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Summary Statistics - Attendance Metrics */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <UserCheck className="h-5 w-5 text-blue-600" />
-          Attendance Overview
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Service Persons</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary.totalServicePersons || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Active personnel
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Check-ins</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{summary.totalCheckIns || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {dateRange.totalDays || 0} days period
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Hours/Day</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Number(summary.averageHoursPerDay || 0).toFixed(1)}h</div>
-            <p className="text-xs text-muted-foreground">Per person</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Absentees</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{summary.totalAbsentees || 0}</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
-          </CardContent>
-        </Card>
-        </div>
-      </div>
-
-
-      {/* Most Active User Card */}
-      {summary.mostActiveUser && summary.mostActiveUser.name && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Most Active Service Person
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-lg">{summary.mostActiveUser.name}</div>
-                <div className="text-sm text-gray-600">{summary.mostActiveUser.email}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">{summary.mostActiveUser.activityCount}</div>
-                <div className="text-sm text-gray-600">Activities logged</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Service Person Reports Table */}
       <Card>
         <CardHeader>
@@ -201,6 +207,9 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                   ? `${formatDate(dateRange.from)} to ${formatDate(dateRange.to)}`
                   : 'selected period'
                 }
+                <span className="ml-2 text-blue-600 font-medium">
+                  (Monday - Saturday working days only)
+                </span>
               </CardDescription>
             </div>
             <Badge variant="outline">
@@ -355,15 +364,44 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         : 'selected period'
                       }
                     </p>
+                    <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                      <Calendar className="h-3 w-3" />
+                      <span className="font-medium">Working Days: Monday - Saturday only</span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setDetailModalOpen(false)}
-                    className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {/* Export to Excel */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleExport('excel')}
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                    >
+                      <FileSpreadsheet className="h-4 w-4 mr-1" />
+                      Excel
+                    </Button>
+                    
+                    {/* Export to PDF */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleExport('pdf')}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      PDF
+                    </Button>
+                    
+                    {/* Close button */}
+                    <button
+                      onClick={() => setDetailModalOpen(false)}
+                      className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 
                 {/* Content */}
@@ -371,153 +409,253 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
             
             {selectedPerson && (
               <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="overview">Performance Overview</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="overview">Complete Overview</TabsTrigger>
                   <TabsTrigger value="daily">Daily Breakdown</TabsTrigger>
-                  <TabsTrigger value="activities">Activities</TabsTrigger>
-                  <TabsTrigger value="flags">Issues & Flags</TabsTrigger>
+                  <TabsTrigger value="activities">Activities Log</TabsTrigger>
                 </TabsList>
               
               <TabsContent value="overview" className="space-y-6">
+                {/* Summary Card with Person Info */}
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900">{selectedPerson.name}</h3>
+                        <p className="text-sm text-gray-600 mt-1">{selectedPerson.email}</p>
+                        {selectedPerson.zones && selectedPerson.zones.length > 0 && (
+                          <div className="flex gap-2 mt-2">
+                            {selectedPerson.zones.map((zone, idx) => (
+                              <Badge key={idx} variant="outline" className="bg-white">
+                                {zone}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-blue-600">
+                          {selectedPerson.summary.performanceScore || 0}%
+                        </div>
+                        <div className="text-sm text-gray-600">Performance Score</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Attendance Metrics */}
                 <div>
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <UserCheck className="h-5 w-5 text-blue-600" />
-                    Attendance Metrics
+                    Attendance Summary
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                      <Card className="border-l-4 border-l-green-500">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Working Days</CardTitle>
+                          <CardTitle className="text-sm text-gray-600">Working Days</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-green-600">
+                          <div className="text-3xl font-bold text-green-600">
                             {selectedPerson.summary.presentDays || selectedPerson.summary.totalWorkingDays || 0}
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">Days present</p>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="border-l-4 border-l-blue-500">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Total Hours</CardTitle>
+                          <CardTitle className="text-sm text-gray-600">Total Hours</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-blue-600">
+                          <div className="text-3xl font-bold text-blue-600">
                             {Number(selectedPerson.summary.totalHours).toFixed(1)}h
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {selectedPerson.summary.averageHoursPerDay 
+                              ? `${Number(selectedPerson.summary.averageHoursPerDay).toFixed(1)}h avg/day`
+                              : 'N/A avg/day'
+                            }
+                          </p>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="border-l-4 border-l-red-500">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Absent Days</CardTitle>
+                          <CardTitle className="text-sm text-gray-600">Absent Days</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-red-600">
+                          <div className="text-3xl font-bold text-red-600">
                             {selectedPerson.summary.absentDays}
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">Days absent</p>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="border-l-4 border-l-purple-500">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Activities</CardTitle>
+                          <CardTitle className="text-sm text-gray-600">Activities</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-purple-600">
+                          <div className="text-3xl font-bold text-purple-600">
                             {selectedPerson.summary.totalActivities || selectedPerson.summary.activitiesLogged || 0}
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">Total logged</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-l-4 border-l-orange-500">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm text-gray-600">Auto Checkouts</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-3xl font-bold text-orange-600">
+                            {selectedPerson.summary.autoCheckouts || 0}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">System generated</p>
                         </CardContent>
                       </Card>
                     </div>
                 </div>
 
-                {/* Performance Metrics */}
+                {/* Ticket Performance Metrics */}
                 <div>
                   <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <Target className="h-5 w-5 text-purple-600" />
-                    Performance Metrics
+                    Ticket Performance
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <Card className="bg-blue-50 border-blue-200">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Total Tickets</CardTitle>
+                          <CardTitle className="text-sm text-blue-800">Total Tickets</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-blue-600">
+                          <div className="text-3xl font-bold text-blue-700">
                             {selectedPerson.summary.totalTickets || 0}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {selectedPerson.summary.ticketsResolved || 0} resolved
-                          </p>
+                          <div className="mt-2 flex items-center justify-between text-xs">
+                            <span className="text-green-700">✓ {selectedPerson.summary.ticketsResolved || 0} resolved</span>
+                            <span className="text-gray-600">
+                              {selectedPerson.summary.totalTickets 
+                                ? ((selectedPerson.summary.totalTickets - (selectedPerson.summary.ticketsResolved || 0))) 
+                                : 0
+                              } pending
+                            </span>
+                          </div>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="bg-green-50 border-green-200">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Resolution Rate</CardTitle>
+                          <CardTitle className="text-sm text-green-800">Resolution Rate</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-green-600">
+                          <div className="text-3xl font-bold text-green-700">
                             {(() => {
                               const total = selectedPerson.summary.totalTickets || 0;
                               const resolved = selectedPerson.summary.ticketsResolved || 0;
                               return total > 0 ? Math.round((resolved / total) * 100) : 0;
                             })()}%
                           </div>
+                          <p className="text-xs text-green-700 mt-2">Success rate</p>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="bg-amber-50 border-amber-200">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Performance Score</CardTitle>
+                          <CardTitle className="text-sm text-amber-800">Avg Resolution</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-purple-600">
-                            {selectedPerson.summary.performanceScore || 0}%
-                          </div>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Avg Resolution Time</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-lg font-bold text-blue-600">
+                          <div className="text-2xl font-bold text-amber-700">
                             {(() => {
                               const hours = selectedPerson.summary.averageResolutionTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
+                          <p className="text-xs text-amber-700 mt-2">Business hours</p>
                         </CardContent>
                       </Card>
                       
-                      <Card>
+                      <Card className="bg-purple-50 border-purple-200">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Avg Travel Time</CardTitle>
+                          <CardTitle className="text-sm text-purple-800">Performance</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-lg font-bold text-orange-600">
+                          <div className="text-3xl font-bold text-purple-700">
+                            {selectedPerson.summary.performanceScore || 0}%
+                          </div>
+                          <div className="mt-2">
+                            <div className="w-full bg-purple-200 rounded-full h-2">
+                              <div 
+                                className="bg-purple-600 h-2 rounded-full transition-all"
+                                style={{ width: `${selectedPerson.summary.performanceScore || 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                </div>
+
+                {/* Time Metrics */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-orange-600" />
+                    Time Analysis
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm text-gray-600">Avg Travel Time</CardTitle>
+                            <MapPin className="h-4 w-4 text-orange-600" />
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-orange-600">
                             {(() => {
                               const hours = selectedPerson.summary.averageTravelTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">Per ticket (real-time)</p>
                         </CardContent>
                       </Card>
                       
                       <Card>
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm">Avg Onsite Time</CardTitle>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm text-gray-600">Avg Onsite Time</CardTitle>
+                            <Clock3 className="h-4 w-4 text-purple-600" />
+                          </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-lg font-bold text-purple-600">
+                          <div className="text-2xl font-bold text-purple-600">
                             {(() => {
                               const hours = selectedPerson.summary.averageOnsiteTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
+                          <p className="text-xs text-gray-500 mt-1">Per ticket (onsite)</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm text-gray-600">Total Work Time</CardTitle>
+                            <Timer className="h-4 w-4 text-blue-600" />
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-blue-600">
+                            {(() => {
+                              const travel = selectedPerson.summary.averageTravelTimeHours || 0;
+                              const onsite = selectedPerson.summary.averageOnsiteTimeHours || 0;
+                              const total = travel + onsite;
+                              return total > 0 ? `${total.toFixed(1)}h` : 'N/A';
+                            })()} 
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">Travel + Onsite avg</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -525,60 +663,137 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
               </TabsContent>
               
               <TabsContent value="daily" className="space-y-4">
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-blue-800">
+                    <Info className="h-4 w-4" />
+                    <span>Detailed day-by-day attendance with all activities and times</span>
+                  </div>
+                </div>
                 <ScrollArea className="h-96">
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {selectedPerson.dayWiseBreakdown.map((day, index) => {
                       const statusConfig = STATUS_CONFIG[day.attendanceStatus as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.CHECKED_OUT;
                       const StatusIcon = statusConfig.icon;
+                      const dayKey = `${day.date}-${index}`;
+                      const isExpanded = expandedDays[dayKey] || false;
                       
                       return (
-                        <Card key={index}>
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-gray-600" />
-                                <span className="font-medium">{formatDate(day.date)}</span>
-                                <Badge className={`${statusConfig.color} border`}>
-                                  <StatusIcon className="h-3 w-3 mr-1" />
-                                  {statusConfig.label}
-                                </Badge>
+                        <Card key={index} className="overflow-hidden">
+                          <CardContent className="p-0">
+                            {/* Header Section */}
+                            <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                  <Calendar className="h-5 w-5 text-blue-600" />
+                                  <div>
+                                    <div className="font-semibold text-gray-900">{formatDate(day.date)}</div>
+                                    <div className="text-xs text-gray-500">
+                                      {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' })}
+                                    </div>
+                                  </div>
+                                  <Badge className={`${statusConfig.color} border`}>
+                                    <StatusIcon className="h-3 w-3 mr-1" />
+                                    {statusConfig.label}
+                                  </Badge>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-2xl font-bold text-gray-900">{Number(day.totalHours).toFixed(1)}h</div>
+                                  <div className="text-xs text-gray-500">Total Hours</div>
+                                </div>
                               </div>
-                              <div className="text-sm text-gray-600">
-                                {Number(day.totalHours).toFixed(1)}h
+                              
+                              {/* Time Details */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2 bg-green-100 rounded-lg">
+                                    <Clock className="h-4 w-4 text-green-700" />
+                                  </div>
+                                  <div>
+                                    <div className="text-xs text-gray-600">Check-in</div>
+                                    <div className="font-semibold text-gray-900">{formatTime(day.checkInTime)}</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2 bg-red-100 rounded-lg">
+                                    <Clock className="h-4 w-4 text-red-700" />
+                                  </div>
+                                  <div>
+                                    <div className="text-xs text-gray-600">Check-out</div>
+                                    <div className="font-semibold text-gray-900">{formatTime(day.checkOutTime)}</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2 bg-purple-100 rounded-lg">
+                                    <Activity className="h-4 w-4 text-purple-700" />
+                                  </div>
+                                  <div>
+                                    <div className="text-xs text-gray-600">Activities</div>
+                                    <div className="font-semibold text-gray-900">{day.activityCount}</div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <span className="text-gray-600">Check-in:</span>
-                                <span className="ml-2 font-medium">{formatTime(day.checkInTime)}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Check-out:</span>
-                                <span className="ml-2 font-medium">{formatTime(day.checkOutTime)}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Activities:</span>
-                                <span className="ml-2 font-medium">{day.activityCount}</span>
-                              </div>
-                            </div>
-                            
-                            {day.flags.length > 0 && (
-                              <div className="mt-3 flex flex-wrap gap-1">
-                                {day.flags.map((flag, flagIndex) => {
-                                  const flagConfig = FLAG_CONFIG[flag.type as keyof typeof FLAG_CONFIG];
-                                  const FlagIcon = flagConfig?.icon || AlertTriangle;
-                                  return (
-                                    <Badge 
-                                      key={flagIndex} 
-                                      variant="outline" 
-                                      className={`text-xs ${flagConfig?.color || 'bg-gray-100 text-gray-800'} border`}
-                                    >
-                                      <FlagIcon className="h-2 w-2 mr-1" />
-                                      {flag.message}
-                                    </Badge>
-                                  );
-                                })}
+                            {/* Activities Section */}
+                            {day.activities && day.activities.length > 0 && (
+                              <div className="p-4">
+                                <button
+                                  onClick={() => toggleDay(dayKey)}
+                                  className="w-full flex items-center justify-between text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <Activity className="h-4 w-4" />
+                                    View {day.activities.length} {day.activities.length === 1 ? 'Activity' : 'Activities'}
+                                  </span>
+                                  <svg 
+                                    className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+                                
+                                {isExpanded && (
+                                  <div className="mt-3 space-y-2">
+                                    {day.activities.map((activity, actIdx) => (
+                                      <div key={actIdx} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                        <div className="flex items-start justify-between mb-2">
+                                          <div className="flex-1">
+                                            <div className="font-medium text-gray-900">{activity.title}</div>
+                                            <Badge variant="outline" className="text-xs mt-1">{activity.activityType}</Badge>
+                                          </div>
+                                          {activity.duration && (
+                                            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                                              {Math.round(activity.duration)}m
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mt-2">
+                                          <div>
+                                            <span className="text-gray-500">Start:</span> {formatTime(activity.startTime)}
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-500">End:</span> {formatTime(activity.endTime)}
+                                          </div>
+                                        </div>
+                                        {activity.location && (
+                                          <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+                                            <MapPin className="h-3 w-3" />
+                                            <span className="truncate">{activity.location}</span>
+                                          </div>
+                                        )}
+                                        {activity.ticket && (
+                                          <div className="mt-2 p-2 bg-white rounded border border-blue-200">
+                                            <div className="text-xs text-blue-800 font-medium">Ticket #{activity.ticketId}</div>
+                                            <div className="text-xs text-gray-600 truncate">{activity.ticket.title}</div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </CardContent>
@@ -590,81 +805,135 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
               </TabsContent>
               
               <TabsContent value="activities" className="space-y-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <Activity className="h-5 w-5 text-purple-700" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900">All Activities</div>
+                      <div className="text-xs text-gray-600">
+                        {selectedPerson.dayWiseBreakdown.reduce((sum, day) => sum + day.activityCount, 0)} total activities
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <ScrollArea className="h-96">
-                  <div className="space-y-3">
-                    {selectedPerson.dayWiseBreakdown.map((day) => 
-                      day.activities.map((activity, index) => (
-                        <Card key={`${day.date}-${index}`}>
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-purple-600" />
-                                <span className="font-medium">{activity.title}</span>
-                                <Badge variant="outline">{activity.activityType}</Badge>
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                {formatDate(day.date)}
-                              </div>
+                  <div className="space-y-4">
+                    {selectedPerson.dayWiseBreakdown.map((day) => {
+                      if (day.activities.length === 0) return null;
+                      
+                      return (
+                        <div key={day.date}>
+                          {/* Date Header */}
+                          <div className="sticky top-0 z-10 bg-white border-b-2 border-blue-600 pb-2 mb-3">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-blue-600" />
+                              <span className="font-semibold text-gray-900">{formatDate(day.date)}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {day.activities.length} {day.activities.length === 1 ? 'activity' : 'activities'}
+                              </Badge>
                             </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <span className="text-gray-600">Start:</span>
-                                <span className="ml-2 font-medium">{formatTime(activity.startTime)}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">End:</span>
-                                <span className="ml-2 font-medium">{formatTime(activity.endTime)}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Duration:</span>
-                                <span className="ml-2 font-medium">
-                                  {activity.duration ? `${Math.round(activity.duration)}m` : 'N/A'}
-                                </span>
-                              </div>
-                            </div>
-                            
-                            {activity.location && (
-                              <div className="mt-2 flex items-center gap-1 text-sm">
-                                <MapPin className="h-3 w-3 text-gray-600" />
-                                <span className="text-gray-600">{activity.location}</span>
-                              </div>
-                            )}
-                            
-                            {activity.ticketId && activity.ticket && (
-                              <div className="mt-2 text-sm">
-                                <span className="text-gray-600">Ticket:</span>
-                                <span className="ml-2 font-medium">#{activity.ticketId} - {activity.ticket.title}</span>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))
-                    )}
+                          </div>
+                          
+                          {/* Activities for this day */}
+                          <div className="space-y-3 ml-6">
+                            {day.activities.map((activity, index) => (
+                              <Card key={`${day.date}-${index}`} className="border-l-4 border-l-purple-500">
+                                <CardContent className="p-4">
+                                  {/* Activity Header */}
+                                  <div className="flex items-start justify-between mb-3">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <Activity className="h-4 w-4 text-purple-600" />
+                                        <span className="font-semibold text-gray-900">{activity.title}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                          {activity.activityType}
+                                        </Badge>
+                                        {activity.duration && (
+                                          <Badge className="text-xs bg-gray-100 text-gray-700 border-gray-300">
+                                            <Timer className="h-3 w-3 mr-1" />
+                                            {Math.round(activity.duration)} minutes
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Time Details */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                    <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                                      <Clock className="h-4 w-4 text-green-700" />
+                                      <div>
+                                        <div className="text-xs text-green-700 font-medium">Start Time</div>
+                                        <div className="text-sm font-semibold text-gray-900">{formatTime(activity.startTime)}</div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
+                                      <Clock className="h-4 w-4 text-red-700" />
+                                      <div>
+                                        <div className="text-xs text-red-700 font-medium">End Time</div>
+                                        <div className="text-sm font-semibold text-gray-900">
+                                          {activity.endTime ? formatTime(activity.endTime) : 'In Progress'}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Location */}
+                                  {activity.location && (
+                                    <div className="flex items-start gap-2 p-2 bg-orange-50 rounded-lg mb-3">
+                                      <MapPin className="h-4 w-4 text-orange-700 mt-0.5" />
+                                      <div className="flex-1">
+                                        <div className="text-xs text-orange-700 font-medium">Location</div>
+                                        <div className="text-sm text-gray-900 break-words">{activity.location}</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Ticket Details */}
+                                  {activity.ticket && (
+                                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                                      <div className="flex items-start justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                          <div className="p-1.5 bg-blue-600 rounded">
+                                            <FileText className="h-3 w-3 text-white" />
+                                          </div>
+                                          <div>
+                                            <div className="text-xs text-blue-700 font-medium">Ticket #{activity.ticketId}</div>
+                                            <div className="text-sm font-semibold text-gray-900">{activity.ticket.title}</div>
+                                          </div>
+                                        </div>
+                                        {activity.ticket.status && (
+                                          <Badge className="text-xs" style={{ 
+                                            backgroundColor: STATUS_COLORS[activity.ticket.status as keyof typeof STATUS_COLORS] || '#6B7280',
+                                            color: 'white',
+                                            border: 'none'
+                                          }}>
+                                            {activity.ticket.status.replace(/_/g, ' ')}
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {activity.ticket.customer && (
+                                        <div className="flex items-center gap-2 text-xs text-gray-700 mt-2">
+                                          <Users className="h-3 w-3" />
+                                          <span className="font-medium">Customer:</span>
+                                          <span>{activity.ticket.customer.companyName}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </ScrollArea>
-              </TabsContent>
-              
-              <TabsContent value="flags" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selectedPerson.flags.map((flag, index) => {
-                    const flagConfig = FLAG_CONFIG[flag.type as keyof typeof FLAG_CONFIG];
-                    const FlagIcon = flagConfig?.icon || AlertTriangle;
-                    
-                    return (
-                      <Card key={index}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <FlagIcon className="h-4 w-4" />
-                            <span className="font-medium">{flag.type.replace('_', ' ')}</span>
-                            <Badge variant="outline">{flag.count}</Badge>
-                          </div>
-                          <p className="text-sm text-gray-600">{flag.message}</p>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
               </TabsContent>
             </Tabs>
           )}
@@ -685,9 +954,32 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
           <div className="space-y-4">
             {/* Mobile Header */}
             <div className="border-b pb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-5 w-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-gray-900">{selectedPerson?.name}</h2>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-blue-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">{selectedPerson?.name}</h2>
+                </div>
+                
+                {/* Mobile Export Buttons */}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleExport('excel')}
+                    className="text-green-600 hover:bg-green-50 border-green-200 h-8 px-2"
+                  >
+                    <FileSpreadsheet className="h-3.5 w-3.5" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleExport('pdf')}
+                    className="text-red-600 hover:bg-red-50 border-red-200 h-8 px-2"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
               <p className="text-sm text-gray-600">
                 Attendance Details for {dateRange.from && dateRange.to 
@@ -772,36 +1064,27 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       </div>
                     </div>
 
-                    {/* Issues & Flags */}
-                    {selectedPerson.flags.length > 0 && (
-                      <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                          Issues ({selectedPerson.flags.length})
-                        </h4>
-                        <div className="space-y-2">
-                          {selectedPerson.flags.slice(0, 3).map((flag, index) => {
-                            const flagConfig = FLAG_CONFIG[flag.type as keyof typeof FLAG_CONFIG];
-                            const FlagIcon = flagConfig?.icon || AlertTriangle;
-                            return (
-                              <div key={index} className="bg-red-50 p-3 rounded-lg border border-red-200">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <FlagIcon className="h-3 w-3 text-red-600" />
-                                  <span className="text-sm font-medium text-red-800">{flag.type.replace('_', ' ')}</span>
-                                  <span className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">{flag.count}</span>
-                                </div>
-                                <p className="text-xs text-red-700">{flag.message}</p>
-                              </div>
-                            );
-                          })}
-                          {selectedPerson.flags.length > 3 && (
-                            <div className="text-center">
-                              <span className="text-xs text-gray-500">+{selectedPerson.flags.length - 3} more issues</span>
-                            </div>
-                          )}
+                    {/* Additional Metrics */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-orange-600" />
+                        Additional Info
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+                          <div className="text-lg font-bold text-orange-600">
+                            {selectedPerson.summary.autoCheckouts || 0}
+                          </div>
+                          <div className="text-xs text-orange-700">Auto Checkouts</div>
+                        </div>
+                        <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+                          <div className="text-lg font-bold text-indigo-600">
+                            {Number(selectedPerson.summary.averageHoursPerDay || 0).toFixed(1)}h
+                          </div>
+                          <div className="text-xs text-indigo-700">Avg Hours/Day</div>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </TabsContent>
                 

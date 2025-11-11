@@ -90,13 +90,20 @@ export function ReportFilters({
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-medium text-foreground">Zone</label>
+        <label className="text-sm font-medium text-foreground flex items-center gap-2">
+          Zone
+          {isZoneUser && (
+            <span className="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+              Your Zone
+            </span>
+          )}
+        </label>
         <Select 
           value={localFilters.zoneId || ''}
           onValueChange={(value) => handleFilterChange('zoneId', value || undefined)}
           disabled={isZoneUser}
         >
-          <SelectTrigger>
+          <SelectTrigger className={isZoneUser ? 'bg-gray-50 cursor-not-allowed' : ''}>
             <SelectValue placeholder="All zones" />
           </SelectTrigger>
           <SelectContent>

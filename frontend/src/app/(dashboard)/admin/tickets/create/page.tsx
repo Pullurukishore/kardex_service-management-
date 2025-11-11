@@ -210,8 +210,28 @@ export default function CreateTicketPage() {
     fetchZoneCustomers();
   }, [zoneId, form, toast]);
 
-  // Update contacts and assets when customer changes
+  // Watch additional required fields for validation
+  const title = form.watch('title');
+  const description = form.watch('description');
+  const callType = form.watch('callType');
+  const priority = form.watch('priority');
   const customerId = form.watch('customerId');
+  const contactId = form.watch('contactId');
+  const assetId = form.watch('assetId');
+
+  // Check if all required fields are filled
+  const isFormValid = Boolean(
+    title && title.length >= 3 &&
+    description && description.length >= 10 &&
+    callType &&
+    priority &&
+    zoneId &&
+    customerId &&
+    contactId &&
+    assetId
+  );
+
+  // Update contacts and assets when customer changes
   useEffect(() => {
     const updateCustomerData = () => {
       if (!customerId) {
@@ -503,6 +523,7 @@ export default function CreateTicketPage() {
           <TicketFormActions 
             isSubmitting={isSubmitting}
             onCancel={() => router.back()}
+            isFormValid={isFormValid}
           />
         </form>
       </Form>

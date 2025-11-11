@@ -71,7 +71,7 @@ export default function ExecutiveHeader({ isRefreshing, onRefresh }: ExecutiveHe
         <div className="flex items-start gap-2 text-blue-800">
           <Info className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
           <span className="text-xs sm:text-sm font-medium leading-relaxed">
-            Time metrics (Response Time, Resolution Time, Downtime, Onsite Work) are calculated using business hours only (9 AM - 5 PM, Monday to Saturday). Travel times show actual elapsed time.
+            Time metrics (Response Time, Resolution Time, Downtime, Onsite Work) are calculated using business hours only (9 AM - 5:30 PM, Monday to Saturday). Travel times show actual elapsed time.
           </span>
         </div>
       </div>

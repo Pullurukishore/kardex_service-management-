@@ -37,7 +37,7 @@ import {
   SlidersHorizontal,
   RotateCcw,
   ArrowUpDown,
-  Grid3X3,
+  Grid3x3,
   List,
   ChevronUp
 } from 'lucide-react';
@@ -163,6 +163,9 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
   const pullToRefreshRef = useRef<HTMLDivElement>(null);
   const [pullDistance, setPullDistance] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
+  const isInitialMount = useRef(true);
+  const isFetching = useRef(false);
+  const hasInitialFetchCompleted = useRef(false);
 
   // Get date range based on selection
   const getDateRange = () => {
@@ -231,7 +234,15 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
 
   // Fetch attendance data
   const fetchAttendanceData = useCallback(async (refresh = false) => {
+    // Prevent concurrent fetches
+    if (isFetching.current) {
+      console.log('⚠️ Fetch already in progress, skipping...');
+      return;
+    }
+    
     try {
+      isFetching.current = true;
+      console.log('🔄 Starting fetch attendance data...', { refresh, currentPage, dateRange });
       if (refresh) setIsRefreshing(true);
       else setLoading(true);
 
@@ -330,6 +341,9 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
     } finally {
       setLoading(false);
       setIsRefreshing(false);
+      isFetching.current = false;
+      hasInitialFetchCompleted.current = true;
+      console.log('✅ Fetch completed');
     }
   }, [currentPage, dateRange, selectedDate, selectedUser, selectedStatus, selectedActivityType, selectedZone, searchQuery, toast]);
 
@@ -384,21 +398,42 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
   }, [currentPage, totalPages]);
 
 
+  // Single useEffect to handle all data fetching with proper debouncing
   useEffect(() => {
-    fetchAttendanceData();
-  }, [fetchAttendanceData]);
+    // For initial mount, fetch immediately without debouncing
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      console.log('🚀 Initial mount - fetching data immediately');
+      fetchAttendanceData();
+      return;
+    }
+    
+    // Skip if initial fetch hasn't completed yet (prevents race conditions during mount)
+    if (!hasInitialFetchCompleted.current) {
+      console.log('⏭️ Skipping - waiting for initial fetch to complete');
+      return;
+    }
+    
+    console.log('⏱️ Filter changed - setting up debounced fetch');
 
-  useEffect(() => {
-    const delayedSearch = setTimeout(() => {
+    // Debounce all filter changes to prevent rapid-fire API calls
+    const timeoutId = setTimeout(() => {
+      // If we're already fetching, the guard will prevent duplicate calls
       if (currentPage === 1) {
         fetchAttendanceData();
       } else {
+        // Reset to page 1 when filters change (will trigger another effect cycle)
+        console.log('📄 Resetting to page 1 due to filter change');
         setCurrentPage(1);
       }
     }, 500);
 
-    return () => clearTimeout(delayedSearch);
-  }, [searchQuery]);
+    // Cleanup: cancel the timeout if dependencies change before timeout fires
+    return () => {
+      clearTimeout(timeoutId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, dateRange, selectedDate, selectedUser, selectedStatus, selectedActivityType, selectedZone, searchQuery]);
 
   // Update showLoadMore based on pagination
   useEffect(() => {
@@ -410,48 +445,12 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <style jsx>{`
-        .btn-touch {
-          min-height: 44px;
-          min-width: 44px;
-        }
-        .card-mobile {
-          touch-action: manipulation;
-        }
-        @media (max-width: 768px) {
-          .header-mobile {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-          .stats-mobile {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-          }
-          .table-mobile {
-            overflow-x: hidden;
-          }
-        }
-        @media (min-width: 769px) {
-          .header-mobile {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-          .stats-mobile {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-          }
-        }
-      `}</style>
       <div className="container mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Modern Header with Gradient Background - Mobile Responsive */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 p-4 md:p-8 shadow-2xl">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10">
-            <div className="header-mobile">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="p-2 md:p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -488,7 +487,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
               <div className="flex items-center gap-3">
                 <Button 
                   onClick={() => fetchAttendanceData(true)} 
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105" 
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[44px]" 
                   size="lg"
                   disabled={isRefreshing}
                 >
@@ -896,7 +895,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
         {/* Modern Main Attendance Table - Mobile Responsive */}
         <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-slate-50 to-indigo-50 rounded-t-xl p-4 md:p-6">
-            <div className="header-mobile">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div className="space-y-1">
                 <CardTitle className="flex items-center gap-3 text-slate-800">
                   <div className="p-2 bg-indigo-100 rounded-lg">
@@ -919,8 +918,48 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
               </div>
             </div>
           </CardHeader>
+          
+          {/* Mobile View Controls - Sort and View Mode Toggle */}
+          <div className="md:hidden flex items-center justify-between gap-2 px-4 py-3 bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const nextSort = sortBy === 'date' ? 'name' : sortBy === 'name' ? 'status' : sortBy === 'status' ? 'hours' : 'date';
+                setSortBy(nextSort);
+              }}
+              className="flex items-center gap-2 bg-white hover:bg-blue-50 border-slate-300 text-slate-700 font-medium transition-all duration-200 flex-1"
+            >
+              <ArrowUpDown className="h-4 w-4 text-blue-600" />
+              <span className="text-sm">
+                {sortBy === 'date' ? 'Date' : sortBy === 'name' ? 'Name' : sortBy === 'status' ? 'Status' : 'Hours'}
+              </span>
+              {sortOrder === 'desc' ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+              className="bg-white hover:bg-blue-50 border-slate-300 text-slate-700 font-medium transition-all duration-200 px-3"
+              title="Toggle sort order"
+            >
+              <RotateCcw className="h-4 w-4 text-blue-600" />
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === 'cards' ? 'compact' : 'cards')}
+              className="flex items-center gap-2 bg-white hover:bg-blue-50 border-slate-300 text-slate-700 font-medium transition-all duration-200 flex-1"
+            >
+              {viewMode === 'cards' ? <List className="h-4 w-4 text-indigo-600" /> : <Grid3x3 className="h-4 w-4 text-indigo-600" />}
+              <span className="text-sm">{viewMode === 'cards' ? 'Compact' : 'Cards'}</span>
+            </Button>
+          </div>
+          
           <CardContent className="p-0">
-            <div className="table-mobile">
+            <div className="overflow-x-hidden">
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
@@ -1494,8 +1533,8 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
               </div>
             </div>
               
-              {/* Modern Pagination - Fixed height to prevent CLS */}
-              <div className="p-6">
+              {/* Modern Pagination - Fixed height to prevent CLS - Desktop Only */}
+              <div className="hidden md:block p-6">
                 <div className="flex items-center justify-center space-x-4 mt-8 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-b-xl min-h-[80px]">
                   {loading ? (
                     <div className="flex items-center gap-4">
@@ -1541,7 +1580,13 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
         </Card>
 
         {/* Modern Detail Modal */}
-        <Dialog open={detailModalOpen} onOpenChange={setDetailModalOpen}>
+        <Dialog 
+          open={detailModalOpen} 
+          onOpenChange={(open) => {
+            setDetailModalOpen(open);
+            if (!open) setSelectedRecord(null);
+          }}
+        >
           <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto bg-gradient-to-br from-white to-slate-50 border-0 shadow-2xl">
             <DialogHeader className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 -m-6 mb-6 rounded-t-xl">
               <DialogTitle className="flex items-center gap-3 text-2xl font-bold">

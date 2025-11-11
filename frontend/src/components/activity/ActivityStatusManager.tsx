@@ -29,6 +29,7 @@ import { UserRole } from '@/types/user.types';
 import EnhancedLocationCapture from './EnhancedLocationCapture';
 import { LocationData } from '@/hooks/useEnhancedLocation';
 import PhotoCapture, { CapturedPhoto } from '@/components/photo/PhotoCapture';
+import ReportUpload from './ReportUpload';
 
 // Map TicketStatus to StageType (from Prisma schema)
 const TICKET_STATUS_TO_STAGE_TYPE: Record<string, string> = {
@@ -212,6 +213,8 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
   const [stageLocation, setStageLocation] = useState<{lat: number, lng: number, address?: string} | null>(null);
   const [isCapturingLocation, setIsCapturingLocation] = useState(false);
   const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [pendingStageData, setPendingStageData] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -367,6 +370,42 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
       return;
     }
 
+    // Check if this is a COMPLETED stage for non-TICKET_WORK activities - show report dialog
+    const mandatoryReportActivities = [
+      'BD_VISIT', 'INSTALLATION', 'MAINTENANCE', 'MAINTENANCE_PLANNED', 'SPARE_REPLACEMENT'
+    ];
+    
+    if (selectedStage === 'COMPLETED' && 
+        selectedActivity.activityType !== 'TICKET_WORK' &&
+        mandatoryReportActivities.includes(selectedActivity.activityType)) {
+      // Store the stage data for after report upload
+      const stageData = {
+        stage: selectedStage,
+        notes: stageNotes || undefined,
+        startTime: new Date().toISOString(),
+        ...(enhancedStageLocation && {
+          latitude: enhancedStageLocation.latitude,
+          longitude: enhancedStageLocation.longitude,
+          location: enhancedStageLocation.address || `${enhancedStageLocation.latitude}, ${enhancedStageLocation.longitude}`,
+          accuracy: enhancedStageLocation.accuracy,
+          locationSource: enhancedStageLocation.source
+        }),
+        ...(capturedPhotos.length > 0 && {
+          photos: capturedPhotos.map(photo => ({
+            filename: photo.filename,
+            dataUrl: photo.dataUrl,
+            size: photo.size,
+            timestamp: photo.timestamp
+          }))
+        })
+      };
+      
+      setPendingStageData(stageData);
+      setShowStageDialog(false);
+      setShowReportDialog(true);
+      return;
+    }
+
     try {
       setIsUpdatingStage(true);
 
@@ -431,6 +470,62 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
       toast({
         title: "Error",
         description: "Failed to update activity stage. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingStage(false);
+    }
+  };
+
+  const handleReportUploadSuccess = async () => {
+    if (!selectedActivity || !pendingStageData) {
+      console.error('No pending stage data');
+      return;
+    }
+
+    try {
+      setIsUpdatingStage(true);
+
+      // End current stage if exists
+      const currentStage = getCurrentStage(selectedActivity);
+      if (currentStage && selectedActivity.ActivityStage) {
+        const activeStageObj = selectedActivity.ActivityStage.find(s => !s.endTime);
+        if (activeStageObj) {
+          await apiClient.put(`/activities/${selectedActivity.id}/stages/${activeStageObj.id}`, {
+            endTime: new Date().toISOString()
+          });
+        }
+      }
+
+      // Create new stage with pending data
+      await apiClient.post(`/activities/${selectedActivity.id}/stages`, pendingStageData);
+
+      toast({
+        title: "Activity Completed",
+        description: "Activity marked as completed with report uploaded",
+      });
+
+      // Close dialogs and reset
+      setShowReportDialog(false);
+      setSelectedActivity(null);
+      setSelectedStage('');
+      setStageNotes('');
+      setStageLocation(null);
+      setEnhancedStageLocation(null);
+      setCapturedPhotos([]);
+      setPendingStageData(null);
+
+      // Refresh data
+      if (onActivityChange) {
+        setTimeout(() => {
+          onActivityChange();
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error completing activity:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete activity. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -635,6 +730,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
       <StatusChangeDialog
         isOpen={showStatusDialog}
         currentStatus={selectedActivity?.ticket?.status as TicketStatusType || 'IN_PROGRESS'}
+        ticketId={selectedActivity?.ticketId}
         userRole={UserRole.SERVICE_PERSON}
         onClose={() => {
           setShowStatusDialog(false);
@@ -789,6 +885,42 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
               )}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Report Upload Dialog */}
+      <Dialog open={showReportDialog} onOpenChange={(open) => {
+        if (!open) {
+          setShowReportDialog(false);
+          setPendingStageData(null);
+          setSelectedActivity(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto mx-3">
+          <DialogHeader>
+            <DialogTitle>Upload Activity Report</DialogTitle>
+            <DialogDescription>
+              {pendingStageData?.stage === 'CLOSED_PENDING' 
+                ? 'Upload a closure report (optional) or skip to proceed without a report'
+                : 'Upload completion report before marking activity as completed'}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedActivity && pendingStageData && (
+            <ReportUpload
+              activityId={selectedActivity.id}
+              activityType={selectedActivity.activityType}
+              reportType={
+                pendingStageData.stage === 'CLOSED_PENDING' ? 'CLOSURE' : 'COMPLETION'
+              }
+              required={pendingStageData.stage !== 'CLOSED_PENDING'}
+              onSuccess={handleReportUploadSuccess}
+              onCancel={() => {
+                setShowReportDialog(false);
+                setPendingStageData(null);
+                setShowStageDialog(true);
+              }}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

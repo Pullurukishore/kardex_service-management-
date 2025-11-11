@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import Script from 'next/script';
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
@@ -16,13 +15,46 @@ import type {
 } from '@/components/dashboard/types';
 import DashboardClient from '@/components/dashboard/DashboardClient';
 
-// Loading component for Suspense boundary
+// Loading component for Suspense boundary - Enhanced skeleton UI
 function DashboardLoading() {
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-600 font-medium">Loading dashboard data...</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 sm:p-4 md:p-6 lg:p-8">
+      <div className="w-full max-w-full">
+        {/* Header skeleton */}
+        <div className="mb-6 sm:mb-8">
+          <div className="h-12 sm:h-16 bg-white/60 rounded-lg animate-pulse mb-2" />
+          <div className="h-6 bg-white/40 rounded-lg animate-pulse w-2/3" />
+        </div>
+        
+        {/* Executive summary cards skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white/60 rounded-xl p-4 sm:p-6 animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
+              <div className="h-8 bg-gray-200 rounded w-3/4 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+
+        {/* Analytics section skeleton */}
+        <div className="bg-white/60 rounded-xl p-4 sm:p-6 mb-6 animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="h-64 bg-gray-200 rounded" />
+            <div className="h-64 bg-gray-200 rounded" />
+          </div>
+        </div>
+
+        {/* Recent tickets skeleton */}
+        <div className="bg-white/60 rounded-xl p-4 sm:p-6 animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-20 bg-gray-200 rounded" />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -103,40 +135,6 @@ export default async function DashboardPage() {
 
     return (
       <>
-        {/* Preload critical resources */}
-        <Script
-          id="dashboard-preload"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Preload critical dashboard resources
-              const preloadLinks = [
-                { rel: 'preconnect', href: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000' },
-                { rel: 'dns-prefetch', href: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000' }
-              ];
-              preloadLinks.forEach(link => {
-                const linkEl = document.createElement('link');
-                Object.assign(linkEl, link);
-                document.head.appendChild(linkEl);
-              });
-            `
-          }}
-        />
-        
-        {/* Non-critical analytics scripts */}
-        <Script
-          id="dashboard-analytics"
-          strategy="lazyOnload"
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Initialize performance monitoring
-              if (typeof window !== 'undefined' && window.performance) {
-                window.dashboardLoadTime = Date.now();
-              }
-            `
-          }}
-        />
-
         <div className="overflow-x-hidden">
           <DashboardErrorBoundary fallback={DashboardErrorFallback}>
             <Suspense fallback={<DashboardLoading />}>
@@ -160,12 +158,36 @@ export default async function DashboardPage() {
       return null;
     }
 
-    // Return error state
+    // Return error state with retry button
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600">Failed to load dashboard</h2>
-          <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        <div className="text-center bg-white rounded-xl shadow-lg p-8 max-w-md mx-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+            <svg
+              className="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Failed to load dashboard</h2>
+          <p className="text-gray-600 mb-6">There was an error loading the dashboard. Please try again.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Retry
+          </button>
         </div>
       </div>
     );

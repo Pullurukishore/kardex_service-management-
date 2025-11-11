@@ -92,7 +92,7 @@ export const generateExcel = async (
     const defaultOptions: ExcelOptions = {
       enableFreezePanes: true,
       enableAutoFilter: true,
-      enableConditionalFormatting: true,
+      enableConditionalFormatting: false, // Disabled due to ExcelJS dataBar type issues
       maxRowsPerSheet: 1000000,
       showLogo: true,
       logoPosition: 'right',
@@ -307,6 +307,13 @@ export const generateExcel = async (
 
     // Add data rows with enhanced features
     const dataStartRow = currentRow;
+    
+    // Validate data before processing
+    if (!data || !Array.isArray(data)) {
+      console.error('Excel generation error: data is undefined or not an array');
+      throw new Error('Invalid data provided for Excel generation');
+    }
+    
     data.forEach((item, rowIndex) => {
       const dataRow = worksheet.getRow(currentRow + rowIndex);
       
@@ -377,6 +384,8 @@ export const generateExcel = async (
     }
     
     // Add conditional formatting for performance metrics
+    // Disabled due to ExcelJS dataBar type incompatibility issues
+    /*
     if (defaultOptions.enableConditionalFormatting) {
       columns.forEach((column, colIndex) => {
         if (column.header.toLowerCase().includes('rate') || 
@@ -385,14 +394,18 @@ export const generateExcel = async (
           const columnLetter = String.fromCharCode(65 + colIndex);
           const range = `${columnLetter}${dataStartRow}:${columnLetter}${dataEndRow}`;
           
-          // Add simple data bars for performance metrics
           try {
             worksheet.addConditionalFormatting({
               ref: range,
               rules: [{
                 type: 'dataBar',
                 priority: 1,
-                showValue: true
+                cfvo: [
+                  { type: 'min' },
+                  { type: 'max' }
+                ],
+                showValue: true,
+                gradient: false
               }]
             });
           } catch (error) {
@@ -401,6 +414,7 @@ export const generateExcel = async (
         }
       });
     }
+    */
 
 
     // Set workbook properties

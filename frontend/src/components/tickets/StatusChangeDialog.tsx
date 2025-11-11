@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +23,9 @@ import {
   FileText,
   MapPin,
   Navigation,
-  X
+  X,
+  Upload,
+  File
 } from 'lucide-react';
 import { UserRole } from '@/types/user.types';
 import PhotoCapture, { CapturedPhoto } from '@/components/photo/PhotoCapture';
@@ -72,7 +75,37 @@ export const TicketStatus = {
   PENDING: 'PENDING'
 } as const;
 
-export type TicketStatusType = typeof TicketStatus[keyof typeof TicketStatus];
+// Export the TicketStatus enum values as a type
+export type TicketStatusType = 
+  | 'OPEN'
+  | 'ASSIGNED'
+  | 'IN_PROCESS'
+  | 'IN_PROGRESS'
+  | 'WORK IN PROGRESS'
+  | 'WORK_IN_PROGRESS'
+  | 'WAITING_CUSTOMER'
+  | 'ONSITE_VISIT'
+  | 'ONSITE_VISIT_PLANNED'
+  | 'ONSITE_VISIT_STARTED'
+  | 'ONSITE_VISIT_REACHED'
+  | 'ONSITE_VISIT_IN_PROGRESS'
+  | 'ONSITE_VISIT_RESOLVED'
+  | 'ONSITE_VISIT_PENDING'
+  | 'ONSITE_VISIT_COMPLETED'
+  | 'PO_NEEDED'
+  | 'PO_REACHED'
+  | 'PO_RECEIVED'
+  | 'SPARE_PARTS_NEEDED'
+  | 'SPARE_PARTS_BOOKED'
+  | 'SPARE_PARTS_DELIVERED'
+  | 'CLOSED_PENDING'
+  | 'CLOSED'
+  | 'CANCELLED'
+  | 'REOPENED'
+  | 'ON_HOLD'
+  | 'ESCALATED'
+  | 'RESOLVED'
+  | 'PENDING';
 
 // Valid status transitions based on backend business logic
 const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
@@ -319,12 +352,30 @@ const getAvailableStatuses = (currentStatus: TicketStatusType, userRole?: UserRo
   const availableTransitions = validTransitions[mappedStatus] || [];
   console.log('StatusChangeDialog: Available transitions:', availableTransitions);
   
+  // Statuses restricted for service person and zone users
+  const restrictedStatusesForFieldUsers: TicketStatusType[] = [
+    'CANCELLED',
+    'REOPENED',
+    'ON_HOLD',
+    'ESCALATED',
+    'RESOLVED',
+    'PENDING',
+    'CLOSED'
+  ];
+  
   // Filter based on user role permissions
   return availableTransitions.filter(status => {
-    // Only admin can set to CLOSED
+    // Service person and zone users cannot set these statuses
+    if ((userRole === UserRole.SERVICE_PERSON || userRole === UserRole.ZONE_USER) && 
+        restrictedStatusesForFieldUsers.includes(status)) {
+      return false;
+    }
+    
+    // Only admin can set to CLOSED (additional check for other roles)
     if (status === TicketStatus.CLOSED && userRole !== UserRole.ADMIN) {
       return false;
     }
+    
     return true;
   });
 };
@@ -353,6 +404,7 @@ type PhotoData = {
 type StatusChangeDialogProps = {
   isOpen: boolean;
   currentStatus: TicketStatusType;
+  ticketId?: string | number;
   userRole?: UserRole;
   onClose: () => void;
   onStatusChange: (status: TicketStatusType, comments?: string, location?: LocationData, photos?: PhotoData) => Promise<void>;
@@ -360,17 +412,20 @@ type StatusChangeDialogProps = {
 
 export function StatusChangeDialog({ 
   isOpen, 
-  currentStatus, 
+  currentStatus,
+  ticketId,
   userRole,
   onClose, 
   onStatusChange 
 }: StatusChangeDialogProps) {
+  const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<TicketStatusType | ''>('');
   const [comments, setComments] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number, address?: string} | null>(null);
   const [isCapturingLocation, setIsCapturingLocation] = useState(false);
   const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
+  const [reportFile, setReportFile] = useState<File | null>(null);
   
   // Enhanced location state
   const [enhancedLocationState, setEnhancedLocationState] = useState<EnhancedLocationState>({
@@ -627,6 +682,46 @@ export function StatusChangeDialog({
       // Call onStatusChange with location and photo data
       await onStatusChange(selectedStatus, comments || undefined, locationData, photoData);
       
+      // Upload report file if provided for CLOSED_PENDING status
+      if (selectedStatus === TicketStatus.CLOSED_PENDING && reportFile && ticketId) {
+        console.log('📄 Uploading report for CLOSED_PENDING status...', {
+          fileName: reportFile.name,
+          fileSize: reportFile.size,
+          ticketId
+        });
+        
+        try {
+          const formData = new FormData();
+          formData.append('files', reportFile);
+          
+          const response = await apiClient.post(`/tickets/${ticketId}/reports`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          
+          console.log('✅ Report uploaded successfully:', response.data);
+          
+          toast({
+            title: 'Report Uploaded',
+            description: `${reportFile.name} has been uploaded successfully`,
+          });
+        } catch (error) {
+          console.error('❌ Error uploading report:', error);
+          
+          toast({
+            title: 'Report Upload Failed',
+            description: 'Failed to upload report. You can upload it manually from the Reports tab.',
+            variant: 'destructive',
+          });
+          
+          // Don't fail the status change if report upload fails
+          // User can always upload manually later
+        }
+      } else if (selectedStatus === TicketStatus.CLOSED_PENDING && !reportFile) {
+        console.log('ℹ️ No report file selected for CLOSED_PENDING status (optional)');
+      }
+      
       // Auto-transition from ONSITE_VISIT_REACHED to ONSITE_VISIT_IN_PROGRESS
       if (selectedStatus === TicketStatus.ONSITE_VISIT_REACHED) {
         try {
@@ -658,6 +753,7 @@ export function StatusChangeDialog({
     setCurrentLocation(null);
     setIsCapturingLocation(false);
     setCapturedPhotos([]);
+    setReportFile(null);
     setEnhancedLocationState({
       capturedLocation: null,
       showLocationCapture: false,
@@ -1033,6 +1129,49 @@ export function StatusChangeDialog({
               <p className="text-xs text-muted-foreground">
                 {comments.length}/500 characters
               </p>
+            </div>
+          )}
+
+          {/* Report Upload for CLOSED_PENDING */}
+          {selectedStatus === TicketStatus.CLOSED_PENDING && (
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="report-file" className="text-sm font-medium flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Closure Report
+                <Badge variant="secondary" className="text-xs">Optional</Badge>
+              </Label>
+              <div className="space-y-2">
+                <input
+                  id="report-file"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setReportFile(e.target.files[0]);
+                    }
+                  }}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {reportFile && (
+                  <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+                    <File className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm text-gray-700 flex-1 truncate">{reportFile.name}</span>
+                    <span className="text-xs text-gray-500">({(reportFile.size / 1024).toFixed(1)} KB)</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setReportFile(null)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Upload completion report (optional). Accepted formats: PDF, Word, Excel, Images
+                </p>
+              </div>
             </div>
           )}
         </div>

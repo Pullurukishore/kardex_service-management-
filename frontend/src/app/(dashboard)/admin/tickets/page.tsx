@@ -21,7 +21,7 @@ type Props = {
 export default async function AdminTicketsPage({ searchParams }: Props) {
   const currentView = (searchParams.view || 'all') as 'all' | 'unassigned' | 'assigned-to-zone' | 'assigned-to-service-person';
   const currentPage = parseInt(searchParams.page || '1');
-  const currentLimit = parseInt(searchParams.limit || '30');
+  const currentLimit = parseInt(searchParams.limit || '100');
   
   const filters = {
     status: searchParams.status || '',
@@ -40,7 +40,7 @@ export default async function AdminTicketsPage({ searchParams }: Props) {
   } catch (err) {
     console.error('Error fetching tickets:', err);
     error = 'Failed to load tickets. Please try again.';
-    ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 30, totalPages: 1 } };
+    ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 100, totalPages: 1 } };
   }
   
   const { data: tickets, pagination } = ticketsData;
@@ -119,6 +119,7 @@ export default async function AdminTicketsPage({ searchParams }: Props) {
       <TicketClient 
         initialTickets={tickets}
         initialStats={stats}
+        initialPagination={pagination}
         searchParams={searchParams}
       />
     </div>

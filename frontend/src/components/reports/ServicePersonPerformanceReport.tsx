@@ -79,65 +79,8 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
         <div className="flex items-center gap-2 text-blue-800">
           <Info className="h-4 w-4" />
           <span className="text-sm font-medium">
-            Time calculations are based on business hours only (9 AM - 5 PM, Monday to Saturday). Travel times show actual elapsed time.
+            Time calculations are based on business hours only (9 AM - 5:30 PM, Monday to Saturday). Travel times show actual elapsed time.
           </span>
-        </div>
-      </div>
-
-      {/* Summary Statistics - Attendance Metrics */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <UserCheck className="h-5 w-5 text-blue-600" />
-          Attendance Overview
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Service Persons</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary.totalServicePersons || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Active personnel
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Check-ins</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{summary.totalCheckIns || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {dateRange.totalDays || 0} days period
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Hours/Day</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Number(summary.averageHoursPerDay || 0).toFixed(1)}h</div>
-            <p className="text-xs text-muted-foreground">Per person</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Absentees</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{summary.totalAbsentees || 0}</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
-          </CardContent>
-        </Card>
         </div>
       </div>
 
@@ -248,30 +191,6 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
           </Card>
         </div>
       </div>
-
-      {/* Most Active User Card */}
-      {summary.mostActiveUser && summary.mostActiveUser.name && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Most Active Service Person
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-lg">{summary.mostActiveUser.name}</div>
-                <div className="text-sm text-gray-600">{summary.mostActiveUser.email}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">{summary.mostActiveUser.activityCount}</div>
-                <div className="text-sm text-gray-600">Activities logged</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Service Person Performance Table */}
       <Card>

@@ -118,7 +118,7 @@ export default function ZoneFieldServiceAnalytics({
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-green-700">
-                  {formatDuration(stats.avgResolutionTime.days * 24 + stats.avgResolutionTime.hours, 0)}
+                  {formatDuration(stats.avgResolutionTime.days * 24 + stats.avgResolutionTime.hours, stats.avgResolutionTime.minutes)}
                 </p>
                 <p className="text-sm text-green-600">Avg Resolution Time</p>
               </div>

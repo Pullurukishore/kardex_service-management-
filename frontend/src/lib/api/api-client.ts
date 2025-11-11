@@ -219,7 +219,7 @@ class ApiClient {
       localStorage.removeItem('userRole');
       localStorage.removeItem('user');
       if (redirectToLogin) {
-        window.location.href = '/login';
+        window.location.href = '/auth/login';
       }
     }
   }

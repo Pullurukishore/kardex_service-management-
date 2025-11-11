@@ -61,3 +61,21 @@ export function verifyToken(token: string): JwtPayload {
   }
   return jwt.verify(token, JWT_CONFIG.secret) as JwtPayload;
 }
+
+export const generateRefreshToken = (userId: number): string => {
+  if (!REFRESH_TOKEN_CONFIG.secret) {
+    throw new Error('Refresh token secret is not configured');
+  }
+  return jwt.sign(
+    { id: userId },
+    REFRESH_TOKEN_CONFIG.secret,
+    { expiresIn: REFRESH_TOKEN_CONFIG.expiresIn }
+  );
+}
+
+export function verifyRefreshToken(token: string): { id: number } {
+  if (!REFRESH_TOKEN_CONFIG.secret) {
+    throw new Error('Refresh token secret is not configured');
+  }
+  return jwt.verify(token, REFRESH_TOKEN_CONFIG.secret) as { id: number };
+}

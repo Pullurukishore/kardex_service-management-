@@ -179,7 +179,24 @@ export default function ZoneCreateTicketPage() {
     fetchInitialData();
   }, [user]);
 
+  // Watch all required fields for validation
   const zoneId = form.watch('zoneId');
+  const title = form.watch('title');
+  const description = form.watch('description');
+  const priority = form.watch('priority');
+  const customerId = form.watch('customerId');
+  const contactId = form.watch('contactId');
+  const assetId = form.watch('assetId');
+
+  // Check if all required fields are filled (assetId is optional for zone users)
+  const isFormValid = Boolean(
+    title && title.length >= 3 &&
+    description && description.length >= 10 &&
+    priority &&
+    zoneId &&
+    customerId &&
+    contactId
+  );
   
   useEffect(() => {
     const fetchZoneCustomers = async () => {
@@ -224,8 +241,6 @@ export default function ZoneCreateTicketPage() {
     fetchZoneCustomers();
   }, [zoneId, form, toast]);
 
-  const customerId = form.watch('customerId');
-  
   useEffect(() => {
     const updateCustomerData = () => {
       if (!customerId) {
@@ -434,6 +449,7 @@ export default function ZoneCreateTicketPage() {
           <TicketFormActions 
             isSubmitting={isSubmitting}
             onCancel={() => router.back()}
+            isFormValid={isFormValid}
           />
         </form>
       </Form>

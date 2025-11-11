@@ -7,9 +7,10 @@ import { ArrowLeft, CheckCircle, Loader2, Ticket } from 'lucide-react';
 interface TicketFormActionsProps {
   isSubmitting: boolean;
   onCancel: () => void;
+  isFormValid: boolean;
 }
 
-export function TicketFormActions({ isSubmitting, onCancel }: TicketFormActionsProps) {
+export function TicketFormActions({ isSubmitting, onCancel, isFormValid }: TicketFormActionsProps) {
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
       <CardContent className="p-6">
@@ -31,8 +32,8 @@ export function TicketFormActions({ isSubmitting, onCancel }: TicketFormActionsP
             </Button>
             <Button 
               type="submit" 
-              disabled={isSubmitting}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg text-white px-8"
+              disabled={isSubmitting || !isFormValid}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg text-white px-8 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

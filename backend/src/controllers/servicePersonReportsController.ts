@@ -215,10 +215,13 @@ export const servicePersonReportsController = {
           const ticketMetrics = await calculateServicePersonTicketMetrics(person.id, fromDateTime, toDateTime);
           console.log(`Calculated ticket metrics for ${person.email}:`, ticketMetrics);
 
-          // Process day-wise breakdown
+          // Process day-wise breakdown - only include Monday to Saturday (working days)
           const daysInRange = eachDayOfInterval({
             start: fromDateTime,
             end: toDateTime,
+          }).filter(day => {
+            const dayOfWeek = day.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            return dayOfWeek !== 0; // Exclude Sundays
           });
 
           const dayWiseBreakdown = daysInRange.map((day) => {
@@ -226,11 +229,10 @@ export const servicePersonReportsController = {
             const dayEnd = endOfDay(day);
             const dayKey = formatDate(day, 'yyyy-MM-dd');
 
-            // Find attendance for this day
-            const dayAttendance = attendanceRecords.find((att) => {
+            // Find ALL attendance records for this day (handle multiple check-ins)
+            const dayAttendances = attendanceRecords.filter((att) => {
               const checkInDay = att.checkInAt ? formatDate(att.checkInAt, 'yyyy-MM-dd') : null;
-              const checkOutDay = att.checkOutAt ? formatDate(att.checkOutAt, 'yyyy-MM-dd') : null;
-              return checkInDay === dayKey || checkOutDay === dayKey;
+              return checkInDay === dayKey;
             });
 
             // Find activities for this day
@@ -239,44 +241,61 @@ export const servicePersonReportsController = {
               return activityDay === dayKey;
             });
 
-            // Calculate total hours for the day
+            // Calculate total hours for the day - sum all sessions
             let totalHours = 0;
-            if (dayAttendance?.checkInAt && dayAttendance?.checkOutAt) {
-              const checkIn = new Date(dayAttendance.checkInAt);
-              const checkOut = new Date(dayAttendance.checkOutAt);
-              totalHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
-            }
+            let hasAutoCheckout = false;
+            let hasOpenSession = false;
+            
+            dayAttendances.forEach(att => {
+              if (att.checkInAt && att.checkOutAt) {
+                const checkIn = new Date(att.checkInAt);
+                const checkOut = new Date(att.checkOutAt);
+                let sessionHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+                
+                // Cap session hours at 24 hours max (prevent multi-day session issues)
+                // If someone is checked in for > 24 hours, it's likely a data quality issue
+                if (sessionHours > 24) {
+                  console.warn(`Session hours capped: User ${att.userId} had ${sessionHours.toFixed(1)}h session on ${dayKey}, capped to 24h`);
+                  sessionHours = 24;
+                  hasAutoCheckout = true; // Flag as problematic
+                } else if (sessionHours >= 12) {
+                  // Check if this session was auto-checkout (>= 12 hours)
+                  hasAutoCheckout = true;
+                } else if (sessionHours < 0) {
+                  // Handle negative hours (data issue)
+                  console.warn(`Negative session hours detected: User ${att.userId} on ${dayKey}, skipping`);
+                  return; // Skip this session
+                }
+                
+                totalHours += sessionHours;
+              } else if (att.checkInAt) {
+                hasOpenSession = true;
+              }
+            });
 
-            // Determine attendance status
+            // Determine attendance status based on all sessions
             let attendanceStatus = 'ABSENT';
-            if (dayAttendance) {
-              if (dayAttendance.checkInAt && dayAttendance.checkOutAt) {
-                attendanceStatus = 'CHECKED_OUT';
-              } else if (dayAttendance.checkInAt) {
+            if (dayAttendances.length > 0) {
+              if (hasOpenSession) {
                 attendanceStatus = 'CHECKED_IN';
+              } else {
+                attendanceStatus = 'CHECKED_OUT';
               }
             }
 
             // Check for flags
             const flags: any[] = [];
-            // Check if checkOut is more than 12 hours after checkIn (auto-checkout)
-            if (dayAttendance?.checkInAt && dayAttendance.checkOutAt) {
-              const checkIn = new Date(dayAttendance.checkInAt);
-              const checkOut = new Date(dayAttendance.checkOutAt);
-              const hoursDiff = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
-              
-              if (hoursDiff >= 12) {
-                flags.push({
-                  type: 'AUTO_CHECKOUT',
-                  message: 'Auto-checked out by system',
-                });
-              }
+            if (hasAutoCheckout) {
+              flags.push({
+                type: 'AUTO_CHECKOUT',
+                message: 'Auto-checked out by system',
+              });
             }
 
             return {
               date: dayKey,
-              checkInTime: dayAttendance?.checkInAt ?? null,
-              checkOutTime: dayAttendance?.checkOutAt ?? null,
+              checkInTime: dayAttendances.length > 0 ? dayAttendances[0].checkInAt : null,
+              checkOutTime: dayAttendances.length > 0 ? dayAttendances[dayAttendances.length - 1].checkOutAt : null,
               totalHours,
               attendanceStatus,
               activityCount: dayActivities.length,
@@ -477,8 +496,8 @@ export const servicePersonReportsController = {
         },
       });
 
-      // Get total working hours
-      const totalHoursResult = await prisma.attendance.aggregate({
+      // Get total working hours - calculate manually with 24h cap (matching individual reports)
+      const allAttendanceForHours = await prisma.attendance.findMany({
         where: {
           user: {
             role: 'SERVICE_PERSON',
@@ -490,10 +509,33 @@ export const servicePersonReportsController = {
           },
           checkOutAt: { not: null },
         },
-        _sum: {
-          totalHours: true,
+        select: {
+          checkInAt: true,
+          checkOutAt: true,
+          userId: true,
         },
       });
+      
+      // Calculate hours with 24h cap per session (prevent multi-day session inflation)
+      let totalHoursSum = 0;
+      allAttendanceForHours.forEach(att => {
+        if (att.checkInAt && att.checkOutAt) {
+          const checkIn = new Date(att.checkInAt);
+          const checkOut = new Date(att.checkOutAt);
+          let sessionHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+          
+          // Apply 24h cap (same as individual reports)
+          if (sessionHours > 24) {
+            sessionHours = 24;
+          } else if (sessionHours < 0) {
+            sessionHours = 0; // Skip negative hours
+          }
+          
+          totalHoursSum += sessionHours;
+        }
+      });
+      
+      const totalHoursResult = { _sum: { totalHours: totalHoursSum } };
 
       // Get total activities logged
       const totalActivities = await prisma.dailyActivityLog.count({
@@ -572,10 +614,38 @@ export const servicePersonReportsController = {
         }
       }
 
-      // Calculate average hours per day (not per person)
-      const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      const averageHoursPerDay = totalDays > 0 
-        ? Number((Number(totalHoursResult._sum.totalHours || 0) / totalDays).toFixed(2))
+      // Calculate average hours per person per day - use SAME records as hours calculation
+      // (only closed sessions with checkOutAt, matching individual reports)
+      const allAttendanceRecords = allAttendanceForHours; // Reuse the same query results
+      
+      // Count unique WORKING days per person (Monday-Saturday only, exclude Sundays)
+      const userPresentDays = new Map<number, Set<string>>();
+      allAttendanceRecords.forEach(att => {
+        if (att.checkInAt) {
+          const checkInDate = new Date(att.checkInAt);
+          const dayOfWeek = checkInDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+          
+          // Skip Sundays (matching individual report logic)
+          if (dayOfWeek === 0) {
+            return; // Skip this record
+          }
+          
+          const dateKey = formatDate(att.checkInAt, 'yyyy-MM-dd');
+          if (!userPresentDays.has(att.userId)) {
+            userPresentDays.set(att.userId, new Set());
+          }
+          userPresentDays.get(att.userId)!.add(dateKey);
+        }
+      });
+      
+      // Sum unique days across all persons
+      let totalUniquePresentDays = 0;
+      userPresentDays.forEach(daysSet => {
+        totalUniquePresentDays += daysSet.size;
+      });
+      
+      const averageHoursPerDay = totalUniquePresentDays > 0 
+        ? Number((Number(totalHoursResult._sum.totalHours || 0) / totalUniquePresentDays).toFixed(2))
         : 0;
 
       res.json({
@@ -942,15 +1012,27 @@ export const servicePersonReportsController = {
 
       // Generate PDF or Excel based on format
       if (format === 'excel') {
+        console.log('Generating Excel report with data:', {
+          dataLength: performanceData?.length,
+          hasData: !!performanceData,
+          isArray: Array.isArray(performanceData),
+          sampleData: performanceData?.[0]
+        });
+        
         const { generateExcel, getExcelColumns } = await import('../utils/excelGenerator');
         const excelColumns = getExcelColumns('service-person-performance');
+        
+        if (!performanceData || !Array.isArray(performanceData)) {
+          throw new Error('Performance data is undefined or not an array');
+        }
+        
         await generateExcel(res, performanceData, excelColumns, 'Service Person Performance Report', filters);
       } else {
         await generatePdf(res, performanceData, columns, 'Service Person Performance Report', filters);
       }
     } catch (error) {
       console.error('Export performance reports error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Failed to generate Excel report', details: error instanceof Error ? error.message : 'Unknown error' });
     }
   },
 
@@ -1075,10 +1157,13 @@ export const servicePersonReportsController = {
             },
           });
 
-          // Generate date range for analysis
+          // Generate date range for analysis - exclude Sundays (working days only)
           const daysInRange = eachDayOfInterval({
             start: fromDateTime,
             end: toDateTime,
+          }).filter(day => {
+            const dayOfWeek = day.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            return dayOfWeek !== 0; // Exclude Sundays
           });
 
           // Calculate summary metrics - count unique days with check-ins, not total records
@@ -1087,8 +1172,12 @@ export const servicePersonReportsController = {
               .filter(att => att.checkInAt)
               .map(att => {
                 const checkInDate = new Date(att.checkInAt!);
+                const dayOfWeek = checkInDate.getDay();
+                // Only count Monday-Saturday
+                if (dayOfWeek === 0) return null;
                 return formatDate(checkInDate, 'yyyy-MM-dd');
               })
+              .filter(date => date !== null)
           ).size;
           const presentDays = uniqueCheckInDays;
           const absentDays = daysInRange.length - presentDays;
@@ -1152,7 +1241,155 @@ export const servicePersonReportsController = {
       }
     } catch (error) {
       console.error('Export attendance reports error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      console.error('Error details:', { message: errorMessage, stack: errorStack });
+      res.status(500).json({ error: 'Failed to generate attendance report', details: errorMessage });
+    }
+  },
+
+  // Export detailed individual service person report with daily breakdown
+  async exportDetailedPersonReport(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const userRole = req.user?.role;
+      
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      const { fromDate, toDate, servicePersonId, format: exportFormat = 'pdf' } = req.query;
+
+      if (!servicePersonId) {
+        return res.status(400).json({ error: 'servicePersonId is required' });
+      }
+
+      // Parse date range
+      const startDate = fromDate ? new Date(fromDate as string) : subDays(new Date(), 30);
+      const endDate = toDate ? new Date(toDate as string) : new Date();
+      
+      const fromDateTime = startOfDay(startDate);
+      const toDateTime = endOfDay(endDate);
+
+      // Get the full report for this person (includes dayWiseBreakdown)
+      const person = await prisma.user.findUnique({
+        where: { id: parseInt(servicePersonId as string) },
+        include: {
+          serviceZones: {
+            include: {
+              serviceZone: true
+            }
+          }
+        }
+      });
+
+      if (!person) {
+        return res.status(404).json({ error: 'Service person not found' });
+      }
+
+      // Get attendance records
+      const attendanceRecords = await prisma.attendance.findMany({
+        where: {
+          userId: person.id,
+          OR: [
+            { checkInAt: { gte: fromDateTime, lte: toDateTime } },
+            { checkOutAt: { gte: fromDateTime, lte: toDateTime } }
+          ],
+        },
+        orderBy: { checkInAt: 'asc' },
+      });
+
+      // Get activities
+      const activities = await prisma.dailyActivityLog.findMany({
+        where: {
+          userId: person.id,
+          startTime: { gte: fromDateTime, lte: toDateTime },
+        },
+        orderBy: { startTime: 'asc' },
+      });
+
+      // Build day-wise breakdown
+      const daysInRange = eachDayOfInterval({ start: fromDateTime, end: toDateTime })
+        .filter(day => day.getDay() !== 0); // Exclude Sundays
+
+      const dayWiseData = daysInRange.map((day) => {
+        const dayKey = formatDate(day, 'yyyy-MM-dd');
+        
+        const dayAttendances = attendanceRecords.filter(att => {
+          const checkInDay = att.checkInAt ? formatDate(att.checkInAt, 'yyyy-MM-dd') : null;
+          return checkInDay === dayKey;
+        });
+
+        const dayActivities = activities.filter(activity => {
+          const activityDay = formatDate(activity.startTime, 'yyyy-MM-dd');
+          return activityDay === dayKey;
+        });
+
+        // Calculate hours (sum all sessions, cap at 24h per session)
+        let totalHours = 0;
+        let hasAutoCheckout = false;
+        dayAttendances.forEach(att => {
+          if (att.checkInAt && att.checkOutAt) {
+            let sessionHours = (new Date(att.checkOutAt).getTime() - new Date(att.checkInAt).getTime()) / (1000 * 60 * 60);
+            if (sessionHours > 24) sessionHours = 24;
+            totalHours += sessionHours;
+            if (sessionHours >= 12) hasAutoCheckout = true;
+          }
+        });
+
+        const checkInTime = dayAttendances[0]?.checkInAt || null;
+        const checkOutTime = dayAttendances[dayAttendances.length - 1]?.checkOutAt || null;
+        const status = dayAttendances.length > 0 ? (checkOutTime ? 'Present' : 'Checked In') : 'Absent';
+        
+        return {
+          date: dayKey,
+          dayName: formatDate(day, 'EEE'),
+          checkIn: checkInTime ? formatDate(new Date(checkInTime), 'HH:mm') : '-',
+          checkOut: checkOutTime ? formatDate(new Date(checkOutTime), 'HH:mm') : '-',
+          hours: totalHours.toFixed(1),
+          status,
+          activities: dayActivities.length,
+          activitiesDetail: dayActivities.map(a => ({
+            type: a.activityType,
+            title: a.title || 'No title',
+            time: formatDate(new Date(a.startTime), 'HH:mm')
+          })),
+          flags: hasAutoCheckout ? 'Auto-checkout' : ''
+        };
+      });
+
+      const reportData = {
+        person: {
+          name: person.name,
+          email: person.email,
+          phone: person.phone,
+          zones: person.serviceZones.map(sz => sz.serviceZone.name).join(', ')
+        },
+        period: {
+          from: formatDate(fromDateTime, 'MMM dd, yyyy'),
+          to: formatDate(toDateTime, 'MMM dd, yyyy')
+        },
+        summary: {
+          totalDays: daysInRange.length,
+          presentDays: dayWiseData.filter(d => d.status !== 'Absent').length,
+          totalHours: dayWiseData.reduce((sum, d) => sum + parseFloat(d.hours), 0).toFixed(1),
+          totalActivities: dayWiseData.reduce((sum, d) => sum + d.activities, 0)
+        },
+        dailyBreakdown: dayWiseData
+      };
+
+      // Generate detailed PDF or Excel
+      if (exportFormat === 'excel') {
+        const { generateDetailedPersonExcel } = await import('../utils/detailedExportGenerator');
+        await generateDetailedPersonExcel(res, reportData);
+      } else {
+        const { generateDetailedPersonPdf } = await import('../utils/detailedExportGenerator');
+        await generateDetailedPersonPdf(res, reportData);
+      }
+    } catch (error) {
+      console.error('Export detailed person report error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: 'Failed to generate detailed report', details: errorMessage });
     }
   },
 

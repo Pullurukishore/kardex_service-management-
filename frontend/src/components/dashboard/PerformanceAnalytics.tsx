@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
   BarChart3,
@@ -21,7 +20,7 @@ import {
   MapPin,
   AlertTriangle
 } from "lucide-react";
-import { formatNumber, formatDuration } from "./utils";
+import { formatNumber } from "./utils";
 import type { DashboardData } from "./types";
 
 interface PerformanceAnalyticsProps {
@@ -32,17 +31,14 @@ interface PerformanceAnalyticsProps {
 export default function PerformanceAnalytics({ dashboardData }: PerformanceAnalyticsProps) {
   const overviewMetrics = [
     { 
-      label: "Operational Efficiency", 
-      value: formatDuration(
-        dashboardData?.stats?.avgResponseTime?.hours || 0, 
-        dashboardData?.stats?.avgResponseTime?.minutes || 0
-      ),
-      subtitle: "Average response time",
-      benchmark: "Target: < 2 hours",
-      performance: ((dashboardData?.stats?.avgResponseTime?.hours || 0) * 60 + (dashboardData?.stats?.avgResponseTime?.minutes || 0)) < 120 ? 95 : 65,
-      trend: dashboardData?.stats?.avgResponseTime?.change || 0,
-      isPositive: dashboardData?.stats?.avgResponseTime?.isPositive !== false,
-      icon: Timer,
+      label: "Active Customers", 
+      value: `${dashboardData?.stats?.kpis?.activeCustomers?.value || 0}`,
+      subtitle: `of ${dashboardData?.adminStats?.totalCustomers || 0} total customers`,
+      benchmark: "Customers with active tickets",
+      performance: Math.round(((dashboardData?.stats?.kpis?.activeCustomers?.value || 0) / Math.max(1, dashboardData?.adminStats?.totalCustomers || 1)) * 100),
+      trend: dashboardData?.stats?.kpis?.activeCustomers?.change || 0,
+      isPositive: true,
+      icon: Users,
       color: "from-blue-500 to-cyan-600",
       bgColor: "bg-gradient-to-br from-blue-50 to-cyan-50"
     },
@@ -59,12 +55,12 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       bgColor: "bg-gradient-to-br from-emerald-50 to-green-50"
     },
     { 
-      label: "Customer Engagement", 
-      value: `${Math.round(((dashboardData?.stats?.kpis?.activeCustomers?.value || 0) / Math.max(1, dashboardData?.adminStats?.totalCustomers || 1)) * 100)}%`,
-      subtitle: `${dashboardData?.stats?.kpis?.activeCustomers?.value || 0} of ${dashboardData?.adminStats?.totalCustomers || 0} customers with active tickets`,
-      benchmark: "Engagement rate",
+      label: "Total Customers", 
+      value: `${dashboardData?.adminStats?.totalCustomers || 0}`,
+      subtitle: `${dashboardData?.stats?.kpis?.activeCustomers?.value || 0} with active tickets`,
+      benchmark: "Customer base",
       performance: Math.round(((dashboardData?.stats?.kpis?.activeCustomers?.value || 0) / Math.max(1, dashboardData?.adminStats?.totalCustomers || 1)) * 100),
-      trend: dashboardData?.stats?.kpis?.activeCustomers?.change || 0,
+      trend: 0,
       isPositive: true,
       icon: Building2,
       color: "from-purple-500 to-violet-600",
@@ -227,9 +223,9 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       <CardContent>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="comparison">Comparison</TabsTrigger>
+            <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="trends" className="text-xs sm:text-sm">Trends</TabsTrigger>
+            <TabsTrigger value="comparison" className="text-xs sm:text-sm">Comparison</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="mt-8">

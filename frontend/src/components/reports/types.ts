@@ -148,6 +148,7 @@ export interface ReportData {
   ratingDistribution?: Record<number, number>;
   customerRatings?: Record<string, any>;
   zones?: Array<any>;
+  totalZones?: number;
   agents?: Array<any>;
   breachedTickets?: Array<any>;
   recentFeedbacks?: Array<any>;
@@ -269,12 +270,47 @@ export const PRIORITY_COLORS = {
   CRITICAL: '#7C3AED'
 };
 
-export const STATUS_COLORS = {
-  OPEN: '#3B82F6',
-  IN_PROGRESS: '#F59E0B',
-  RESOLVED: '#10B981',
-  CLOSED: '#6B7280',
-  CANCELLED: '#9CA3AF',
-  ASSIGNED: '#8B5CF6',
-  PENDING: '#F97316'
+export const STATUS_COLORS: Record<string, string> = {
+  // Initial/Open States
+  OPEN: '#3B82F6',                    // Blue
+  ASSIGNED: '#8B5CF6',                 // Purple
+  
+  // In Progress States
+  IN_PROCESS: '#F59E0B',               // Amber
+  IN_PROGRESS: '#F97316',              // Orange
+  
+  // Onsite Visit States
+  ONSITE_VISIT: '#06B6D4',             // Cyan
+  ONSITE_VISIT_PLANNED: '#0891B2',     // Cyan-600
+  ONSITE_VISIT_STARTED: '#0E7490',     // Cyan-700
+  ONSITE_VISIT_REACHED: '#155E75',     // Cyan-800
+  ONSITE_VISIT_IN_PROGRESS: '#164E63', // Cyan-900
+  ONSITE_VISIT_RESOLVED: '#0D9488',    // Teal-600
+  ONSITE_VISIT_PENDING: '#14B8A6',     // Teal-500
+  ONSITE_VISIT_COMPLETED: '#2DD4BF',   // Teal-400
+  
+  // Waiting/Pending States
+  WAITING_CUSTOMER: '#FBBF24',         // Yellow-400
+  PENDING: '#F59E0B',                  // Amber-500
+  ON_HOLD: '#FB923C',                  // Orange-400
+  
+  // Spare Parts States
+  SPARE_PARTS_NEEDED: '#A855F7',       // Purple-500
+  SPARE_PARTS_BOOKED: '#9333EA',       // Purple-600
+  SPARE_PARTS_DELIVERED: '#7C3AED',    // Purple-700
+  
+  // Purchase Order States
+  PO_NEEDED: '#EC4899',                // Pink-500
+  PO_RECEIVED: '#DB2777',              // Pink-600
+  PO_REACHED: '#BE185D',               // Pink-700
+  
+  // Resolution States
+  RESOLVED: '#10B981',                 // Emerald-500
+  CLOSED_PENDING: '#84CC16',           // Lime-500
+  CLOSED: '#6B7280',                   // Gray-500
+  
+  // Issue/Problem States
+  ESCALATED: '#EF4444',                // Red-500
+  CANCELLED: '#9CA3AF',                // Gray-400
+  REOPENED: '#F87171'                  // Red-400
 };

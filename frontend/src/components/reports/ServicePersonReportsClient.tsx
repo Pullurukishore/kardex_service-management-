@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -136,11 +136,6 @@ export default function ServicePersonReportsClient({
   const [dateRange, setDateRange] = useState(initialDateRange);
   const { toast } = useToast();
 
-  // Fetch data when date range changes
-  useEffect(() => {
-    fetchReportData();
-  }, [dateRange]);
-
   // Handle date range change
   const handleDateRangeChange = (field: 'from' | 'to', value: string) => {
     setDateRange(prev => ({
@@ -150,7 +145,7 @@ export default function ServicePersonReportsClient({
   };
 
   // Fetch report data
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -225,7 +220,12 @@ export default function ServicePersonReportsClient({
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange.from, dateRange.to, toast]);
+
+  // Fetch data when date range changes
+  useEffect(() => {
+    fetchReportData();
+  }, [fetchReportData]);
 
   // Handle export to PDF
   const handleExport = async (format: 'pdf' | 'excel' = 'pdf') => {

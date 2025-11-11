@@ -83,11 +83,11 @@ function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number
   let currentDate = new Date(startDate);
   const finalDate = new Date(endDate);
 
-  // Business hours: 9 AM to 5 PM (8 hours per day)
+  // Business hours: 9 AM to 5:30 PM (8.5 hours per day)
   const BUSINESS_START_HOUR = 9;
   const BUSINESS_END_HOUR = 17;
-  const BUSINESS_HOURS_PER_DAY = BUSINESS_END_HOUR - BUSINESS_START_HOUR; // 8 hours
-  const BUSINESS_MINUTES_PER_DAY = BUSINESS_HOURS_PER_DAY * 60; // 480 minutes
+  const BUSINESS_END_MINUTE = 30;
+  const BUSINESS_MINUTES_PER_DAY = (BUSINESS_END_HOUR - BUSINESS_START_HOUR) * 60 + BUSINESS_END_MINUTE; // 510 minutes (8.5 hours)
 
   while (currentDate < finalDate) {
     const dayOfWeek = getDay(currentDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
@@ -96,7 +96,7 @@ function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number
     if (dayOfWeek !== 0) {
       // Create business hours for this day
       const businessStart = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_START_HOUR), 0), 0), 0);
-      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), 0), 0), 0);
+      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), BUSINESS_END_MINUTE), 0), 0);
 
       // Determine the actual start and end times for this day
       let dayStart = businessStart;
@@ -409,17 +409,36 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
     }
   }
 
-  // Get zone names for distribution
-  const zoneNames = await prisma.serviceZone.findMany({
-    where: { id: { in: zoneDistribution.map((z: any) => z.zoneId) } },
+  // Get ALL zones (not just zones with tickets)
+  const allZones = await prisma.serviceZone.findMany({
     select: { id: true, name: true }
   });
 
-  // Get customer names for distribution
-  const customerNames = await prisma.customer.findMany({
-    where: { id: { in: customerDistribution.map((c: any) => c.customerId) } },
-    select: { id: true, companyName: true }
+  // Create a map of zone ticket counts
+  const zoneTicketMap = new Map(zoneDistribution.map((z: any) => [z.zoneId, z._count]));
+
+  // Build complete zone distribution including zones with 0 tickets
+  const completeZoneDistribution = allZones.map((zone: any) => ({
+    zoneId: zone.id,
+    zoneName: zone.name,
+    count: zoneTicketMap.get(zone.id) || 0
+  })).sort((a: any, b: any) => b.count - a.count); // Sort by count descending
+
+  // Get ALL customers (not just customers with tickets)
+  const allCustomers = await prisma.customer.findMany({
+    select: { id: true, companyName: true, isActive: true }
   });
+
+  // Create a map of customer ticket counts
+  const customerTicketMap = new Map(customerDistribution.map((c: any) => [c.customerId, c._count]));
+
+  // Build complete customer distribution including customers with 0 tickets
+  const completeCustomerDistribution = allCustomers.map((customer: any) => ({
+    customerId: customer.id,
+    customerName: customer.companyName,
+    count: customerTicketMap.get(customer.id) || 0,
+    isActive: customer.isActive
+  })).sort((a: any, b: any) => b.count - a.count); // Sort by count descending
 
   // Get assignee names for distribution
   const assigneeNames = await prisma.user.findMany({
@@ -440,7 +459,7 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
   // Calculate customer performance metrics (more tickets = machine issues)
   const customerPerformanceMetrics = customerDistribution.map((c: any) => {
     const customerTickets = tickets.filter((t: any) => t.customerId === c.customerId);
-    const customerName = customerNames.find((cn: any) => cn.id === c.customerId)?.companyName || 'Unknown Customer';
+    const customerName = allCustomers.find((cn: any) => cn.id === c.customerId)?.companyName || 'Unknown Customer';
     
     // Calculate machine issue indicators
     const criticalIssues = customerTickets.filter((t: any) => t.priority === 'CRITICAL').length;
@@ -561,8 +580,8 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
       totalRatings: ratingsData.length,
       
       // Operational metrics
-      totalZones: zoneNames.length,
-      totalCustomers: customerNames.length,
+      totalZones: allZones.length,
+      totalCustomers: allCustomers.length,
       totalAssignees: assigneeNames.length,
       
       // Onsite visit metrics
@@ -587,17 +606,9 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
       [curr.slaStatus || 'NOT_SET']: curr._count
     }), {}),
     
-    zoneDistribution: zoneDistribution.map((z: any) => ({
-      zoneId: z.zoneId,
-      zoneName: zoneNames.find((zn: any) => zn.id === z.zoneId)?.name || 'Unknown Zone',
-      count: z._count
-    })),
+    zoneDistribution: completeZoneDistribution,
     
-    customerDistribution: customerDistribution.map((c: any) => ({
-      customerId: c.customerId,
-      customerName: customerNames.find((cn: any) => cn.id === c.customerId)?.companyName || 'Unknown Customer',
-      count: c._count
-    })),
+    customerDistribution: completeCustomerDistribution,
     
     assigneeDistribution: assigneeDistribution
       .filter((a: any) => a.assignedToId)
@@ -635,11 +646,11 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
     
     // Performance insights
     insights: {
-      topPerformingZone: zoneDistribution.length > 0 
-        ? zoneNames.find((zn: any) => zn.id === zoneDistribution[0].zoneId)?.name || 'N/A'
+      topPerformingZone: completeZoneDistribution.length > 0 
+        ? completeZoneDistribution[0].zoneName || 'N/A'
         : 'N/A',
-      mostActiveCustomer: customerDistribution.length > 0 
-        ? customerNames.find((cn: any) => cn.id === customerDistribution[0].customerId)?.companyName || 'N/A'
+      mostActiveCustomer: completeCustomerDistribution.length > 0 
+        ? completeCustomerDistribution[0].customerName || 'N/A'
         : 'N/A',
       topAssignee: assigneeDistribution.length > 0 && assigneeDistribution[0].assignedToId
         ? assigneeNames.find((an: any) => an.id === assigneeDistribution[0].assignedToId)?.name || 'N/A'
@@ -1085,6 +1096,36 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
     }
   });
 
+  // Build filters for assets
+  const assetWhere: any = {};
+  
+  // Add zone filter for assets
+  if (whereClause?.zoneId !== undefined) {
+    if (typeof whereClause.zoneId === 'number' || typeof whereClause.zoneId === 'string') {
+      assetWhere.customer = { serviceZoneId: parseInt(whereClause.zoneId as number as unknown as string) };
+    } else if (typeof whereClause.zoneId === 'object' && whereClause.zoneId !== null && Array.isArray((whereClause.zoneId as any).in)) {
+      assetWhere.customer = { serviceZoneId: { in: (whereClause.zoneId as any).in } };
+    }
+  }
+  
+  // Add customer filter if specified
+  if (filters?.customerId) {
+    assetWhere.customerId = parseInt(filters.customerId);
+  }
+  
+  // Add asset filter if specified
+  if (filters?.assetId) {
+    assetWhere.id = parseInt(filters.assetId);
+  }
+
+  // Get ALL assets (with or without issues)
+  const allAssets = await prisma.asset.findMany({
+    where: assetWhere,
+    include: {
+      customer: true
+    }
+  });
+
   // Build additional filters for tickets based on customerId and assetId
   const ticketFilters: any = {
     ...whereClause,
@@ -1107,7 +1148,7 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
     ticketFilters.assetId = parseInt(filters.assetId);
   }
 
-  // Get machine downtime data
+  // Get machine downtime data (only tickets with issues)
   const ticketsWithDowntime = await prisma.ticket.findMany({
     where: ticketFilters,
     include: {
@@ -1121,8 +1162,8 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
     }
   });
 
-  // Calculate downtime for each machine (business hours)
-  const machineDowntime = ticketsWithDowntime.map((ticket: any) => {
+  // Calculate downtime for each ticket
+  const ticketDowntimeData = ticketsWithDowntime.map((ticket: any) => {
     let downtimeMinutes = 0;
     
     if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
@@ -1134,10 +1175,12 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
     }
     
     return {
+      assetId: ticket.assetId,
       machineId: ticket.asset?.machineId || 'Unknown',
       model: ticket.asset?.model || 'Unknown',
       serialNo: ticket.asset?.serialNo || 'Unknown',
       customer: ticket.asset?.customer?.companyName || 'Unknown',
+      customerId: ticket.asset?.customerId,
       zone: ticket.zone?.name || 'Unknown',
       ticketId: ticket.id,
       ticketTitle: ticket.title,
@@ -1150,15 +1193,17 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
     };
   });
 
-  // Group downtime by machine
-  const machineDowntimeSummary = machineDowntime.reduce((acc: any, curr: any) => {
-    const machineKey = curr.machineId;
-    if (!acc[machineKey]) {
-      acc[machineKey] = {
-        machineId: curr.machineId,
-        model: curr.model,
-        serialNo: curr.serialNo,
-        customer: curr.customer,
+  // Group tickets by asset to calculate downtime per machine
+  const assetDowntimeMap = ticketDowntimeData.reduce((acc: any, ticket: any) => {
+    const assetKey = ticket.assetId || ticket.machineId;
+    if (!acc[assetKey]) {
+      acc[assetKey] = {
+        assetId: ticket.assetId,
+        machineId: ticket.machineId,
+        model: ticket.model,
+        serialNo: ticket.serialNo,
+        customer: ticket.customer,
+        customerId: ticket.customerId,
         totalDowntimeMinutes: 0,
         incidents: 0,
         openIncidents: 0,
@@ -1166,32 +1211,74 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
       };
     }
     
-    acc[machineKey].totalDowntimeMinutes += curr.downtimeMinutes;
-    acc[machineKey].incidents += 1;
+    acc[assetKey].totalDowntimeMinutes += ticket.downtimeMinutes;
+    acc[assetKey].incidents += 1;
     
-    if (curr.status === 'RESOLVED' || curr.status === 'CLOSED') {
-      acc[machineKey].resolvedIncidents += 1;
+    if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+      acc[assetKey].resolvedIncidents += 1;
     } else {
-      acc[machineKey].openIncidents += 1;
+      acc[assetKey].openIncidents += 1;
     }
     
     return acc;
   }, {} as Record<string, any>);
 
-  // Since we've already filtered tickets at the query level, we don't need additional filtering
-  // Zone users are not filtered by customer as they manage zones, not specific customers
-  const filteredZoneUsers = zoneUsers;
+  // Build comprehensive machine downtime list including machines with 0 issues
+  const allMachineDowntime = allAssets.map((asset: any) => {
+    const assetKey = asset.id;
+    const downtimeData = assetDowntimeMap[assetKey];
+    
+    if (downtimeData) {
+      // Asset has issues - return with downtime data
+      return {
+        machineId: asset.machineId || 'Unknown',
+        model: asset.model || 'Unknown',
+        serialNo: asset.serialNo || 'Unknown',
+        customer: asset.customer?.companyName || 'Unknown',
+        customerId: asset.customerId,
+        assetId: asset.id,
+        totalDowntimeMinutes: downtimeData.totalDowntimeMinutes,
+        incidents: downtimeData.incidents,
+        openIncidents: downtimeData.openIncidents,
+        resolvedIncidents: downtimeData.resolvedIncidents,
+        totalDowntimeHours: Math.round((downtimeData.totalDowntimeMinutes / 60) * 100) / 100,
+        avgDowntimeHours: downtimeData.incidents > 0 
+          ? Math.round((downtimeData.totalDowntimeMinutes / downtimeData.incidents / 60) * 100) / 100 
+          : 0
+      };
+    } else {
+      // Asset has no issues - return with zero values
+      return {
+        machineId: asset.machineId || 'Unknown',
+        model: asset.model || 'Unknown',
+        serialNo: asset.serialNo || 'Unknown',
+        customer: asset.customer?.companyName || 'Unknown',
+        customerId: asset.customerId,
+        assetId: asset.id,
+        totalDowntimeMinutes: 0,
+        incidents: 0,
+        openIncidents: 0,
+        resolvedIncidents: 0,
+        totalDowntimeHours: 0,
+        avgDowntimeHours: 0
+      };
+    }
+  });
 
-  // Machine downtime is already filtered by the ticket query with customerId and assetId
-  const filteredMachineDowntime = Object.values<Record<string, any>>(machineDowntimeSummary).map((machine: any) => ({
-    ...machine,
-    totalDowntimeHours: Math.round((machine.totalDowntimeMinutes / 60) * 100) / 100,
-    avgDowntimeHours: machine.incidents > 0 ? Math.round((machine.totalDowntimeMinutes / machine.incidents / 60) * 100) / 100 : 0
-  }));
+  // Sort by downtime (descending) - machines with issues first
+  const sortedMachineDowntime = allMachineDowntime.sort((a: any, b: any) => 
+    b.totalDowntimeMinutes - a.totalDowntimeMinutes
+  );
 
+  // Calculate summary statistics
+  const machinesWithIssues = sortedMachineDowntime.filter((m: any) => m.incidents > 0);
+  const totalDowntimeHours = machinesWithIssues.reduce((sum: number, machine: any) => 
+    sum + machine.totalDowntimeHours, 0
+  );
+  
   // Prepare response
   const response: IndustrialZoneData = {
-    zoneUsers: filteredZoneUsers.map((user: any) => ({
+    zoneUsers: zoneUsers.map((user: any) => ({
       id: user.id,
       name: user.name || user.email,
       email: user.email,
@@ -1210,20 +1297,21 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
         ['OPEN', 'IN_PROGRESS', 'ASSIGNED'].includes(t.status)
       ).length
     })),
-    machineDowntime: filteredMachineDowntime as any[],
-    detailedDowntime: machineDowntime as any[],
+    machineDowntime: sortedMachineDowntime as any[],
+    detailedDowntime: ticketDowntimeData as any[],
     summary: {
       totalZoneUsers: zoneUsers.length,
       totalServicePersons: servicePersons.length,
-      totalMachinesWithDowntime: filteredMachineDowntime.length,
-      totalDowntimeHours: filteredMachineDowntime.reduce((sum: number, machine: any) => 
-        sum + Math.round((machine.totalDowntimeMinutes || 0) / 60 * 100) / 100, 0
-      ),
-      averageDowntimePerMachine: filteredMachineDowntime.length > 0 
-        ? Math.round(filteredMachineDowntime.reduce((sum: number, machine: any) => 
-            sum + (machine.totalDowntimeMinutes || 0), 0
-          ) / filteredMachineDowntime.length / 60 * 100) / 100
-        : 0
+      totalMachines: allAssets.length,
+      totalMachinesWithDowntime: machinesWithIssues.length,
+      totalMachinesWithoutIssues: allAssets.length - machinesWithIssues.length,
+      totalDowntimeHours: Math.round(totalDowntimeHours * 100) / 100,
+      averageDowntimePerMachine: machinesWithIssues.length > 0 
+        ? Math.round((totalDowntimeHours / machinesWithIssues.length) * 100) / 100
+        : 0,
+      totalIncidents: machinesWithIssues.reduce((sum: number, m: any) => sum + m.incidents, 0),
+      totalOpenIncidents: machinesWithIssues.reduce((sum: number, m: any) => sum + m.openIncidents, 0),
+      totalResolvedIncidents: machinesWithIssues.reduce((sum: number, m: any) => sum + m.resolvedIncidents, 0)
     }
   };
 
@@ -2440,8 +2528,8 @@ async function generateHerAnalysisReport(res: Response, whereClause: any, startD
 
     // Business hours configuration
     const BUSINESS_START_HOUR = 9; // 9:00 AM
-    const BUSINESS_END_HOUR = 17; // 5:00 PM (17:00)
-    const BUSINESS_END_MINUTE = 30; // 5:30 PM
+    const BUSINESS_END_HOUR = 17; // 5:30 PM (17:30)
+    const BUSINESS_END_MINUTE = 30; // Minutes past 5 PM
     const WORKING_DAYS = [1, 2, 3, 4, 5, 6]; // Monday to Saturday (0 = Sunday)
 
     // SLA hours by priority (in business hours)

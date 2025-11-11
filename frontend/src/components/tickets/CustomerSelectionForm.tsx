@@ -120,19 +120,11 @@ export function CustomerSelectionForm({
           name="customerId"
           render={({ field }) => (
             <FormItem>
-              <div className="flex justify-between items-center">
-                <FormLabel className="flex items-center space-x-2">
-                  <Building2 className="h-4 w-4 text-green-500" />
-                  <span>Customer</span>
-                  {isLoadingCustomers && <Loader2 className="h-3 w-3 animate-spin text-green-500" />}
-                </FormLabel>
-                {zoneId && (
-                  <div className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full flex items-center">
-                    <MapPin className="h-3 w-3 mr-1" />
-                    <span>Zone ID: {customers[0]?.serviceZoneId || 'N/A'}</span>
-                  </div>
-                )}
-              </div>
+              <FormLabel className="flex items-center space-x-2">
+                <Building2 className="h-4 w-4 text-green-500" />
+                <span>Customer <span className="text-red-500">*</span></span>
+                {isLoadingCustomers && <Loader2 className="h-3 w-3 animate-spin text-green-500" />}
+              </FormLabel>
               <Select 
                 onValueChange={field.onChange} 
                 value={field.value}
@@ -211,7 +203,7 @@ export function CustomerSelectionForm({
               <FormItem>
                 <FormLabel className="flex items-center space-x-2">
                   <Users className="h-4 w-4 text-purple-500" />
-                  <span>Contact Person</span>
+                  <span>Contact Person <span className="text-red-500">*</span></span>
                 </FormLabel>
                 <div className="flex gap-2">
                   <Select 
@@ -306,7 +298,7 @@ export function CustomerSelectionForm({
               <FormItem>
                 <FormLabel className="flex items-center space-x-2">
                   <Settings className="h-4 w-4 text-indigo-500" />
-                  <span>Asset</span>
+                  <span>Asset <span className="text-red-500">*</span></span>
                 </FormLabel>
                 <div className="flex gap-2">
                   <Select 

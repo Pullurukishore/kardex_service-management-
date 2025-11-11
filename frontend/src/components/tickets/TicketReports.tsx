@@ -27,13 +27,14 @@ import {
   X,
   FileImage,
   FileVideo,
-  FileArchive
+  FileArchive,
+  RefreshCw
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/api-client';
 import axios from 'axios';
 
 interface TicketReport {
-  id: string;
+  id: string | number; // Backend returns number, but we accept both
   fileName: string;
   fileSize: number;
   fileType: string;
@@ -76,10 +77,19 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   const fetchReports = async () => {
     try {
+      console.log('📄 Fetching reports for ticket:', ticketId);
       const response = await apiClient.get(`/tickets/${ticketId}/reports`);
-      setReports(response.data || []);
+      console.log('✅ Reports fetched:', response);
+      
+      // apiClient.get() already returns response.data, so response itself is the array
+      const reportsData = Array.isArray(response) ? response : [];
+      console.log('📊 Reports count:', reportsData.length);
+      console.log('📊 Reports array:', Array.isArray(reportsData));
+      
+      setReports(reportsData);
+      console.log('✅ Reports state updated with', reportsData.length, 'reports');
     } catch (error) {
-      console.error('Error fetching reports:', error);
+      console.error('❌ Error fetching reports:', error);
     }
   };
 
@@ -326,7 +336,11 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [ticketId]); // Refetch when ticketId changes
+
+  // Debug: Log current reports state
+  console.log('🔍 Current reports state:', reports);
+  console.log('🔍 Reports length:', reports.length);
 
   return (
     <div className="space-y-4">
@@ -432,13 +446,34 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
       </Card>
 
       {/* Reports List */}
+      {reports.length === 0 && (
+        <Card>
+          <CardContent className="py-8 text-center text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-lg font-medium mb-2">No Reports Yet</p>
+            <p className="text-sm">Upload reports using the section above or add them when changing ticket status to CLOSED_PENDING</p>
+          </CardContent>
+        </Card>
+      )}
+      
       {reports.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Uploaded Reports ({reports.length})
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Uploaded Reports ({reports.length})
+              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchReports}
+                className="gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -451,7 +486,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleView(report.id, report.fileName)}
+                          onClick={() => handleView(String(report.id), report.fileName)}
                           title="View report"
                         >
                           <Eye className="h-4 w-4" />
@@ -459,7 +494,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDownload(report.id, report.fileName)}
+                          onClick={() => handleDownload(String(report.id), report.fileName)}
                           title="Download report"
                         >
                           <Download className="h-4 w-4" />
@@ -467,7 +502,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDelete(report.id)}
+                          onClick={() => handleDelete(String(report.id))}
                           title="Delete report"
                         >
                           <Trash2 className="h-4 w-4" />

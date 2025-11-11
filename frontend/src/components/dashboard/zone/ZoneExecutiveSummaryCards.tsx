@@ -119,7 +119,10 @@ export default function ZoneExecutiveSummaryCards({
     },
     {
       title: 'Avg Resolution Time',
-      value: `${stats?.avgResolutionTime?.days || 0}d ${stats?.avgResolutionTime?.hours || 0}h ${stats?.avgResolutionTime?.minutes || 0}m`,
+      value: formatDuration(
+        (stats?.avgResolutionTime?.days || 0) * 24 + (stats?.avgResolutionTime?.hours || 0),
+        stats?.avgResolutionTime?.minutes || 0
+      ),
       description: 'Time to ticket resolution',
       change: Number(stats?.avgResolutionTime?.change ?? 0),
       isPositive: stats?.avgResolutionTime?.isPositive !== false,

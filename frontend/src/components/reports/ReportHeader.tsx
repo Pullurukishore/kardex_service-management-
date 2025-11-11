@@ -16,7 +16,7 @@ export function ReportHeader({
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Reports</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Generate and view detailed reports for your KardexCare operations
+            Generate and view detailed reports for your Kardex operations
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">

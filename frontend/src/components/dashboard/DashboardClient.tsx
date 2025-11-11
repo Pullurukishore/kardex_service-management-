@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import ExecutiveHeader from './ExecutiveHeader';
 import ExecutiveSummaryCards from './ExecutiveSummaryCards';
 import QuickStatsAlerts from './QuickStatsAlerts';
-import LazyDashboardSection from './LazyDashboardSection';
 import RecentTickets from './RecentTickets';
 
 // Import heavy components dynamically
@@ -83,8 +82,25 @@ export default function DashboardClient({
   };
 
   useEffect(() => {
-    // Initial data load
-    fetchDashboardData();
+    // Only fetch if initial data is empty or missing critical fields
+    // This prevents duplicate fetching since we already have SSR data
+    const hasValidInitialData = 
+      initialDashboardData && 
+      initialDashboardData.stats && 
+      Object.keys(initialDashboardData).length > 0;
+    
+    if (!hasValidInitialData) {
+      console.log('Initial data missing or invalid, fetching dashboard data...');
+      fetchDashboardData();
+    }
+    
+    // Set up auto-refresh every 5 minutes
+    const refreshInterval = setInterval(() => {
+      console.log('Auto-refreshing dashboard data...');
+      fetchDashboardData();
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    return () => clearInterval(refreshInterval);
   }, []);
 
   const handleRefresh = async () => {
@@ -161,42 +177,42 @@ export default function DashboardClient({
           dashboardData={dashboardData} 
         />
 
-        {/* Lazy-loaded analytics components with intersection observer */}
-        <LazyDashboardSection className="mb-6 sm:mb-8">
+        {/* Lazy-loaded analytics components */}
+        <div className="mb-6 sm:mb-8">
           <DynamicFieldServiceAnalytics 
             dashboardData={dashboardData} 
           />
-        </LazyDashboardSection>
+        </div>
 
-        <LazyDashboardSection className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <DynamicPerformanceAnalytics 
             dashboardData={dashboardData} 
           />
-        </LazyDashboardSection>
+        </div>
 
-        <LazyDashboardSection className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <DynamicAdvancedAnalytics 
             dashboardData={dashboardData}
             statusDistribution={statusDistribution}
             ticketTrends={ticketTrends}
             loading={isRefreshing}
           />
-        </LazyDashboardSection>
+        </div>
 
-        <LazyDashboardSection className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <RecentTickets 
             dashboardData={dashboardData} 
             loading={isRefreshing}
           />
-        </LazyDashboardSection>
+        </div>
 
-        <LazyDashboardSection className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <DynamicZonePerformanceAnalytics 
             dashboardData={dashboardData} 
             onRefresh={handleRefresh} 
             isRefreshing={isRefreshing} 
           />
-        </LazyDashboardSection>
+        </div>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Title <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Enter ticket title" 
@@ -72,7 +72,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Description <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Describe the issue in detail..."
@@ -93,7 +93,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
             <FormItem>
               <FormLabel className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-green-500" />
-                <span>Call Type</span>
+                <span>Call Type <span className="text-red-500">*</span></span>
               </FormLabel>
               <Select 
                 onValueChange={field.onChange} 
@@ -133,7 +133,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
               <FormItem>
                 <FormLabel className="flex items-center space-x-2">
                   <AlertCircle className="h-4 w-4 text-orange-500" />
-                  <span>Priority</span>
+                  <span>Priority <span className="text-red-500">*</span></span>
                 </FormLabel>
                 <Select 
                   onValueChange={field.onChange} 
@@ -181,7 +181,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
                 <FormItem>
                   <FormLabel className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-blue-500" />
-                    <span>Service Zone</span>
+                    <span>Service Zone <span className="text-red-500">*</span></span>
                   </FormLabel>
                   
                   {hideZoneSelector ? (

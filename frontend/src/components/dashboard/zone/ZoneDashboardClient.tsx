@@ -9,7 +9,6 @@ import type { ZoneDashboardData } from '@/lib/server/dashboard';
 // Import admin dashboard components (reused for zone)
 import ZoneExecutiveHeader from './ZoneExecutiveHeader';
 import ExecutiveSummaryCards from '../ExecutiveSummaryCards';
-import LazyDashboardSection from '../LazyDashboardSection';
 import RecentTickets from '../RecentTickets';
 
 // Import heavy components dynamically
@@ -276,42 +275,42 @@ export default function ZoneDashboardClient({
         dashboardData={dashboardData} 
       />
 
-      {/* Lazy-loaded analytics components with intersection observer */}
-      <LazyDashboardSection className="mb-8">
+      {/* Lazy-loaded analytics components */}
+      <div className="mb-8">
         <DynamicFieldServiceAnalytics 
           dashboardData={dashboardData} 
         />
-      </LazyDashboardSection>
+      </div>
 
-      <LazyDashboardSection>
+      <div className="mb-8">
         <DynamicPerformanceAnalytics 
           dashboardData={dashboardData} 
         />
-      </LazyDashboardSection>
+      </div>
 
-      <LazyDashboardSection>
+      <div className="mb-8">
         <DynamicAdvancedAnalytics 
           dashboardData={dashboardData}
           statusDistribution={statusDistribution}
           ticketTrends={ticketTrends}
           loading={isRefreshing}
         />
-      </LazyDashboardSection>
+      </div>
 
-      <LazyDashboardSection>
+      <div className="mb-8">
         <RecentTickets 
           dashboardData={dashboardData} 
           loading={isRefreshing}
         />
-      </LazyDashboardSection>
+      </div>
 
-      <LazyDashboardSection>
+      <div className="mb-8">
         <DynamicZonePerformanceAnalytics 
           dashboardData={dashboardData} 
           onRefresh={handleRefresh} 
           isRefreshing={isRefreshing} 
         />
-      </LazyDashboardSection>
+      </div>
     </div>
   );
 }

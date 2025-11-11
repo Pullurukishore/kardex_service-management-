@@ -1,20 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/lib/api/axios';
-import { Ticket, TicketStatus, Priority } from '@/types/ticket';
+import { Ticket, TicketStatus, Priority, TicketStats } from '@/types/ticket';
+import { calculateTicketStats } from '@/lib/utils/ticketStats';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Users, Clock, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { AlertCircle, Users, Clock, CheckCircle, XCircle, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 interface TicketClientProps {
   initialTickets: Ticket[];
-  initialStats: any;
+  initialStats: TicketStats;
+  initialPagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
   searchParams: {
     status?: string;
     priority?: string;
@@ -71,16 +78,20 @@ function getPriorityBadgeVariant(priority: Priority) {
   }
 }
 
-export default function TicketClient({
+const TicketClient = memo(function TicketClient({
   initialTickets,
   initialStats,
+  initialPagination,
   searchParams
 }: TicketClientProps) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
-  const [stats, setStats] = useState(initialStats);
+  const [stats, setStats] = useState<TicketStats>(initialStats);
+  const [pagination, setPagination] = useState(initialPagination);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const initialLoadComplete = useRef(false);
+  const lastSearchParams = useRef<string>('');
 
   // Detect mobile screen size
   useEffect(() => {
@@ -93,7 +104,7 @@ export default function TicketClient({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const fetchTicketData = async () => {
+  const fetchTicketData = useCallback(async () => {
     try {
       setIsRefreshing(true);
       setError(null);
@@ -110,19 +121,13 @@ export default function TicketClient({
 
       const response = await api.get(`/tickets?${params.toString()}`);
       const ticketData = response.data?.data || [];
+      const paginationData = response.data?.pagination || initialPagination;
       
       setTickets(ticketData);
+      setPagination(paginationData);
       
-      // Calculate stats
-      const newStats = {
-        total: ticketData.length,
-        open: ticketData.filter((t: Ticket) => t.status === TicketStatus.OPEN).length,
-        assigned: ticketData.filter((t: Ticket) => 
-          t.status === TicketStatus.ASSIGNED || t.status === TicketStatus.IN_PROGRESS
-        ).length,
-        closed: ticketData.filter((t: Ticket) => t.status === TicketStatus.CLOSED).length,
-        critical: ticketData.filter((t: Ticket) => t.priority === Priority.CRITICAL).length,
-      };
+      // Calculate stats using shared utility function
+      const newStats = calculateTicketStats(ticketData);
       setStats(newStats);
       
       return true;
@@ -134,16 +139,35 @@ export default function TicketClient({
     } finally {
       setIsRefreshing(false);
     }
-  };
+  }, [searchParams]);
 
   useEffect(() => {
-    // Fetch fresh data when component mounts or search params change
-    fetchTicketData();
-  }, [searchParams.status, searchParams.priority, searchParams.search, searchParams.page, searchParams.view]);
+    // Create a string representation of current search params
+    const currentSearchParams = JSON.stringify(searchParams);
+    
+    // Only fetch data if search params have actually changed (not on initial mount)
+    if (initialLoadComplete.current && currentSearchParams !== lastSearchParams.current) {
+      console.log('TicketClient - Search params changed, fetching new data');
+      fetchTicketData();
+    } else if (!initialLoadComplete.current) {
+      // Mark initial load as complete without fetching (we already have server-side data)
+      console.log('TicketClient - Initial load complete, using server-side data');
+      initialLoadComplete.current = true;
+    }
+    
+    // Update the last search params reference
+    lastSearchParams.current = currentSearchParams;
+  }, [searchParams, fetchTicketData]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     await fetchTicketData();
-  };
+  }, [fetchTicketData]);
+
+  // Memoize ticket count to prevent unnecessary recalculations
+  const ticketCount = useMemo(() => tickets.length, [tickets.length]);
+
+  // Memoize stats to prevent unnecessary recalculations
+  const memoizedStats = useMemo(() => stats, [stats]);
 
   if (error) {
     return (
@@ -214,7 +238,7 @@ export default function TicketClient({
                 <p className={cn(
                   "font-bold text-blue-900",
                   isMobile ? "text-xl" : "text-2xl"
-                )}>{stats.total}</p>
+                )}>{memoizedStats.total}</p>
               </div>
               <div className={cn(
                 "rounded-full bg-blue-500 flex items-center justify-center",
@@ -243,7 +267,7 @@ export default function TicketClient({
                 <p className={cn(
                   "font-bold text-green-900",
                   isMobile ? "text-xl" : "text-2xl"
-                )}>{stats.open}</p>
+                )}>{memoizedStats.open}</p>
               </div>
               <div className={cn(
                 "rounded-full bg-green-500 flex items-center justify-center",
@@ -275,7 +299,7 @@ export default function TicketClient({
                 <p className={cn(
                   "font-bold text-yellow-900",
                   isMobile ? "text-xl" : "text-2xl"
-                )}>{stats.assigned}</p>
+                )}>{memoizedStats.assigned}</p>
               </div>
               <div className={cn(
                 "rounded-full bg-yellow-500 flex items-center justify-center",
@@ -304,7 +328,7 @@ export default function TicketClient({
                 <p className={cn(
                   "font-bold text-purple-900",
                   isMobile ? "text-xl" : "text-2xl"
-                )}>{stats.closed}</p>
+                )}>{memoizedStats.closed}</p>
               </div>
               <div className={cn(
                 "rounded-full bg-purple-500 flex items-center justify-center",
@@ -333,7 +357,7 @@ export default function TicketClient({
                 <p className={cn(
                   "font-bold text-red-900",
                   isMobile ? "text-xl" : "text-2xl"
-                )}>{stats.critical}</p>
+                )}>{memoizedStats.critical}</p>
               </div>
               <div className={cn(
                 "rounded-full bg-red-500 flex items-center justify-center",
@@ -363,7 +387,7 @@ export default function TicketClient({
               "text-blue-600",
               isMobile ? "h-4 w-4" : "h-5 w-5"
             )} />
-            Tickets ({tickets.length})
+            Tickets ({ticketCount})
           </CardTitle>
           <CardDescription className={isMobile ? "text-sm" : ""}>
             Manage and track service tickets
@@ -515,6 +539,123 @@ export default function TicketClient({
           )}
         </CardContent>
       </Card>
+
+      {/* Pagination Controls */}
+      {pagination.totalPages > 1 && (
+        <Card className="shadow-sm">
+          <CardContent className={cn("flex items-center justify-between", isMobile ? "p-4 flex-col gap-4" : "p-6 flex-row")}>
+            {/* Pagination Info */}
+            <div className={cn("text-sm text-gray-600", isMobile ? "order-2" : "")}>
+              Showing <span className="font-semibold text-gray-900">{((pagination.page - 1) * pagination.limit) + 1}</span> to{' '}
+              <span className="font-semibold text-gray-900">
+                {Math.min(pagination.page * pagination.limit, pagination.total)}
+              </span> of{' '}
+              <span className="font-semibold text-gray-900">{pagination.total}</span> tickets
+            </div>
+
+            {/* Pagination Buttons */}
+            <div className={cn("flex items-center gap-2", isMobile ? "order-1 w-full justify-between" : "")}>
+              {/* Previous Button */}
+              <Link 
+                href={`?${new URLSearchParams({ 
+                  ...searchParams, 
+                  page: (pagination.page - 1).toString() 
+                }).toString()}`}
+                className={cn(pagination.page === 1 ? "pointer-events-none opacity-50" : "")}
+              >
+                <button
+                  disabled={pagination.page === 1}
+                  className={cn(
+                    "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md",
+                    "bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                    isMobile ? "touch-manipulation min-h-[44px]" : ""
+                  )}
+                >
+                  <ChevronLeft className={cn(isMobile ? "h-5 w-5" : "h-4 w-4 mr-2")} />
+                  {!isMobile && "Previous"}
+                </button>
+              </Link>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  let pageNumber: number;
+                  
+                  // Show first page, current page context, and last page
+                  if (pagination.totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (pagination.page <= 3) {
+                    pageNumber = i + 1;
+                  } else if (pagination.page >= pagination.totalPages - 2) {
+                    pageNumber = pagination.totalPages - 4 + i;
+                  } else {
+                    pageNumber = pagination.page - 2 + i;
+                  }
+
+                  const isCurrentPage = pageNumber === pagination.page;
+
+                  return (
+                    <Link 
+                      key={pageNumber}
+                      href={`?${new URLSearchParams({ 
+                        ...searchParams, 
+                        page: pageNumber.toString() 
+                      }).toString()}`}
+                      className={cn(isMobile && "hidden sm:block")}
+                    >
+                      <button
+                        className={cn(
+                          "inline-flex items-center justify-center w-10 h-10 border text-sm font-medium rounded-md",
+                          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                          isCurrentPage
+                            ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                        )}
+                      >
+                        {pageNumber}
+                      </button>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Mobile: Simple Page Indicator */}
+              {isMobile && (
+                <div className="sm:hidden px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
+                  Page {pagination.page} / {pagination.totalPages}
+                </div>
+              )}
+
+              {/* Next Button */}
+              <Link 
+                href={`?${new URLSearchParams({ 
+                  ...searchParams, 
+                  page: (pagination.page + 1).toString() 
+                }).toString()}`}
+                className={cn(pagination.page >= pagination.totalPages ? "pointer-events-none opacity-50" : "")}
+              >
+                <button
+                  disabled={pagination.page >= pagination.totalPages}
+                  className={cn(
+                    "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md",
+                    "bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                    isMobile ? "touch-manipulation min-h-[44px]" : ""
+                  )}
+                >
+                  {!isMobile && "Next"}
+                  <ChevronRight className={cn(isMobile ? "h-5 w-5" : "h-4 w-4 ml-2")} />
+                </button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
-}
+});
+
+TicketClient.displayName = 'TicketClient';
+
+export default TicketClient;

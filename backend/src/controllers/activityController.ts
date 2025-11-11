@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { GeocodingService } from '../services/geocoding.service';
 import { EnhancedPhotoStorageService } from '../services/enhanced-photo-storage.service';
+import { CloudinaryService } from '../services/cloudinary.service';
 
 const prisma = new PrismaClient();
 
@@ -908,6 +909,183 @@ export const activityController = {
       res.status(500).json({
         success: false,
         message: 'Failed to fetch stage template'
+      });
+    }
+  },
+
+  // Upload activity report
+  async uploadActivityReport(req: Request, res: Response) {
+    try {
+      const { activityId } = req.params;
+      const { reports, reportType, description } = req.body;
+      const userId = (req as any).user?.id;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Unauthorized'
+        });
+      }
+
+      // Validate activity exists
+      const activity = await prisma.dailyActivityLog.findUnique({
+        where: { id: parseInt(activityId) },
+        include: { user: true }
+      });
+
+      if (!activity) {
+        return res.status(404).json({
+          success: false,
+          message: 'Activity not found'
+        });
+      }
+
+      // Verify user owns this activity
+      if (activity.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'You can only upload reports for your own activities'
+        });
+      }
+
+      if (!reports || !Array.isArray(reports) || reports.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'At least one report file is required'
+        });
+      }
+
+      // Upload files to Cloudinary
+      const uploadResults = await CloudinaryService.uploadPhotos(
+        reports,
+        {
+          activityId: activity.id,
+          userId: userId,
+          type: 'activity_verification'
+        }
+      );
+
+      // Save report records to database
+      const savedReports = await Promise.all(
+        uploadResults.map(async (upload, index) => {
+          return await prisma.activityReport.create({
+            data: {
+              activityId: activity.id,
+              reportType: reportType || 'COMPLETION',
+              fileName: reports[index].filename || `report_${index + 1}.jpg`,
+              fileSize: upload.bytes,
+              fileType: upload.format,
+              filePath: upload.secure_url,
+              description: description || null,
+              uploadedById: userId,
+              metadata: {
+                publicId: upload.public_id,
+                uploadedAt: new Date().toISOString(),
+                activityType: activity.activityType,
+                activityTitle: activity.title
+              }
+            },
+            include: {
+              uploadedBy: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true
+                }
+              }
+            }
+          });
+        })
+      );
+
+      // Create audit log
+      await prisma.auditLog.create({
+        data: {
+          action: 'ACTIVITY_REPORT_UPLOADED',
+          entityType: 'ACTIVITY_LOG',
+          entityId: activity.id,
+          userId: userId,
+          performedAt: new Date(),
+          updatedAt: new Date(),
+          details: {
+            activityId: activity.id,
+            activityType: activity.activityType,
+            reportType: reportType || 'COMPLETION',
+            fileCount: savedReports.length,
+            totalSize: savedReports.reduce((sum: number, r: any) => sum + r.fileSize, 0),
+            description: description
+          },
+          status: 'SUCCESS'
+        }
+      });
+
+      res.status(201).json({
+        success: true,
+        data: savedReports,
+        message: `${savedReports.length} report(s) uploaded successfully`
+      });
+
+    } catch (error) {
+      console.error('Error uploading activity report:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to upload activity report',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  },
+
+  // Get activity reports
+  async getActivityReports(req: Request, res: Response) {
+    try {
+      const { activityId } = req.params;
+      const userId = (req as any).user?.id;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Unauthorized'
+        });
+      }
+
+      // Verify activity exists
+      const activity = await prisma.dailyActivityLog.findUnique({
+        where: { id: parseInt(activityId) }
+      });
+
+      if (!activity) {
+        return res.status(404).json({
+          success: false,
+          message: 'Activity not found'
+        });
+      }
+
+      // Get reports
+      const reports = await prisma.activityReport.findMany({
+        where: { activityId: parseInt(activityId) },
+        include: {
+          uploadedBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      res.json({
+        success: true,
+        data: reports,
+        message: 'Activity reports retrieved successfully'
+      });
+
+    } catch (error) {
+      console.error('Error fetching activity reports:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch activity reports'
       });
     }
   }

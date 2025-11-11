@@ -36,7 +36,7 @@ model User {
   updatedAt                      DateTime                 @updatedAt
   lastLoginAt                    DateTime?
   isActive                       Boolean                  @default(true)
-  refreshToken                   String?                  @db.VarChar(255)
+  refreshToken                   String?                  @db.Text
   refreshTokenExpires            DateTime?
   tokenVersion                   String                   @db.VarChar(36)
   customerId                     Int?
@@ -62,6 +62,7 @@ model User {
   createdCustomers               Customer[]               @relation("CustomerCreatedBy")
   updatedCustomers               Customer[]               @relation("CustomerUpdatedBy")
   activityLogs                   DailyActivityLog[]       @relation("UserActivityLogs")
+  activityReports                ActivityReport[]         @relation("UserActivityReports")
   notifications                  Notification[]
   onsiteVisitLogs                OnsiteVisitLog[]         @relation("UserOnsiteVisitLogs")
   approvedPOs                    PORequest[]              @relation("ApprovedPOs")
@@ -77,6 +78,12 @@ model User {
   ticketReports                  TicketReport[]           @relation("UserTicketReports")
   statusHistoryChanges           TicketStatusHistory[]    @relation("UserStatusChanges")
   customer                       Customer?                @relation("UserCustomer", fields: [customerId], references: [id])
+
+  @@index([role])
+  @@index([isActive])
+  @@index([role, isActive])
+  @@index([customerId])
+  @@index([email, isActive])
 }
 
 model Customer {
@@ -220,6 +227,14 @@ model Ticket {
   notes                   TicketNote[]          @relation("TicketNotes")
   reports                 TicketReport[]        @relation("TicketReports")
   statusHistory           TicketStatusHistory[] @relation("TicketStatusHistory")
+
+  @@index([status, assignedToId])
+  @@index([customerId, status])
+  @@index([zoneId, status])
+  @@index([assignedToId, status])
+  @@index([priority, status])
+  @@index([createdAt])
+  @@index([status])
 }
 
 model Attachment {
@@ -474,7 +489,7 @@ model Attendance {
 }
 
 model DailyActivityLog {
-  id            Int             @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   userId        Int
   ticketId      Int?
   activityType  ActivityType
@@ -484,14 +499,15 @@ model DailyActivityLog {
   endTime       DateTime?
   duration      Int?
   location      String?
-  latitude      Decimal?        @db.Decimal(10, 7)
-  longitude     Decimal?        @db.Decimal(10, 7)
+  latitude      Decimal?         @db.Decimal(10, 7)
+  longitude     Decimal?         @db.Decimal(10, 7)
   metadata      Json?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   ActivityStage ActivityStage[]
-  ticket        Ticket?         @relation("TicketActivityLogs", fields: [ticketId], references: [id], onDelete: Cascade)
-  user          User            @relation("UserActivityLogs", fields: [userId], references: [id], onDelete: Cascade)
+  reports       ActivityReport[]
+  ticket        Ticket?          @relation("TicketActivityLogs", fields: [ticketId], references: [id], onDelete: Cascade)
+  user          User             @relation("UserActivityLogs", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, startTime])
   @@index([ticketId])
@@ -516,6 +532,27 @@ model ActivityStage {
 
   @@index([activityId, startTime])
   @@index([stage])
+}
+
+model ActivityReport {
+  id           Int              @id @default(autoincrement())
+  activityId   Int
+  reportType   ReportType       @default(COMPLETION)
+  fileName     String
+  fileSize     Int
+  fileType     String
+  filePath     String
+  description  String?
+  uploadedById Int
+  metadata     Json?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  activity     DailyActivityLog @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  uploadedBy   User             @relation("UserActivityReports", fields: [uploadedById], references: [id])
+
+  @@index([activityId])
+  @@index([uploadedById])
+  @@index([createdAt])
 }
 
 enum UserRole {
@@ -651,4 +688,10 @@ enum StageType {
   CUSTOMER_HANDOVER
   PREPARATION
   CLEANUP
+}
+
+enum ReportType {
+  COMPLETION
+  CLOSURE
+  SUMMARY
 }

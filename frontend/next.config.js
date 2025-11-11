@@ -111,8 +111,8 @@ const nextConfig = {
   // Output configuration for different deployment targets
   output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
   
-  // Enable static export for Firebase Hosting
-  trailingSlash: true,
+  // Disable trailing slash for proper routing
+  trailingSlash: false,
   
   // Image domains for production
   images: {
@@ -134,6 +134,25 @@ const nextConfig = {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: false,
+  },
+  
+  // Add headers for Google Fonts optimization
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://fonts.googleapis.com>; rel=preconnect; crossorigin',
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+        ],
+      },
+    ];
   },
 }
 

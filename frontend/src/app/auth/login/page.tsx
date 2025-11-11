@@ -69,6 +69,33 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
+  // Check for session expiration and show notification
+  useEffect(() => {
+    const sessionExpired = sessionStorage.getItem('sessionExpired');
+    const sessionExpiredReason = sessionStorage.getItem('sessionExpiredReason');
+    
+    if (sessionExpired === 'true') {
+      let message = 'Your session has expired. Please login again.';
+      
+      if (sessionExpiredReason === 'REFRESH_TOKEN_EXPIRED') {
+        message = 'Your session has expired due to inactivity. Please login again.';
+      } else if (sessionExpiredReason === 'NO_REFRESH_TOKEN') {
+        message = 'Your session is no longer valid. Please login again.';
+      }
+      
+      toast({
+        title: "Session Expired",
+        description: message,
+        variant: "destructive",
+        duration: 5000,
+      });
+      
+      // Clear the flags
+      sessionStorage.removeItem('sessionExpired');
+      sessionStorage.removeItem('sessionExpiredReason');
+    }
+  }, []);
+
   // Load saved credentials on component mount
   useEffect(() => {
     // Add a small delay to ensure component is fully mounted

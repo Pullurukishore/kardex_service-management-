@@ -2007,6 +2007,25 @@ export const uploadTicketReports = async (req: TicketRequest, res: Response) => 
         uploadedAt: report.createdAt,
         url: `${process.env.BACKEND_URL || 'http://localhost:5003'}/api/tickets/${ticketId}/reports/${report.id}/download`,
       });
+      
+      // Create audit log for report upload
+      await prisma.auditLog.create({
+        data: {
+          action: 'REPORT_UPLOADED',
+          entityType: 'TICKET',
+          entityId: Number(ticketId),
+          userId: user.id,
+          performedAt: new Date(),
+          updatedAt: new Date(),
+          details: {
+            reportId: report.id,
+            fileName: report.fileName,
+            fileSize: report.fileSize,
+            fileType: report.fileType,
+            message: `Report "${report.fileName}" uploaded`,
+          },
+        },
+      });
     }
     
     res.status(201).json(uploadedReports);

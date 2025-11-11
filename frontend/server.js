@@ -3,7 +3,7 @@ const { parse } = require('url');
 const next = require('next');
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = '::'; // Listen on all IPv6 and IPv4 interfaces
+const hostname = '0.0.0.0'; // Listen on all IPv4 interfaces
 const port = process.env.PORT || 3000;
 
 // Create the Next.js app
@@ -21,6 +21,8 @@ app.prepare().then(() => {
       res.end('Internal server error');
     }
   }).listen(port, hostname, () => {
-    console.log(`> Frontend ready on http://0.0.0.0:${port} (IPv4) and http://[::]:${port} (IPv6)`);
+    console.log(`> Frontend ready!`);
+    console.log(`> Local:    http://localhost:${port}`);
+    console.log(`> Network:  http://${hostname}:${port}`);
   });
 });

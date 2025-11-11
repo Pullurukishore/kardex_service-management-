@@ -25,17 +25,14 @@ interface FieldServiceAnalyticsProps {
 export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAnalyticsProps) {
   const metrics = [
     {
-      title: "Response Efficiency",
-      value: formatDuration(
-        dashboardData?.stats?.avgResponseTime?.hours || 0, 
-        dashboardData?.stats?.avgResponseTime?.minutes || 0
-      ),
-      subtitle: "Average first response",
-      change: dashboardData?.stats?.avgResponseTime?.change || 0,
-      isPositive: dashboardData?.stats?.avgResponseTime?.isPositive !== false,
+      title: "SLA Compliance",
+      value: `${dashboardData?.stats?.kpis?.slaCompliance?.value || 0}%`,
+      subtitle: "Closed within 1 business day",
+      change: dashboardData?.stats?.kpis?.slaCompliance?.change || 0,
+      isPositive: (dashboardData?.stats?.kpis?.slaCompliance?.value || 0) >= 90,
       icon: Timer,
-      color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-blue-50"
+      color: "from-green-500 to-emerald-600",
+      bgColor: "bg-green-50"
     },
     {
       title: "Service Coverage",
@@ -77,7 +74,7 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
   ];
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 space-y-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg">
@@ -86,6 +83,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
           Field Service Analytics (FSA)
         </h2>
       </div>
+      
+      {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, i) => (
           <Card key={i} className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">

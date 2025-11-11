@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,37 +8,28 @@ import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/user.types";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NavItemSkeleton } from "@/components/ui/NavigationLoading";
 import { preloadRoute } from "@/lib/browser";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   Users,
-  Settings,
-  FileText,
-  Bell,
-  MessageSquare,
-  Box,
-  ShoppingCart,
   BarChart2,
-  AlertCircle,
-  ClipboardList,
   MapPin,
-  Menu,
   ChevronLeft,
-  ChevronDown,
-  CreditCard,
-  HelpCircle,
   LogOut,
   ChevronRight,
   X,
   Calendar,
   Ticket,
   Activity,
-  Sparkles,
 } from "lucide-react";
 
+// Constants
+const MOBILE_BREAKPOINT = 1024; // lg breakpoint
+const INITIAL_LOAD_DELAY = 50; // ms
+const ANIMATION_DURATION = 0.15; // seconds
+const STAGGER_DELAY = 0.02; // seconds
 
 type NavItem = {
   title: string;
@@ -217,7 +207,7 @@ export function Sidebar({
   // Detect mobile screen size
   React.useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
     
     checkMobile();
@@ -239,7 +229,7 @@ export function Sidebar({
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setIsInitialLoad(false);
-    }, 50); // Reduced from 300ms to 50ms
+    }, INITIAL_LOAD_DELAY);
     return () => clearTimeout(timer);
   }, []);
 
@@ -296,8 +286,8 @@ export function Sidebar({
         initial={isInitialLoad ? { opacity: 0, x: -10 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ 
-          duration: 0.15, // Reduced from 0.3s to 0.15s
-          delay: isInitialLoad ? index * 0.02 : 0, // Reduced from 0.05 to 0.02
+          duration: ANIMATION_DURATION,
+          delay: isInitialLoad ? index * STAGGER_DELAY : 0,
           ease: "easeOut" 
         }}
         suppressHydrationWarning

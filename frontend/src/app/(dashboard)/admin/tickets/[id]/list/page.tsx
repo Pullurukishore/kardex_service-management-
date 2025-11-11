@@ -612,6 +612,7 @@ export default function TicketDetailPage() {
         isOpen={isStatusDialogOpen}
         onClose={() => setIsStatusDialogOpen(false)}
         currentStatus={ticket.status}
+        ticketId={ticket.id}
         userRole={user?.role}
         onStatusChange={handleStatusChange}
       />

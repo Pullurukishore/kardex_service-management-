@@ -76,7 +76,10 @@ export default function ExecutiveSummaryCards({ dashboardData }: ExecutiveSummar
     },
     {
       title: 'Avg Resolution Time',
-      value: `${dashboardData?.stats?.avgResolutionTime?.days || 0}d ${dashboardData?.stats?.avgResolutionTime?.hours || 0}h ${dashboardData?.stats?.avgResolutionTime?.minutes || 0}m`,
+      value: formatDuration(
+        (dashboardData?.stats?.avgResolutionTime?.days || 0) * 24 + (dashboardData?.stats?.avgResolutionTime?.hours || 0),
+        dashboardData?.stats?.avgResolutionTime?.minutes || 0
+      ),
       description: 'Time to ticket resolution',
       change: Number(dashboardData?.stats?.avgResolutionTime?.change ?? 0),
       isPositive: dashboardData?.stats?.avgResolutionTime?.isPositive !== false,

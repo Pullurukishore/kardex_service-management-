@@ -4,14 +4,15 @@ import React, { useState, useEffect, useRef, memo, useMemo, useCallback } from '
 import { RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/lib/api/axios';
-import { Customer } from '@/types/customer';
+import { Customer, CustomerStats as CustomerStatsType } from '@/types/customer';
+import { calculateCustomerStats } from '@/lib/utils/customerStats';
 import CustomerStats from './CustomerStats';
 import CustomerFilters from './CustomerFilters';
 import CustomerTable from './CustomerTable';
 
 interface CustomerClientProps {
   initialCustomers: Customer[];
-  initialStats: any;
+  initialStats: CustomerStatsType;
   searchParams: {
     search?: string;
     status?: string;
@@ -27,7 +28,7 @@ const CustomerClient = memo(function CustomerClient({
   readOnly = false
 }: CustomerClientProps) {
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
-  const [stats, setStats] = useState(initialStats);
+  const [stats, setStats] = useState<CustomerStatsType>(initialStats);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const initialLoadComplete = useRef(false);
@@ -49,14 +50,8 @@ const CustomerClient = memo(function CustomerClient({
       
       setCustomers(customerData);
       
-      // Calculate stats
-      const newStats = {
-        total: customerData.length,
-        active: customerData.filter((c: Customer) => c.isActive).length,
-        inactive: customerData.filter((c: Customer) => !c.isActive).length,
-        totalAssets: customerData.reduce((sum: number, c: Customer) => sum + (c._count?.assets || 0), 0),
-        totalTickets: customerData.reduce((sum: number, c: Customer) => sum + (c._count?.tickets || 0), 0)
-      };
+      // Calculate stats using shared utility function
+      const newStats = calculateCustomerStats(customerData);
       setStats(newStats);
       
       return true;

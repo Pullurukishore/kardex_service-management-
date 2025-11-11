@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { PrismaClient, User, UserRole } from '@prisma/client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import { JWT_CONFIG, REFRESH_TOKEN_CONFIG } from '../config/auth';
+import { JWT_CONFIG, REFRESH_TOKEN_CONFIG, generateRefreshToken, verifyRefreshToken } from '../config/auth';
 import { sendEmail } from '../utils/email';
 
 const prisma = new PrismaClient();
@@ -471,12 +471,39 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
 export const refreshToken = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
+    
+    console.log('Refresh token request received');
+    console.log('Has refresh token cookie:', !!refreshToken);
+    
     if (!refreshToken) {
-      return res.status(401).json({ message: 'Refresh token required' });
+      console.log('No refresh token provided in cookies');
+      return res.status(401).json({ 
+        success: false,
+        message: 'Refresh token required',
+        code: 'NO_REFRESH_TOKEN'
+      });
     }
 
-    // Verify refresh token
-    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_CONFIG.secret) as { id: number };
+    // Verify refresh token using helper function
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+      console.log('Refresh token decoded successfully for user:', decoded.id);
+    } catch (verifyError) {
+      console.log('Refresh token verification failed:', verifyError);
+      if (verifyError instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ 
+          success: false,
+          message: 'Refresh token expired. Please login again.',
+          code: 'REFRESH_TOKEN_EXPIRED'
+        });
+      }
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid refresh token',
+        code: 'INVALID_REFRESH_TOKEN'
+      });
+    }
 
     // Find user with refresh token
     const user = await prisma.user.findUnique({
@@ -487,37 +514,108 @@ export const refreshToken = async (req: Request, res: Response) => {
         role: true,
         customerId: true,
         isActive: true,
-        refreshToken: true
+        refreshToken: true,
+        tokenVersion: true
       }
     });
 
-    // Validate user and refresh token
-    if (!user || user.refreshToken !== refreshToken) {
-      return res.status(401).json({ message: 'Invalid refresh token' });
+    console.log('User found:', !!user);
+    console.log('User active:', user?.isActive);
+    console.log('Tokens match:', user?.refreshToken === refreshToken);
+
+    // Validate user exists and is active
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'User not found',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ 
+        success: false,
+        message: 'Account is deactivated',
+        code: 'ACCOUNT_DEACTIVATED'
+      });
+    }
+
+    // Validate refresh token matches stored token
+    if (user.refreshToken !== refreshToken) {
+      console.log('Refresh token mismatch - possible token theft');
+      // Clear all tokens for security
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken: null }
+      });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid refresh token',
+        code: 'TOKEN_MISMATCH'
+      });
     }
 
     // Generate new access token
     const newToken = jwt.sign(
-      { id: user.id, role: user.role, customerId: user.customerId },
+      { 
+        id: user.id, 
+        role: user.role, 
+        customerId: user.customerId,
+        version: user.tokenVersion
+      },
       JWT_CONFIG.secret,
-      { expiresIn: '1d' }
+      { expiresIn: JWT_CONFIG.expiresIn }
     );
 
-    // Set new access token cookie
+    // Optionally rotate refresh token for better security
+    const shouldRotateRefreshToken = true; // Set to false if you don't want rotation
+    let newRefreshToken = refreshToken;
+    
+    if (shouldRotateRefreshToken) {
+      newRefreshToken = generateRefreshToken(user.id);
+      // Update stored refresh token
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { 
+          refreshToken: newRefreshToken,
+          lastActiveAt: new Date()
+        }
+      });
+      console.log('Refresh token rotated for user:', user.id);
+    } else {
+      // Just update last active time
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastActiveAt: new Date() }
+      });
+    }
+
+    // Set cookies with new tokens
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax' as const,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 24 * 60 * 60 * 1000, // 1 day for access token
       path: '/'
     };
     
     res.cookie('accessToken', newToken, cookieOptions);
     res.cookie('token', newToken, cookieOptions);
     res.cookie('userRole', user.role, cookieOptions);
+    
+    if (shouldRotateRefreshToken) {
+      res.cookie('refreshToken', newRefreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days for refresh token
+      });
+    }
+
+    console.log('Token refresh successful for user:', user.id);
 
     res.json({ 
+      success: true,
       accessToken: newToken,
+      ...(shouldRotateRefreshToken && { refreshToken: newRefreshToken }),
       user: {
         id: user.id,
         email: user.email,
@@ -530,14 +628,26 @@ export const refreshToken = async (req: Request, res: Response) => {
     console.error('Refresh token error:', error);
     
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: 'Refresh token expired' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Refresh token expired',
+        code: 'REFRESH_TOKEN_EXPIRED'
+      });
     }
     
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: 'Invalid refresh token' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid refresh token',
+        code: 'INVALID_JWT'
+      });
     }
     
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal server error',
+      code: 'INTERNAL_ERROR'
+    });
   }
 };
 

@@ -264,3 +264,11 @@ export interface Notification {
   createdAt: string;
   readAt?: string;
 }
+
+export interface TicketStats {
+  total: number;
+  open: number;
+  assigned: number;
+  closed: number;
+  critical: number;
+}

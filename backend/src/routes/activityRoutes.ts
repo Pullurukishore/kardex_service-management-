@@ -27,4 +27,8 @@ router.get('/:activityId/stages', requireRole(['SERVICE_PERSON']), activityContr
 // Get stage templates for activity types
 router.get('/templates/:activityType', requireRole(['SERVICE_PERSON']), activityController.getActivityStageTemplates);
 
+// Activity Report Routes
+router.post('/:activityId/reports', requireRole(['SERVICE_PERSON']), activityController.uploadActivityReport);
+router.get('/:activityId/reports', requireRole(['SERVICE_PERSON', 'ADMIN', 'ZONE_USER']), activityController.getActivityReports);
+
 export default router;

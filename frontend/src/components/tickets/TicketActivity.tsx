@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Activity, User, Clock, MapPin, ExternalLink } from 'lucide-react';
+import { Activity, User, Clock, MapPin, ExternalLink, FileText, Download } from 'lucide-react';
 import { LocationDisplay, getNotesWithoutLocation, hasLocationData } from './LocationDisplay';
 import { PhotoDisplay, hasPhotoData, getNotesWithoutPhotos } from './PhotoDisplay';
 import api from '@/lib/api/axios';
@@ -21,12 +21,16 @@ interface TicketActivityProps {
 
 interface ActivityItem {
   id: string;
-  type: 'STATUS_CHANGE' | 'NOTE';
+  type: 'STATUS_CHANGE' | 'NOTE' | 'REPORT_UPLOADED';
   description: string;
   data: {
     status?: string;
     notes?: string;
     content?: string;
+    fileName?: string;
+    fileSize?: number;
+    fileType?: string;
+    reportId?: number;
     [key: string]: any;
   };
   user: {
@@ -145,6 +149,8 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
         return <Activity className="h-4 w-4 text-white" />;
       case 'NOTE':
         return <User className="h-4 w-4 text-white" />;
+      case 'REPORT_UPLOADED':
+        return <FileText className="h-4 w-4 text-white" />;
       default:
         return <Clock className="h-4 w-4 text-white" />;
     }
@@ -156,6 +162,8 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
         return 'bg-blue-500';
       case 'NOTE':
         return 'bg-green-500';
+      case 'REPORT_UPLOADED':
+        return 'bg-purple-500';
       default:
         return 'bg-gray-500';
     }
@@ -236,6 +244,34 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                             {activity.description} <Badge variant="outline" className="ml-1">{formatStatusName(activity.data.status || '')}</Badge>
                             {activity.data.notes && getNotesWithoutPhotos(getNotesWithoutLocation(activity.data.notes)) && (
                               <span className="block mt-1 text-xs italic">"{getNotesWithoutPhotos(getNotesWithoutLocation(activity.data.notes))}"</span>
+                            )}
+                          </>
+                        ) : activity.type === 'REPORT_UPLOADED' ? (
+                          <>
+                            <span className="font-medium">Uploaded report</span>
+                            {activity.data.fileName && (
+                              <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-purple-600" />
+                                  <span className="text-sm font-medium text-purple-900">{activity.data.fileName}</span>
+                                  {activity.data.fileSize && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {(activity.data.fileSize / 1024).toFixed(1)} KB
+                                    </Badge>
+                                  )}
+                                </div>
+                                {activity.data.reportId && (
+                                  <a
+                                    href={`/api/tickets/${ticketId}/reports/${activity.data.reportId}/download`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 mt-2 text-xs text-purple-600 hover:text-purple-800 hover:underline"
+                                  >
+                                    <Download className="h-3 w-3" />
+                                    Download Report
+                                  </a>
+                                )}
+                              </div>
                             )}
                           </>
                         ) : (

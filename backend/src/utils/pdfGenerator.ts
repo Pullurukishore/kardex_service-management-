@@ -44,9 +44,15 @@ function formatPdfValue(value: any, column: ColumnDefinition, item?: any): strin
   // Apply custom formatter first if provided
   if (column.format) {
     try {
-      return column.format(value, item);
+      const formatted = column.format(value, item);
+      // Ensure we always return a string
+      if (Array.isArray(formatted)) {
+        return formatted.join(', ');
+      }
+      return formatted === null || formatted === undefined ? '' : String(formatted);
     } catch (e) {
       console.warn(`Error formatting value for column ${column.key}:`, e);
+      return String(value);
     }
   }
   
@@ -68,6 +74,10 @@ function formatPdfValue(value: any, column: ColumnDefinition, item?: any): strin
       }
       return String(value);
     default:
+      // Handle arrays (like zones)
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
       return String(value);
   }
 }
@@ -84,7 +94,15 @@ function getNestedValue(obj: any, path: string): any {
 
 // Helper function to wrap text for PDF cells
 function wrapText(doc: PDFKit.PDFDocument, text: string, maxWidth: number): string[] {
-  const words = text.split(' ');
+  // Handle non-string values safely
+  if (text === null || text === undefined) {
+    return [''];
+  }
+  
+  // Convert to string if not already
+  const textString = typeof text === 'string' ? text : String(text);
+  
+  const words = textString.split(' ');
   const lines: string[] = [];
   let currentLine = '';
 

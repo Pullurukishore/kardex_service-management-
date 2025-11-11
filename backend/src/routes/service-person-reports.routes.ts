@@ -28,6 +28,9 @@ router.get('/export/performance', servicePersonReportsController.exportServicePe
 // Export service person attendance reports as PDF/Excel
 router.get('/export/attendance', servicePersonReportsController.exportServicePersonAttendanceReports);
 
+// Export detailed individual person report with daily breakdown and activities
+router.get('/export/detailed-person', servicePersonReportsController.exportDetailedPersonReport);
+
 // Get detailed activity logs for a specific service person and date
 router.get('/activity-details/:servicePersonId/:date', servicePersonReportsController.getActivityDetails);
 

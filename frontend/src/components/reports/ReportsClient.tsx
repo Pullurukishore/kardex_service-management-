@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, Download, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { SummaryCards } from '@/components/reports/SummaryCards';
 import { ReportRenderer } from '@/components/reports/ReportRenderer';
 import { REPORT_TYPES } from '@/components/reports/types';
 import type { ReportFilters as ReportFiltersType } from '@/components/reports/types';
+import { eachDayOfInterval, getDay } from 'date-fns';
 
 interface ReportsClientProps {
   initialFilters: ReportFiltersType;
@@ -47,13 +48,13 @@ export default function ReportsClient({
     if (filters.reportType === 'industrial-data' && filters.zoneId) {
       fetchCustomersForZone(filters.zoneId);
     }
-  }, [filters.reportType]);
+  }, [filters.reportType, filters.zoneId]);
 
   React.useEffect(() => {
     if (filters.reportType === 'industrial-data' && filters.customerId) {
       fetchAssetsForCustomer(filters.customerId);
     }
-  }, [filters.customerId]);
+  }, [filters.reportType, filters.customerId]);
 
   const handleFilterChange = async (newFilters: ReportFiltersType) => {
     console.log('Filters changed - no auto-generation');
@@ -92,7 +93,7 @@ export default function ReportsClient({
   };
 
   // Function to fetch customers for a specific zone
-  const fetchCustomersForZone = async (zoneId?: string) => {
+  const fetchCustomersForZone = useCallback(async (zoneId?: string) => {
     if (!zoneId) {
       setDynamicCustomers([]);
       return;
@@ -110,10 +111,10 @@ export default function ReportsClient({
     } finally {
       setIsLoadingCustomers(false);
     }
-  };
+  }, []);
   
   // Function to fetch assets for a specific customer
-  const fetchAssetsForCustomer = async (customerId: string) => {
+  const fetchAssetsForCustomer = useCallback(async (customerId: string) => {
     setIsLoadingAssets(true);
     try {
       const params = new URLSearchParams({ customerId });
@@ -127,7 +128,7 @@ export default function ReportsClient({
     } finally {
       setIsLoadingAssets(false);
     }
-  };
+  }, []);
 
   const handleRefresh = async (customFilters?: ReportFiltersType) => {
     const activeFilters = customFilters || filters;
@@ -180,7 +181,14 @@ export default function ReportsClient({
             from: activeFilters.dateRange?.from?.toISOString().split('T')[0] || '',
             to: activeFilters.dateRange?.to?.toISOString().split('T')[0] || '',
             totalDays: activeFilters.dateRange?.from && activeFilters.dateRange?.to 
-              ? Math.ceil((activeFilters.dateRange.to.getTime() - activeFilters.dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1
+              ? (() => {
+                  // Calculate working days (Monday-Saturday only, excluding Sundays)
+                  const days = eachDayOfInterval({ 
+                    start: activeFilters.dateRange.from, 
+                    end: activeFilters.dateRange.to 
+                  });
+                  return days.filter(day => getDay(day) !== 0).length; // 0 = Sunday
+                })()
               : 0
           }
         });
@@ -405,7 +413,7 @@ export default function ReportsClient({
         <div className="flex items-center gap-2 text-blue-800">
           <Info className="h-4 w-4" />
           <span className="text-sm font-medium">
-            Time metrics in reports (Resolution Time, Response Time, Downtime, Onsite Work) are calculated using business hours only (9 AM - 5 PM, Monday to Saturday). Travel times show actual elapsed time.
+            Time metrics in reports (Resolution Time, Response Time, Downtime, Onsite Work) are calculated using business hours only (9 AM - 5:30 PM, Monday to Saturday). Travel times show actual elapsed time.
           </span>
         </div>
       </div>
@@ -475,7 +483,7 @@ export default function ReportsClient({
       {reportData && (
         <div className="space-y-6">
           {/* Summary Cards - Skip for reports that have their own summary */}
-          {!['ticket-summary', 'industrial-data'].includes(filters.reportType) && (
+          {!['ticket-summary', 'industrial-data', 'service-person-attendance', 'service-person-reports'].includes(filters.reportType) && (
             <SummaryCards summary={reportData.summary || {}} />
           )}
 

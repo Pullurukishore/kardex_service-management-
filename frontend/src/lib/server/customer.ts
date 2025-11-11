@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
-import { Customer } from '@/types/customer';
+import { Customer, CustomerStats } from '@/types/customer';
+import { calculateCustomerStats } from '@/lib/utils/customerStats';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
@@ -10,7 +11,7 @@ interface CustomerFilters {
   limit?: number;
 }
 
-async function makeServerRequest(endpoint: string) {
+async function makeServerRequest(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: any) {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
@@ -23,15 +24,22 @@ async function makeServerRequest(endpoint: string) {
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method,
     headers: {
       'Authorization': `Bearer ${authToken}`,
       'Content-Type': 'application/json',
     },
+    ...(body && { body: JSON.stringify(body) }),
     cache: 'no-store', // Ensure fresh data
   });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch ${endpoint}: ${response.statusText}`);
+  }
+
+  // Return empty object for DELETE requests with no content
+  if (method === 'DELETE' && response.status === 204) {
+    return {};
   }
 
   return response.json();
@@ -49,7 +57,8 @@ export async function getCustomers(filters: CustomerFilters = {}): Promise<Custo
   try {
     const customers: Customer[] = await makeServerRequest(`/customers?${params}`);
     
-    // Apply client-side filtering for status since API might not support this
+    // Apply client-side filtering for status
+    // TODO: Consider moving this to backend API for better performance with large datasets
     return customers.filter(customer => {
       const matchesStatus = status === 'all' || 
         (status === 'active' && customer.isActive) ||
@@ -63,21 +72,22 @@ export async function getCustomers(filters: CustomerFilters = {}): Promise<Custo
   }
 }
 
-export async function getCustomerStats(customers: Customer[]) {
-  return {
-    total: customers.length,
-    active: customers.filter(c => c.isActive).length,
-    inactive: customers.filter(c => !c.isActive).length,
-    totalAssets: customers.reduce((sum, c) => sum + (c._count?.assets || 0), 0),
-    totalTickets: customers.reduce((sum, c) => sum + (c._count?.tickets || 0), 0)
-  };
+/**
+ * Get customer statistics (wrapper for backwards compatibility)
+ * Uses shared calculateCustomerStats utility
+ */
+export async function getCustomerStats(customers: Customer[]): Promise<CustomerStats> {
+  return calculateCustomerStats(customers);
 }
 
 // Removed getUniqueIndustries function as industry filtering is no longer needed
 
+/**
+ * Delete a customer by ID using proper HTTP DELETE method
+ */
 export async function deleteCustomerById(id: number): Promise<void> {
   try {
-    await makeServerRequest(`/customers/${id}`);
+    await makeServerRequest(`/customers/${id}`, 'DELETE');
   } catch (error) {
     console.error('Error deleting customer:', error);
     throw error;

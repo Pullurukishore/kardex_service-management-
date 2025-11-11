@@ -681,46 +681,16 @@ export default function CleanAttendanceWidget({
     } catch (error: any) {
       console.error('Check-out failed:', error);
       
-      // Handle early checkout confirmation first
+      // Handle early checkout confirmation - Show dialog to user
       if (error.response?.status === 400 && error.response.data?.requiresConfirmation) {
-        // Auto-confirm early checkout for better UX
-        try {
-          const confirmCheckOutData = {
-            ...checkOutData,
-            confirmEarlyCheckout: true
-          };
-          
-          console.log('CleanAttendanceWidget: Auto-confirming early checkout:', confirmCheckOutData);
-          
-          const confirmResponse = await apiClient.post('/attendance/checkout', confirmCheckOutData);
-          
-          toast({
-            title: 'Checked Out Successfully',
-            description: `Early checkout completed. You can re-check-in anytime.`,
-          });
-
-          // Reset enhanced location state
-          setEnhancedLocationState({
-            isCapturing: false,
-            capturedLocation: null,
-            error: null,
-            showLocationCapture: false
-          });
-
-          await fetchAttendanceStatus();
-          if (onStatusChange) onStatusChange();
-          setActionLoading(false);
-          return; // Exit successfully
-        } catch (confirmError: any) {
-          console.error('Early checkout confirmation failed:', confirmError);
-          toast({
-            title: 'Check-out Failed',
-            description: confirmError.response?.data?.message || 'Failed to confirm early checkout',
-            variant: 'destructive',
-          });
-          setActionLoading(false);
-          return;
-        }
+        // Store the checkout data and show confirmation dialog
+        setEarlyCheckoutData({
+          location: location,
+          confirmationData: error.response.data
+        });
+        setShowEarlyCheckoutConfirm(true);
+        setActionLoading(false);
+        return; // Wait for user confirmation
       }
       
       // Handle other errors
@@ -792,71 +762,27 @@ export default function CleanAttendanceWidget({
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      // Handle early checkout confirmation - Auto-confirm for better UX
+      // Handle early checkout confirmation - Show dialog to user
       if (error.response?.status === 400 && error.response?.data?.requiresConfirmation) {
-        
-        // Automatically confirm early checkout instead of showing dialog
-        try {
-          const capturedLocation = enhancedLocationState.capturedLocation;
-          if (!capturedLocation) {
-            toast({
-              title: 'Location Required',
-              description: 'Please capture your location for checkout.',
-              variant: 'destructive',
-            });
-            return;
-          }
-          
-          const response = await apiClient.post('/attendance/checkout', {
-            attendanceId: attendanceData?.attendance?.id,
-            latitude: capturedLocation.latitude,
-            longitude: capturedLocation.longitude,
-            address: capturedLocation.address || `${capturedLocation.latitude.toFixed(6)}, ${capturedLocation.longitude.toFixed(6)}`,
-            confirmEarlyCheckout: true
-          });
-
-          const result = response.data || response;
-          const newData: AttendanceData = {
-            isCheckedIn: false,
-            attendance: result.attendance ? {
-              id: result.attendance.id,
-              checkInAt: result.attendance.checkInAt,
-              checkOutAt: result.attendance.checkOutAt,
-              checkInAddress: result.attendance.checkInAddress,
-              checkOutAddress: result.attendance.checkOutAddress,
-              status: result.attendance.status || 'EARLY_CHECKOUT',
-              totalHours: result.attendance.totalHours
-            } : attendanceData?.attendance
-          };
-          setAttendanceData(newData);
-
+        const capturedLocation = enhancedLocationState.capturedLocation;
+        if (!capturedLocation) {
           toast({
-            title: 'Checked Out Successfully',
-            description: `Early checkout completed. Total hours: ${formatHours(result.attendance?.totalHours)}h. You can re-check-in anytime.`,
-          });
-
-          // Reset enhanced location state
-          setEnhancedLocationState({
-            isCapturing: false,
-            capturedLocation: null,
-            error: null,
-            showLocationCapture: false
-          });
-
-          if (onStatusChange) {
-            await onStatusChange();
-          }
-          await fetchAttendanceStatus();
-          await fetchAttendanceStats();
-          return;
-        } catch (confirmError: any) {
-          toast({
-            title: 'Check-out Failed',
-            description: confirmError.response?.data?.message || 'Failed to confirm early checkout',
+            title: 'Location Required',
+            description: 'Please capture your location for checkout.',
             variant: 'destructive',
           });
+          setActionLoading(false);
           return;
         }
+        
+        // Store the checkout data and show confirmation dialog
+        setEarlyCheckoutData({
+          location: capturedLocation,
+          confirmationData: error.response.data
+        });
+        setShowEarlyCheckoutConfirm(true);
+        setActionLoading(false);
+        return; // Wait for user confirmation
       }
       
       toast({
@@ -1048,6 +974,7 @@ export default function CleanAttendanceWidget({
     
     if (!confirmed || !earlyCheckoutData) {
       setEarlyCheckoutData(null);
+      setActionLoading(false);
       return;
     }
 
@@ -1059,7 +986,8 @@ export default function CleanAttendanceWidget({
         attendanceId: attendanceData?.attendance?.id,
         latitude: location.latitude,
         longitude: location.longitude,
-        address: location.address,
+        address: location.address || `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`,
+        locationSource: location.source,
         confirmEarlyCheckout: true
       });
 
@@ -1080,7 +1008,15 @@ export default function CleanAttendanceWidget({
 
       toast({
         title: 'Checked Out Successfully',
-        description: `Total hours: ${formatHours(result.attendance?.totalHours)}h`,
+        description: `Early checkout completed. Total hours: ${formatHours(result.attendance?.totalHours)}h`,
+      });
+
+      // Reset enhanced location state
+      setEnhancedLocationState({
+        isCapturing: false,
+        capturedLocation: null,
+        error: null,
+        showLocationCapture: false
       });
 
       if (onStatusChange) {

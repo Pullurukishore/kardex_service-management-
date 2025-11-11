@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -313,8 +313,8 @@ export default function AttendanceDetailView({
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Fetch attendance details
-  const fetchAttendanceDetail = async () => {
+  // Fetch attendance details with useCallback to prevent unnecessary re-renders
+  const fetchAttendanceDetail = useCallback(async () => {
     try {
       setLoading(true);
       const response = await apiClient.get(apiEndpoint);
@@ -340,7 +340,7 @@ export default function AttendanceDetailView({
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiEndpoint, toast]);
 
   // Format duration
   const formatDuration = (minutes?: number) => {
@@ -380,7 +380,7 @@ export default function AttendanceDetailView({
     if (attendanceId) {
       fetchAttendanceDetail();
     }
-  }, [attendanceId, apiEndpoint]);
+  }, [attendanceId, fetchAttendanceDetail]);
 
   if (loading) {
     return (
@@ -419,23 +419,6 @@ export default function AttendanceDetailView({
 
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
-      <style jsx>{`
-        @media (max-width: 640px) {
-          .container {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-          }
-          .break-words {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
-          }
-          .break-all {
-            word-break: break-all;
-          }
-        }
-      `}</style>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
