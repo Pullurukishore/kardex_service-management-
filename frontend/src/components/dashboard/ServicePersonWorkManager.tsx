@@ -273,7 +273,6 @@ export default function ServicePersonWorkManager({
         onRefresh();
       }
     } catch (error) {
-      console.error('Error performing quick action:', error);
       toast({
         title: "Error",
         description: "Failed to update item. Please try again.",

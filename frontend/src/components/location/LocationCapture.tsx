@@ -81,7 +81,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
         handleCaptureLocation();
       }
     } catch (error) {
-      console.log('Permission API not supported, trying direct location access');
       handleCaptureLocation();
     }
   };
@@ -96,8 +95,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
     }));
 
     try {
-      console.log('LocationCapture: Starting GPS capture...');
-      
       // Get GPS location with any accuracy (no blocking)
       const location = await LocationService.getCurrentLocation({
         enableHighAccuracy: true,
@@ -110,8 +107,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
 
       if (!mountedRef.current) return;
 
-      console.log(`LocationCapture: GPS obtained with accuracy: ±${Math.round(location.accuracy || 0)}m`);
-      
       // Set permission as granted after successful location capture
       setPermissionGranted(true);
 
@@ -119,8 +114,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
       await processLocationWithAddress(location);
 
     } catch (error) {
-      console.error('LocationCapture: GPS capture failed:', error);
-      
       if (!mountedRef.current) return;
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to get GPS location';
@@ -139,8 +132,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
 
   const processLocationWithAddress = async (location: GPSLocation) => {
     try {
-      console.log('LocationCapture: Getting address for location...');
-      
       // Get address using LocationService
       const geocodeResult = await LocationService.reverseGeocode(
         location.latitude, 
@@ -163,12 +154,9 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
         error: null
       }));
 
-      console.log('LocationCapture: Location capture successful:', result);
       onLocationCapture(result);
 
     } catch (error) {
-      console.error('LocationCapture: Address lookup failed:', error);
-      
       if (!mountedRef.current) return;
 
       // Still provide location without address
@@ -189,7 +177,6 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
       onLocationCapture(result);
     }
   };
-
 
   const handleRetry = () => {
     handleCaptureLocation();

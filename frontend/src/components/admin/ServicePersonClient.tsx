@@ -164,7 +164,6 @@ export default function ServicePersonClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch service person data:', err);
       setError('Failed to load service personnel. Please try again.');
       toast.error('Failed to refresh service personnel data');
       return false;

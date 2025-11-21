@@ -40,7 +40,6 @@ export default async function ZoneServicePersonsPage({ searchParams }: ZoneServi
     createdAt: new Date().toISOString() // Add missing createdAt field
   }));
 
-
   // Calculate stats using the actual data
   const totalPersons = clientServicePersons.length;
   const activePersons = clientServicePersons.filter(p => p.isActive).length;

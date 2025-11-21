@@ -41,7 +41,6 @@ export async function getCurrentUser(): Promise<AuthResponseUser | null> {
     const userData = await response.json();
     return userData;
   } catch (error) {
-    console.error('Error fetching current user:', error);
     return null;
   }
 }

@@ -76,7 +76,6 @@ export const listServicePersons = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error listing service persons:', error);
     res.status(500).json({ error: 'Failed to fetch service persons' });
   }
 };
@@ -105,7 +104,6 @@ export const getServicePerson = async (req: Request, res: Response) => {
 
     res.json(servicePerson);
   } catch (error) {
-    console.error('Error fetching service person:', error);
     res.status(500).json({ error: 'Failed to fetch service person' });
   }
 };
@@ -113,14 +111,6 @@ export const getServicePerson = async (req: Request, res: Response) => {
 export const createServicePerson = async (req: ServicePersonRequest, res: Response) => {
   try {
     const { name, email, phone, password, serviceZoneIds = [] } = req.body;
-
-    console.log('📝 createServicePerson: Creating service person with data:', {
-      name,
-      email,
-      phone,
-      serviceZoneIds
-    });
-    
     // Validate input
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -170,7 +160,6 @@ export const createServicePerson = async (req: ServicePersonRequest, res: Respon
     const { password: _, ...safeUser } = servicePerson;
     res.status(201).json(safeUser);
   } catch (error) {
-    console.error('Error creating service person:', error);
     res.status(500).json({ error: 'Failed to create service person' });
   }
 };
@@ -248,7 +237,6 @@ export const updateServicePerson = async (req: ServicePersonRequest, res: Respon
     const { password: _, ...safeUser } = servicePerson;
     res.json(safeUser);
   } catch (error) {
-    console.error('Error updating service person:', error);
     res.status(500).json({ error: 'Failed to update service person' });
   }
 };
@@ -304,7 +292,6 @@ export const deleteServicePerson = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error deleting service person:', error);
     res.status(500).json({ error: 'Failed to delete service person' });
   }
 };

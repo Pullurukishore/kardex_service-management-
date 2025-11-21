@@ -1,17 +1,25 @@
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/user.types';
 
 export const useAuthGuard = (requiredRoles?: UserRole | UserRole[], redirectPath = '/auth/login') => {
   const { user, isAuthenticated, isLoading, hasPermission } = useAuth();
   const router = useRouter();
+  const lastRedirectTime = useRef(0);
 
   useEffect(() => {
     if (isLoading) return;
 
+    // Add cooldown to prevent rapid redirects
+    const now = Date.now();
+    if (now - lastRedirectTime.current < 5000) { // 5 second cooldown
+      return;
+    }
+
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
+      lastRedirectTime.current = now;
       const callbackUrl = encodeURIComponent(window.location.pathname);
       router.push(`${redirectPath}?callbackUrl=${callbackUrl}`);
       return;
@@ -19,6 +27,9 @@ export const useAuthGuard = (requiredRoles?: UserRole | UserRole[], redirectPath
 
     // Check roles if required
     if (requiredRoles && !hasPermission(requiredRoles)) {
+      // Add cooldown for role-based redirects too
+      lastRedirectTime.current = now;
+      
       // Redirect to dashboard based on user role
       const getRoleBasedPath = (role?: UserRole): string => {
         switch (role) {

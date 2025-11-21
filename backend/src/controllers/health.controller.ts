@@ -13,11 +13,7 @@ export const healthCheck = async (req: Request, res: Response) => {
     // Get basic stats
     const customerCount = await prisma.customer.count();
     
-    const totalTime = Date.now() - startTime;
-    
-    console.log(`🏥 [HEALTH] Health check completed in ${totalTime}ms (DB: ${dbTime}ms)`);
-    
-    res.json({
+    const totalTime = Date.now() - startTime;    res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       database: {
@@ -30,10 +26,7 @@ export const healthCheck = async (req: Request, res: Response) => {
       responseTime: `${totalTime}ms`
     });
   } catch (error) {
-    const totalTime = Date.now() - startTime;
-    console.error(`❌ [HEALTH] Health check failed after ${totalTime}ms:`, error);
-    
-    res.status(500).json({
+    const totalTime = Date.now() - startTime;    res.status(500).json({
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       error: 'Database connection failed',

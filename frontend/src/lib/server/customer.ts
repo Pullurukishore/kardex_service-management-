@@ -67,7 +67,6 @@ export async function getCustomers(filters: CustomerFilters = {}): Promise<Custo
       return matchesStatus;
     });
   } catch (error) {
-    console.error('Error fetching customers:', error);
     return [];
   }
 }
@@ -89,7 +88,6 @@ export async function deleteCustomerById(id: number): Promise<void> {
   try {
     await makeServerRequest(`/customers/${id}`, 'DELETE');
   } catch (error) {
-    console.error('Error deleting customer:', error);
     throw error;
   }
 }

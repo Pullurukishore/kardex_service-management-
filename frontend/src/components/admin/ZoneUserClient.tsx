@@ -106,7 +106,6 @@ export default function ZoneUserClient({
         setPagination(response.data.pagination);
       }
     } catch (error) {
-      console.error('Failed to fetch zone users:', error);
       toast.error('Failed to load zone users');
     } finally {
       setIsLoading(false);
@@ -162,7 +161,6 @@ export default function ZoneUserClient({
         setStats(newStats);
       }
     } catch (error) {
-      console.error('Error fetching zone users:', error);
       toast.error('Failed to fetch zone users');
     } finally {
       setIsRefreshing(false);

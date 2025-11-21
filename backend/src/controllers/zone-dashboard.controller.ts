@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { JwtPayload } from '../middleware/auth.middleware';
 import { serializeBigInts } from '../utils/bigint';
+import { differenceInMinutes, getDay, addDays, startOfDay, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 
 // Custom type definitions to replace problematic Prisma exports
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'IN_PROCESS' | 'RESOLVED' | 'CLOSED' | 'CANCELLED';
@@ -77,80 +78,157 @@ interface TopIssue {
 
 // Helper functions for zone metrics
 
+// Helper function to calculate business hours between two dates (9 AM to 5:30 PM, excluding Sundays)
+function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number {
+  if (startDate >= endDate) return 0;
+
+  let totalMinutes = 0;
+  let currentDate = new Date(startDate);
+  const finalDate = new Date(endDate);
+
+  // Business hours: 9 AM to 5:30 PM (8.5 hours per day)
+  const BUSINESS_START_HOUR = 9;
+  const BUSINESS_END_HOUR = 17;
+  const BUSINESS_END_MINUTE = 30;
+
+  while (currentDate < finalDate) {
+    const dayOfWeek = getDay(currentDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    
+    // Skip Sundays (dayOfWeek === 0)
+    if (dayOfWeek !== 0) {
+      // Create business hours for this day
+      const businessStart = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_START_HOUR), 0), 0), 0);
+      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), BUSINESS_END_MINUTE), 0), 0);
+
+      let dayStart = businessStart;
+      let dayEnd = businessEnd;
+
+      if (currentDate.toDateString() === startDate.toDateString()) {
+        if (startDate > businessStart) {
+          dayStart = startDate;
+        }
+      }
+
+      if (currentDate.toDateString() === finalDate.toDateString()) {
+        if (finalDate < businessEnd) {
+          dayEnd = finalDate;
+        }
+      }
+
+      if (dayStart < businessEnd && dayEnd > businessStart) {
+        if (dayStart < businessStart) dayStart = businessStart;
+        if (dayEnd > businessEnd) dayEnd = businessEnd;
+        
+        if (dayStart < dayEnd) {
+          totalMinutes += differenceInMinutes(dayEnd, dayStart);
+        }
+      }
+    }
+
+    currentDate = addDays(startOfDay(currentDate), 1);
+  }
+
+  return totalMinutes;
+}
+
 async function calculateAverageResponseTime(zoneId: number): Promise<{ hours: number; minutes: number }> {
   try {
-    // Calculate time from OPEN to ASSIGNED using status history
-    const result = await prisma.$queryRaw<Array<{ avg_response_time: number | null }>>`
-      SELECT AVG(EXTRACT(EPOCH FROM (sh."changedAt" - t."createdAt")) / 60) as avg_response_time
-      FROM "Ticket" t
-      JOIN "Customer" c ON t."customerId" = c.id
-      JOIN "TicketStatusHistory" sh ON t.id = sh."ticketId"
-      WHERE c."serviceZoneId" = ${zoneId}
-      AND sh.status = 'ASSIGNED'
-      AND t."createdAt" >= NOW() - INTERVAL '30 days'
-      AND sh."changedAt" IS NOT NULL
-    `;
-    
-    let avgMinutes = result[0]?.avg_response_time || 0;
-    
-    // If no status history data, use a simple fallback based on current ticket status
-    if (avgMinutes === 0) {
-      const fallbackResult = await prisma.$queryRaw<Array<{ avg_response_time: number | null }>>`
-        SELECT AVG(EXTRACT(EPOCH FROM (t."updatedAt" - t."createdAt")) / 60) as avg_response_time
-        FROM "Ticket" t
-        JOIN "Customer" c ON t."customerId" = c.id
-        WHERE c."serviceZoneId" = ${zoneId}
-        AND t.status IN ('ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')
-        AND t."createdAt" >= NOW() - INTERVAL '30 days'
-      `;
-      avgMinutes = fallbackResult[0]?.avg_response_time || 0;
+    // Get tickets for this zone with ASSIGNED status
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        customer: {
+          serviceZoneId: zoneId
+        }
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        statusHistory: {
+          where: {
+            status: 'ASSIGNED'
+          },
+          select: {
+            changedAt: true
+          },
+          take: 1,
+          orderBy: {
+            changedAt: 'asc'
+          }
+        }
+      }
+    });
+
+    // Calculate response times using business hours
+    const responseTimes = tickets
+      .filter(t => t.statusHistory.length > 0)
+      .map(t => calculateBusinessHoursInMinutes(t.createdAt, t.statusHistory[0].changedAt))
+      .filter(time => time > 0);
+
+    if (responseTimes.length === 0) {
+      return { hours: 0, minutes: 0 };
     }
-    
+
+    const avgMinutes = responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length;
+
     return {
       hours: Math.floor(avgMinutes / 60),
       minutes: Math.round(avgMinutes % 60)
     };
   } catch (error) {
-    console.error('Error calculating average response time:', error);
     return { hours: 0, minutes: 0 };
   }
 }
 
 async function calculateAverageResolutionTime(zoneId: number): Promise<{ days: number; hours: number }> {
   try {
-    // Calculate time from OPEN to CLOSED using status history
-    const result = await prisma.$queryRaw<Array<{ avg_resolution_time: number | null }>>`
-      SELECT AVG(EXTRACT(EPOCH FROM (sh."changedAt" - t."createdAt")) / 3600) as avg_resolution_time
-      FROM "Ticket" t
-      JOIN "Customer" c ON t."customerId" = c.id
-      JOIN "TicketStatusHistory" sh ON t.id = sh."ticketId"
-      WHERE c."serviceZoneId" = ${zoneId}
-      AND sh.status = 'CLOSED'
-      AND t."createdAt" >= NOW() - INTERVAL '30 days'
-      AND sh."changedAt" IS NOT NULL
-    `;
-    
-    let avgHours = result[0]?.avg_resolution_time || 0;
-    
-    // If no status history data, use a simple fallback based on current ticket status
-    if (avgHours === 0) {
-      const fallbackResult = await prisma.$queryRaw<Array<{ avg_resolution_time: number | null }>>`
-        SELECT AVG(EXTRACT(EPOCH FROM (t."updatedAt" - t."createdAt")) / 3600) as avg_resolution_time
-        FROM "Ticket" t
-        JOIN "Customer" c ON t."customerId" = c.id
-        WHERE c."serviceZoneId" = ${zoneId}
-        AND t.status IN ('RESOLVED', 'CLOSED')
-        AND t."createdAt" >= NOW() - INTERVAL '30 days'
-      `;
-      avgHours = fallbackResult[0]?.avg_resolution_time || 0;
+    // Get closed tickets for this zone
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        status: 'CLOSED',
+        customer: {
+          serviceZoneId: zoneId
+        }
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        statusHistory: {
+          where: {
+            status: 'CLOSED'
+          },
+          select: {
+            changedAt: true
+          },
+          take: 1,
+          orderBy: {
+            changedAt: 'desc'
+          }
+        }
+      }
+    });
+
+    // Calculate resolution times using business hours
+    const resolutionTimes = tickets
+      .map(t => {
+        const closedAt = t.statusHistory.length > 0 ? t.statusHistory[0].changedAt : t.updatedAt;
+        return calculateBusinessHoursInMinutes(t.createdAt, closedAt);
+      })
+      .filter(time => time > 0);
+
+    if (resolutionTimes.length === 0) {
+      return { days: 0, hours: 0 };
     }
-    
-    return {
-      days: Math.floor(avgHours / 24),
-      hours: Math.round(avgHours % 24)
-    };
+
+    const avgMinutes = resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length;
+    const businessHoursPerDay = 8 * 60; // 480 minutes per business day
+    const days = Math.floor(avgMinutes / businessHoursPerDay);
+    const remainingMinutes = avgMinutes % businessHoursPerDay;
+    // Keep decimal hours for proper display of sub-hour values (e.g., 0.25h = 15 minutes)
+    const hours = Math.round((remainingMinutes / 60) * 10) / 10;
+
+    return { days, hours };
   } catch (error) {
-    console.error('Error calculating average resolution time:', error);
     return { days: 0, hours: 0 };
   }
 }
@@ -198,7 +276,6 @@ async function calculateAverageDowntime(zoneId: number): Promise<{ hours: number
       minutes: Math.round(avgMinutes % 60)
     };
   } catch (error) {
-    console.error('Error calculating machine downtime:', error);
     return { hours: 0, minutes: 0 };
   }
 }
@@ -250,7 +327,6 @@ async function calculateAverageTravelTime(zoneId: number): Promise<number> {
     
     return avgMinutes;
   } catch (error) {
-    console.error('Error calculating average travel time:', error);
     return 0;
   }
 }
@@ -273,7 +349,6 @@ async function calculatePartsAvailability(zoneId: number): Promise<number> {
     
     return availability;
   } catch (error) {
-    console.error('Error calculating parts availability:', error);
     return 0;
   }
 }
@@ -679,7 +754,6 @@ export const getZoneDashboardData = async (req: Request, res: Response) => {
     
     return res.json(serializeBigInts(response));
   } catch (error) {
-    console.error('Zone Dashboard - Error occurred:', error);
     return res.status(500).json({ error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 };
@@ -968,7 +1042,6 @@ export const getZoneServicePersons = async (req: AuthenticatedRequest, res: Resp
       }
     });
   } catch (error) {
-    console.error('Error fetching zone service persons:', error);
     return res.status(500).json({ error: 'Failed to fetch service persons for the zone' });
   }
 }
@@ -1032,7 +1105,6 @@ export const getZoneStatusDistribution = async (req: Request, res: Response) => 
 
     return res.json({ distribution });
   } catch (error) {
-    console.error('Error fetching zone status distribution:', error);
     return res.status(500).json({ error: 'Failed to fetch status distribution' });
   }
 };
@@ -1114,7 +1186,6 @@ export const getZoneTicketTrends = async (req: Request, res: Response) => {
 
     return res.json({ trends });
   } catch (error) {
-    console.error('Error fetching zone ticket trends:', error);
     return res.status(500).json({ error: 'Failed to fetch ticket trends' });
   }
 };

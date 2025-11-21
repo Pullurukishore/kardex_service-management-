@@ -183,9 +183,7 @@ export async function exportDashboardReport(req: Request, res: Response) {
       res.send(buffer);
     });
 
-  } catch (error) {
-    console.error('Error exporting report:', error);
-    return res.status(500).json({
+  } catch (error) {    return res.status(500).json({
       success: false,
       message: 'Failed to export report',
       error: error instanceof Error ? error.message : 'Unknown error'

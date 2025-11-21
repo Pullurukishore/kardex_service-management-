@@ -177,7 +177,6 @@ export const register = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -366,8 +365,6 @@ export const login = async (req: Request, res: Response) => {
     });
 
   } catch (error: unknown) {
-    console.error('Login error:', error);
-    
     // Define a type for the error response
     type ErrorResponse = {
       success: boolean;
@@ -447,7 +444,6 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
 
     res.json(user);
   } catch (error) {
-    console.error('Get current user error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -476,7 +472,6 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
-    console.error('Logout error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -484,12 +479,7 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
 export const refreshToken = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
-    
-    console.log('Refresh token request received');
-    console.log('Has refresh token cookie:', !!refreshToken);
-    
     if (!refreshToken) {
-      console.log('No refresh token provided in cookies');
       return res.status(401).json({ 
         success: false,
         message: 'Refresh token required',
@@ -501,9 +491,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     let decoded;
     try {
       decoded = verifyRefreshToken(refreshToken);
-      console.log('Refresh token decoded successfully for user:', decoded.id);
     } catch (verifyError) {
-      console.log('Refresh token verification failed:', verifyError);
       if (verifyError instanceof jwt.TokenExpiredError) {
         return res.status(401).json({ 
           success: false,
@@ -531,11 +519,6 @@ export const refreshToken = async (req: Request, res: Response) => {
         tokenVersion: true
       }
     });
-
-    console.log('User found:', !!user);
-    console.log('User active:', user?.isActive);
-    console.log('Tokens match:', user?.refreshToken === refreshToken);
-
     // Validate user exists and is active
     if (!user) {
       return res.status(401).json({ 
@@ -562,9 +545,28 @@ export const refreshToken = async (req: Request, res: Response) => {
       const refreshDecoded = jwt.verify(refreshToken, REFRESH_TOKEN_CONFIG.secret) as any;
       if (refreshDecoded.id === user.id && refreshDecoded.version === user.tokenVersion) {
         isValidRefreshToken = true;
+      } else if (refreshDecoded.id === user.id && refreshDecoded.version !== user.tokenVersion) {
+        // Version mismatch - token was revoked
+        return res.status(401).json({ 
+          success: false,
+          message: 'Token version mismatch. Please login again.',
+          code: 'TOKEN_VERSION_MISMATCH'
+        });
       }
     } catch (refreshError) {
-      console.log('Refresh token verification failed:', refreshError);
+      if (refreshError instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ 
+          success: false,
+          message: 'Refresh token expired. Please login again.',
+          code: 'REFRESH_TOKEN_EXPIRED'
+        });
+      } else if (refreshError instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ 
+          success: false,
+          message: 'Invalid refresh token format.',
+          code: 'INVALID_TOKEN_FORMAT'
+        });
+      }
     }
     
     // Also check if it matches the stored refresh token (for backward compatibility)
@@ -573,7 +575,6 @@ export const refreshToken = async (req: Request, res: Response) => {
     }
     
     if (!isValidRefreshToken) {
-      console.log('Refresh token invalid - not matching user or version');
       return res.status(401).json({ 
         success: false,
         message: 'Invalid refresh token',
@@ -608,7 +609,6 @@ export const refreshToken = async (req: Request, res: Response) => {
           lastActiveAt: new Date()
         }
       });
-      console.log('Refresh token rotated for user:', user.id);
     } else {
       // Just update last active time without changing refresh token
       await prisma.user.update({
@@ -636,9 +636,6 @@ export const refreshToken = async (req: Request, res: Response) => {
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days for refresh token
       });
     }
-
-    console.log('Token refresh successful for user:', user.id);
-
     const responseData: any = { 
       success: true,
       accessToken: newToken,
@@ -658,8 +655,6 @@ export const refreshToken = async (req: Request, res: Response) => {
     res.json(responseData);
 
   } catch (error) {
-    console.error('Refresh token error:', error);
-    
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ 
         success: false,
@@ -747,14 +742,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
         }
       });
     } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError);
       // Don't reveal email sending failure to prevent enumeration
     }
 
     res.json(successResponse);
 
   } catch (error) {
-    console.error('Forgot password error:', error);
     res.status(500).json({ 
       success: false,
       message: 'An error occurred while processing your request',
@@ -829,7 +822,6 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Reset password error:', error);
     res.status(500).json({
       success: false,
       message: 'An error occurred while resetting your password',

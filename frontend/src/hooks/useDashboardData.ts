@@ -62,7 +62,6 @@ export const useDashboardData = () => {
         avgResponseTime
       });
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
       setError(err instanceof Error ? err : new Error('Failed to load dashboard data'));
     } finally {
       setLoading(false);

@@ -90,30 +90,25 @@ async function getServicePersonDashboardData(
 
     // Handle authentication errors (token expired/invalid)
     if (attendanceResponse.status === 401) {
-      console.error('[Dashboard SSR] Authentication failed - Token expired or invalid');
       redirect('/auth/login');
     }
 
     // Handle forbidden access
     if (attendanceResponse.status === 403) {
-      console.error('[Dashboard SSR] Access forbidden - Insufficient permissions');
       redirect('/auth/login');
     }
 
     // Handle server errors with retry logic
     if (attendanceResponse.status >= 500) {
       if (retryCount < MAX_RETRIES) {
-        console.warn(`[Dashboard SSR] Server error (${attendanceResponse.status}), retrying... (${retryCount + 1}/${MAX_RETRIES})`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
         return getServicePersonDashboardData(token, retryCount + 1);
       }
-      console.error(`[Dashboard SSR] Server error after ${MAX_RETRIES} retries`);
       return null;
     }
 
     // Handle other non-OK responses
     if (!attendanceResponse.ok) {
-      console.error(`[Dashboard SSR] Failed to fetch attendance status: ${attendanceResponse.status}`);
       return null;
     }
 
@@ -121,12 +116,7 @@ async function getServicePersonDashboardData(
     
     // Development logging
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Dashboard SSR] Attendance data fetched successfully:', {
-        isCheckedIn: attendanceData?.isCheckedIn,
-        status: attendanceData?.attendance?.status,
-        hasActivity: !!attendanceData?.currentActivity,
-      });
-    }
+      }
     
     return {
       attendance: attendanceData
@@ -134,14 +124,11 @@ async function getServicePersonDashboardData(
   } catch (error: any) {
     // Handle network errors with retry
     if (error.name === 'AbortError') {
-      console.error('[Dashboard SSR] Request timeout');
-    } else if (retryCount < MAX_RETRIES && error.message?.includes('fetch')) {
-      console.warn(`[Dashboard SSR] Network error, retrying... (${retryCount + 1}/${MAX_RETRIES})`);
+      } else if (retryCount < MAX_RETRIES && error.message?.includes('fetch')) {
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
       return getServicePersonDashboardData(token, retryCount + 1);
     } else {
-      console.error('[Dashboard SSR] Data fetch error:', error.message || error);
-    }
+      }
     return null;
   }
 }
@@ -206,19 +193,16 @@ export default async function ServicePersonDashboardPage() {
 
   // Validate authentication
   if (!authToken) {
-    console.error('[Dashboard SSR] No authentication token found');
     redirect('/auth/login');
   }
 
   // Validate role authorization
   if (userRole !== 'SERVICE_PERSON') {
-    console.error('[Dashboard SSR] Invalid role for service person dashboard:', userRole);
     redirect('/auth/login');
   }
 
   // Check token expiration BEFORE making API calls
   if (isTokenExpired(authToken)) {
-    console.error('[Dashboard SSR] Token has expired, redirecting to login');
     redirect('/auth/login');
   }
 

@@ -81,7 +81,6 @@ export default function CustomerAssetsPage() {
       const data = await fetchCustomer(Number(id));
       setCustomer(data);
     } catch (error) {
-      console.error('Error loading customer:', error);
       toast({
         title: 'Error',
         description: 'Failed to load customer assets',
@@ -114,7 +113,6 @@ export default function CustomerAssetsPage() {
       // Reload customer data to refresh the assets list
       await loadCustomer();
     } catch (error: any) {
-      console.error('Error deleting asset:', error);
       let errorMessage = 'Failed to delete asset. Please try again.';
       
       if (error?.response?.data?.message) {

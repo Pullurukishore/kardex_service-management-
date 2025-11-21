@@ -181,7 +181,6 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
   }
 };
 
-
 export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
   const startTime = Date.now();
   

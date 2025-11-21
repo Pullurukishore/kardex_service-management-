@@ -63,13 +63,11 @@ wss.on('connection', (ws: BaseWebSocket) => {
   
   // Handle WebSocket close
   customWs.on('close', () => {
-    console.log('Client disconnected');
-  });
+    });
   
   // Handle errors
   customWs.on('error', (error) => {
-    console.error('WebSocket error:', error);
-  });
+    });
 });
 
 // Keep-alive interval
@@ -151,10 +149,7 @@ app.use(cookieParser());
 initializeStorage();
 // Use storageConfig.root to keep serving path consistent with where files are saved
 const storagePath = storageConfig.root;
-console.log('📁 Static storage path:', storagePath);
-
 app.use('/storage', (req, res, next) => {
-  console.log('📂 Storage request:', req.path);
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -164,15 +159,14 @@ app.use('/storage', (req, res, next) => {
 // Also serve from parent project root storage as a fallback (in case files were saved there)
 const parentStoragePath = path.resolve(process.cwd(), '..', 'storage');
 if (parentStoragePath !== storagePath) {
-  console.log('📁 Fallback storage path enabled:', parentStoragePath);
   app.use('/storage', express.static(parentStoragePath));
 }
 
 // API Routes
 app.use('/api/auth', authRoutes);
 
-// Apply PIN authentication middleware to all routes except auth
-app.use(pinAuthMiddleware);
+// Apply PIN authentication middleware only to login route
+app.use('/api/auth/login', pinAuthMiddleware);
 
 app.use('/api/customers', customerRoutes);
 app.use('/api/contacts', contactAdminRoutes);
@@ -217,7 +211,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
   }
-  console.error(err.stack);
   res.status(500).json({ 
     error: 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { details: err.message })

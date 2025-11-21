@@ -149,8 +149,6 @@ export default async function DashboardPage() {
       </>
     );
   } catch (error) {
-    console.error('Failed to load dashboard:', error);
-    
     // Handle authentication errors
     if (error instanceof Error && 
         (error.message.includes('401') || error.message.includes('Unauthorized'))) {

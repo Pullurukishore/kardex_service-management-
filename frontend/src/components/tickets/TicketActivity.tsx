@@ -44,16 +44,27 @@ interface ActivityItem {
 };
 
 // Simplified location display component - backend now handles address resolution
-function LocationDisplayWithBackendAddress({ notes, activityId }: { notes?: string; activityId: string }) {
-  if (!notes) return null;
+function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: { notes?: string; activityId: string; locationData?: { location?: string; latitude?: number; longitude?: number; accuracy?: number; locationSource?: string; } }) {
+  if (!notes && !locationData) return null;
 
-  const locationMatch = notes.match(/📍 Location: ([^\n]+)/);
-  const coordsMatch = notes.match(/📍 Coordinates: ([^\n]+)/);
-  const timeMatch = notes.match(/🕒 Time: ([^\n]+)/);
+  const locationMatch = notes?.match(/📍 Location: ([^\n]+)/);
+  const coordsMatch = notes?.match(/📍 Coordinates: ([^\n]+)/);
+  const timeMatch = notes?.match(/🕒 Time: ([^\n]+)/);
+  const sourceMatch = notes?.match(/📌 Source: ([^\n]+)/);
   
-  const location = locationMatch?.[1];
-  const coordinates = coordsMatch?.[1];
+  const hasStructured = !!(locationData && (locationData.location || (locationData.latitude && locationData.longitude)));
+  const computedSource = locationData?.locationSource === 'manual'
+    ? '✓ Manual'
+    : (locationData?.accuracy !== undefined && locationData?.accuracy !== null)
+      ? (locationData.accuracy <= 100 ? `✓ Accurate (${Math.round(locationData.accuracy)}m)` : `⚠ Low Accuracy (${Math.round(locationData.accuracy)}m)`)
+      : undefined;
+  
+  const location = hasStructured ? (locationData?.location) : locationMatch?.[1];
+  const coordinates = hasStructured && locationData?.latitude !== undefined && locationData?.longitude !== undefined
+    ? `${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)}`
+    : coordsMatch?.[1];
   const time = timeMatch?.[1];
+  const source = hasStructured ? computedSource : sourceMatch?.[1];
 
   return (
     <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
@@ -67,6 +78,20 @@ function LocationDisplayWithBackendAddress({ notes, activityId }: { notes?: stri
               <span className="text-xs font-semibold text-blue-800 bg-blue-200 px-2 py-1 rounded-full">
                 📍 LOCATION TRACKED
               </span>
+              {source && (
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${
+                    source.includes('Manual') 
+                      ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                      : source.includes('Accurate')
+                      ? 'bg-green-50 text-green-700 border-green-200'
+                      : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                  }`}
+                >
+                  {source}
+                </Badge>
+              )}
             </div>
             
             <div className="bg-white p-2 rounded-md border border-blue-100">
@@ -118,8 +143,7 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
         const response = await api.get(`/tickets/${ticketId}/activity`);
         setActivities(response.data);
       } catch (error) {
-        console.error('Error fetching activities:', error);
-      } finally {
+        } finally {
         setLoading(false);
       }
     };
@@ -225,7 +249,7 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                         {activity.user?.role?.replace('_', ' ').toLowerCase()}
                       </Badge>
                       {/* Show location badge only for onsite visit statuses */}
-                      {activity.type === 'STATUS_CHANGE' && activity.data.status && isOnsiteVisitStatus(activity.data.status) && hasLocationData(activity.data.notes) && (
+                      {activity.type === 'STATUS_CHANGE' && activity.data.status && isOnsiteVisitStatus(activity.data.status) && ((activity.data.location || (activity.data.latitude && activity.data.longitude)) || hasLocationData(activity.data.notes)) && (
                         <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
                           📍 Location
                         </Badge>
@@ -285,10 +309,17 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                       </p>
                       
                       {/* Location Display for Onsite Visit Status Changes Only - Backend Address Resolution */}
-                      {activity.type === 'STATUS_CHANGE' && activity.data.status && isOnsiteVisitStatus(activity.data.status) && hasLocationData(activity.data.notes) && (
+                      {activity.type === 'STATUS_CHANGE' && activity.data.status && isOnsiteVisitStatus(activity.data.status) && ((activity.data.location || (activity.data.latitude && activity.data.longitude)) || hasLocationData(activity.data.notes)) && (
                         <LocationDisplayWithBackendAddress 
                           notes={activity.data.notes} 
                           activityId={activity.id}
+                          locationData={{
+                            location: activity.data.location,
+                            latitude: activity.data.latitude,
+                            longitude: activity.data.longitude,
+                            accuracy: activity.data.accuracy,
+                            locationSource: activity.data.locationSource
+                          }}
                         />
                       )}
                       

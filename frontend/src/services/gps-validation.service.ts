@@ -13,6 +13,7 @@ export interface GPSValidationResult {
   success: boolean;
   location?: GPSLocation;
   error?: string;
+  warning?: string;
   requiresManualSelection?: boolean;
   attemptsMade?: number;
 }
@@ -52,35 +53,59 @@ export class EnhancedGPSService {
 
     // Single GPS attempt - let the hook handle retries for better UX
     try {
-      console.log('GPS single attempt starting...');
-      
       const location = await this.attemptGPSCapture(finalConfig, 1);
       
-      // Check if this location meets our accuracy requirements
-      console.log(`GPS Validation Check: accuracy=${location.accuracy}m, maxAccuracy=${finalConfig.maxAccuracy}m`);
+      // Debug logging for accuracy validation
+      console.log(`GPS Validation: accuracy=${location.accuracy}m, threshold=${finalConfig.maxAccuracy}m`);
+      console.log(`GPS Validation: ${location.accuracy <= finalConfig.maxAccuracy ? 'ACCEPT' : 'REJECT'}`);
       
-      if (location.accuracy <= finalConfig.maxAccuracy) {
-        console.log(`✅ GPS ACCEPTED: ±${location.accuracy}m (threshold: ${finalConfig.maxAccuracy}m)`);
-        
+      // Intelligent accuracy validation
+      const isGoodAccuracy = location.accuracy <= 50; // Excellent accuracy
+      const isAcceptableAccuracy = location.accuracy <= finalConfig.maxAccuracy; // Within threshold
+      const isFairAccuracy = location.accuracy <= 150; // Fair but usable
+      
+      // Always accept excellent accuracy (≤50m) regardless of threshold
+      if (isGoodAccuracy) {
+        console.log(`GPS Success: Excellent ±${Math.round(location.accuracy)}m accuracy accepted`);
         return {
           success: true,
           location,
           attemptsMade: 1
         };
-      } else {
-        console.log(`❌ GPS REJECTED: ±${location.accuracy}m exceeds threshold of ${finalConfig.maxAccuracy}m`);
-        
+      }
+      
+      // Accept acceptable accuracy (≤100m by default)
+      if (isAcceptableAccuracy) {
+        console.log(`GPS Success: Acceptable ±${Math.round(location.accuracy)}m accuracy accepted`);
         return {
-          success: false,
+          success: true,
           location,
-          error: `GPS accuracy insufficient: ±${Math.round(location.accuracy)}m (requires ≤${finalConfig.maxAccuracy}m)`,
-          requiresManualSelection: true,
           attemptsMade: 1
         };
       }
-    } catch (error: any) {
-      console.log('GPS attempt failed:', error.message);
       
+      // For fair accuracy (≤150m), accept but with warning
+      if (isFairAccuracy) {
+        console.log(`GPS Success: Fair ±${Math.round(location.accuracy)}m accuracy accepted with warning`);
+        return {
+          success: true,
+          location,
+          attemptsMade: 1,
+          warning: `GPS accuracy is fair (±${Math.round(location.accuracy)}m). Consider moving to open area for better accuracy.`
+        };
+      }
+      
+      // Reject poor accuracy (>150m)
+      console.log(`GPS Failed: Poor ±${Math.round(location.accuracy)}m accuracy exceeds acceptable threshold`);
+      return {
+        success: false,
+        location,
+        error: `GPS accuracy too poor: ±${Math.round(location.accuracy)}m (requires ≤${finalConfig.maxAccuracy}m, preferably ≤50m)`,
+        requiresManualSelection: true,
+        attemptsMade: 1
+      };
+    } catch (error: any) {
+      console.log(`GPS Error:`, error);
       return {
         success: false,
         error: this.parseGPSError(error) || "GPS location unavailable",
@@ -113,11 +138,9 @@ export class EnhancedGPSService {
         // Request precise location permission on supported browsers
         navigator.permissions.query({ name: 'geolocation' }).then(result => {
           if (result.state === 'granted') {
-            console.log('High accuracy GPS permission granted');
-          }
+            }
         }).catch(err => {
-          console.warn('Could not check GPS permissions:', err);
-        });
+          });
       }
       
       navigator.geolocation.getCurrentPosition(
@@ -129,8 +152,6 @@ export class EnhancedGPSService {
             timestamp: position.timestamp
           };
           
-          console.log(`GPS captured: ${location.latitude}, ${location.longitude} (±${location.accuracy}m)`);
-          
           // Enhanced coordinate validation
           const validation = this.validateLocationByCoordinates(location);
           if (!validation.isValid) {
@@ -141,7 +162,6 @@ export class EnhancedGPSService {
           resolve(location);
         },
         (error) => {
-          console.error(`GPS attempt ${attemptNumber} failed:`, error);
           reject(error);
         },
         options
@@ -252,14 +272,11 @@ export class EnhancedGPSService {
     );
     
     if (!isInIndia) {
-      console.warn(`Coordinates ${lat}, ${lng} appear to be outside India`);
       // Don't reject, just warn - coordinates might be valid for other regions
     }
     
     return true;
   }
-
-
 
   /**
    * Parse GPS error into user-friendly message
@@ -322,8 +339,6 @@ export class EnhancedGPSService {
     if (timeElapsedHours <= 0) return false; // No time elapsed
     
     const speedKmh = distance / timeElapsedHours;
-    
-    console.log(`Location jump check: ${distance.toFixed(2)}km in ${timeElapsedHours.toFixed(2)}h = ${speedKmh.toFixed(2)}km/h`);
     
     return speedKmh > maxSpeedKmh;
   }

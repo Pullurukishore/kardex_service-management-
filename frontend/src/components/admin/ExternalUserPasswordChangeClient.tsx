@@ -65,7 +65,6 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
         throw new Error(response.message || 'Failed to change password');
       }
     } catch (error: any) {
-      console.error('Error changing password:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to change password';
       setMessage({ 
         type: 'error', 

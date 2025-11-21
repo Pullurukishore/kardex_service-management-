@@ -50,8 +50,6 @@ async function makeServerRequest(endpoint: string) {
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
   
-  console.log('AuthToken found:', !!authToken);
-  
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -60,17 +58,12 @@ async function makeServerRequest(endpoint: string) {
     cache: 'no-store', // Ensure fresh data
   });
 
-  console.log('Response status:', response.status, response.statusText);
-  
   if (!response.ok) {
-    console.error(`Failed to fetch ${endpoint}:`, response.status, response.statusText);
     const errorText = await response.text();
-    console.error('Error response:', errorText);
     throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
   }
 
   const data = await response.json();
-  console.log('Response data structure:', Object.keys(data));
   return data;
 }
 
@@ -97,7 +90,6 @@ export async function getExternalUsers(params: GetExternalUsersParams = {}): Pro
       }
     };
   } catch (error) {
-    console.error('Error fetching external users:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
@@ -154,7 +146,6 @@ export async function getExternalUserById(id: number): Promise<ExternalUser | nu
     // Backend returns { user: userData }, so we need to extract the user
     return data.user || data;
   } catch (error) {
-    console.error('Error fetching external user by ID:', error);
     return null;
   }
 }

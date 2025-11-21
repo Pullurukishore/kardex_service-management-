@@ -175,8 +175,6 @@ export const useEnhancedLocation = (options: UseEnhancedLocationOptions = {}) =>
           }
         }
       } catch (error: any) {
-        console.error('GPS capture error:', error);
-        
         if (attempt >= maxRetries) {
           // All retries exhausted due to errors
           setState(prev => ({ 
@@ -250,7 +248,6 @@ export const useEnhancedLocation = (options: UseEnhancedLocationOptions = {}) =>
         
         // If coordinate validation failed, use coordinates as address
         if (coordinateValidation && !coordinateValidation.isValid) {
-          console.warn('Geocoding coordinate validation failed:', coordinateValidation.warnings);
           finalAddress = `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
           
           // Show warning to user about address accuracy
@@ -271,8 +268,7 @@ export const useEnhancedLocation = (options: UseEnhancedLocationOptions = {}) =>
         };
       }
     } catch (error) {
-      console.error('Failed to get address for location:', error);
-    }
+      }
 
     // Fallback to coordinates if geocoding fails
     return {
@@ -315,8 +311,7 @@ export const useEnhancedLocation = (options: UseEnhancedLocationOptions = {}) =>
         };
       }
     } catch (error) {
-      console.error('Jump validation failed:', error);
-    }
+      }
 
     return { isUnrealistic: false };
   }, []);

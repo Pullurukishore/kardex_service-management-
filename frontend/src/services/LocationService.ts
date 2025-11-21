@@ -42,8 +42,6 @@ class LocationService {
 
     for (let attempt = 1; attempt <= retryAttempts; attempt++) {
       try {
-        console.log(`LocationService: Getting location (attempt ${attempt}/${retryAttempts})...`);
-        
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(
             resolve,
@@ -69,13 +67,9 @@ class LocationService {
           accuracyLevel: this.getAccuracyLevel(position.coords.accuracy || 999999)
         };
 
-        console.log(`LocationService: Location obtained with accuracy: ±${Math.round(location.accuracy || 0)}m (${location.accuracyLevel})`);
-        
         // Check if accuracy meets requirements
         if (requireAccuracy && !location.isAccurate) {
-          console.warn(`LocationService: Accuracy ±${Math.round(location.accuracy || 0)}m exceeds threshold of ${accuracyThreshold}m`);
           if (attempt < retryAttempts) {
-            console.log(`LocationService: Retrying for better accuracy...`);
             continue; // Try again for better accuracy
           } else {
             throw new Error(`GPS accuracy too poor: ±${Math.round(location.accuracy || 0)}m. Required: ±${accuracyThreshold}m or better.`);
@@ -84,18 +78,14 @@ class LocationService {
         
         // Provide accuracy feedback
         if (location.accuracy && location.accuracy > 100) {
-          console.warn(`LocationService: Poor GPS accuracy: ±${Math.round(location.accuracy)}m`);
-        } else if (location.accuracy && location.accuracy <= 10) {
-          console.log(`LocationService: Excellent GPS accuracy: ±${Math.round(location.accuracy)}m`);
-        }
+          } else if (location.accuracy && location.accuracy <= 10) {
+          }
 
         // Cache the location
         this.lastKnownLocation = location;
         
         return location;
       } catch (error) {
-        console.warn(`LocationService: Location attempt ${attempt} failed:`, error);
-        
         if (attempt === retryAttempts) {
           throw new Error(`Failed to get location after ${retryAttempts} attempts: ${error}`);
         }
@@ -137,8 +127,7 @@ class LocationService {
           callback(location);
         },
         (error) => {
-          console.error('Location watch error:', error);
-        },
+          },
         options
       );
 
@@ -175,31 +164,24 @@ class LocationService {
       // Import apiClient dynamically to avoid circular dependencies
       const { apiClient } = await import('@/lib/api/api-client');
       
-      console.log('LocationService: Calling backend geocoding service...');
       const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
       
       if (response.data?.success && response.data?.data?.address) {
-        console.log('LocationService: Backend geocoding successful:', response.data.data.address);
         return { address: response.data.data.address, source: 'backend' };
       }
     } catch (error) {
-      console.warn('LocationService: Backend geocoding failed:', error);
-    }
+      }
 
     // Try frontend geocoding as fallback
     try {
-      console.log('LocationService: Trying frontend geocoding fallback...');
       const address = await this.frontendReverseGeocode(latitude, longitude);
       if (address && address !== `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`) {
-        console.log('LocationService: Frontend geocoding successful:', address);
         return { address, source: 'frontend' };
       }
     } catch (error) {
-      console.warn('LocationService: Frontend geocoding failed:', error);
-    }
+      }
 
     // Final fallback to coordinates
-    console.log('LocationService: Using coordinates as final fallback');
     return { 
       address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`, 
       source: 'coordinates' 
@@ -257,7 +239,6 @@ class LocationService {
       
       throw new Error('No address found in response');
     } catch (error) {
-      console.warn('Frontend geocoding with Nominatim failed:', error);
       throw error;
     }
   }
@@ -311,7 +292,6 @@ class LocationService {
       const permission = await navigator.permissions.query({ name: 'geolocation' });
       return permission.state;
     } catch (error) {
-      console.error('Permission check error:', error);
       return 'prompt';
     }
   }
@@ -324,7 +304,6 @@ class LocationService {
       const location = await this.getCurrentLocation();
       return !!location;
     } catch (error) {
-      console.error('Location permission request failed:', error);
       return false;
     }
   }

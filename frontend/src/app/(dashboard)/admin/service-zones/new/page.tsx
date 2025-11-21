@@ -49,7 +49,6 @@ export default function NewServiceZonePage() {
       router.push('/admin/service-zones');
       router.refresh();
     } catch (error: any) {
-      console.error('Error creating service zone:', error);
       toast({
         title: 'Error',
         description: error.response?.data?.error || 'Failed to create service zone',

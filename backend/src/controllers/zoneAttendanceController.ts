@@ -31,11 +31,7 @@ export const zoneAttendanceController = {
           }
         }
       });
-
-      console.log('🔍 Zone Attendance Debug - User with zones:', JSON.stringify(userWithZone, null, 2));
-
       if (!userWithZone || !userWithZone.serviceZones.length) {
-        console.log('❌ No zone assigned to user:', userId);
         return res.status(404).json({ 
           success: false,
           error: 'No zone assigned to user' 
@@ -43,8 +39,6 @@ export const zoneAttendanceController = {
       }
 
       const userZoneId = userWithZone.serviceZones[0].serviceZoneId;
-      console.log('✅ User zone ID:', userZoneId);
-
       const { 
         startDate, 
         endDate, 
@@ -155,10 +149,6 @@ export const zoneAttendanceController = {
           },
         }
       });
-
-      console.log('👥 Service persons in zone:', allServicePersons.length, allServicePersons.map(sp => ({ id: sp.id, name: sp.name, email: sp.email })));
-      console.log('🔍 Where clause for attendance:', JSON.stringify(whereClause, null, 2));
-
       // Get attendance records for the date range
       const attendanceRecords = await prisma.attendance.findMany({
         where: whereClause,
@@ -192,15 +182,6 @@ export const zoneAttendanceController = {
           { createdAt: 'desc' }
         ]
       });
-
-      console.log('📊 Raw attendance records found:', attendanceRecords.length, attendanceRecords.map(ar => ({ 
-        id: ar.id, 
-        userId: ar.userId, 
-        checkInAt: ar.checkInAt, 
-        status: ar.status,
-        userName: ar.user?.name || ar.user?.email 
-      })));
-
       // Group attendance records by user and date for consolidation
       const consolidatedRecords = new Map();
       
@@ -390,19 +371,6 @@ export const zoneAttendanceController = {
       const paginatedRecords = finalRecords.slice(skip, skip + Number(limit));
       
       const totalPages = Math.ceil(totalRecords / Number(limit));
-
-      console.log('📈 Final result:', {
-        totalRecords,
-        paginatedRecords: paginatedRecords.length,
-        totalPages,
-        sampleRecord: paginatedRecords[0] ? {
-          id: paginatedRecords[0].id,
-          userId: paginatedRecords[0].userId,
-          status: paginatedRecords[0].status,
-          userName: paginatedRecords[0].user?.name || paginatedRecords[0].user?.email
-        } : 'No records'
-      });
-
       return res.json({
         success: true,
         data: {
@@ -417,7 +385,6 @@ export const zoneAttendanceController = {
       });
 
     } catch (error) {
-      console.error('Error fetching zone attendance:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to fetch attendance records' 
@@ -525,7 +492,6 @@ export const zoneAttendanceController = {
       });
 
     } catch (error) {
-      console.error('Error fetching zone attendance stats:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to fetch attendance statistics' 
@@ -597,7 +563,6 @@ export const zoneAttendanceController = {
       });
 
     } catch (error) {
-      console.error('Error fetching zone service persons:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to fetch service persons' 
@@ -643,7 +608,6 @@ export const zoneAttendanceController = {
       });
 
     } catch (error) {
-      console.error('Error fetching zone service zones:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to fetch service zones' 
@@ -776,7 +740,6 @@ export const zoneAttendanceController = {
       return res.send(csv);
 
     } catch (error) {
-      console.error('Error exporting zone attendance:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to export attendance data' 
@@ -887,7 +850,18 @@ export const zoneAttendanceController = {
                       lt: endOfDay,
                     },
                   },
-                  include: {
+                  select: {
+                    id: true,
+                    status: true,
+                    changedAt: true,
+                    notes: true,
+                    timeInStatus: true,
+                    totalTimeOpen: true,
+                    location: true,
+                    latitude: true,
+                    longitude: true,
+                    accuracy: true,
+                    locationSource: true,
                     changedBy: {
                       select: {
                         id: true,
@@ -1041,7 +1015,18 @@ export const zoneAttendanceController = {
                     lte: attendanceRecord.checkOutAt ? new Date(attendanceRecord.checkOutAt) : undefined,
                   },
                 },
-                include: {
+                select: {
+                  id: true,
+                  status: true,
+                  changedAt: true,
+                  notes: true,
+                  timeInStatus: true,
+                  totalTimeOpen: true,
+                  location: true,
+                  latitude: true,
+                  longitude: true,
+                  accuracy: true,
+                  locationSource: true,
                   changedBy: {
                     select: {
                       id: true,
@@ -1199,7 +1184,6 @@ export const zoneAttendanceController = {
       });
 
     } catch (error) {
-      console.error('Error fetching zone attendance detail:', error);
       return res.status(500).json({ 
         success: false,
         error: 'Failed to fetch attendance record details' 

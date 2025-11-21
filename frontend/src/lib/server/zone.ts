@@ -36,11 +36,6 @@ async function serverFetch(endpoint: string) {
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
   
-  console.log('Zone serverFetch called for endpoint:', endpoint);
-  console.log('Full URL:', `${API_BASE_URL}${endpoint}`);
-  console.log('AuthToken found:', !!authToken);
-  console.log('UserRole found:', userRole);
-  
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -49,17 +44,12 @@ async function serverFetch(endpoint: string) {
     cache: 'no-store', // Ensure fresh data
   });
 
-  console.log('Response status:', response.status, response.statusText);
-  
   if (!response.ok) {
-    console.error(`Failed to fetch ${endpoint}:`, response.status, response.statusText);
     const errorText = await response.text();
-    console.error('Error response:', errorText);
     throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
   }
 
   const data = await response.json();
-  console.log('Successful response data:', data);
   return data;
 }
 
@@ -99,7 +89,6 @@ export async function getZoneServicePersons(params: {
       }
     };
   } catch (error) {
-    console.error('Error fetching zone service persons:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 30, total: 0, totalPages: 0 }

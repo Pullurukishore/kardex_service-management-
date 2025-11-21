@@ -9,7 +9,6 @@ export const safeLocalStorage = {
     try {
       return isBrowser ? window.localStorage.getItem(key) : null;
     } catch (e) {
-      console.error('localStorage access error:', e);
       return null;
     }
   },
@@ -19,8 +18,7 @@ export const safeLocalStorage = {
         window.localStorage.setItem(key, value);
       }
     } catch (e) {
-      console.error('localStorage setItem error:', e);
-    }
+      }
   },
   removeItem: (key: string): void => {
     try {
@@ -28,8 +26,7 @@ export const safeLocalStorage = {
         window.localStorage.removeItem(key);
       }
     } catch (e) {
-      console.error('localStorage removeItem error:', e);
-    }
+      }
   },
 };
 
@@ -38,7 +35,6 @@ export const safeSessionStorage = {
     try {
       return isBrowser ? window.sessionStorage.getItem(key) : null;
     } catch (e) {
-      console.error('sessionStorage access error:', e);
       return null;
     }
   },
@@ -48,8 +44,7 @@ export const safeSessionStorage = {
         window.sessionStorage.setItem(key, value);
       }
     } catch (e) {
-      console.error('sessionStorage setItem error:', e);
-    }
+      }
   },
   removeItem: (key: string): void => {
     try {
@@ -57,8 +52,7 @@ export const safeSessionStorage = {
         window.sessionStorage.removeItem(key);
       }
     } catch (e) {
-      console.error('sessionStorage removeItem error:', e);
-    }
+      }
   },
 };
 
@@ -66,7 +60,6 @@ export const safeMatchMedia = (query: string): MediaQueryList | null => {
   try {
     return isBrowser ? window.matchMedia(query) : null;
   } catch (e) {
-    console.error('matchMedia error:', e);
     return null;
   }
 };
@@ -76,7 +69,6 @@ export const executeClientSide = <T>(callback: () => T): T | undefined => {
     try {
       return callback();
     } catch (e) {
-      console.error('Client-side execution error:', e);
       return undefined;
     }
   }
@@ -97,7 +89,6 @@ export const safeAddEventListener = (
         target.removeEventListener(type, listener, options);
       };
     } catch (e) {
-      console.error('Error adding event listener:', e);
       return () => {};
     }
   }
@@ -148,8 +139,7 @@ export const preloadRoute = (href: string): void => {
     link.href = href;
     document.head.appendChild(link);
   } catch (e) {
-    console.error('Error preloading route:', e);
-  }
+    }
 };
 
 // Helper to detect if we're in a hydration phase

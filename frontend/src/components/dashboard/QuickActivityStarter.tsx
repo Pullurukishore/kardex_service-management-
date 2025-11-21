@@ -88,8 +88,7 @@ export default function QuickActivityStarter({ onActivityStarted }: QuickActivit
             address: `${position.coords.latitude}, ${position.coords.longitude}`
           };
         } catch (error) {
-          console.warn('Could not get location:', error);
-        }
+          }
       }
 
       const response = await apiClient.post('/activities', {
@@ -114,7 +113,6 @@ export default function QuickActivityStarter({ onActivityStarted }: QuickActivit
       }
 
     } catch (error) {
-      console.error('Error starting activity:', error);
       toast({
         title: "Error",
         description: "Failed to start activity. Please try again.",

@@ -381,7 +381,6 @@ export const adminAttendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get all attendance error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -476,7 +475,6 @@ export const adminAttendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get attendance stats error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -555,6 +553,7 @@ export const adminAttendanceController = {
                   id: true,
                   title: true,
                   status: true,
+                  onsiteLocationHistory: true,
                   customer: {
                     select: {
                       companyName: true,
@@ -567,7 +566,18 @@ export const adminAttendanceController = {
                         lt: endOfDay,
                       },
                     },
-                    include: {
+                    select: {
+                      id: true,
+                      status: true,
+                      changedAt: true,
+                      notes: true,
+                      timeInStatus: true,
+                      totalTimeOpen: true,
+                      location: true,
+                      latitude: true,
+                      longitude: true,
+                      accuracy: true,
+                      locationSource: true,
                       changedBy: {
                         select: {
                           id: true,
@@ -716,6 +726,7 @@ export const adminAttendanceController = {
               id: true,
               title: true,
               status: true,
+              onsiteLocationHistory: true,
               customer: {
                 select: {
                   companyName: true,
@@ -728,7 +739,18 @@ export const adminAttendanceController = {
                     lt: endOfDay,
                   },
                 },
-                include: {
+                select: {
+                  id: true,
+                  status: true,
+                  changedAt: true,
+                  notes: true,
+                  timeInStatus: true,
+                  totalTimeOpen: true,
+                  location: true,
+                  latitude: true,
+                  longitude: true,
+                  accuracy: true,
+                  locationSource: true,
                   changedBy: {
                     select: {
                       id: true,
@@ -825,7 +847,6 @@ export const adminAttendanceController = {
         auditLogs,
       });
     } catch (error) {
-      console.error('Get attendance detail error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -921,7 +942,6 @@ export const adminAttendanceController = {
         attendance: updatedAttendance,
       });
     } catch (error) {
-      console.error('Update attendance error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1025,7 +1045,6 @@ export const adminAttendanceController = {
         activityLog,
       });
     } catch (error) {
-      console.error('Add activity log error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1141,7 +1160,6 @@ export const adminAttendanceController = {
       res.setHeader('Content-Disposition', 'attachment; filename=attendance-export.csv');
       res.send(csv);
     } catch (error) {
-      console.error('Export attendance error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1205,7 +1223,6 @@ export const adminAttendanceController = {
         data: servicePersons,
       });
     } catch (error) {
-      console.error('Get service persons error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1248,7 +1265,6 @@ export const adminAttendanceController = {
         data: serviceZones,
       });
     } catch (error) {
-      console.error('Get service zones error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },

@@ -78,7 +78,6 @@ export default function NewExternalUserClient() {
         throw new Error(response.message || 'Failed to create user');
       }
     } catch (error: any) {
-      console.error('Error creating user:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create user';
       setMessage({ 
         type: 'error', 
@@ -211,7 +210,6 @@ export default function NewExternalUserClient() {
                   placeholder="+1234567890"
                 />
               </div>
-
 
               <div>
                 <label htmlFor="password" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
@@ -391,7 +389,6 @@ export default function NewExternalUserClient() {
                   placeholder="+1234567890"
                 />
               </MobileFormRow>
-
 
               <MobileFormRow>
                 <label htmlFor="mobile-password" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">

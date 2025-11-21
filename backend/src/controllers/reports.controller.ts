@@ -185,7 +185,6 @@ export const generateReport = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Invalid report type' });
     }
   } catch (error) {
-    console.error('Error generating report:', error);
     return res.status(500).json({ error: 'Failed to generate report' });
   }
 };
@@ -1330,12 +1329,8 @@ interface ColumnDefinition {
 export const exportReport = async (req: Request, res: Response) => {
   try {
     const { from, to, zoneId, reportType, format = 'pdf', ...otherFilters } = req.query as unknown as ReportFilters & { format: string };
-    
-    console.log('Export request received:', { from, to, zoneId, reportType, format, otherFilters });
-    
     // Validate required parameters
     if (!reportType) {
-      console.error('Export failed: Report type is required');
       return res.status(400).json({ error: 'Report type is required' });
     }
     
@@ -1355,9 +1350,6 @@ export const exportReport = async (req: Request, res: Response) => {
     if (zoneId) {
       whereClause.zoneId = parseInt(zoneId as string);
     }
-
-    console.log('Export whereClause:', whereClause);
-
     let data: any[] = [];
     let columns: ColumnDefinition[] = [];
     let summaryData: any = null;
@@ -1456,7 +1448,6 @@ export const exportReport = async (req: Request, res: Response) => {
         data = zoneData.zones || [];
         summaryData = zoneData.summary;
         columns = getPdfColumns('zone-performance');
-        console.log('Zone performance data fetched:', { dataCount: data.length, summary: summaryData });
         break;
         
       case 'her-analysis':
@@ -1562,23 +1553,17 @@ export const exportReport = async (req: Request, res: Response) => {
           { key: 'isHerBreached', header: 'Breached', width: 15 },
           { key: 'resolvedAt', header: 'Resolved', width: 20, format: (date: string) => date ? new Date(date).toLocaleString() : 'N/A' }
         ];
-        console.log('HER Analysis data fetched:', { dataCount: data.length, summary: summaryData });
         break;
         
       default:
-        console.error('Invalid report type:', reportType);
         return res.status(400).json({ error: 'Invalid report type' });
     }
-
-    console.log(`Exporting ${reportType} as ${format}, data count: ${data.length}`);
-
     if (format.toLowerCase() === 'pdf') {
       // Generate PDF with summary and data
       await generatePdf(res, data, columns, reportTitle, filters, summaryData);
     } else if (format.toLowerCase() === 'excel' || format.toLowerCase() === 'xlsx') {
       // Generate Excel with enhanced formatting and summary data
       const excelColumns = getExcelColumns(reportType);
-      console.log('Generating Excel with columns:', excelColumns.map(c => c.key));
       await generateExcel(res, data, excelColumns, reportTitle, filters, summaryData);
     } else {
       // Default to PDF export
@@ -1586,7 +1571,6 @@ export const exportReport = async (req: Request, res: Response) => {
       await generatePdf(res, data, pdfColumns, reportTitle, filters, summaryData);
     }
   } catch (error) {
-    console.error('Error exporting report:', error);
     res.status(500).json({ 
       error: 'Failed to export report',
       details: error instanceof Error ? error.message : 'Unknown error'
@@ -1602,7 +1586,6 @@ const getNestedValue = (obj: any, path: string) => {
     return acc[part] !== undefined ? acc[part] : '';
   }, obj);
 };
-
 
 // Helper functions to get report data without sending response
 async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: Date): Promise<TicketSummaryData> {
@@ -2414,7 +2397,6 @@ async function generateExecutiveSummaryReport(res: Response, whereClause: any, s
       }
     });
   } catch (error) {
-    console.error('Error generating executive summary:', error);
     res.status(500).json({ error: 'Failed to generate executive summary' });
   }
 }
@@ -2711,7 +2693,6 @@ async function generateHerAnalysisReport(res: Response, whereClause: any, startD
       }
     });
   } catch (error) {
-    console.error('Error generating HER analysis:', error);
     res.status(500).json({ error: 'Failed to generate HER analysis' });
   }
 }
@@ -2811,7 +2792,6 @@ export const generateZoneReport = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'Invalid report type' });
     }
   } catch (error) {
-    console.error('Error generating zone report:', error);
     res.status(500).json({ error: 'Failed to generate zone report' });
   }
 }
@@ -3122,7 +3102,6 @@ export const exportZoneReport = async (req: Request, res: Response) => {
       await generatePdf(res, data, pdfColumns, `Zone ${reportTitle}`, filters, summaryData);
     }
   } catch (error) {
-    console.error('Error exporting zone report:', error);
     res.status(500).json({ 
       error: 'Failed to export zone report',
       details: error instanceof Error ? error.message : 'Unknown error'

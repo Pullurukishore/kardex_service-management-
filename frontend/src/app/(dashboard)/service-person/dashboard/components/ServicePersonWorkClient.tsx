@@ -150,7 +150,6 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
       setCurrentLocation(locationData);
       return locationData;
     } catch (error) {
-      console.error('Error getting location:', error);
       toast({
         title: "Location Error",
         description: "Failed to get location. Please enable GPS.",
@@ -175,8 +174,7 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
       const response = await apiClient.get('/attendance/status');
       setAttendance(response.data);
     } catch (error) {
-      console.error('Error refreshing attendance:', error);
-    }
+      }
   };
 
   const refreshActivities = async () => {
@@ -184,8 +182,7 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
       const response = await apiClient.get('/activities?limit=10');
       setActivities(response.data?.activities || []);
     } catch (error) {
-      console.error('Error refreshing activities:', error);
-    }
+      }
   };
 
   const refreshTickets = async () => {
@@ -193,8 +190,7 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
       const response = await apiClient.get('/tickets?filter=assigned-to-service-person&limit=20');
       setTickets(response.data?.tickets || []);
     } catch (error) {
-      console.error('Error refreshing tickets:', error);
-    }
+      }
   };
 
   // Check-in/Check-out handlers
@@ -216,7 +212,6 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
         });
       }
     } catch (error) {
-      console.error('Check-in error:', error);
       toast({
         title: "Check-in Error",
         description: "Failed to check in. Please try again.",
@@ -243,7 +238,6 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
         });
       }
     } catch (error) {
-      console.error('Check-out error:', error);
       toast({
         title: "Check-out Error",
         description: "Failed to check out. Please try again.",
@@ -283,7 +277,6 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
         });
       }
     } catch (error) {
-      console.error('Error starting activity:', error);
       toast({
         title: "Activity Error",
         description: "Failed to start activity. Please try again.",
@@ -313,7 +306,6 @@ export default function ServicePersonWorkClient({ initialData }: Props) {
         });
       }
     } catch (error) {
-      console.error('Error ending activity:', error);
       toast({
         title: "Activity Error",
         description: "Failed to end activity. Please try again.",

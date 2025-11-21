@@ -291,7 +291,6 @@ const ZoneAttendancePage = memo(function ZoneAttendancePage() {
           setStats(null);
         }
       } else {
-        console.error('Error fetching stats:', statsResponse.reason);
         setStats(null);
       }
 
@@ -304,7 +303,6 @@ const ZoneAttendancePage = memo(function ZoneAttendancePage() {
           setServicePersons([]);
         }
       } else {
-        console.error('Error fetching service persons:', servicePersonsResponse.reason);
         setServicePersons([]);
       }
 
@@ -317,12 +315,10 @@ const ZoneAttendancePage = memo(function ZoneAttendancePage() {
           setServiceZones([]);
         }
       } else {
-        console.error('Error fetching service zones:', serviceZonesResponse.reason);
         setServiceZones([]);
       }
 
     } catch (error) {
-      console.error('Error fetching attendance data:', error);
       toast({
         title: "Error",
         description: "Failed to load attendance data. Please try again.",
@@ -383,7 +379,6 @@ const ZoneAttendancePage = memo(function ZoneAttendancePage() {
       setCurrentPage(prev => prev + 1);
     }
   }, [currentPage, totalPages]);
-
 
   useEffect(() => {
     fetchAttendanceData();

@@ -61,7 +61,6 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
       
       router.refresh(); // Refresh the page to update the data
     } catch (error: any) {
-      console.error('Error deleting zone user:', error);
       toast({
         title: 'Error',
         description: error.response?.data?.message || error.message || 'Failed to delete zone user',

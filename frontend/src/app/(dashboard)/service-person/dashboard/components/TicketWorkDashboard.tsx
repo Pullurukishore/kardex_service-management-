@@ -164,7 +164,6 @@ export default function TicketWorkDashboard({
         onRefreshTickets();
       }
     } catch (error) {
-      console.error('Error updating ticket status:', error);
       toast({
         title: "Update Error",
         description: "Failed to update ticket status. Please try again.",

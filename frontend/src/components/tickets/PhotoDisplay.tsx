@@ -161,8 +161,7 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
         setCloudinaryPhotos(convertedPhotos);
       }
     } catch (error) {
-      console.error('Failed to load photos:', error);
-    } finally {
+      } finally {
       setLoading(false);
     }
   };
@@ -180,8 +179,7 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Download failed:', error);
-    }
+      }
   };
 
   if (!photoInfo) return null;

@@ -28,20 +28,14 @@ export async function middleware(request: NextRequest) {
 
   // Log all API calls with detailed information
   if (pathname.startsWith('/api/')) {
-    console.log('\n--- API Request ---');
-    console.log(`[${new Date().toISOString()}] ${request.method} ${pathname}`);
-    console.log('User Role:', userRole || 'Unauthenticated');
-    
     // Clone the request to read the body
     const requestClone = request.clone();
     try {
       const body = await requestClone.text();
       if (body) {
-        console.log('Request Body:', body);
-      }
+        }
     } catch (error) {
-      console.log('Could not read request body');
-    }
+      }
 
     // Skip authentication check for PIN auth endpoints
     const pinAuthEndpoints = [
@@ -54,7 +48,6 @@ export async function middleware(request: NextRequest) {
 
     // Block access to API routes if not authenticated (except PIN auth endpoints)
     if (!isPinAuthEndpoint && (!authToken || !refreshToken)) {
-      console.log('Unauthenticated API access attempt');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -63,7 +56,6 @@ export async function middleware(request: NextRequest) {
 
     // Check if user has access to the API route (skip for PIN auth endpoints)
     if (!isPinAuthEndpoint && !isRouteAccessible(pathname, userRole)) {
-      console.log('Unauthorized API access attempt');
       return NextResponse.json(
         { error: 'You do not have permission to access this resource' },
         { status: 403 }
@@ -98,8 +90,6 @@ export async function middleware(request: NextRequest) {
   // Check if user has access to the requested route
   if (!isRouteAccessible(pathname, userRole)) {
     const redirectPath = getRoleBasedRedirect(userRole);
-    console.log(`Middleware: Redirecting ${userRole} from ${pathname} to ${redirectPath}`);
-    
     // Add a small delay header to prevent conflicts with client-side redirects
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
     response.headers.set('X-Redirect-Reason', 'role-access');

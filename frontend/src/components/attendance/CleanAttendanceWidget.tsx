@@ -108,11 +108,9 @@ export default function CleanAttendanceWidget({
     try {
       setLoading(true);
       const response = await apiClient.get('/attendance/status');
-      console.log('CleanAttendanceWidget: Fetched status:', response);
       const data = response.data || response;
       setAttendanceData(data);
     } catch (error) {
-      console.error('Failed to fetch attendance status:', error);
       toast({
         title: 'Error',
         description: 'Failed to fetch attendance status',
@@ -130,8 +128,7 @@ export default function CleanAttendanceWidget({
       const data = response.data || response;
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch attendance stats:', error);
-    }
+      }
   }, []);
 
   // Initialize data
@@ -189,17 +186,13 @@ export default function CleanAttendanceWidget({
       const maxReadings = 3;
       const readingDelay = 2000; // 2 seconds between readings
 
-      console.log('CleanAttendanceWidget: Starting GPS consistency check with multiple readings...');
-
       for (let i = 0; i < maxReadings; i++) {
         try {
-          console.log(`CleanAttendanceWidget: GPS reading ${i + 1}/${maxReadings}`);
           const reading = await getSingleLocationReading();
           readings.push(reading);
           
           // If we get a very accurate reading early, we can use it
           if (reading.accuracy <= 50 && i > 0) {
-            console.log(`CleanAttendanceWidget: Excellent accuracy (±${Math.round(reading.accuracy)}m) achieved, using this reading`);
             break;
           }
           
@@ -208,7 +201,6 @@ export default function CleanAttendanceWidget({
             await new Promise(resolve => setTimeout(resolve, readingDelay));
           }
         } catch (error) {
-          console.error(`CleanAttendanceWidget: GPS reading ${i + 1} failed:`, error);
           // Continue with other readings even if one fails
         }
       }
@@ -227,11 +219,9 @@ export default function CleanAttendanceWidget({
         error: null
       });
 
-      console.log('CleanAttendanceWidget: Best location selected:', bestReading);
       return bestReading;
 
     } catch (error: any) {
-      console.error('CleanAttendanceWidget: GPS consistency check failed:', error);
       setLocationState({
         isCapturing: false,
         capturedLocation: null,
@@ -247,20 +237,12 @@ export default function CleanAttendanceWidget({
       return readings[0];
     }
 
-    console.log('CleanAttendanceWidget: Analyzing GPS readings for consistency:', readings.map(r => ({
-      lat: r.latitude.toFixed(6),
-      lng: r.longitude.toFixed(6),
-      accuracy: `±${Math.round(r.accuracy)}m`,
-      address: r.address.substring(0, 50) + '...'
-    })));
-
     // Strategy 1: If we have a reading with excellent accuracy (<50m), prefer it
     const excellentReadings = readings.filter(r => r.accuracy <= 50);
     if (excellentReadings.length > 0) {
       const best = excellentReadings.reduce((best, current) => 
         current.accuracy < best.accuracy ? current : best
       );
-      console.log('CleanAttendanceWidget: Using excellent accuracy reading:', `±${Math.round(best.accuracy)}m`);
       return best;
     }
 
@@ -270,7 +252,6 @@ export default function CleanAttendanceWidget({
       const best = consistentReadings.reduce((best, current) => 
         current.accuracy < best.accuracy ? current : best
       );
-      console.log('CleanAttendanceWidget: Using consistent reading:', `±${Math.round(best.accuracy)}m`);
       return best;
     }
 
@@ -278,7 +259,6 @@ export default function CleanAttendanceWidget({
     const best = readings.reduce((best, current) => 
       current.accuracy < best.accuracy ? current : best
     );
-    console.log('CleanAttendanceWidget: Using best accuracy reading (no consistency found):', `±${Math.round(best.accuracy)}m`);
     return best;
   };
 
@@ -311,7 +291,6 @@ export default function CleanAttendanceWidget({
       }
     }
 
-    console.log(`CleanAttendanceWidget: Found ${consistent.length} consistent readings out of ${readings.length}`);
     return consistent;
   };
 
@@ -341,24 +320,18 @@ export default function CleanAttendanceWidget({
         return;
       }
 
-      console.log('CleanAttendanceWidget: Starting GPS capture...');
-      
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude, accuracy } = position.coords;
           
-          console.log(`CleanAttendanceWidget: GPS obtained - Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}, Accuracy: ±${Math.round(accuracy)}m`);
-          
           // Warn about poor GPS accuracy and provide user guidance
           if (accuracy > 100) {
-            console.warn(`CleanAttendanceWidget: Poor GPS accuracy (±${Math.round(accuracy)}m) - location may be imprecise`);
             // Show user warning for poor accuracy
             setLocationState(prev => ({
               ...prev,
               error: `Very poor GPS signal (±${Math.round(accuracy)}m). Please go outdoors with clear sky view for better accuracy. Location may be off by over 3km.`
             }));
           } else if (accuracy > 500) {
-            console.warn(`CleanAttendanceWidget: Poor GPS accuracy (±${Math.round(accuracy)}m) - location may be imprecise`);
             // Show user warning for poor accuracy
             setLocationState(prev => ({
               ...prev,
@@ -369,34 +342,19 @@ export default function CleanAttendanceWidget({
           // Get address from coordinates
           let address = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
           try {
-            console.log('CleanAttendanceWidget: Getting address from backend geocoding...');
             const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
-            
-            console.log('CleanAttendanceWidget: Geocoding response:', {
-              success: response.data?.success,
-              hasAddress: !!response.data?.address,
-              fullResponse: response.data
-            });
             
             // Handle different response formats
             if (response.data?.address) {
               // Direct address in response
               address = response.data.address;
-              console.log('CleanAttendanceWidget: Address resolved (direct):', address);
-            } else if (response.data?.success && response.data?.data?.address) {
+              } else if (response.data?.success && response.data?.data?.address) {
               // Nested address format
               address = response.data.data.address;
-              console.log('CleanAttendanceWidget: Address resolved (nested):', address);
-            } else {
-              console.warn('CleanAttendanceWidget: Geocoding returned no address:', response.data);
-            }
+              } else {
+              }
           } catch (error: any) {
-            console.error('CleanAttendanceWidget: Geocoding API failed:', {
-              error: error?.message || error,
-              status: error?.response?.status,
-              data: error?.response?.data
-            });
-          }
+            }
 
           const locationData = { 
             latitude, 
@@ -413,11 +371,9 @@ export default function CleanAttendanceWidget({
             error: null
           });
           
-          console.log('CleanAttendanceWidget: Location captured and stored in state:', locationData);
           resolve(locationData);
         },
         (error) => {
-          console.error('CleanAttendanceWidget: GPS error:', error);
           const errorMessage = `Location error: ${error.message}`;
           setLocationState({
             isCapturing: false,
@@ -483,8 +439,6 @@ export default function CleanAttendanceWidget({
         timestamp: new Date(location.timestamp).toISOString()
       };
 
-      console.log('CleanAttendanceWidget: Enhanced check-in with location:', checkInData);
-      
       const response = await apiClient.post('/attendance/checkin', checkInData);
       
       toast({
@@ -501,10 +455,7 @@ export default function CleanAttendanceWidget({
       });
 
       await fetchAttendanceStatus();
-      if (onStatusChange) onStatusChange();
     } catch (error: any) {
-      console.error('Check-in failed:', error);
-      
       let errorMessage = 'Failed to check in. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -526,12 +477,8 @@ export default function CleanAttendanceWidget({
   const handleLegacyCheckIn = async () => {
     setActionLoading(true);
     try {
-      console.log('CleanAttendanceWidget: Starting check-in process...');
-      
       // Get location with visual feedback
       const location = await getCurrentLocation();
-      console.log('CleanAttendanceWidget: Location captured:', location);
-
       // Send check-in request
       const response = await apiClient.post('/attendance/checkin', {
         latitude: location.latitude,
@@ -540,8 +487,6 @@ export default function CleanAttendanceWidget({
       });
 
       const result = response.data || response;
-      console.log('CleanAttendanceWidget: Check-in successful:', result);
-      
       // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: true,
@@ -564,15 +509,10 @@ export default function CleanAttendanceWidget({
         description: location.address,
       });
 
-      // Notify parent and refresh data
-      if (onStatusChange) {
-        await onStatusChange();
-      }
+      // Refresh local data
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      console.error('Check-in failed:', error);
-      
       // If already checked in, refresh status to sync UI with backend
       if (error.response?.status === 400 && 
           (error.response?.data?.error === 'Already checked in' || 
@@ -582,11 +522,8 @@ export default function CleanAttendanceWidget({
           description: 'You are currently checked in. Refreshing status...',
           variant: 'destructive',
         });
-        // Refresh to sync state
-        await fetchAttendanceStatus();
-        if (onStatusChange) {
-          await onStatusChange();
-        }
+        // Refresh local data
+      await fetchAttendanceStatus();
       } else {
         toast({
           title: 'Check-in Failed',
@@ -659,8 +596,6 @@ export default function CleanAttendanceWidget({
 
     setActionLoading(true);
     try {
-      console.log('CleanAttendanceWidget: Sending checkout data:', checkOutData);
-
       const response = await apiClient.post('/attendance/checkout', checkOutData);
       
       toast({
@@ -677,10 +612,7 @@ export default function CleanAttendanceWidget({
       });
 
       await fetchAttendanceStatus();
-      if (onStatusChange) onStatusChange();
     } catch (error: any) {
-      console.error('Check-out failed:', error);
-      
       // Handle early checkout confirmation - Show dialog to user
       if (error.response?.status === 400 && error.response.data?.requiresConfirmation) {
         // Store the checkout data and show confirmation dialog
@@ -718,12 +650,8 @@ export default function CleanAttendanceWidget({
   const handleLegacyCheckOut = async () => {
     setActionLoading(true);
     try {
-      console.log('CleanAttendanceWidget: Starting check-out process...');
-      
       // Get location with visual feedback
       const location = await getCurrentLocation();
-      console.log('CleanAttendanceWidget: Location captured:', location);
-
       // Send check-out request
       const response = await apiClient.post('/attendance/checkout', {
         attendanceId: attendanceData?.attendance?.id,
@@ -733,8 +661,6 @@ export default function CleanAttendanceWidget({
       });
 
       const result = response.data || response;
-      console.log('CleanAttendanceWidget: Check-out successful:', result);
-      
       // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: false,
@@ -755,10 +681,7 @@ export default function CleanAttendanceWidget({
         description: `Total hours: ${formatHours(result.attendance?.totalHours)}h`,
       });
 
-      // Notify parent and refresh data
-      if (onStatusChange) {
-        await onStatusChange();
-      }
+      // Refresh local data
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
@@ -844,13 +767,9 @@ export default function CleanAttendanceWidget({
         timestamp: new Date(location.timestamp).toISOString()
       };
 
-      console.log('CleanAttendanceWidget: Enhanced re-check-in with location:', reCheckInData);
-      
       const response = await apiClient.post('/attendance/re-checkin', reCheckInData);
       
       const result = response.data || response;
-      console.log('CleanAttendanceWidget: Re-check-in successful:', result);
-      
       // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: true,
@@ -881,15 +800,10 @@ export default function CleanAttendanceWidget({
         showLocationCapture: false
       });
 
-      // Notify parent and refresh data
-      if (onStatusChange) {
-        await onStatusChange();
-      }
+      // Refresh local data
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      console.error('Re-check-in failed:', error);
-      
       let errorMessage = 'Failed to re-check in. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -911,12 +825,8 @@ export default function CleanAttendanceWidget({
   const handleLegacyReCheckIn = async () => {
     setActionLoading(true);
     try {
-      console.log('CleanAttendanceWidget: Starting legacy re-check-in process...');
-      
       // Get location with visual feedback
       const location = await getCurrentLocation();
-      console.log('CleanAttendanceWidget: Location captured:', location);
-
       // Send re-check-in request
       const response = await apiClient.post('/attendance/re-checkin', {
         attendanceId: attendanceData?.attendance?.id,
@@ -926,8 +836,6 @@ export default function CleanAttendanceWidget({
       });
 
       const result = response.data || response;
-      console.log('CleanAttendanceWidget: Legacy re-check-in successful:', result);
-      
       // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: true,
@@ -950,14 +858,10 @@ export default function CleanAttendanceWidget({
         description: location.address,
       });
 
-      // Notify parent and refresh data
-      if (onStatusChange) {
-        await onStatusChange();
-      }
+      // Refresh local data
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      console.error('Legacy re-check-in failed:', error);
       toast({
         title: 'Re-Check-in Failed',
         description: error.response?.data?.message || 'Failed to re-check in',
@@ -1019,13 +923,10 @@ export default function CleanAttendanceWidget({
         showLocationCapture: false
       });
 
-      if (onStatusChange) {
-        await onStatusChange();
-      }
+      // Refresh local data
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      console.error('Early checkout failed:', error);
       toast({
         title: 'Check-out Failed',
         description: error.response?.data?.message || 'Failed to check out',
@@ -1108,13 +1009,6 @@ export default function CleanAttendanceWidget({
       (attendanceData.attendance.status === 'CHECKED_OUT' || attendanceData.attendance.status === 'EARLY_CHECKOUT');
     
     // Debug logging
-    console.log('CleanAttendanceWidget Button State:', {
-      isCheckedIn,
-      hasAttendanceToday,
-      attendanceStatus: attendanceData.attendance?.status,
-      attendanceData: attendanceData
-    });
-
     if (isCheckedIn) {
       return (
         <Button

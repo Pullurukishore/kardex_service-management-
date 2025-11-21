@@ -35,7 +35,6 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import PhotoGallery from '@/components/photo/PhotoGallery';
 
-
 export default function TicketDetailPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -54,7 +53,6 @@ export default function TicketDetailPage() {
       const response = await api.get(`/tickets/${id}`);
       setTicket(response.data);
     } catch (error) {
-      console.error('Error fetching ticket details:', error);
       toast({
         title: 'Error',
         description: 'Failed to load ticket details',
@@ -72,7 +70,6 @@ export default function TicketDetailPage() {
         const response = await api.get(`/tickets/${id}`);
         setTicket(response.data);
       } catch (error) {
-        console.error('Error fetching ticket:', error);
         toast({
           title: 'Error',
           description: 'Failed to load ticket details',
@@ -92,7 +89,7 @@ export default function TicketDetailPage() {
   const handleStatusChange = async (
     status: string, 
     comments?: string, 
-    location?: { latitude: number; longitude: number; address?: string; timestamp: string },
+    location?: { latitude: number; longitude: number; address?: string; timestamp: string; accuracy?: number; source?: 'gps' | 'manual' | 'network' },
     photos?: { photos: any[]; timestamp: string }
   ) => {
     if (!ticket) return;
@@ -113,7 +110,6 @@ export default function TicketDetailPage() {
         variant: 'default',
       });
     } catch (error) {
-      console.error('Error updating status:', error);
       toast({
         title: 'Error',
         description: 'Failed to update ticket status',
@@ -148,7 +144,6 @@ export default function TicketDetailPage() {
         description: 'Ticket assigned successfully',
       });
     } catch (error: any) {
-      console.error('Error assigning ticket:', error);
       const errorMessage = error.response?.data?.message || 'Failed to assign ticket';
       
       toast({
@@ -166,7 +161,6 @@ export default function TicketDetailPage() {
       </div>
     );
   }
-
 
   return (
     <div className="p-4">
@@ -374,8 +368,7 @@ export default function TicketDetailPage() {
                       await api.patch(`/tickets/${ticket.id}`, { status });
                       setTicket({ ...ticket, status });
                     } catch (error) {
-                      console.error('Error updating status:', error);
-                    }
+                      }
                   }} />
                 ) : activeTab === 'reports' ? (
                   <TicketReports ticketId={ticket.id.toString()} />
@@ -509,7 +502,6 @@ export default function TicketDetailPage() {
                       setAssignmentStep('SERVICE_PERSON');
                       setIsAssignDialogOpen(true);
                     } catch (error) {
-                      console.error('Error fetching service persons:', error);
                       toast({
                         title: 'Error',
                         description: 'Failed to load service persons. Please try again.',

@@ -59,7 +59,6 @@ export class RatingController {
         data: newRating,
       });
     } catch (error) {
-      console.error('Error creating rating:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to create rating',
@@ -98,7 +97,6 @@ export class RatingController {
         data: rating,
       });
     } catch (error) {
-      console.error('Error fetching rating:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch rating',
@@ -129,7 +127,6 @@ export class RatingController {
         data: ratings,
       });
     } catch (error) {
-      console.error('Error fetching customer ratings:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch customer ratings',
@@ -150,7 +147,6 @@ export class RatingController {
         data: stats,
       });
     } catch (error) {
-      console.error('Error fetching rating statistics:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch rating statistics',
@@ -183,7 +179,6 @@ export class RatingController {
         },
       });
     } catch (error) {
-      console.error('Error checking rating existence:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to check rating existence',

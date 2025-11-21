@@ -101,85 +101,20 @@ export const authenticate = async (
     
     // Try to verify access token first
     let decoded: JwtPayload | null = null;
-    let isRefreshing = false;
     
     if (accessToken) {
       decoded = verifyToken(accessToken, JWT_CONFIG.secret);
-      
-      // If access token is expired but we have a refresh token, try to refresh
-      if (!decoded && refreshToken) {
-        isRefreshing = true;
-      }
     }
     
-    // If we need to refresh the token
-    if ((!decoded || isRefreshing) && refreshToken) {
-      const refreshPayload = verifyToken(refreshToken, REFRESH_TOKEN_CONFIG.secret) as RefreshTokenPayload | null;
-      
-      if (!refreshPayload?.id) {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid refresh token',
-          code: 'INVALID_REFRESH_TOKEN'
-        });
-      }
-      
-      // Find user with refresh token
-      const user = await prisma.user.findUnique({
-        where: { id: refreshPayload.id, isActive: true },
-        select: { 
-          id: true, 
-          email: true, 
-          role: true, 
-          customerId: true, 
-          tokenVersion: true,
-          refreshToken: true
-        }
+    // If we don't have a valid decoded token and have refresh token, 
+    // let the frontend handle refresh via the dedicated endpoint
+    // Don't automatically refresh here to avoid conflicts with frontend logic
+    if (!decoded && refreshToken) {
+      return res.status(401).json({
+        success: false,
+        error: 'Access token expired. Please refresh your token.',
+        code: 'TOKEN_EXPIRED'
       });
-      
-      // Validate refresh token
-      if (!user || user.refreshToken !== refreshToken) {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid refresh token',
-          code: 'INVALID_REFRESH_TOKEN'
-        });
-      }
-      
-      // Check token version
-      if (refreshPayload.version !== user.tokenVersion) {
-        return res.status(401).json({
-          success: false,
-          error: 'Token has been revoked',
-          code: 'TOKEN_REVOKED'
-        });
-      }
-      
-      // Generate new access token with proper null check for customerId
-      const newAccessToken = generateAccessToken(
-        {
-          id: user.id,
-          role: user.role,
-          customerId: user.customerId ?? undefined // Convert null to undefined
-        },
-        user.tokenVersion
-      );
-      
-      // Set new access token in response cookie
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax' as const,
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-        path: '/'
-      };
-      
-      res.cookie('accessToken', newAccessToken, cookieOptions);
-      res.cookie('token', newAccessToken, cookieOptions);
-      
-      // Set the new token in the request for the current request
-      accessToken = newAccessToken;
-      decoded = verifyToken(newAccessToken, JWT_CONFIG.secret);
     }
 
     // If we still don't have a valid decoded token
@@ -265,8 +200,6 @@ export const authenticate = async (
       req.user = userPayload;
       next();
     } catch (error: unknown) {
-      console.error('User lookup error:', error);
-      
       // Handle Prisma errors
       if (error instanceof Error && 'code' in error) {
         if (error.code === 'P2025') { // Record not found
@@ -290,8 +223,6 @@ export const authenticate = async (
       });
     }
   } catch (error: unknown) {
-    console.error('Authentication error:', error);
-    
     // Handle specific JWT errors
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
@@ -388,7 +319,6 @@ export const canManageAssets = async (req: AuthedRequest, res: Response, next: N
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    console.error('Asset management permission check error:', error);
     return res.status(500).json({ 
       success: false,
       error: 'Internal server error during authorization',

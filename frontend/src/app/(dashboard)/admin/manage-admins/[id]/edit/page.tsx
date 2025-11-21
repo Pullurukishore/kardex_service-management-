@@ -54,7 +54,6 @@ export default async function EditAdminPage({ params }: EditAdminPageProps) {
       </div>
     );
   } catch (error) {
-    console.error('Error fetching admin:', error);
     notFound();
   }
 }

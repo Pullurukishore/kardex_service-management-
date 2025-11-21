@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, OnsiteVisitEvent } from '@prisma/client';
 import { subDays, startOfDay, endOfDay, differenceInMinutes, format, getDay, setHours, setMinutes, setSeconds, setMilliseconds, addDays, isBefore, isAfter } from 'date-fns';
 
 import prisma from '../config/db';
@@ -120,18 +120,20 @@ function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number
 
 export const getDashboardData = async (req: Request, res: Response) => {
   try {
-    // Get date ranges for comparison
+    // Get date ranges (support "all"/"total" = all-time)
     const today = new Date();
+    const rangeParam = (req.query.range as string) || '';
+    const isAllRange = ['all', 'total'].includes(rangeParam.toLowerCase());
     const thirtyDaysAgo = subDays(today, 30);
     const sixtyDaysAgo = subDays(today, 60);
-    
-    // Get current period data (last 30 days)
-    const currentPeriodStart = thirtyDaysAgo;
+
+    // Current period
+    const currentPeriodStart = isAllRange ? new Date(0) : thirtyDaysAgo;
     const currentPeriodEnd = today;
-    
-    // Get previous period data (30-60 days ago)
-    const previousPeriodStart = sixtyDaysAgo;
-    const previousPeriodEnd = thirtyDaysAgo;
+
+    // Previous period (not meaningful for all-time; use zeros later for change)
+    const previousPeriodStart = isAllRange ? new Date(0) : sixtyDaysAgo;
+    const previousPeriodEnd = isAllRange ? new Date(0) : thirtyDaysAgo;
     
     // Execute all queries in parallel for better performance
     const [
@@ -254,13 +256,10 @@ export const getDashboardData = async (req: Request, res: Response) => {
         }
       }),
       
+      // Get active machines count
       prisma.asset.count({
         where: {
-          status: "ACTIVE",
-          updatedAt: {
-            gte: currentPeriodStart,
-            lte: currentPeriodEnd
-          }
+          status: { in: ["ACTIVE", "active", "Active"] }
         }
       }),
       
@@ -343,13 +342,10 @@ export const getDashboardData = async (req: Request, res: Response) => {
         }
       }),
       
+      // Get active machines count (previous period)
       prisma.asset.count({
         where: {
-          status: "ACTIVE",
-          updatedAt: {
-            gte: previousPeriodStart,
-            lte: previousPeriodEnd
-          }
+          status: { in: ["ACTIVE", "active", "Active"] }
         }
       }),
       
@@ -516,10 +512,10 @@ export const getDashboardData = async (req: Request, res: Response) => {
       return Math.round(((current - previous) / previous) * 100);
     };
     
-    const openTicketsChange = calculateChange(openTicketsCurrent, openTicketsPrevious);
-    const inProgressTicketsChange = calculateChange(inProgressTicketsCurrent, inProgressTicketsPrevious);
-    const monthlyTicketsChange = calculateChange(monthlyTicketsCurrent, monthlyTicketsPrevious);
-    const activeMachinesChange = calculateChange(activeMachinesCurrent, activeMachinesPrevious);
+    const openTicketsChange = isAllRange ? 0 : calculateChange(openTicketsCurrent, openTicketsPrevious);
+    const inProgressTicketsChange = isAllRange ? 0 : calculateChange(inProgressTicketsCurrent, inProgressTicketsPrevious);
+    const monthlyTicketsChange = isAllRange ? 0 : calculateChange(monthlyTicketsCurrent, monthlyTicketsPrevious);
+    const activeMachinesChange = isAllRange ? 0 : calculateChange(activeMachinesCurrent, activeMachinesPrevious);
     
     // Prepare status distribution
     const statusDistributionFormatted = statusDistribution.map((item: any) => ({
@@ -568,7 +564,7 @@ export const getDashboardData = async (req: Request, res: Response) => {
         kpis: {
           totalTickets: {
             value: totalTicketsCount,
-            change: calculateChange(totalTicketsCount, 0).toString(),
+            change: (isAllRange ? 0 : calculateChange(totalTicketsCount, 0)).toString(),
             isPositive: false // More tickets is generally not positive
           },
           slaCompliance: {
@@ -632,7 +628,6 @@ export const getDashboardData = async (req: Request, res: Response) => {
     
     res.json(dashboardData);
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -653,9 +648,7 @@ async function calculateAverageResponseTime(startDate: Date, endDate: Date) {
         createdAt: true,
         statusHistory: {
           where: {
-            status: {
-              in: ['OPEN', 'ASSIGNED']
-            }
+            status: 'ASSIGNED'
           },
           orderBy: {
             changedAt: 'asc'
@@ -668,25 +661,17 @@ async function calculateAverageResponseTime(startDate: Date, endDate: Date) {
       }
     });
     
-    // Calculate response times (time from OPEN to ASSIGNED)
+    // Calculate response times (time from ticket creation to ASSIGNED - first response)
     const responseTimes = ticketsWithStatusHistory
       .map((ticket: any) => {
         const statusHistory = ticket.statusHistory;
         
-        // Find the OPEN status record (should be the first one)
-        const openStatus = statusHistory.find((h: any) => h.status === 'OPEN');
-        // Find the ASSIGNED status record
+        // Find the ASSIGNED status record (first response/assignment)
         const assignedStatus = statusHistory.find((h: any) => h.status === 'ASSIGNED');
         
-        if (openStatus && assignedStatus) {
-          // Calculate business hours from OPEN to ASSIGNED
-          return calculateBusinessHoursInMinutes(openStatus.changedAt, assignedStatus.changedAt);
-        } else if (statusHistory.length > 0) {
-          // Fallback: if no clear OPEN->ASSIGNED transition, use creation time to first status change
-          const firstStatusChange = statusHistory[0];
-          if (firstStatusChange.status !== 'OPEN') {
-            return calculateBusinessHoursInMinutes(ticket.createdAt, firstStatusChange.changedAt);
-          }
+        if (assignedStatus) {
+          // Calculate business hours from ticket creation to ASSIGNED
+          return calculateBusinessHoursInMinutes(ticket.createdAt, assignedStatus.changedAt);
         }
         
         return null;
@@ -709,7 +694,6 @@ async function calculateAverageResponseTime(startDate: Date, endDate: Date) {
     
     return { hours, minutes, change: 0, isPositive };
   } catch (error) {
-    console.error('Error calculating average response time:', error);
     return { hours: 0, minutes: 0, change: 0, isPositive: true }; // Return zeros on error
   }
 }
@@ -886,7 +870,6 @@ async function calculateAverageDowntime(startDate: Date, endDate: Date): Promise
     
     return { hours, minutes, change: 0, isPositive };
   } catch (error) {
-    console.error('Error calculating downtime:', error);
     return { hours: 0, minutes: 0, change: 0, isPositive: true };
   }
 }
@@ -910,7 +893,7 @@ async function calculateSLACompliance(startDate: Date, endDate: Date) {
     // SLA target: 1 business day (8.5 hours with 9 AM - 5:30 PM schedule)
     // In a real scenario, you would check against SLA policies based on priority
     const compliantTickets = tickets.filter((ticket: any) => {
-      if (ticket.status !== 'CLOSED') return false;
+      if (!['CLOSED', 'RESOLVED', 'CLOSED_PENDING'].includes(ticket.status)) return false;
       
       const openedAt = ticket.createdAt;
       const closedAt = ticket.updatedAt;
@@ -1012,8 +995,8 @@ async function getZoneWiseTicketData() {
           
           if (resolutionTimes.length > 0) {
             const avgMinutes = resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length;
-            // Convert to hours and round to avoid floating point precision issues
-            avgResolutionTimeHours = Math.round(avgMinutes / 60); // Round to nearest hour
+            // Convert to hours (keep decimal for proper display of sub-hour values)
+            avgResolutionTimeHours = Math.round((avgMinutes / 60) * 10) / 10; // Round to 1 decimal place
           }
         } else {
           // If no closed tickets, check if there are any tickets at all
@@ -1035,8 +1018,8 @@ async function getZoneWiseTicketData() {
             const avgAge = allZoneTickets.reduce((sum, ticket) => 
               sum + calculateBusinessHoursInMinutes(ticket.createdAt, ticket.updatedAt), 0
             ) / allZoneTickets.length;
-            // Convert to hours and round to avoid floating point precision issues
-            avgResolutionTimeHours = Math.round(avgAge / 60); // Round to nearest hour
+            // Convert to hours (keep decimal for proper display of sub-hour values)
+            avgResolutionTimeHours = Math.round((avgAge / 60) * 10) / 10; // Round to 1 decimal place
           } else {
             // Default to 0 hours if no data available
             avgResolutionTimeHours = 0;
@@ -1056,7 +1039,6 @@ async function getZoneWiseTicketData() {
     
     return zoneDataWithResolutionTime;
   } catch (error) {
-    console.error('Error fetching zone-wise data with resolution time:', error);
     return [];
   }
 }
@@ -1094,142 +1076,216 @@ async function getTicketTrends(days: number = 30) {
   }
 }
 
-// Helper function to calculate average travel time (ONSITE_VISIT_STARTED to ONSITE_VISIT_REACHED + ONSITE_VISIT_RESOLVED to ONSITE_VISIT_COMPLETED)
+// Helper function to calculate average travel time (same as service person reports)
+// Travel time: ONSITE_VISIT_STARTED to ONSITE_VISIT_REACHED + ONSITE_VISIT_RESOLVED to ONSITE_VISIT_COMPLETED
 async function calculateAverageTravelTime(startDate: Date, endDate: Date) {
   try {
-    // Get tickets that have status history entries for both travel segments
-    const statusHistoryEntries = await prisma.ticketStatusHistory.findMany({
-      where: {
-        status: {
-          in: ['ONSITE_VISIT_STARTED', 'ONSITE_VISIT_REACHED', 'ONSITE_VISIT_RESOLVED', 'ONSITE_VISIT_COMPLETED']
-        },
-        changedAt: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
+    // Get all tickets (no date filter on createdAt - match service person report logic)
+    const tickets = await prisma.ticket.findMany({
       include: {
-        ticket: true
+        statusHistory: {
+          orderBy: {
+            changedAt: 'asc',
+          },
+        },
       },
-      orderBy: {
-        changedAt: 'asc'
-      }
     });
 
-    if (statusHistoryEntries.length === 0) {
+    const travelTimes: number[] = [];
+
+    for (const ticket of tickets) {
+      const statusHistory = ticket.statusHistory;
+      if (statusHistory.length > 0) {
+        // Travel time: ONSITE_VISIT_STARTED to ONSITE_VISIT_REACHED + ONSITE_VISIT_RESOLVED to ONSITE_VISIT_COMPLETED
+        const goingStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_STARTED');
+        const goingEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_REACHED');
+        const returnStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_RESOLVED');
+        const returnEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_COMPLETED');
+
+        let ticketTravelTime = 0;
+        
+        // Going travel time
+        if (goingStart && goingEnd && goingStart.changedAt < goingEnd.changedAt) {
+          ticketTravelTime += differenceInMinutes(goingEnd.changedAt, goingStart.changedAt);
+        }
+        
+        // Return travel time
+        if (returnStart && returnEnd && returnStart.changedAt < returnEnd.changedAt) {
+          ticketTravelTime += differenceInMinutes(returnEnd.changedAt, returnStart.changedAt);
+        }
+        
+        if (ticketTravelTime > 0) {
+          travelTimes.push(ticketTravelTime);
+        }
+      }
+    }
+
+    if (travelTimes.length === 0) {
       return {
         hours: 0,
-        minutes: 0, // No data = show 0
+        minutes: 0,
         change: 0,
         isPositive: true
       };
     }
 
-    // Group by ticket ID to analyze status transitions
-    const ticketStatusMap = new Map();
-    
-    for (const entry of statusHistoryEntries) {
-      if (!ticketStatusMap.has(entry.ticketId)) {
-        ticketStatusMap.set(entry.ticketId, []);
-      }
-      ticketStatusMap.get(entry.ticketId).push(entry);
-    }
-
-    let totalMinutes = 0;
-    let validTickets = 0;
-    let filteredTickets = 0;
-    let ticketDetails: any[] = [];
-
-    for (const [ticketId, statusHistory] of ticketStatusMap) {
-      // Sort by changedAt to ensure chronological order
-      statusHistory.sort((a: any, b: any) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime());
-      
-      // Calculate going travel time (STARTED → REACHED)
-      const goingStart = statusHistory.find((h: any) => h.status === 'ONSITE_VISIT_STARTED');
-      const goingEnd = statusHistory.find((h: any) => h.status === 'ONSITE_VISIT_REACHED');
-      
-      // Calculate return travel time (RESOLVED → COMPLETED)
-      const returnStart = statusHistory.find((h: any) => h.status === 'ONSITE_VISIT_RESOLVED');
-      const returnEnd = statusHistory.find((h: any) => h.status === 'ONSITE_VISIT_COMPLETED');
-
-      let ticketTotalTravelMinutes = 0;
-      let hasValidTravel = false;
-
-      // Add going travel time (keep as real elapsed time since travel happens in real-time)
-      if (goingStart && goingEnd && goingStart.changedAt < goingEnd.changedAt) {
-        const goingMinutes = differenceInMinutes(
-          new Date(goingEnd.changedAt),
-          new Date(goingStart.changedAt)
-        );
-        // Accept ALL database values without any filtering
-        if (goingMinutes > 0) {
-          ticketTotalTravelMinutes += goingMinutes;
-          hasValidTravel = true;
-        }
-      }
-
-      // Add return travel time (keep as real elapsed time since travel happens in real-time)
-      if (returnStart && returnEnd && returnStart.changedAt < returnEnd.changedAt) {
-        const returnMinutes = differenceInMinutes(
-          new Date(returnEnd.changedAt),
-          new Date(returnStart.changedAt)
-        );
-        // Accept ALL database values without any filtering
-        if (returnMinutes > 0) {
-          ticketTotalTravelMinutes += returnMinutes;
-          hasValidTravel = true;
-        }
-      }
-
-      // Only include tickets with at least one valid travel segment
-      if (hasValidTravel) { // Accept any total travel time
-        totalMinutes += ticketTotalTravelMinutes;
-        validTickets++;
-        ticketDetails.push({ ticketId, travelMinutes: ticketTotalTravelMinutes });
-      }
-    }
-
-    if (validTickets === 0) {
-      console.log('⚠️ No valid travel time data found');
-      console.log(`   - Tickets processed: ${ticketStatusMap.size}`);
-      console.log(`   - Tickets filtered (>4h total): ${filteredTickets}`);
-      return {
-        hours: 0,
-        minutes: 0, // No data = show 0
-        change: 0,
-        isPositive: true
-      };
-    }
-
-    const avgMinutes = Math.round(totalMinutes / validTickets);
+    // Calculate average in minutes
+    const avgMinutes = Math.round((travelTimes.reduce((sum, time) => sum + time, 0) / travelTimes.length));
     const hours = Math.floor(avgMinutes / 60);
     const minutes = avgMinutes % 60;
-
-    console.log(`✅ Avg Travel Time: ${hours}h ${minutes}m`);
-    console.log(`   - Valid tickets: ${validTickets}`);
-    console.log(`   - Total minutes: ${totalMinutes}`);
-    console.log(`   - Sample: ${ticketDetails.slice(0, 3).map((t: any) => `Ticket#${t.ticketId}: ${t.travelMinutes}m`).join(', ')}`);
     return {
       hours,
       minutes,
-      change: 0, // You could calculate this compared to previous period
-      isPositive: true // Lower travel time is better
+      change: 0,
+      isPositive: true
     };
   } catch (error) {
-    console.error('Error calculating average travel time:', error);
     return {
       hours: 0,
-      minutes: 0, // Error = show 0
+      minutes: 0,
       change: 0,
       isPositive: true
     };
   }
 }
 
-// Helper function to calculate average onsite resolution time (ONSITE_VISIT_IN_PROGRESS to ONSITE_VISIT_RESOLVED)
+// Helper function to calculate average onsite resolution time (same as service person reports)
+// Onsite work time: ONSITE_VISIT_IN_PROGRESS to ONSITE_VISIT_RESOLVED
 async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Date) {
   try {
-    // Get tickets that have status history entries for onsite work resolution
+    // Get all tickets (no date filter on createdAt - match service person report logic)
+    const tickets = await prisma.ticket.findMany({
+      include: {
+        statusHistory: {
+          orderBy: {
+            changedAt: 'asc',
+          },
+        },
+      },
+    });
+
+    const onsiteTimes: number[] = [];
+
+    for (const ticket of tickets) {
+      const statusHistory = ticket.statusHistory;
+      if (statusHistory.length > 0) {
+        // Onsite work time: ONSITE_VISIT_IN_PROGRESS to ONSITE_VISIT_RESOLVED
+        const onsiteStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_IN_PROGRESS');
+        const onsiteEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_RESOLVED');
+        
+        if (onsiteStart && onsiteEnd && onsiteStart.changedAt < onsiteEnd.changedAt) {
+          const onsiteTime = differenceInMinutes(onsiteEnd.changedAt, onsiteStart.changedAt);
+          if (onsiteTime > 0) {
+            onsiteTimes.push(onsiteTime);
+          }
+        }
+      }
+    }
+
+    if (onsiteTimes.length === 0) {
+      return {
+        hours: 0,
+        minutes: 0,
+        change: 0,
+        isPositive: true
+      };
+    }
+
+    // Calculate average in minutes
+    const avgMinutes = Math.round((onsiteTimes.reduce((sum, time) => sum + time, 0) / onsiteTimes.length));
+    const hours = Math.floor(avgMinutes / 60);
+    const minutes = avgMinutes % 60;
+    return {
+      hours,
+      minutes,
+      change: 0,
+      isPositive: true
+    };
+  } catch (error) {
+    return {
+      hours: 0,
+      minutes: 0,
+      change: 0,
+      isPositive: true
+    };
+  }
+}
+
+// Old implementation kept for reference - ONSITE_VISIT_LOG based
+async function calculateAverageOnsiteResolutionTime_OLD(startDate: Date, endDate: Date) {
+  try {
+    // First try: Use OnsiteVisitLog (WORK_STARTED -> WORK_COMPLETED|RESOLVED|ENDED)
+    try {
+      const endLogCandidates = await prisma.onsiteVisitLog.findMany({
+        where: {
+          event: { in: [OnsiteVisitEvent.WORK_COMPLETED, OnsiteVisitEvent.RESOLVED, OnsiteVisitEvent.ENDED] },
+          createdAt: { gte: startDate, lte: endDate }
+        },
+        select: { ticketId: true },
+        distinct: ['ticketId']
+      });
+      if (endLogCandidates.length > 0) {
+        const ticketIdsForLogs = endLogCandidates.map((e: any) => e.ticketId);
+        const fullLogs = await prisma.onsiteVisitLog.findMany({
+          where: {
+            ticketId: { in: ticketIdsForLogs },
+            event: { in: [
+              OnsiteVisitEvent.WORK_STARTED,
+              OnsiteVisitEvent.WORK_PAUSED,
+              OnsiteVisitEvent.WORK_RESUMED,
+              OnsiteVisitEvent.WORK_COMPLETED,
+              OnsiteVisitEvent.RESOLVED,
+              OnsiteVisitEvent.ENDED
+            ] }
+          },
+          orderBy: { createdAt: 'asc' }
+        });
+
+        const logMap = new Map<number, any[]>();
+        for (const l of fullLogs) {
+          if (!logMap.has(l.ticketId)) logMap.set(l.ticketId, []);
+          logMap.get(l.ticketId)!.push(l);
+        }
+
+        const perTicketMinutes = new Map<number, number>();
+        let segmentCount = 0;
+        let filteredOutliers = 0;
+        const MAX_ONSITE_MIN = 12 * 60; // 12h sanity cap per segment
+
+        for (const [ticketId, logs] of logMap) {
+          logs.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          let ticketMinutes = 0;
+          for (let i = 0; i < logs.length; i++) {
+            const e: any = logs[i];
+            // End inside window -> pair with nearest preceding WORK_STARTED by same user
+            if ((e.event === OnsiteVisitEvent.WORK_COMPLETED || e.event === OnsiteVisitEvent.RESOLVED || e.event === OnsiteVisitEvent.ENDED)
+              && e.createdAt >= startDate && e.createdAt <= endDate) {
+              let start: any = null;
+              for (let j = i - 1; j >= 0; j--) {
+                if (logs[j].event === OnsiteVisitEvent.WORK_STARTED && logs[j].userId === e.userId) { start = logs[j]; break; }
+              }
+              if (start && start.createdAt < e.createdAt) {
+                const mins = differenceInMinutes(new Date(e.createdAt), new Date(start.createdAt));
+                if (mins > 0) { ticketMinutes += mins; segmentCount++; }
+              }
+            }
+          }
+          if (ticketMinutes > 0) perTicketMinutes.set(ticketId, ticketMinutes);
+        }
+
+        if (perTicketMinutes.size > 0) {
+          const total = Array.from(perTicketMinutes.values()).reduce((a, b) => a + b, 0);
+          const avgMinutesFromLogs = Math.round(total / perTicketMinutes.size);
+          const hoursFromLogs = Math.floor(avgMinutesFromLogs / 60);
+          const minutesFromLogs = avgMinutesFromLogs % 60;
+          if (filteredOutliers > 0)
+          return { hours: hoursFromLogs, minutes: minutesFromLogs, change: 0, isPositive: true };
+        }
+      }
+    } catch (e) {
+    }
+
+    // Fallback: Find tickets that had onsite in-progress/resolved changes during the window
     const statusHistoryEntries = await prisma.ticketStatusHistory.findMany({
       where: {
         status: {
@@ -1240,8 +1296,10 @@ async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Da
           lte: endDate
         }
       },
-      include: {
-        ticket: true
+      select: {
+        ticketId: true,
+        status: true,
+        changedAt: true
       },
       orderBy: {
         changedAt: 'asc'
@@ -1257,56 +1315,66 @@ async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Da
       };
     }
 
-    // Group by ticket ID to analyze status transitions
-    const ticketStatusMap = new Map();
-    
-    for (const entry of statusHistoryEntries) {
+    // Step 2: Load full relevant status history for those tickets (to handle boundary conditions)
+    const ticketIds = Array.from(new Set(statusHistoryEntries.map((e: any) => e.ticketId)));
+    const fullHistory = await prisma.ticketStatusHistory.findMany({
+      where: {
+        ticketId: { in: ticketIds },
+        status: {
+          in: ['ONSITE_VISIT_IN_PROGRESS', 'ONSITE_VISIT_RESOLVED']
+        }
+      },
+      orderBy: {
+        changedAt: 'asc'
+      }
+    });
+
+    // Group by ticket ID
+    const ticketStatusMap = new Map<number, any[]>();
+    for (const entry of fullHistory) {
       if (!ticketStatusMap.has(entry.ticketId)) {
         ticketStatusMap.set(entry.ticketId, []);
       }
-      ticketStatusMap.get(entry.ticketId).push(entry);
+      ticketStatusMap.get(entry.ticketId)!.push(entry);
     }
 
     let totalMinutes = 0;
     let validTickets = 0;
     let filteredTickets = 0;
     let ticketOnsiteDetails: any[] = [];
+    const MAX_ONSITE_MIN_FALLBACK = 12 * 60; // 12h sanity cap
 
     for (const [ticketId, statusHistory] of ticketStatusMap) {
-      // Sort by changedAt to ensure chronological order
+      // Ensure chronological
       statusHistory.sort((a: any, b: any) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime());
-      
-      // Find ONSITE_VISIT_IN_PROGRESS status
-      const startStatus = statusHistory.find((h: any) => 
-        h.status === 'ONSITE_VISIT_IN_PROGRESS'
-      );
-      
-      // Find ONSITE_VISIT_RESOLVED status
-      const endStatus = statusHistory.find((h: any) => 
-        h.status === 'ONSITE_VISIT_RESOLVED'
-      );
 
-      if (startStatus && endStatus && startStatus.changedAt < endStatus.changedAt) {
-        const durationMinutes = calculateBusinessHoursInMinutes(
-          new Date(startStatus.changedAt),
-          new Date(endStatus.changedAt)
-        );
+      // For each RESOLVED event that ends within the window, pair with the nearest preceding IN_PROGRESS
+      for (let i = 0; i < statusHistory.length; i++) {
+        const e: any = statusHistory[i];
+        if (e.status === 'ONSITE_VISIT_RESOLVED' && e.changedAt >= startDate && e.changedAt <= endDate) {
+          // Find previous IN_PROGRESS
+          let startStatus: any = null;
+          for (let j = i - 1; j >= 0; j--) {
+            if (statusHistory[j].status === 'ONSITE_VISIT_IN_PROGRESS') {
+              startStatus = statusHistory[j];
+              break;
+            }
+          }
 
-        // Accept ALL database values without any filtering
-        if (durationMinutes > 0) {
-          totalMinutes += durationMinutes;
-          validTickets++;
-          ticketOnsiteDetails.push({ ticketId, onsiteMinutes: durationMinutes });
+          if (startStatus && startStatus.changedAt < e.changedAt) {
+            // Use real elapsed minutes for onsite duration
+            const durationMinutes = differenceInMinutes(new Date(e.changedAt), new Date(startStatus.changedAt));
+            if (durationMinutes > 0) {
+              totalMinutes += durationMinutes;
+              validTickets++;
+              ticketOnsiteDetails.push({ ticketId, onsiteMinutes: durationMinutes });
+            }
+          }
         }
       }
     }
 
     if (validTickets === 0) {
-      console.log('⚠️ No valid onsite resolution time data found');
-      console.log(`   - Tickets processed: ${ticketStatusMap.size}`);
-      console.log(`   - Tickets with IN_PROGRESS status: ${Array.from(ticketStatusMap.values()).filter((h: any) => h.some((e: any) => e.status === 'ONSITE_VISIT_IN_PROGRESS')).length}`);
-      console.log(`   - Tickets with RESOLVED status: ${Array.from(ticketStatusMap.values()).filter((h: any) => h.some((e: any) => e.status === 'ONSITE_VISIT_RESOLVED')).length}`);
-      console.log(`   - Tickets filtered (>8h): ${filteredTickets}`);
       return {
         hours: 0,
         minutes: 0, // No data = show 0
@@ -1318,11 +1386,6 @@ async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Da
     const avgMinutes = Math.round(totalMinutes / validTickets);
     const hours = Math.floor(avgMinutes / 60);
     const minutes = avgMinutes % 60;
-
-    console.log(`✅ Avg Onsite Resolution Time: ${hours}h ${minutes}m`);
-    console.log(`   - Valid tickets: ${validTickets}`);
-    console.log(`   - Total minutes (business hours): ${totalMinutes}`);
-    console.log(`   - Sample: ${ticketOnsiteDetails.slice(0, 3).map((t: any) => `Ticket#${t.ticketId}: ${t.onsiteMinutes}m`).join(', ')}`);
     return {
       hours,
       minutes,
@@ -1330,7 +1393,6 @@ async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Da
       isPositive: true // Lower resolution time is better
     };
   } catch (error) {
-    console.error('Error calculating average onsite resolution time:', error);
     return {
       hours: 0,
       minutes: 0, // Error = show 0

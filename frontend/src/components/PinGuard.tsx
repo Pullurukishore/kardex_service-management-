@@ -22,50 +22,41 @@ export default function PinGuard({ children }: PinGuardProps) {
     if (hasChecked) return;
 
     const checkPinAccess = async () => {
-      console.log('PinGuard: Starting PIN check for path:', pathname);
-      
       // Skip PIN check for public routes
       const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
       if (isPublicRoute) {
-        console.log('PinGuard: Public route detected, skipping PIN check:', pathname);
         setIsValidated(true);
         setIsLoading(false);
         setHasChecked(true);
         return;
       }
 
+      // Wait for next tick to ensure DOM is ready
+      await new Promise(resolve => setTimeout(resolve, 0));
+
       try {
         // Check if PIN session cookie exists
-        console.log('PinGuard: All cookies:', document.cookie);
         const allCookies = document.cookie.split('; ');
         const pinSession = allCookies.find(row => row.startsWith('pinSession='));
         
-        console.log('PinGuard: Parsed cookies:', allCookies);
-        console.log('PinGuard: PIN session cookie:', pinSession);
-        
         // Also check localStorage for PIN session
         const localSession = localStorage.getItem('pinAccessSession');
-        console.log('PinGuard: localStorage PIN session:', localSession);
-        
         // Check for force bypass parameter
         const urlParams = new URLSearchParams(window.location.search);
         const forceBypass = urlParams.get('forceBypass');
         
         if (forceBypass === 'true') {
-          console.log('PinGuard: Force bypass detected, allowing PIN page access');
           setIsValidated(true);
         } else if (pinSession || localSession) {
           const sessionValue = pinSession ? pinSession.split('=')[1] : 'localStorage';
-          console.log('PinGuard: PIN session found, allowing access:', sessionValue);
           setIsValidated(true);
         } else {
-          console.log('PinGuard: No PIN session found, redirecting to PIN page');
-          router.push('/pin-access');
+          // Use window.location.href instead of router.push to avoid race conditions
+          window.location.href = '/pin-access';
           return;
         }
       } catch (error) {
-        console.error('PinGuard: PIN check error:', error);
-        router.push('/pin-access');
+        window.location.href = '/pin-access';
         return;
       } finally {
         setIsLoading(false);
@@ -74,7 +65,7 @@ export default function PinGuard({ children }: PinGuardProps) {
     };
 
     checkPinAccess();
-  }, [pathname, router, hasChecked]);
+  }, [pathname, hasChecked]);
 
   // Show loading state
   if (isLoading) {

@@ -39,15 +39,10 @@ export default function AddAssetPage() {
   const onSubmit = async (values: AssetFormValues) => {
     try {
       setIsLoading(true);
-      console.log('Submitting asset data:', { ...values, customerId: Number(id) });
-      
       const response = await apiClient.post('/assets', {
         ...values,
         customerId: Number(id)
       });
-      
-      console.log('Full response:', response);
-      console.log('Asset creation response data:', response.data);
       
       // apiClient returns data directly, not wrapped in axios response
       const data = response.data || response || {};
@@ -59,18 +54,15 @@ export default function AddAssetPage() {
 
       // Small delay to ensure toast is shown before redirect
       setTimeout(() => {
-        console.log('Redirecting to:', `/admin/customers/${id}`);
         try {
           router.push(`/admin/customers/${id}`);
         } catch (redirectError) {
-          console.error('Redirect error:', redirectError);
           // Fallback: use window.location
           window.location.href = `/admin/customers/${id}`;
         }
       }, 1500);
 
     } catch (error: any) {
-      console.error('Error adding asset:', error);
       let errorMessage = 'Failed to add asset. Please try again.';
       
       if (error?.response?.data?.message) {
@@ -182,7 +174,6 @@ export default function AddAssetPage() {
                 />
 
               </div>
-
 
               <div className="flex justify-end space-x-4 pt-6 border-t">
                 <Button

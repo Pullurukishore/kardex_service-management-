@@ -74,7 +74,6 @@ export async function getTickets(filters: TicketFilters = {}): Promise<ApiRespon
     const data = await makeServerRequest(`/tickets?${queryParams.toString()}`);
     return data;
   } catch (error) {
-    console.error('Error fetching tickets:', error);
     throw error;
   }
 }
@@ -84,7 +83,6 @@ export async function getTicketById(id: string): Promise<Ticket> {
     const data = await makeServerRequest(`/tickets/${id}`);
     return data.data;
   } catch (error) {
-    console.error('Error fetching ticket:', error);
     throw error;
   }
 }
@@ -96,7 +94,6 @@ export async function updateTicketStatus(ticketId: number, status: TicketStatus)
   try {
     await makeServerRequest(`/tickets/${ticketId}/status`, 'PATCH', { status });
   } catch (error) {
-    console.error('Error updating ticket status:', error);
     throw error;
   }
 }

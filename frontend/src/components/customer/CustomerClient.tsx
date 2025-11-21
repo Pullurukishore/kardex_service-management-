@@ -56,7 +56,6 @@ const CustomerClient = memo(function CustomerClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch customer data:', err);
       setError('Failed to load customer data. Please try again.');
       toast.error('Failed to refresh customer data');
       return false;
@@ -71,11 +70,9 @@ const CustomerClient = memo(function CustomerClient({
     
     // Only fetch data if search params have actually changed (not on initial mount)
     if (initialLoadComplete.current && currentSearchParams !== lastSearchParams.current) {
-      console.log('CustomerClient - Search params changed, fetching new data');
       fetchCustomerData();
     } else if (!initialLoadComplete.current) {
       // Mark initial load as complete without fetching (we already have server-side data)
-      console.log('CustomerClient - Initial load complete, using server-side data');
       initialLoadComplete.current = true;
     }
     

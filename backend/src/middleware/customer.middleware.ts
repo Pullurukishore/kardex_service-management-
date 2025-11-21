@@ -30,7 +30,6 @@ export const canManageCustomers = (req: Request, res: Response, next: NextFuncti
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    console.error('Customer management permission check error:', error);
     return res.status(500).json({ 
       success: false,
       error: 'Internal server error during authorization',
@@ -86,7 +85,6 @@ export const canManageContacts = (req: Request, res: Response, next: NextFunctio
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    console.error('Contact management permission check error:', error);
     return res.status(500).json({ 
       success: false,
       error: 'Internal server error during authorization',
@@ -135,7 +133,6 @@ export const canViewCustomers = (req: Request, res: Response, next: NextFunction
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    console.error('Customer view permission check error:', error);
     return res.status(500).json({ 
       success: false,
       error: 'Internal server error during authorization',

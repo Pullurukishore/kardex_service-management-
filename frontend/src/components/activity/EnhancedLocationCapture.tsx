@@ -63,6 +63,23 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
     previousLocation
   });
 
+  // Debug logging for GPS capture attempts
+  React.useEffect(() => {
+    if (lastAttempt && lastAttempt.location) {
+      console.log(`EnhancedLocationCapture: Last attempt accuracy=${lastAttempt.location.accuracy}m, success=${lastAttempt.success}`);
+      console.log(`EnhancedLocationCapture: GPS retry count=${gpsRetryCount}`);
+      
+      // Show warning if present
+      if (lastAttempt.success && lastAttempt.warning) {
+        toast({
+          title: "GPS Accuracy Notice",
+          description: lastAttempt.warning,
+          variant: "default",
+        });
+      }
+    }
+  }, [lastAttempt, gpsRetryCount]);
+
   // Handle location capture success - use ref to prevent infinite loops
   const lastNotifiedLocationRef = React.useRef<LocationData | null>(null);
   

@@ -234,8 +234,7 @@ const FSAZoneClient: React.FC<FSAZoneClientProps> = ({
             }
           }
         } catch (zoneError: any) {
-          console.warn('Could not fetch zone analytics:', zoneError);
-        }
+          }
         
         // Only show success message when explicitly requested (manual refresh)
         if (showSuccessMessage) {
@@ -245,7 +244,6 @@ const FSAZoneClient: React.FC<FSAZoneClientProps> = ({
         throw new Error(dashboardResponse.error || 'Failed to fetch FSA data');
       }
     } catch (err: any) {
-      console.error('Error fetching FSA data:', err);
       setError(err.message || 'Failed to load FSA data');
       toast.error('Failed to load FSA dashboard data');
     } finally {

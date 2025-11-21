@@ -117,19 +117,14 @@ export default function EditZoneServicePersonPage() {
 
   const loadZones = async () => {
     try {
-      console.log('Loading zones for zone user...');
       // Use zone-specific endpoint to get only zones the current user has access to
       const response = await apiClient.get('/zone/attendance/service-zones');
-      console.log('Zone service zones response:', response);
-      
       const zones = Array.isArray(response.data) 
         ? response.data 
         : response.data.data || [];
       
-      console.log('Processed zones:', zones);
       setZones(zones);
     } catch (error) {
-      console.error('Error loading zones:', error);
       toast({
         title: 'Error',
         description: 'Failed to load service zones for your zone',
@@ -142,21 +137,15 @@ export default function EditZoneServicePersonPage() {
     try {
       setIsLoading(true);
       const response = await apiClient.get<ApiResponse<ServicePerson>>(`/service-persons/${id}`);
-      console.log('Service person API response:', response);
-
       // Unwrap response: handle both raw object and { data: object }
       const unwrapped: any = (response && (response as any).data !== undefined)
         ? (response as any).data
         : (response as any);
 
       if (!unwrapped || typeof unwrapped !== 'object') {
-        console.error('Invalid service person data received:', unwrapped);
-        console.log('Full response:', response);
         setServicePerson(null);
         return;
       }
-      
-      console.log('Processing service person data:', unwrapped);
       
       // Use a strongly typed variable for the rest of the function
       const sp: ServicePerson = unwrapped as ServicePerson;
@@ -164,8 +153,6 @@ export default function EditZoneServicePersonPage() {
       
       // Extract service zones, handling different possible structures
       const serviceZones: any[] = (sp as any).serviceZones || [];
-      console.log('Service zones from API:', serviceZones);
-      
       // Extract zone IDs from serviceZones array
       const zoneIds: number[] = serviceZones
         .map((zoneItem: any): number | null => {
@@ -177,8 +164,6 @@ export default function EditZoneServicePersonPage() {
         })
         .filter((id: number | null): id is number => id !== null);
         
-      console.log('Extracted zone IDs:', zoneIds);
-      
       // Reset form with service person data
       reset({
         id: sp.id,
@@ -195,7 +180,6 @@ export default function EditZoneServicePersonPage() {
       setValue('serviceZoneIds', zoneIds);
       
     } catch (error) {
-      console.error('Error loading service person:', error);
       toast({
         title: 'Error',
         description: 'Failed to load service person details',
@@ -228,8 +212,6 @@ export default function EditZoneServicePersonPage() {
   };
 
   const onSubmit = async (data: UpdateServicePersonForm) => {
-    console.log('Form submission data:', data);
-    
     // Validate required fields
     if (!data.email || !data.email.trim()) {
       toast({
@@ -284,8 +266,6 @@ export default function EditZoneServicePersonPage() {
         serviceZoneIds: data.serviceZoneIds,
       };
       
-      console.log('Updating service person with data:', updateData);
-      
       // Use general service person update endpoint (backend will handle zone restrictions)
       const response = await apiClient.put(`/service-persons/${servicePersonId}`, updateData);
       
@@ -305,8 +285,6 @@ export default function EditZoneServicePersonPage() {
       }, 1500);
       
     } catch (error: any) {
-      console.error('Error updating service person:', error);
-      
       let errorMessage = 'Failed to update service person';
       if (error.response?.data?.error) {
         errorMessage = error.response.data.error;

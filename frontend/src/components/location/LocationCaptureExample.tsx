@@ -10,13 +10,11 @@ const LocationCaptureExample: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleLocationCapture = (result: LocationResult) => {
-    console.log('LocationCaptureExample: Location captured:', result);
     setCapturedLocation(result);
     setError(null);
   };
 
   const handleError = (errorMessage: string) => {
-    console.error('LocationCaptureExample: Error:', errorMessage);
     setError(errorMessage);
     setCapturedLocation(null);
   };
@@ -160,13 +158,10 @@ const LocationCaptureExample: React.FC = () => {
 
 <LocationCapture
   onLocationCapture={(result) => {
-    console.log('Location:', result.location);
-    console.log('Address:', result.address);
     // Use the location data...
   }}
   onError={(error) => {
-    console.error('Location error:', error);
-  }}
+    }}
   accuracyThreshold={5000} // 5km
   showAddress={true}
   autoCapture={false}

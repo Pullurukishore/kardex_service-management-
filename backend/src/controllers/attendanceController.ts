@@ -115,15 +115,12 @@ export const attendanceController = {
         try {
           const { address: geocodedAddress } = await GeocodingService.reverseGeocode(latitude, longitude);
           checkInAddress = geocodedAddress || `${latitude}, ${longitude}`;
-          console.log(`Geocoded check-in address: ${checkInAddress}`);
         } catch (error) {
-          console.error('Geocoding error on check-in:', error);
           // Fallback to coordinates if geocoding fails
           checkInAddress = address || `${latitude}, ${longitude}`;
         }
       } else if (locationSource === 'manual') {
         // For manual entry, use the provided address as-is
-        console.log(`Using manual address for check-in: ${address}`);
         checkInAddress = address;
       }
 
@@ -194,7 +191,6 @@ export const attendanceController = {
         attendance,
       });
     } catch (error) {
-      console.error('Check-in error:', error);
       return res.status(500).json({ 
         error: 'Failed to check in',
         details: error instanceof Error ? error.message : 'Unknown error'
@@ -219,17 +215,6 @@ export const attendanceController = {
       }
       
       const { latitude, longitude, address, notes, attendanceId, isEarlyCheckout, confirmEarlyCheckout, locationSource } = req.body;
-
-      console.log('Checkout request received:', {
-        userId,
-        attendanceId,
-        latitude,
-        longitude,
-        address: address?.substring(0, 50) + '...',
-        locationSource,
-        confirmEarlyCheckout
-      });
-
       // Get real address from coordinates using geocoding service
       // Only geocode if location source is GPS, not manual entry
       let checkOutAddress = address;
@@ -237,15 +222,12 @@ export const attendanceController = {
         try {
           const { address: geocodedAddress } = await GeocodingService.reverseGeocode(latitude, longitude);
           checkOutAddress = geocodedAddress || `${latitude}, ${longitude}`;
-          console.log(`Geocoded check-out address: ${checkOutAddress}`);
         } catch (error) {
-          console.error('Geocoding error on check-out:', error);
           // Fallback to coordinates if geocoding fails
           checkOutAddress = address || `${latitude}, ${longitude}`;
         }
       } else if (locationSource === 'manual') {
         // For manual entry, use the provided address as-is
-        console.log(`Using manual address for check-out: ${address}`);
         checkOutAddress = address;
       }
 
@@ -418,7 +400,6 @@ export const attendanceController = {
         }),
       });
     } catch (error) {
-      console.error('Check-out error:', error);
       return res.status(500).json({ 
         error: 'Failed to check out',
         details: error instanceof Error ? error.message : 'Unknown error'
@@ -495,7 +476,6 @@ export const attendanceController = {
         isCheckedIn: false,
       });
     } catch (error) {
-      console.error('Get attendance status error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -554,7 +534,6 @@ export const attendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get attendance history error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -648,7 +627,6 @@ export const attendanceController = {
         })
       });
     } catch (error) {
-      console.error('Get attendance stats error:', error);
       return res.status(500).json({ 
         error: 'Failed to get attendance stats',
         details: error instanceof Error ? error.message : 'Unknown error'
@@ -704,14 +682,11 @@ export const attendanceController = {
         try {
           const { address: geocodedAddress } = await GeocodingService.reverseGeocode(latitude, longitude);
           checkInAddress = geocodedAddress || `${latitude}, ${longitude}`;
-          console.log(`Geocoded re-check-in address: ${checkInAddress}`);
         } catch (error) {
-          console.error('Geocoding error on re-check-in:', error);
           checkInAddress = address || `${latitude}, ${longitude}`;
         }
       } else if (locationSource === 'manual') {
         // For manual entry, use the provided address as-is
-        console.log(`Using manual address for re-check-in: ${address}`);
         checkInAddress = address;
       }
 
@@ -767,7 +742,6 @@ export const attendanceController = {
         attendance: updatedAttendance,
       });
     } catch (error) {
-      console.error('Re-check-in error:', error);
       return res.status(500).json({ 
         error: 'Failed to re-check-in',
         details: error instanceof Error ? error.message : 'Unknown error'
@@ -907,7 +881,6 @@ export const attendanceController = {
         attendances: updatedAttendances,
       });
     } catch (error) {
-      console.error('Auto-checkout error:', error);
       return res.status(500).json({ 
         error: 'Failed to perform auto-checkout',
         details: error instanceof Error ? error.message : 'Unknown error'
@@ -1013,7 +986,6 @@ export const attendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get all attendance error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1116,7 +1088,6 @@ export const attendanceController = {
         lastUpdated: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Get live tracking error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },

@@ -72,7 +72,6 @@ export default function DashboardClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch dashboard data:', err);
       setError('Failed to load dashboard data. Please try again.');
       toast.error('Failed to refresh dashboard data');
       return false;
@@ -90,13 +89,11 @@ export default function DashboardClient({
       Object.keys(initialDashboardData).length > 0;
     
     if (!hasValidInitialData) {
-      console.log('Initial data missing or invalid, fetching dashboard data...');
       fetchDashboardData();
     }
     
     // Set up auto-refresh every 5 minutes
     const refreshInterval = setInterval(() => {
-      console.log('Auto-refreshing dashboard data...');
       fetchDashboardData();
     }, 5 * 60 * 1000); // 5 minutes
     

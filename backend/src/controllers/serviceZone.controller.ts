@@ -165,7 +165,6 @@ export const listServiceZones = async (req: ServiceZoneRequest, res: Response) =
       },
     });
   } catch (error) {
-    console.error('Error listing service zones:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -225,7 +224,6 @@ export const getServiceZone = async (req: Request, res: Response) => {
 
     res.status(200).json(response);
   } catch (error) {
-    console.error('Error fetching service zone:', error);
     res.status(500).json({ error: 'Failed to fetch service zone' });
   }
 };
@@ -273,11 +271,8 @@ export const createServiceZone = async (req: Request, res: Response) => {
     });
 
     // Log the creation
-    console.log(`Service zone '${name}' created by user ${currentUserId}`);
-
     res.status(201).json(serviceZone);
   } catch (error) {
-    console.error('Error creating service zone:', error);
     res.status(500).json({ error: 'Failed to create service zone' });
   }
 };
@@ -411,7 +406,6 @@ export const updateServiceZone = async (req: ServiceZoneRequest, res: Response) 
 
     res.json(formattedResult);
   } catch (error) {
-    console.error('Error updating service zone:', error);
     res.status(500).json({ error: 'Failed to update service zone' });
   }
 };
@@ -462,7 +456,6 @@ export const deleteServiceZone = async (req: Request, res: Response) => {
 
     return res.json({ message: 'Service zone deleted successfully' });
   } catch (error) {
-    console.error('Error deleting service zone:', error);
     return res.status(500).json({ error: 'Failed to delete service zone' });
   }
 };
@@ -574,7 +567,6 @@ export const getServiceZoneStats = async (req: ServiceZoneRequest, res: Response
 
     res.json(stats);
   } catch (error) {
-    console.error('Error getting service zone stats:', error);
     res.status(500).json({ error: 'Failed to fetch service zone stats' });
   }
 };

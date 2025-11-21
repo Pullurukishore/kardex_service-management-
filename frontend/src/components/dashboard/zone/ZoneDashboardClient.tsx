@@ -127,27 +127,17 @@ export default function ZoneDashboardClient({
       setIsRefreshing(true);
       setError(null);
       
-      console.log('Fetching zone dashboard data...');
-      
       const [zoneRes, statusRes, trendsRes] = await Promise.all([
         api.get('/zone-dashboard'),
         api.get('/zone-dashboard/status-distribution').catch((err) => {
-          console.warn('Failed to fetch status distribution:', err);
           return { data: { distribution: [] } };
         }),
         api.get('/zone-dashboard/ticket-trends').catch((err) => {
-          console.warn('Failed to fetch ticket trends:', err);
           return { data: { trends: [] } };
         })
       ]);
       
-      console.log('Zone dashboard data received:', zoneRes.data);
-      console.log('Status distribution received:', statusRes.data);
-      console.log('Ticket trends received:', trendsRes.data);
-      
       const transformedData = transformZoneDataToDashboardData(zoneRes.data);
-      console.log('Transformed dashboard data:', transformedData);
-      
       setZoneDashboardData(zoneRes.data || null);
       setDashboardData(transformedData);
       setStatusDistribution(statusRes.data || { distribution: [] });
@@ -161,7 +151,6 @@ export default function ZoneDashboardClient({
       setIsInitialLoading(false);
       return true;
     } catch (err) {
-      console.error('Failed to fetch zone dashboard data:', err);
       setError('Failed to load zone dashboard data. Please try again.');
       toast.error('Failed to refresh zone dashboard data');
       setIsInitialLoading(false);

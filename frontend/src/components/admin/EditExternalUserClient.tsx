@@ -59,7 +59,6 @@ export default function EditExternalUserClient({ externalUser }: EditExternalUse
         throw new Error(response.message || 'Failed to update user');
       }
     } catch (error: any) {
-      console.error('Error updating user:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update user';
       setMessage({ 
         type: 'error', 

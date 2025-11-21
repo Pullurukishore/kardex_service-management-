@@ -40,15 +40,30 @@ const getZoneResolutionTime = (zone: any) => {
 
 // Helper function to format resolution time
 const formatResolutionTime = (hours: number) => {
-  // Ensure we're working with a clean integer
-  const cleanHours = Math.round(hours);
+  if (hours === 0) return '0h';
   
-  if (cleanHours >= 24) {
-    const days = Math.floor(cleanHours / 24);
-    const remainingHours = cleanHours % 24;
-    return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
+  // Handle decimal hours (e.g., 0.5 hours = 30 minutes)
+  const totalMinutes = Math.round(hours * 60);
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const remainingMinutes = totalMinutes % (24 * 60);
+  const displayHours = Math.floor(remainingMinutes / 60);
+  const displayMinutes = remainingMinutes % 60;
+  
+  if (days > 0) {
+    if (displayHours > 0) {
+      return `${days}d ${displayHours}h`;
+    }
+    return `${days}d`;
   }
-  return `${cleanHours}h`;
+  
+  if (displayHours > 0) {
+    if (displayMinutes > 0) {
+      return `${displayHours}h ${displayMinutes}m`;
+    }
+    return `${displayHours}h`;
+  }
+  
+  return `${displayMinutes}m`;
 };
 
 // Helper function to get resolution time performance level

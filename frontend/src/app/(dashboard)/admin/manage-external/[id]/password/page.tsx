@@ -54,7 +54,6 @@ export default async function ExternalUserPasswordChangePage({ params }: Externa
       </div>
     );
   } catch (error) {
-    console.error('Error fetching external user:', error);
     notFound();
   }
 }

@@ -51,7 +51,6 @@ function formatPdfValue(value: any, column: ColumnDefinition, item?: any): strin
       }
       return formatted === null || formatted === undefined ? '' : String(formatted);
     } catch (e) {
-      console.warn(`Error formatting value for column ${column.key}:`, e);
       return String(value);
     }
   }
@@ -238,7 +237,6 @@ export const generatePdf = async (
            .text('REMSTAR', logoX + 10, logoY + 28);
       }
     } catch (error) {
-      console.warn('Could not load logo for PDF:', error);
       // Create fallback modern branded card on RIGHT
       doc.roundedRect(logoX - 8, logoY - 4, logoWidth + 16, logoHeight + 8, 6)
          .fill('#FFFFFF')
@@ -657,7 +655,6 @@ export const generatePdf = async (
     doc.end();
     
   } catch (error) {
-    console.error('Error generating PDF file:', error);
     res.status(500).json({ 
       error: 'Failed to generate PDF report',
       details: error instanceof Error ? error.message : 'Unknown error'

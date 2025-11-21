@@ -110,8 +110,7 @@ export class CloudPhotoStorageService {
         });
         
       } catch (error) {
-        console.error(`Failed to store photo ${photo.filename}:`, error);
-      }
+        }
     }
     
     return storedPhotos;
@@ -145,7 +144,6 @@ export class CloudPhotoStorageService {
       return this.getCDNUrl(uploadResult.Location);
       
     } catch (error) {
-      console.warn('Failed to generate thumbnail:', error);
       return undefined;
     }
   }
@@ -200,7 +198,6 @@ export class CloudPhotoStorageService {
       return true;
       
     } catch (error) {
-      console.error(`Failed to delete photo ${attachmentId}:`, error);
       return false;
     }
   }
@@ -225,7 +222,6 @@ export class CloudPhotoStorageService {
       });
       
     } catch (error) {
-      console.error(`Failed to generate signed URL for ${attachmentId}:`, error);
       return null;
     }
   }

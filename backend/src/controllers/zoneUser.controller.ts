@@ -82,7 +82,6 @@ export const listZoneUsers = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error listing zone users:', error);
     res.status(500).json({ error: 'Failed to fetch zone users' });
   }
 };
@@ -115,7 +114,6 @@ export const getZoneUser = async (req: Request, res: Response) => {
 
     res.json(user);
   } catch (error) {
-    console.error('Error fetching zone user:', error);
     res.status(500).json({ error: 'Failed to fetch zone user' });
   }
 };
@@ -189,7 +187,6 @@ export const assignUserToZones = async (req: ZoneUserRequest, res: Response) => 
 
     res.json(updatedUser);
   } catch (error) {
-    console.error('Error assigning user to zones:', error);
     res.status(500).json({ error: 'Failed to assign user to zones' });
   }
 };
@@ -261,7 +258,6 @@ export const updateZoneUserAssignments = async (req: ZoneUserRequest, res: Respo
 
     res.json(updatedUser);
   } catch (error) {
-    console.error('Error updating zone user assignments:', error);
     res.status(500).json({ error: 'Failed to update zone assignments' });
   }
 };
@@ -287,7 +283,6 @@ export const removeZoneUserAssignments = async (req: Request, res: Response) => 
 
     res.json({ message: 'Zone assignments removed successfully' });
   } catch (error) {
-    console.error('Error removing zone user assignments:', error);
     res.status(500).json({ error: 'Failed to remove zone assignments' });
   }
 };
@@ -321,7 +316,6 @@ export const deleteZoneUser = async (req: Request, res: Response) => {
       message: 'Zone user deleted successfully' 
     });
   } catch (error) {
-    console.error('Error deleting zone user:', error);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to delete zone user' 
@@ -334,14 +328,6 @@ export const createZoneUserWithZones = async (req: Request, res: Response) => {
   const prisma = new PrismaClient();
 
   try {
-    console.log('📝 createZoneUserWithZones: Creating user with data:', {
-      name,
-      email,
-      phone,
-      serviceZoneIds,
-      isActive
-    });
-    
     // Hash the password before saving
     const hashedPassword = await hash(password, 10);
     
@@ -398,8 +384,6 @@ export const createZoneUserWithZones = async (req: Request, res: Response) => {
       data: userWithoutPassword,
     });
   } catch (error: any) {
-    console.error('Error creating zone user:', error);
-    
     // Handle duplicate email error
     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
       return res.status(400).json({
@@ -465,7 +449,6 @@ export const getAllUsersForZoneAssignment = async (req: Request, res: Response) 
 
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users for zone assignment:', error);
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 };

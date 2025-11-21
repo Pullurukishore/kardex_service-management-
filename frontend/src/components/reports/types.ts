@@ -291,7 +291,6 @@ export const STATUS_COLORS: Record<string, string> = {
   
   // Waiting/Pending States
   WAITING_CUSTOMER: '#FBBF24',         // Yellow-400
-  PENDING: '#F59E0B',                  // Amber-500
   ON_HOLD: '#FB923C',                  // Orange-400
   
   // Spare Parts States

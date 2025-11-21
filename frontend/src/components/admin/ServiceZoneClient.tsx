@@ -95,7 +95,6 @@ export default function ServiceZoneClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch service zone data:', err);
       setError('Failed to load service zones. Please try again.');
       toast.error('Failed to refresh service zone data');
       return false;

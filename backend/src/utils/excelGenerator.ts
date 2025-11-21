@@ -40,8 +40,7 @@ function formatExcelValue(value: any, column: ColumnDefinition, item?: any): any
     try {
       return column.format(value, item);
     } catch (e) {
-      console.warn(`Error formatting value for column ${column.key}:`, e);
-    }
+      }
   }
   
   // Apply Excel-specific formatting based on data type
@@ -144,8 +143,7 @@ export const generateExcel = async (
           });
         }
       } catch (error) {
-        console.warn('Could not load logo for Excel:', error);
-      }
+        }
     }
 
     // Set optimal row heights for professional layout
@@ -310,7 +308,6 @@ export const generateExcel = async (
     
     // Validate data before processing
     if (!data || !Array.isArray(data)) {
-      console.error('Excel generation error: data is undefined or not an array');
       throw new Error('Invalid data provided for Excel generation');
     }
     
@@ -409,13 +406,11 @@ export const generateExcel = async (
               }]
             });
           } catch (error) {
-            console.warn('Could not add conditional formatting:', error);
-          }
+            }
         }
       });
     }
     */
-
 
     // Set workbook properties
     workbook.creator = 'Kardex Remstar Professional Suite';
@@ -441,8 +436,6 @@ export const generateExcel = async (
     res.end();
     
   } catch (error) {
-    console.error('Error generating Excel file:', error);
-    
     // Check if headers have already been sent
     if (!res.headersSent) {
       res.status(500).json({ 

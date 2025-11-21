@@ -27,8 +27,7 @@ export class DashboardErrorBoundary extends React.Component<ErrorBoundaryProps, 
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('DashboardErrorBoundary caught an error:', error, errorInfo);
-  }
+    }
 
   reset = (): void => {
     this.setState({ error: null });

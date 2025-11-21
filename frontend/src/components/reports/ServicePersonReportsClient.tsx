@@ -149,11 +149,6 @@ export default function ServicePersonReportsClient({
     try {
       setLoading(true);
       
-      console.log('Fetching reports with params:', {
-        fromDate: dateRange.from,
-        toDate: dateRange.to
-      });
-      
       // Fetch data using apiClient for consistent authentication
       const [reportsResponse, summaryResponse] = await Promise.allSettled([
         apiClient.get('/service-person-reports', {
@@ -171,24 +166,16 @@ export default function ServicePersonReportsClient({
         })
       ]);
 
-      console.log('Reports response:', reportsResponse);
-      console.log('Summary response:', summaryResponse);
-
       // Process reports response
       if (reportsResponse.status === 'fulfilled') {
         const response = reportsResponse.value;
-        console.log('Full reports response:', response);
-        
         if (response.success) {
           const reportData = response.data?.servicePersonReports?.[0];
-          console.log('Processed report data:', reportData);
           setReportData(reportData || null);
         } else {
-          console.warn('Reports API did not return success:', response);
           setReportData(null);
         }
       } else {
-        console.error('Reports API call rejected:', reportsResponse.reason);
         setReportData(null);
         // Don't throw here, allow the component to render with partial data
       }
@@ -196,21 +183,15 @@ export default function ServicePersonReportsClient({
       // Process summary response
       if (summaryResponse.status === 'fulfilled') {
         const response = summaryResponse.value;
-        console.log('Full summary response:', response);
-        
         if (response.success) {
-          console.log('Processed summary data:', response.data);
           setSummaryData(response.data || null);
         } else {
-          console.warn('Summary API did not return success:', response);
           setSummaryData(null);
         }
       } else {
-        console.error('Summary API call rejected:', summaryResponse.reason);
         setSummaryData(null);
       }
     } catch (error) {
-      console.error('Error in fetchReportData:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       toast({
         title: 'Error',
@@ -258,7 +239,6 @@ export default function ServicePersonReportsClient({
         variant: 'default',
       });
     } catch (error) {
-      console.error('Error exporting report:', error);
       toast({
         title: 'Export failed',
         description: 'Failed to export report',
@@ -268,7 +248,6 @@ export default function ServicePersonReportsClient({
       setLoading(false);
     }
   };
-
 
   // Handle refresh
   const handleRefresh = () => {

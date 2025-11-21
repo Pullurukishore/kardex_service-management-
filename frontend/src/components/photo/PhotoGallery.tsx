@@ -85,7 +85,6 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         setError(result.error || 'Failed to load photos');
       }
     } catch (error) {
-      console.error('Error loading photos:', error);
       setError(error instanceof Error ? error.message : 'Failed to load photos');
     } finally {
       setLoading(false);
@@ -144,8 +143,6 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
           : `${cleanFilename}.jpg`;
       }
       
-      console.log('Final download filename:', downloadFilename);
-      
       link.download = downloadFilename;
       document.body.appendChild(link);
       link.click();
@@ -157,8 +154,6 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         description: `Downloading ${downloadFilename}`,
       });
     } catch (error) {
-      console.error('Download failed:', error);
-      
       // Fallback: try to open in new tab
       try {
         window.open(getPhotoUrl(photo), '_blank');
@@ -260,8 +255,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
                   onClick={() => setSelectedPhoto(photo)}
                   onError={(e) => {
                     // Show placeholder if image fails to load
-                    console.error('Failed to load image:', getPhotoUrl(photo));
-                  }}
+                    }}
                 />
                 
                 {/* Overlay with actions */}

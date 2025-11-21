@@ -33,11 +33,8 @@ export default function EditCustomerPage() {
           throw new Error('Customer ID is required');
         }
         const data = await fetchCustomer(Number(customerId));
-        console.log('API Response:', data);
-        console.log('Customer data keys:', Object.keys(data));
         setCustomer(data as unknown as Customer);
       } catch (error) {
-        console.error('Error loading customer:', error);
         router.push('/admin/customers');
       } finally {
         setLoading(false);
@@ -58,8 +55,6 @@ export default function EditCustomerPage() {
   }
 
   // Transform API data to match form data format
-  console.log('Customer object before transformation:', customer);
-  
   const formData: CustomerFormData = {
     companyName: customer.companyName || '',
     industry: customer.industry,
@@ -71,7 +66,5 @@ export default function EditCustomerPage() {
     contactPhone: customer.contacts?.[0]?.phone || '',
   };
   
-  console.log('Transformed formData:', formData);
-
   return <CustomerFormComponent customer={formData} customerId={customer.id} />;
 }

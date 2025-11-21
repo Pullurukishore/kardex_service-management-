@@ -82,7 +82,6 @@ router.get('/zone-users', authMiddleware(['ADMIN']), async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching zone users:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch zone users'

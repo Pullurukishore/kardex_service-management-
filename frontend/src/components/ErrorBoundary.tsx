@@ -29,15 +29,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log the error to an error reporting service
-    console.error('Uncaught error:', error, errorInfo);
-    
     // Check if this is a hydration error
     if (error.message.includes('Hydration') || error.message.includes('hydration')) {
-      console.warn('Hydration error detected, attempting recovery...');
-      // For hydration errors, try to recover by reloading
+      // For hydration errors, try to recover by reloading with a longer delay
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 1000); // Increased delay to prevent rapid reloads
       return;
     }
     
@@ -46,6 +43,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
+  };
+
+  private handleReload = () => {
+    // Add a small delay to prevent immediate reload loops
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   };
 
   public render() {
@@ -65,7 +69,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="mt-4 flex space-x-3">
                 <Button
                   variant="outline"
-                  onClick={() => window.location.reload()}
+                  onClick={this.handleReload}
                   className="flex items-center space-x-2"
                 >
                   <RefreshCw className="h-4 w-4" />

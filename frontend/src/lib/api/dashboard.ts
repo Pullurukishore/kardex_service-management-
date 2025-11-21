@@ -18,7 +18,6 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     const response = await apiClient.get('/dashboard');
     return response.data;
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
     throw error;
   }
 };
@@ -31,7 +30,6 @@ export const fetchAdminStats = async (): Promise<DashboardStats> => {
     const response = await apiClient.get('/dashboard/admin-stats');
     return response.data;
   } catch (error) {
-    console.error('Error fetching admin stats:', error);
     throw error;
   }
 };
@@ -47,7 +45,6 @@ export const fetchRecentTickets = async (limit: number = 10): Promise<RecentTick
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching recent tickets:', error);
     throw error;
   }
 };
@@ -60,7 +57,6 @@ export const fetchTicketStatusDistribution = async (): Promise<{ [key: string]: 
     const response = await apiClient.get('/dashboard/tickets/status-distribution');
     return response.data;
   } catch (error) {
-    console.error('Error fetching ticket status distribution:', error);
     throw error;
   }
 };
@@ -76,7 +72,6 @@ export const fetchTicketTrends = async (days: number = 30): Promise<TicketTrend[
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching ticket trends:', error);
     throw error;
   }
 };
@@ -89,7 +84,6 @@ export const fetchZoneWiseTickets = async (): Promise<ZoneWiseTicket[]> => {
     const response = await apiClient.get('/dashboard/zones/stats');
     return response.data;
   } catch (error) {
-    console.error('Error fetching zone-wise tickets:', error);
     return [];
   }
 };
@@ -102,7 +96,6 @@ export const fetchSlaCompliance = async (): Promise<number> => {
     const response = await apiClient.get('/dashboard/metrics/sla-compliance');
     return response.data.complianceRate;
   } catch (error) {
-    console.error('Error fetching SLA compliance:', error);
     return 0;
   }
 };
@@ -115,7 +108,6 @@ export const fetchAvgResponseTime = async (): Promise<number> => {
     const response = await apiClient.get('/dashboard/metrics/avg-response-time');
     return response.data.averageResponseTime;
   } catch (error) {
-    console.error('Error fetching average response time:', error);
     throw error;
   }
 };
@@ -129,17 +121,13 @@ export const fetchZonePerformanceMetrics = async (zoneId: string): Promise<ZoneP
     // Try the FSA dashboard endpoint first
     try {
       const response = await apiClient.get(`/zone-dashboard/fsa/${zoneId}`);
-      console.log('FSA Dashboard Response:', response.data);
       return response.data;
     } catch (fsaError) {
-      console.debug('FSA dashboard endpoint not available, falling back to service-zones stats endpoint', fsaError);
       // Fall back to the service-zones stats endpoint if FSA dashboard is not available
       const response = await apiClient.get(`/service-zones/${zoneId}/stats`);
-      console.log('Service Zone Stats Response:', response.data);
       return response.data;
     }
   } catch (error) {
-    console.error(`Error fetching metrics for zone ${zoneId}:`, error);
     throw new Error('Failed to fetch service zone stats');
   }
 };

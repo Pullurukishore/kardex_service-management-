@@ -15,7 +15,7 @@ export interface SimpleLocationData {
   address: string;
   accuracy: number;
   timestamp: number;
-  source: 'manual_address';
+  source: 'manual';
 }
 
 interface SimpleAddressEntryProps {
@@ -56,7 +56,7 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
       address: address.trim(),
       accuracy: 50, // Manual address gets reasonable accuracy
       timestamp: Date.now(),
-      source: 'manual_address'
+      source: 'manual'
     };
 
     onLocationSelect(locationData);

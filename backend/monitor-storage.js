@@ -22,8 +22,7 @@ function getDirectorySize(dirPath) {
       }
     }
   } catch (error) {
-    console.error(`Error reading directory ${dirPath}:`, error.message);
-  }
+    }
   
   return { size: totalSize, count: fileCount };
 }
@@ -37,12 +36,9 @@ function formatBytes(bytes) {
 }
 
 function monitorStorage() {
-  console.log('📊 KardexCare Storage Monitor\n');
-  
   const storageRoot = path.join(process.cwd(), '..', 'storage');
   
   if (!fs.existsSync(storageRoot)) {
-    console.log('❌ Storage directory not found');
     return;
   }
   
@@ -66,33 +62,22 @@ function monitorStorage() {
       totalSize += stats.size;
       totalFiles += stats.count;
       
-      console.log(`📁 ${dir.padEnd(20)} ${stats.count.toString().padStart(6)} files  ${formatBytes(stats.size).padStart(10)}`);
-    }
+      }
   });
-  
-  console.log('─'.repeat(50));
-  console.log(`📊 Total Storage:        ${totalFiles.toString().padStart(6)} files  ${formatBytes(totalSize).padStart(10)}`);
   
   // Storage warnings
   const totalGB = totalSize / (1024 * 1024 * 1024);
   
   if (totalGB > 50) {
-    console.log('⚠️  Warning: Storage usage over 50GB');
-  } else if (totalGB > 100) {
-    console.log('🚨 Alert: Storage usage over 100GB - consider cleanup');
-  } else {
-    console.log('✅ Storage usage is healthy');
-  }
+    } else if (totalGB > 100) {
+    } else {
+    }
   
   // Daily upload estimate
   const dailyEstimate = totalFiles / 30; // Rough 30-day estimate
-  console.log(`📈 Estimated daily uploads: ${Math.round(dailyEstimate)} files`);
-  
   // 50-user capacity check
   const currentUsersEstimate = Math.ceil(dailyEstimate / 5); // 5 photos per user per day
-  console.log(`👥 Current load equivalent: ~${currentUsersEstimate} active users`);
-  console.log(`🎯 50-user capacity: ${currentUsersEstimate <= 50 ? '✅ Well within limits' : '⚠️ Approaching limits'}`);
-}
+  }
 
 // Run monitor
 monitorStorage();

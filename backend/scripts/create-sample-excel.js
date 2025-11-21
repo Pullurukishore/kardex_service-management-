@@ -54,8 +54,7 @@ function createSampleExcel() {
     const dataDir = path.join(__dirname, '..', 'data');
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
-      console.log('Created data directory');
-    }
+      }
     
     // Create workbook and worksheet
     const workbook = XLSX.utils.book_new();
@@ -67,10 +66,6 @@ function createSampleExcel() {
     // Write to file
     const filePath = path.join(dataDir, 'sample-import-data.xlsx');
     XLSX.writeFile(workbook, filePath);
-    
-    console.log(`Sample Excel file created: ${filePath}`);
-    console.log('This file contains sample data showing the required format.');
-    console.log('You can use this as a template for your actual data.');
     
     // Also create an empty template
     const templateData = [{
@@ -88,12 +83,8 @@ function createSampleExcel() {
     const templatePath = path.join(dataDir, 'import-template.xlsx');
     XLSX.writeFile(templateWorkbook, templatePath);
     
-    console.log(`Empty template created: ${templatePath}`);
-    console.log('Use this template to add your actual data.');
-    
-  } catch (error) {
-    console.error('Error creating sample Excel file:', error.message);
-  }
+    } catch (error) {
+    }
 }
 
 // Run if called directly

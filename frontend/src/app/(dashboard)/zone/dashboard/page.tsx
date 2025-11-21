@@ -62,35 +62,25 @@ export default async function ZoneDashboardPage() {
     const accessToken = cookieStore.get('accessToken')?.value;
     const token = cookieStore.get('token')?.value;
     
-    console.log('Zone Dashboard - User role:', userRole, 'Has token:', !!(accessToken || token));
-    
     // Check if user is authenticated
     if (!userRole || (!accessToken && !token)) {
-      console.log('Zone Dashboard - No authentication, redirecting to login');
       redirect('/auth/login');
     }
 
     // Check if user has access to zone dashboard - ONLY ZONE_USER should access this
     const normalizedUserRole = userRole.toUpperCase();
     if (normalizedUserRole !== 'ZONE_USER') {
-      console.log('Zone Dashboard - Unauthorized role:', userRole, 'redirecting to appropriate dashboard');
-      
       // Return a client-side redirect component instead of server-side redirect
       // This prevents NEXT_REDIRECT errors during prefetching
       return <ClientRedirect role={normalizedUserRole} />;
     }
 
     // Fetch initial data on the server
-    console.log('Zone Dashboard - Attempting to fetch data...');
     const { zoneDashboardData } = await getAllZoneDashboardData();
-    console.log('Zone Dashboard - Data fetched successfully:', !!zoneDashboardData);
-    
     // Log the actual data received from backend
     if (zoneDashboardData) {
-      console.log('Zone Dashboard - Backend data:', JSON.stringify(zoneDashboardData, null, 2));
-    } else {
-      console.warn('Zone Dashboard - No data received from backend, will fetch on client side');
-    }
+      } else {
+      }
 
     // Pass the actual data from backend (or null to trigger client-side fetch)
     // Don't use dummy data - let the client component fetch real data
@@ -142,8 +132,6 @@ export default async function ZoneDashboardPage() {
       </>
     );
   } catch (error) {
-    console.error('Failed to load zone dashboard:', error);
-    
     // Handle authentication errors
     if (error instanceof Error && 
         (error.message.includes('401') || error.message.includes('Unauthorized') || error.message.includes('No access token found'))) {

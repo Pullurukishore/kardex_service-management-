@@ -65,61 +65,37 @@ export default function ZoneUserDetailsPage() {
 
   // Debug state changes
   useEffect(() => {
-    console.log('State changed - loading:', loading, 'zoneUser:', zoneUser);
-  }, [loading, zoneUser]);
+    }, [loading, zoneUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
       if (!userId || Number.isNaN(userId)) {
-        console.error('Invalid user ID:', params?.id);
         setLoading(false);
         return;
       }
       setLoading(true);
       try {
-        console.log('Fetching zone user with ID:', userId);
         const res = await apiClient.get(`/zone-users/${userId}`);
-        console.log('Zone user data received:', res);
-        console.log('Response type:', typeof res);
-        console.log('Response keys:', res ? Object.keys(res) : 'No response');
-        
         // Handle different response structures
         let userData = null;
         
         // Check if response has ApiResponse structure (res.data)
         if (res && typeof res === 'object' && 'data' in res && res.data) {
-          console.log('Using ApiResponse structure - res.data:', res.data);
           userData = res.data;
         }
         // Check if response is the user data directly
         else if (res && typeof res === 'object' && 'id' in res) {
-          console.log('Using direct response structure:', res);
           userData = res;
         }
         
-        console.log('Final userData:', userData);
-        
         // Validate user data
         if (!userData || typeof userData !== 'object' || !userData.id) {
-          console.error('API returned invalid data for user ID:', userId);
-          console.error('Raw response:', res);
-          console.error('Processed userData:', userData);
           setZoneUser(null);
           return;
         }
         
-        console.log('Setting zone user data:', userData);
         setZoneUser(userData);
-        console.log('Zone user state updated successfully');
-      } catch (error: any) {
-        console.error('Failed to fetch zone user:', error);
-        console.error('Error details:', {
-          status: error?.response?.status,
-          statusText: error?.response?.statusText,
-          data: error?.response?.data,
-          message: error?.message
-        });
-        
+        } catch (error: any) {
         // Don't show toast for 404 errors, just let the UI handle it
         if (error?.response?.status !== 404) {
           toast({

@@ -45,18 +45,11 @@ export class WhatsAppService {
    */
   async sendMessage(message: WhatsAppMessage): Promise<void> {
     try {
-      console.log('📱 WhatsAppService: sendMessage called with:', {
-        to: message.to,
-        bodyLength: message.body.length
-      });
-      
       // Format the phone number properly
       const formattedPhone = this.formatPhoneNumber(message.to);
       const formattedTo = message.to.startsWith('whatsapp:') 
         ? `whatsapp:${this.formatPhoneNumber(message.to.replace('whatsapp:', ''))}`
         : `whatsapp:${formattedPhone}`;
-      
-      console.log('📱 WhatsAppService: Formatted phone number:', formattedTo);
       
       const messageOptions: any = {
         body: message.body,
@@ -64,42 +57,21 @@ export class WhatsAppService {
         to: formattedTo,
       };
       
-      console.log('📱 WhatsAppService: Message options:', {
-        from: this.fromNumber,
-        to: formattedTo,
-        hasBody: !!message.body
-      });
-
       if (message.mediaUrl && message.mediaUrl.length > 0) {
         messageOptions.mediaUrl = message.mediaUrl;
       }
 
       const result = await this.client.messages.create(messageOptions);
       
-      console.log('✅ WhatsApp message sent successfully:', {
-        sid: result.sid,
-        to: formattedTo,
-        status: result.status,
-      });
-
       // Check message status after a delay
       setTimeout(async () => {
         try {
           const messageStatus = await this.client.messages(result.sid).fetch();
-          console.log('📱 WhatsAppService: Message status update:', {
-            sid: result.sid,
-            status: messageStatus.status,
-            errorCode: messageStatus.errorCode,
-            errorMessage: messageStatus.errorMessage,
-            dateUpdated: messageStatus.dateUpdated
-          });
-        } catch (statusError) {
-          console.error('❌ WhatsAppService: Failed to fetch message status:', statusError);
-        }
+          } catch (statusError) {
+          }
       }, 3000); // Check after 3 seconds
       
     } catch (error) {
-      console.error('❌ WhatsAppService: sendMessage failed:', error);
       throw error;
     }
   }
@@ -133,25 +105,13 @@ export class WhatsAppService {
    */
   async sendTicketAssignedNotification(data: TicketAssignmentData): Promise<void> {
     try {
-      console.log('📱 WhatsAppService: Starting assignment notification...');
-      console.log('📱 WhatsAppService: Assignment data:', {
-        ticketId: data.ticketId,
-        assignedToName: data.assignedToName,
-        assignedToPhone: data.assignedToPhone,
-        customerName: data.customerName
-      });
-      
       const message = this.generateAssignmentMessage(data);
-      console.log('📱 WhatsAppService: Generated message length:', message.length);
-      
       await this.sendMessage({
         to: data.assignedToPhone,
         body: message,
       });
       
-      console.log('✅ WhatsAppService: Assignment notification sent successfully');
-    } catch (error) {
-      console.error('❌ WhatsAppService: Failed to send assignment notification:', error);
+      } catch (error) {
       throw error;
     }
   }
@@ -239,8 +199,6 @@ export class WhatsAppService {
    * Format phone number for WhatsApp
    */
   private formatPhoneNumber(phone: string): string {
-    console.log('📱 WhatsAppService: Raw phone number:', phone);
-    
     // Remove all non-digit characters
     let cleaned = phone.replace(/\D/g, '');
     
@@ -252,7 +210,6 @@ export class WhatsAppService {
     // Ensure it has the + prefix
     const formatted = '+' + cleaned;
     
-    console.log('📱 WhatsAppService: Formatted phone number:', formatted);
     return formatted;
   }
 

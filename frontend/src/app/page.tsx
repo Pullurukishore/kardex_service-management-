@@ -29,31 +29,24 @@ export default function Home() {
               case 'EXTERNAL_USER':
                 return '/external/tickets';
               default:
-                console.log('Root page: Unknown role:', role, 'redirecting to login');
                 return '/auth/login';
             }
           };
           
-          console.log('Root page: Redirecting authenticated user to dashboard, role:', user.role);
           const redirectPath = getRoleBasedRedirect(user.role);
-          console.log('Root page: Redirect path:', redirectPath);
-          
           // Use window.location for more reliable redirect
           if (typeof window !== 'undefined') {
             window.location.href = redirectPath;
           }
         } else {
           // Redirect unauthenticated users to login
-          console.log('Root page: Redirecting unauthenticated user to login, isAuthenticated:', isAuthenticated, 'user:', !!user);
-          
           // Use window.location for more reliable redirect
           if (typeof window !== 'undefined') {
             window.location.href = '/auth/login';
           }
         }
       } else {
-        console.log('Root page: Still loading, isLoading:', isLoading);
-      }
+        }
     }, 100); // Small delay to prevent conflicts
 
     return () => clearTimeout(redirectTimer);

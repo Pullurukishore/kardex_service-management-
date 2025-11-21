@@ -62,7 +62,6 @@ export default function ServicePersonTicketDetailPage() {
         setStatusHistory(ticketData.statusHistory || []);
       }
     } catch (error: any) {
-      console.error('Error fetching ticket details:', error);
       toast({
         title: 'Error',
         description: 'Failed to load ticket details',
@@ -107,7 +106,6 @@ export default function ServicePersonTicketDetailPage() {
 
           await apiClient.post('/activities', activityPayload);
         } catch (activityError) {
-          console.error('Error creating activity log:', activityError);
           // Don't fail the status update if activity logging fails
         }
       }
@@ -122,7 +120,6 @@ export default function ServicePersonTicketDetailPage() {
       await fetchTicketDetails();
 
     } catch (error: any) {
-      console.error('Error updating ticket status:', error);
       toast({
         title: 'Error',
         description: error.response?.data?.message || 'Failed to update ticket status',
@@ -141,7 +138,6 @@ export default function ServicePersonTicketDetailPage() {
       });
       await fetchTicketDetails();
     } catch (error: any) {
-      console.error('Error adding comment:', error);
       toast({
         title: 'Error',
         description: 'Failed to add comment',

@@ -122,8 +122,6 @@ export default function ExternalCreateTicketPage() {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        console.log('Fetching service zones...');
-        
         // Use the shared axios instance that carries cookies and handles refresh
         const response = await api.get('/service-zones', {
           params: {
@@ -133,10 +131,8 @@ export default function ExternalCreateTicketPage() {
 
         // Backend returns { data: ZoneType[], pagination: {...} }
         const zonesData: ZoneType[] = response.data?.data || [];
-        console.log('Fetched zones:', zonesData);
         setZones(zonesData);
       } catch (error) {
-        console.error('Error fetching service zones:', error);
         toast({
           title: 'Error',
           description: 'Failed to load service zones. Please try again.',
@@ -214,7 +210,6 @@ export default function ExternalCreateTicketPage() {
         setContacts([]);
         setAssets([]);
       } catch (error) {
-        console.error('Error fetching zone customers:', error);
         toast({
           title: 'Error',
           description: zoneId === 'all' 
@@ -265,7 +260,6 @@ export default function ExternalCreateTicketPage() {
     try {
       updateCustomerData();
     } catch (error) {
-      console.error('Error updating customer data:', error);
       toast({
         title: 'Error',
         description: 'Failed to update customer data. Please try again.',
@@ -318,8 +312,6 @@ export default function ExternalCreateTicketPage() {
         description: `Asset "${newAsset.model}" has been created and selected.`,
       });
     } catch (error: any) {
-      console.error('Error creating asset:', error);
-      
       let errorMessage = 'Failed to create asset. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -379,8 +371,6 @@ export default function ExternalCreateTicketPage() {
         description: `Contact "${newContact.name}" has been created and selected.`,
       });
     } catch (error: any) {
-      console.error('Error creating contact:', error);
-      
       let errorMessage = 'Failed to create contact. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
@@ -454,8 +444,6 @@ export default function ExternalCreateTicketPage() {
         router.refresh(); // Ensure the page updates with the new data
       }, 1500);
     } catch (error: any) {
-      console.error('Error creating ticket:', error);
-      
       let errorMessage = 'Failed to submit support request. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;

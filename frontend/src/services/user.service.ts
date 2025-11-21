@@ -31,7 +31,6 @@ export const getServicePersons = async (): Promise<UsersResponse> => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching service persons:', error);
     throw error;
   }
 };

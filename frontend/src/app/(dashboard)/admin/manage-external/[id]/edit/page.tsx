@@ -54,7 +54,6 @@ export default async function EditExternalUserPage({ params }: EditExternalUserP
       </div>
     );
   } catch (error) {
-    console.error('Error fetching external user:', error);
     notFound();
   }
 }

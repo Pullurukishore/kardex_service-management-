@@ -62,7 +62,6 @@ export default function CustomerDetailPage() {
       const data = await fetchCustomer(Number(id));
       setCustomer(data);
     } catch (error) {
-      console.error('Error loading customer:', error);
       toast({
         title: 'Error',
         description: 'Failed to load customer details',
@@ -88,7 +87,6 @@ export default function CustomerDetailPage() {
       
       router.push('/admin/customers');
     } catch (error) {
-      console.error('Error deleting customer:', error);
       toast({
         title: 'Error',
         description: 'Failed to delete customer. Please try again.',

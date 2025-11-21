@@ -130,10 +130,7 @@ export class LocalPhotoStorageService {
           storedPhotos.push(photoResult);
         }
         
-        console.log(`✅ Stored photo: ${uniqueFilename} (${photo.size} bytes)`);
-        
-      } catch (error) {
-        console.error(`❌ Failed to store photo ${photo.filename}:`, error);
+        } catch (error) {
         // Continue with other photos
       }
     }
@@ -159,7 +156,6 @@ export class LocalPhotoStorageService {
       return `data:${attachment.mimeType};base64,${base64}`;
       
     } catch (error) {
-      console.error(`Failed to retrieve photo ${attachmentId}:`, error);
       return null;
     }
   }
@@ -175,7 +171,6 @@ export class LocalPhotoStorageService {
       
       return attachment?.path || null;
     } catch (error) {
-      console.error(`Failed to get photo path ${attachmentId}:`, error);
       return null;
     }
   }
@@ -196,10 +191,8 @@ export class LocalPhotoStorageService {
       // Delete file from disk
       try {
         await fs.unlink(attachment.path);
-        console.log(`🗑️ Deleted file: ${attachment.path}`);
-      } catch (error) {
-        console.warn(`Failed to delete file ${attachment.path}:`, error);
-      }
+        } catch (error) {
+        }
       
       // Delete from database
       await prisma.attachment.delete({
@@ -209,7 +202,6 @@ export class LocalPhotoStorageService {
       return true;
       
     } catch (error) {
-      console.error(`Failed to delete photo ${attachmentId}:`, error);
       return false;
     }
   }
@@ -261,11 +253,9 @@ export class LocalPhotoStorageService {
         
         if (stats.mtime.getTime() < cutoffTime) {
           await fs.unlink(filePath);
-          console.log(`🧹 Cleaned up temp file: ${file}`);
-        }
+          }
       }
     } catch (error) {
-      console.error('Failed to cleanup temp files:', error);
-    }
+      }
   }
 }

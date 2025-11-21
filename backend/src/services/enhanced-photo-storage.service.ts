@@ -72,16 +72,11 @@ export class EnhancedPhotoStorageService {
         }
       }
 
-      console.log(`Successfully stored ${storedPhotos.length} photos for ${context.type}`);
       return storedPhotos;
 
     } catch (error) {
-      console.error('Failed to store photos:', error);
-      console.error('Context:', context);
-      console.error('Photos count:', photos.length);
       if (error instanceof Error) {
-        console.error('Error details:', error.message, error.stack);
-      }
+        }
       throw new Error(`Failed to store photos: ${error}`);
     }
   }
@@ -119,7 +114,6 @@ export class EnhancedPhotoStorageService {
       });
 
     } catch (error) {
-      console.error(`Failed to get photos for ticket ${ticketId}:`, error);
       return [];
     }
   }

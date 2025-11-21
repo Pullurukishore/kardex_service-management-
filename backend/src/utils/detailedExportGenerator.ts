@@ -60,8 +60,7 @@ export async function generateDetailedPersonExcel(res: Response, data: ReportDat
       });
     }
   } catch (error) {
-    console.warn('Could not add logo to Excel:', error);
-  }
+    }
 
   // Set column widths
   worksheet.columns = [
@@ -229,8 +228,7 @@ export async function generateDetailedPersonPdf(res: Response, data: ReportData)
       doc.image(logoPath, 50, 45, { width: 100 });
     }
   } catch (error) {
-    console.warn('Could not add logo to PDF:', error);
-  }
+    }
 
   // Title (adjust position if logo exists)
   doc.fontSize(18).fillColor('#2563EB').text(`Service Person Attendance Report`, 160, 50, { align: 'left' });

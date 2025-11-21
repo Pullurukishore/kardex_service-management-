@@ -136,14 +136,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
       const token = getToken();
       
-      console.log('Export token check:', { 
-        hasToken: !!token, 
-        tokenPrefix: token?.substring(0, 20),
-        personId: selectedPerson.id 
-      });
-      
       if (!token) {
-        console.error('No authentication token found');
         alert('Authentication required. Please log in again.');
         return;
       }
@@ -156,8 +149,6 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
       });
 
       const url = `${process.env.NEXT_PUBLIC_API_URL}/admin/service-person-reports/export/detailed-person?${params}`;
-      console.log('Export URL:', url);
-
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -168,11 +159,6 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Export failed:', { 
-          status: response.status, 
-          statusText: response.statusText, 
-          body: errorText 
-        });
         throw new Error(`Export failed: ${response.status} ${response.statusText}`);
       }
 
@@ -186,7 +172,6 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
       window.URL.revokeObjectURL(downloadUrl);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Export error:', error);
       alert(`Failed to export ${format.toUpperCase()}. Please try again.`);
     }
   };
@@ -315,7 +300,6 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                           </span>
                         </div>
                       </td>
-
 
                       {/* Actions */}
                       <td className="p-3">

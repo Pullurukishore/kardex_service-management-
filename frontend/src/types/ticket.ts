@@ -23,8 +23,7 @@ export enum TicketStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   ON_HOLD = 'ON_HOLD',
   ESCALATED = 'ESCALATED',
-  RESOLVED = 'RESOLVED',
-  PENDING = 'PENDING'
+  RESOLVED = 'RESOLVED'
 }
 
 export enum Priority {

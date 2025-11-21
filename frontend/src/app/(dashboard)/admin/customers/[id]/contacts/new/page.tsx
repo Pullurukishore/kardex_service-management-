@@ -57,7 +57,6 @@ export default function AddContactPage() {
 
       router.push(`/admin/customers/${id}`);
     } catch (error: unknown) {
-      console.error('Error adding contact:', error);
       let errorMessage = 'Failed to add contact. Please try again.';
       
       if (error && typeof error === 'object' && 'response' in error) {
@@ -110,7 +109,6 @@ export default function AddContactPage() {
                     </FormItem>
                   )}
                 />
-
 
                 <FormField
                   control={form.control}

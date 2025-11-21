@@ -8,12 +8,6 @@ cloudinary.config({
 });
 
 // Debug Cloudinary configuration
-console.log('Cloudinary Config Check:', {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
-  api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
-  api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING'
-});
-
 export interface CloudinaryUploadResult {
   public_id: string;
   secure_url: string;
@@ -89,27 +83,16 @@ export class CloudinaryService {
         } as CloudinaryUploadResult;
 
       } catch (error) {
-        console.error(`Failed to upload photo ${photo.filename}:`, error);
-        console.error('Photo details:', {
-          filename: photo.filename,
-          size: photo.size,
-          dataUrlLength: photo.dataUrl?.length || 0,
-          timestamp: photo.timestamp
-        });
-        console.error('Upload context:', context);
         if (error instanceof Error) {
-          console.error('Error details:', error.message);
-        }
+          }
         throw new Error(`Failed to upload photo: ${error}`);
       }
     });
 
     try {
       const results = await Promise.all(uploadPromises);
-      console.log(`Successfully uploaded ${results.length} photos to Cloudinary for ${context.type}`);
       return results;
     } catch (error) {
-      console.error('Failed to upload photos to Cloudinary:', error);
       throw error;
     }
   }
@@ -128,14 +111,11 @@ export class CloudinaryService {
         resource_type: 'image'
       });
       
-      console.log('Cloudinary connection test successful:', result.public_id);
-      
       // Clean up test image
       await cloudinary.uploader.destroy(result.public_id);
       
       return true;
     } catch (error) {
-      console.error('Cloudinary connection test failed:', error);
       return false;
     }
   }

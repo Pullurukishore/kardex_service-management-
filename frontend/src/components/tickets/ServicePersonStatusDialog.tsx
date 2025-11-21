@@ -23,6 +23,7 @@ import {
   Home
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/api-client';
+import SimpleAddressEntry from '@/components/location/SimpleAddressEntry';
 
 type ServicePersonStatusOption = {
   value: string;
@@ -40,7 +41,9 @@ type LocationData = {
   latitude: number;
   longitude: number;
   address?: string;
+  accuracy?: number;
   timestamp: string;
+  source?: 'gps' | 'manual' | 'network';
 };
 
 interface ServicePersonStatusDialogProps {
@@ -146,9 +149,10 @@ export function ServicePersonStatusDialog({
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [comments, setComments] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number, address?: string} | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number, address?: string, accuracy?: number, source?: 'gps' | 'manual' | 'network'} | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [isManualAddressOpen, setIsManualAddressOpen] = useState(false);
 
   // Get available status options based on current status
   const availableOptions = useMemo(() => {
@@ -189,26 +193,20 @@ export function ServicePersonStatusDialog({
         });
       });
       
-      console.log('ServicePersonStatusDialog GPS Accuracy:', position.coords.accuracy, 'meters');
-      
       const { latitude, longitude } = position.coords;
       
       // Validate GPS accuracy (warn if > 100m, but still proceed)
       let accuracyWarning = '';
       if (position.coords.accuracy > 100) {
         accuracyWarning = ` (Low accuracy: ${Math.round(position.coords.accuracy)}m)`;
-        console.warn('ServicePersonStatusDialog: GPS accuracy is poor:', position.coords.accuracy, 'meters');
-      }
+        }
       
       // Try to get address from coordinates using backend geocoding service
       let address = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}${accuracyWarning}`;
       let geocodingSuccess = false;
       
       try {
-        console.log('ServicePersonStatusDialog: Calling backend geocoding service...');
         const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
-        
-        console.log('ServicePersonStatusDialog: Backend response:', response.data);
         
         // Fixed: Check the correct response structure
         if (response.data?.success && response.data?.data?.address) {
@@ -217,33 +215,27 @@ export function ServicePersonStatusDialog({
           if (backendAddress && !backendAddress.match(/^\d+\.\d+,\s*\d+\.\d+/)) {
             address = backendAddress + accuracyWarning;
             geocodingSuccess = true;
-            console.log('ServicePersonStatusDialog: Backend geocoding successful:', address);
-          } else {
-            console.log('ServicePersonStatusDialog: Backend returned coordinates, keeping original format');
-          }
+            } else {
+            }
         } else {
-          console.log('ServicePersonStatusDialog: Backend geocoding returned no valid address');
-          console.log('Response structure:', response.data);
-        }
+          }
       } catch (geocodeError: any) {
-        console.log('ServicePersonStatusDialog: Backend geocoding failed:', geocodeError.message || geocodeError);
         // Keep the coordinates format as fallback
       }
         
       setCurrentLocation({
         lat: latitude,
         lng: longitude,
-        address
+        address,
+        accuracy: position.coords.accuracy,
+        source: 'gps'
       });
       
       // If geocoding failed, show a subtle warning but don't block the workflow
       if (!geocodingSuccess && position.coords.accuracy <= 100) {
-        console.log('ServicePersonStatusDialog: Using coordinates as address due to geocoding failure');
-      }
+        }
       
     } catch (error: any) {
-      console.log('ServicePersonStatusDialog: First location attempt failed, trying with lower accuracy...');
-      
       // Retry with lower accuracy settings for better compatibility
       try {
         const fallbackPosition = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -253,8 +245,6 @@ export function ServicePersonStatusDialog({
             maximumAge: 300000 // Allow 5 minute cache for fallback
           });
         });
-        
-        console.log('ServicePersonStatusDialog: Fallback GPS successful, accuracy:', fallbackPosition.coords.accuracy, 'meters');
         
         const { latitude, longitude } = fallbackPosition.coords;
         let accuracyWarning = '';
@@ -274,13 +264,14 @@ export function ServicePersonStatusDialog({
             }
           }
         } catch (geocodeError) {
-          console.log('ServicePersonStatusDialog: Fallback geocoding failed, using coordinates');
-        }
+          }
         
         setCurrentLocation({
           lat: latitude,
           lng: longitude,
-          address
+          address,
+          accuracy: fallbackPosition.coords.accuracy,
+          source: 'gps'
         });
       } catch (fallbackError: any) {
         const errorMessage = fallbackError.code === 1 
@@ -292,8 +283,7 @@ export function ServicePersonStatusDialog({
           : fallbackError.message || 'Failed to get location';
           
         setLocationError(errorMessage);
-        console.error('ServicePersonStatusDialog: Both location attempts failed:', fallbackError);
-      }
+        }
     } finally {
       setLocationLoading(false);
     }
@@ -302,7 +292,6 @@ export function ServicePersonStatusDialog({
   // Auto-get location when status requiring location is selected
   useEffect(() => {
     if (selectedOption?.requiresLocation && !currentLocation && !locationLoading) {
-      console.log('ServicePersonStatusDialog: Auto-getting location for status:', selectedStatus);
       getCurrentLocation();
     }
   }, [selectedStatus, selectedOption?.requiresLocation]);
@@ -313,7 +302,6 @@ export function ServicePersonStatusDialog({
       // Auto-get location for common onsite statuses
       const onsiteStatuses = ['ONSITE_VISIT_STARTED', 'ONSITE_VISIT_REACHED', 'ONSITE_VISIT_IN_PROGRESS', 'ONSITE_VISIT_RESOLVED'];
       if (onsiteStatuses.includes(currentStatus) || selectedStatus.includes('ONSITE')) {
-        console.log('ServicePersonStatusDialog: Auto-getting location for onsite status on dialog open');
         getCurrentLocation();
       }
     }
@@ -342,7 +330,9 @@ export function ServicePersonStatusDialog({
             latitude: currentLocation.lat,
             longitude: currentLocation.lng,
             address: currentLocation.address,
-            timestamp: new Date().toISOString()
+            accuracy: currentLocation.accuracy,
+            timestamp: new Date().toISOString(),
+            source: currentLocation.source || 'gps'
           }
         : undefined;
 
@@ -374,8 +364,7 @@ export function ServicePersonStatusDialog({
       onClose();
 
     } catch (error) {
-      console.error('Error changing status:', error);
-    } finally {
+      } finally {
       setIsSubmitting(false);
     }
   };
@@ -385,6 +374,7 @@ export function ServicePersonStatusDialog({
     setComments('');
     setCurrentLocation(null);
     setLocationError(null);
+    setIsManualAddressOpen(false);
     onClose();
   };
 
@@ -465,19 +455,35 @@ export function ServicePersonStatusDialog({
                   Getting your location...
                 </div>
               ) : currentLocation ? (
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    Location captured
-                  </div>
-                  <div className="text-xs text-gray-600 pl-6">
-                    {currentLocation.address}
-                  </div>
-                  {currentLocation.address?.includes('Low accuracy') && (
-                    <div className="text-xs text-amber-600 pl-6 flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3" />
-                      GPS accuracy is limited. Consider moving to an open area for better precision.
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <CheckCircle className="h-4 w-4" />
+                      Location captured
                     </div>
+                    <div className="text-xs text-gray-600 pl-6">
+                      {currentLocation.address}
+                    </div>
+                    {currentLocation.source === 'manual' && (
+                      <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs ml-6">
+                        ✓ Manual
+                      </Badge>
+                    )}
+                    {currentLocation.address?.includes('Low accuracy') && currentLocation.source === 'gps' && (
+                      <div className="text-xs text-amber-600 pl-6 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        GPS accuracy is limited. Consider moving to an open area for better precision.
+                      </div>
+                    )}
+                  </div>
+                  {currentLocation.source === 'gps' && currentLocation.accuracy && currentLocation.accuracy > 100 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsManualAddressOpen(true)}
+                    >
+                      📍 Enter Manual Address
+                    </Button>
                   )}
                 </div>
               ) : locationError ? (
@@ -486,18 +492,46 @@ export function ServicePersonStatusDialog({
                     <XCircle className="h-4 w-4" />
                     {locationError}
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={getCurrentLocation}
-                    disabled={locationLoading}
-                  >
-                    Retry Location
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={getCurrentLocation}
+                      disabled={locationLoading}
+                    >
+                      Retry Location
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsManualAddressOpen(true)}
+                    >
+                      📍 Enter Manual Address
+                    </Button>
+                  </div>
                 </div>
               ) : null}
             </div>
           )}
+
+          {/* Manual Address Entry Dialog */}
+          <SimpleAddressEntry
+            isOpen={isManualAddressOpen}
+            onClose={() => setIsManualAddressOpen(false)}
+            onLocationSelect={(loc) => {
+              setCurrentLocation({
+                lat: loc.latitude,
+                lng: loc.longitude,
+                address: loc.address,
+                accuracy: loc.accuracy,
+                source: 'manual'
+              });
+              setIsManualAddressOpen(false);
+            }}
+            title="📍 Enter Your Location"
+            description="GPS signal is weak. Please type your current address."
+            gpsRetryCount={0}
+          />
 
           {/* Comments */}
           <div className="space-y-2">

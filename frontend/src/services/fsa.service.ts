@@ -89,7 +89,6 @@ export async function fetchFSADataServer(params: { startDate?: string; endDate?:
 
     return await response.json();
   } catch (error) {
-    console.error('Error in fetchFSADataServer:', error);
     throw error;
   }
 }
@@ -100,7 +99,6 @@ const fetchWithSSR = async (url: string, params: Record<string, any> = {}) => {
     const response = await api.get(url, { params });
     return response.data;
   } catch (error) {
-    console.error(`Error fetching ${url}:`, error);
     throw error;
   }
 };
@@ -178,7 +176,6 @@ export const fetchFSAData = async (startDate?: string, endDate?: string): Promis
       }
     };
   } catch (error) {
-    console.error('Error fetching FSA data:', error);
     throw error;
   }
 };
@@ -201,7 +198,6 @@ export const exportFSAData = async (startDate: string, endDate: string, format: 
     
     return response.data;
   } catch (error) {
-    console.error('Error exporting FSA data:', error);
     throw error;
   }
 };

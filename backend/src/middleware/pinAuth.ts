@@ -9,8 +9,6 @@ let currentAccessPin = {
   createdAt: new Date()
 };
 
-console.log('🔐 PIN initialized with fresh hash:', currentAccessPin.pin);
-
 // PIN attempt tracking for security
 class AttemptTracker {
   private attempts = new Map<string, { count: number; lastAttempt: Date; lockedUntil?: Date }>();
@@ -49,7 +47,6 @@ class AttemptTracker {
       if (record.count >= this.MAX_ATTEMPTS) {
         record.lockedUntil = new Date(now.getTime() + this.LOCKOUT_DURATION);
         this.attempts.set(ip, record);
-        console.log(`🔒 IP ${ip} locked out for ${this.LOCKOUT_DURATION / 1000 / 60} minutes after ${this.MAX_ATTEMPTS} failed attempts`);
         return { 
           allowed: false, 
           attemptsLeft: 0, 
@@ -58,7 +55,6 @@ class AttemptTracker {
       } else {
         this.attempts.set(ip, record);
         const attemptsLeft = this.MAX_ATTEMPTS - record.count;
-        console.log(`⚠️ Failed PIN attempt from IP ${ip}. ${attemptsLeft} attempts remaining`);
         return { 
           allowed: true, 
           attemptsLeft 
@@ -117,13 +113,11 @@ class SessionManager {
                 validUntil: new Date(session.validUntil)
               });
             });
-            console.log(`Loaded ${this.sessions.size} sessions from storage`);
-          }
+            }
         }
       }
     } catch (error) {
-      console.error('Failed to load sessions:', error);
-    }
+      }
   }
   
   private saveSessions(): void {
@@ -139,11 +133,9 @@ class SessionManager {
         // Convert Map to array for JSON serialization
         const data = Array.from(this.sessions.entries());
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-        console.log(`Saved ${this.sessions.size} sessions to storage`);
-      }
+        }
     } catch (error) {
-      console.error('Failed to save sessions:', error);
-    }
+      }
   }
   
   public set(id: string, session: { validUntil: Date; ip: string }): void {
@@ -174,8 +166,7 @@ class SessionManager {
     }
     
     if (expiredCount > 0) {
-      console.log(`Cleared ${expiredCount} expired sessions`);
-    }
+      }
   }
   
   public entries(): IterableIterator<[string, { validUntil: Date; ip: string }]> {
@@ -194,8 +185,7 @@ export const generateAccessPin = (pin: string): void => {
     plainPin: pin, // Store plain PIN for admin display
     createdAt: new Date()
   };
-  console.log(`New access PIN generated at: ${currentAccessPin.createdAt}`);
-};
+  };
 
 export const getCurrentPin = () => currentAccessPin;
 
@@ -231,6 +221,10 @@ export const validatePinSession = (sessionId: string, ip: string): boolean => {
   return true;
 };
 
+export const getPinSessionData = (sessionId: string) => {
+  return sessionManager.get(sessionId);
+};
+
 export const clearExpiredSessions = (): void => {
   sessionManager.clearExpiredSessions();
 };
@@ -246,8 +240,6 @@ export const getPinAttemptInfo = (ip: string) => {
 
 // Middleware to check PIN access
 export const pinAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  console.log(`🔐 PIN Middleware - Path: ${req.path}, Method: ${req.method}`);
-  
   // Skip PIN check for auth endpoints and health check
   const excludedPaths = [
     '/api/auth/validate-pin',
@@ -269,7 +261,6 @@ export const pinAuthMiddleware = (req: Request, res: Response, next: NextFunctio
   }
   
   if (excludedPaths.includes(req.path)) {
-    console.log(`✅ PIN Middleware - Excluded path: ${req.path}`);
     return next();
   }
   
@@ -279,13 +270,15 @@ export const pinAuthMiddleware = (req: Request, res: Response, next: NextFunctio
                         req.headers.authorization.split(' ')[1]);
   const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
   
-  console.log(`🔐 PIN Middleware - Session ID: ${pinSessionId ? 'exists' : 'missing'}, IP: ${clientIp}`);
-  
   // Check if valid PIN session exists
   if (pinSessionId && validatePinSession(pinSessionId, clientIp)) {
-    console.log(`✅ PIN Middleware - Valid session, allowing access`);
-    // Refresh cookie session on each request to extend expiry
-    if (req.cookies?.pinSession) {
+    // Only refresh cookie session if it's close to expiry (within 1 hour)
+    // to prevent unnecessary cookie setting on every request
+    const sessionData = getPinSessionData(pinSessionId);
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+    
+    if (req.cookies?.pinSession && sessionData && (sessionData.validUntil.getTime() - now) < oneHour) {
       const cookieOptions = {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
@@ -300,7 +293,6 @@ export const pinAuthMiddleware = (req: Request, res: Response, next: NextFunctio
   }
   
   // No valid PIN session - require PIN verification
-  console.log(`❌ PIN Middleware - No valid session, blocking access`);
   return res.status(403).json({ 
     error: 'PIN verification required',
     code: 'PIN_REQUIRED'

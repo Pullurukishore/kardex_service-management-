@@ -79,7 +79,6 @@ export class PhotoStorageService {
         });
         
       } catch (error) {
-        console.error(`Failed to store photo ${photo.filename}:`, error);
         // Continue with other photos
       }
     }
@@ -105,7 +104,6 @@ export class PhotoStorageService {
       return `data:${attachment.mimeType};base64,${base64}`;
       
     } catch (error) {
-      console.error(`Failed to retrieve photo ${attachmentId}:`, error);
       return null;
     }
   }
@@ -127,8 +125,7 @@ export class PhotoStorageService {
       try {
         await fs.unlink(attachment.path);
       } catch (error) {
-        console.warn(`Failed to delete file ${attachment.path}:`, error);
-      }
+        }
       
       // Delete from database
       await prisma.attachment.delete({
@@ -138,7 +135,6 @@ export class PhotoStorageService {
       return true;
       
     } catch (error) {
-      console.error(`Failed to delete photo ${attachmentId}:`, error);
       return false;
     }
   }

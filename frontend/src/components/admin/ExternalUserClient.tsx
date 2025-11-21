@@ -63,7 +63,6 @@ export default function ExternalUserClient({
       // Refresh the page to show updated data
       router.refresh();
     } catch (error: any) {
-      console.error('Error deleting external user:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to delete external user';
       toast.error(errorMessage);
     } finally {

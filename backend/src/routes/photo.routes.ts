@@ -18,7 +18,6 @@ router.get('/tickets/:ticketId/photos', authenticate, async (req, res) => {
       photos
     });
   } catch (error) {
-    console.error('Failed to get ticket photos:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve photos'
@@ -54,7 +53,6 @@ router.post('/tickets/:ticketId/photos', authenticate, async (req, res) => {
       photos: storedPhotos
     });
   } catch (error) {
-    console.error('Failed to upload ticket photos:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to upload photos'
@@ -134,7 +132,6 @@ router.get('/activities/:activityId/photos', authenticate, async (req, res) => {
       photos
     });
   } catch (error) {
-    console.error('Failed to get activity photos:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve photos'
@@ -170,7 +167,6 @@ router.post('/activities/:activityId/photos', authenticate, async (req, res) => 
       photos: storedPhotos
     });
   } catch (error) {
-    console.error('Failed to upload activity photos:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to upload photos'

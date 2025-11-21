@@ -56,7 +56,6 @@ export default function ZoneCustomerDetailPage() {
       const data = await fetchCustomer(Number(id));
       setCustomer(data);
     } catch (error) {
-      console.error('Error loading customer:', error);
       toast({
         title: 'Error',
         description: 'Failed to load customer details',

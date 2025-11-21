@@ -36,11 +36,9 @@ export default function PinManagementClient() {
       if (response.success !== false) {
         setPinStatus(response.data || response);
       } else {
-        console.error('Failed to fetch PIN status:', response.error);
         setError(response.error || 'Failed to load PIN status');
       }
     } catch (error) {
-      console.error('Error fetching PIN status:', error);
       setError('Network error while fetching PIN status');
     }
   };

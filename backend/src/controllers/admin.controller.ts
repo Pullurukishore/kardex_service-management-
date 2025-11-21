@@ -72,7 +72,6 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -151,7 +150,6 @@ export const createUser = async (req: AuthenticatedRequest, res: Response) => {
 
     res.status(201).json({ user });
   } catch (error) {
-    console.error('Error creating user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -219,7 +217,6 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({ user });
   } catch (error) {
-    console.error('Error updating user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -252,7 +249,6 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error('Error deleting user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -302,7 +298,6 @@ export const resetUserPassword = async (req: AuthenticatedRequest, res: Response
       newPassword: passwordToUse // Return the password that was actually set
     });
   } catch (error) {
-    console.error('Error resetting password:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -349,7 +344,6 @@ export const toggleUserStatus = async (req: AuthenticatedRequest, res: Response)
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`
     });
   } catch (error) {
-    console.error('Error toggling user status:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -395,7 +389,6 @@ export const getUserById = async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({ user });
   } catch (error) {
-    console.error('Error fetching user:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

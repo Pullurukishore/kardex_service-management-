@@ -225,7 +225,6 @@ export const servicePersonAttendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get my attendance error:', error);
       res.status(500).json({ 
         success: false,
         error: 'Internal server error',
@@ -321,7 +320,6 @@ export const servicePersonAttendanceController = {
         },
       });
     } catch (error) {
-      console.error('Get my attendance stats error:', error);
       res.status(500).json({ 
         success: false,
         error: 'Internal server error',
@@ -446,8 +444,6 @@ export const servicePersonAttendanceController = {
         
         activityCount = count;
         activityLogs = activities;
-        console.log(`[Service Person Detail] Searching for activities between ${dayStart.toISOString()} and ${dayEnd.toISOString()}`);
-        console.log(`[Service Person Detail] Found ${count} activities for attendance ${attendanceId}:`, activities.map(a => ({ id: a.id, title: a.title, type: a.activityType, startTime: a.startTime })));
       }
 
       // Generate flags based on attendance data
@@ -513,7 +509,6 @@ export const servicePersonAttendanceController = {
         data: enrichedRecord,
       });
     } catch (error) {
-      console.error('Get my attendance detail error:', error);
       res.status(500).json({ 
         success: false,
         error: 'Internal server error',

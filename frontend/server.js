@@ -16,13 +16,10 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url, true);
       await handle(req, res, parsedUrl);
     } catch (err) {
-      console.error('Error occurred handling', req.url, err);
       res.statusCode = 500;
       res.end('Internal server error');
     }
   }).listen(port, hostname, () => {
-    console.log(`> Frontend ready!`);
-    console.log(`> Local:    http://localhost:${port}`);
-    console.log(`> Network:  http://${hostname}:${port}`);
+    console.log(`\n✓ Server running at http://localhost:${port}\n`);
   });
 });

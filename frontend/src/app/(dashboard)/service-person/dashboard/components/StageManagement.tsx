@@ -201,8 +201,7 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
       const response = await apiClient.get(`/activities/${activity.id}/stages`);
       setStages(response.data || []);
     } catch (error) {
-      console.error('Error fetching activity stages:', error);
-    }
+      }
   };
 
   const handleNextStage = async () => {
@@ -234,7 +233,6 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
         });
       }
     } catch (error) {
-      console.error('Error updating stage:', error);
       toast({
         title: "Stage Error",
         description: "Failed to update stage. Please try again.",
@@ -262,7 +260,6 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
       // End the activity
       onEndActivity(activity.id);
     } catch (error) {
-      console.error('Error ending activity:', error);
       toast({
         title: "Activity Error",
         description: "Failed to end activity. Please try again.",

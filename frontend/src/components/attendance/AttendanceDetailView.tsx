@@ -53,6 +53,8 @@ interface ActivityStage {
   latitude?: number;
   longitude?: number;
   notes?: string;
+  accuracy?: number;
+  locationSource?: 'gps' | 'manual' | 'network';
   photos?: Array<{
     id: number;
     filename: string;
@@ -69,6 +71,11 @@ interface TicketStatusHistory {
   notes?: string;
   timeInStatus?: number;
   totalTimeOpen?: number;
+  location?: string; // Location where status change occurred
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number; // GPS accuracy in meters
+  locationSource?: 'gps' | 'manual' | 'network'; // Location source type
   changedBy: {
     id: number;
     name: string;
@@ -273,7 +280,6 @@ const TICKET_STATUS_CONFIG = {
   SPARE_PARTS_NEEDED: { label: 'Spare Parts Needed', color: 'bg-red-100 text-red-800' },
   SPARE_PARTS_BOOKED: { label: 'Spare Parts Booked', color: 'bg-pink-100 text-pink-800' },
   SPARE_PARTS_DELIVERED: { label: 'Spare Parts Delivered', color: 'bg-teal-100 text-teal-800' },
-  PENDING: { label: 'Pending', color: 'bg-slate-100 text-slate-800' },
   IN_PROGRESS: { label: 'In Progress', color: 'bg-amber-100 text-amber-800' },
   ON_HOLD: { label: 'On Hold', color: 'bg-gray-100 text-gray-800' },
   ESCALATED: { label: 'Escalated', color: 'bg-red-100 text-red-800' },
@@ -338,7 +344,6 @@ export default function AttendanceDetailView({
         throw new Error('No attendance data received');
       }
     } catch (error) {
-      console.error('Error fetching attendance detail:', error);
       toast({
         title: "Error",
         description: "Failed to load attendance details. Please try again.",
@@ -757,16 +762,39 @@ export default function AttendanceDetailView({
                                         {stage.duration && (
                                           <span className="text-gray-400">({formatDuration(stage.duration)})</span>
                                         )}
-                                        {stage.latitude && stage.longitude && (
-                                          <span className="text-gray-400 text-xs">
-                                            @ {typeof stage.latitude === 'number' ? stage.latitude.toFixed(6) : stage.latitude}, {typeof stage.longitude === 'number' ? stage.longitude.toFixed(6) : stage.longitude}
-                                          </span>
-                                        )}
                                       </div>
                                       {stage.location && (
-                                        <div className="flex items-center gap-1 text-xs text-gray-500 ml-7">
-                                          <MapPin className="h-3 w-3" />
-                                          <span>{shortenAddress(stage.location)}</span>
+                                        <div className="ml-7">
+                                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                                            <MapPin className="h-3 w-3" />
+                                            <span>{shortenAddress(stage.location)}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                            {stage.locationSource === 'manual' && (
+                                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                ✓ Manual
+                                              </Badge>
+                                            )}
+                                            {stage.accuracy && stage.accuracy <= 100 && stage.locationSource === 'gps' && (
+                                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                                ✓ Accurate ({Number(stage.accuracy).toFixed(0)}m)
+                                              </Badge>
+                                            )}
+                                            {stage.accuracy && stage.accuracy > 100 && stage.locationSource === 'gps' && (
+                                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                                                ⚠ Low Accuracy ({Number(stage.accuracy).toFixed(0)}m)
+                                              </Badge>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {/* Show coordinates only when no address is available */}
+                                      {!stage.location && stage.latitude && stage.longitude && (
+                                        <div className="ml-7">
+                                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                                            <MapPin className="h-3 w-3" />
+                                            <span>{typeof stage.latitude === 'number' ? stage.latitude.toFixed(6) : stage.latitude}, {typeof stage.longitude === 'number' ? stage.longitude.toFixed(6) : stage.longitude}</span>
+                                          </div>
                                         </div>
                                       )}
                                     </div>
@@ -784,20 +812,55 @@ export default function AttendanceDetailView({
                                 {activity.ticket.statusHistory.map((statusChange: any, statusIndex: number) => {
                                   const statusConfig = TICKET_STATUS_CONFIG[statusChange.status as keyof typeof TICKET_STATUS_CONFIG] || { label: statusChange.status, color: 'bg-gray-100 text-gray-800' };
                                   return (
-                                    <div key={statusChange.id} className="flex items-center gap-2 text-sm">
-                                      <Badge variant="outline" className={`text-xs ${statusConfig.color}`}>
-                                        {statusConfig.label}
-                                      </Badge>
-                                      <span className="text-gray-500">
-                                        {formatTime(statusChange.changedAt)}
-                                      </span>
-                                      <span className="text-gray-600">by {statusChange.changedBy.name}</span>
-                                      {statusChange.timeInStatus && (
-                                        <span className="text-gray-400">({formatDuration(statusChange.timeInStatus)})</span>
-                                      )}
-                                      {statusChange.notes && (
-                                        <span className="text-gray-500 italic truncate max-w-48">"{statusChange.notes}"</span>
-                                      )}
+                                    <div key={statusChange.id}>
+                                      <div className="flex items-center gap-2 text-sm">
+                                        <Badge variant="outline" className={`text-xs ${statusConfig.color}`}>
+                                          {statusConfig.label}
+                                        </Badge>
+                                        <span className="text-gray-500">
+                                          {formatTime(statusChange.changedAt)}
+                                        </span>
+                                        <span className="text-gray-600">by {statusChange.changedBy.name}</span>
+                                        {statusChange.timeInStatus && (
+                                          <span className="text-gray-400">({formatDuration(statusChange.timeInStatus)})</span>
+                                        )}
+                                        {statusChange.notes && (
+                                          <span className="text-gray-500 italic truncate max-w-48">"{statusChange.notes}"</span>
+                                        )}
+                                      </div>
+                                      {(() => {
+                                        const notes: string = statusChange.notes || '';
+                                        const manualFromSource = statusChange.locationSource === 'manual';
+                                        const manualFromNotes = /📌 Source: ✓ Manual/.test(notes);
+                                        const locMatch = notes.match(/📍 Location:\s*([^\n]+)/);
+                                        const displayLocation = (manualFromNotes && locMatch ? locMatch[1].trim() : statusChange.location);
+                                        if (!displayLocation) return null;
+                                        return (
+                                          <div className="flex items-start gap-2 mt-1 ml-6">
+                                            <MapPin className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-xs text-gray-500 break-words">{shortenAddress(displayLocation)}</p>
+                                              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                {(manualFromSource || manualFromNotes) && (
+                                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                    ✓ Manual
+                                                  </Badge>
+                                                )}
+                                                {statusChange.accuracy && statusChange.accuracy <= 100 && statusChange.locationSource === 'gps' && (
+                                                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                                    ✓ Accurate ({Number(statusChange.accuracy).toFixed(0)}m)
+                                                  </Badge>
+                                                )}
+                                                {statusChange.accuracy && statusChange.accuracy > 100 && statusChange.locationSource === 'gps' && (
+                                                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                                                    ⚠ Low Accuracy ({Number(statusChange.accuracy).toFixed(0)}m)
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
                                     </div>
                                   );
                                 })}
@@ -808,19 +871,90 @@ export default function AttendanceDetailView({
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               {activity.location && (
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
-                                  <MapPin className="h-3 w-3" />
-                                  <span>{activity.location}</span>
-                                  {activity.latitude && activity.longitude && (
+                                <div className="flex items-start gap-2 text-sm text-gray-500">
+                                  <MapPin className="h-3 w-3 mt-0.5" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-500 break-words">{activity.location}</p>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                      {((activity as any).locationSource === 'manual' || (activity as any).metadata?.locationSource === 'manual') && (
+                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                          ✓ Manual
+                                        </Badge>
+                                      )}
+                                      {(() => {
+                                        const src = (activity as any).locationSource || (activity as any).metadata?.locationSource;
+                                        const acc = (activity as any).accuracy ?? (activity as any).metadata?.accuracy;
+                                        return src === 'gps' && typeof acc === 'number' && acc <= 100;
+                                      })() && (
+                                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                          ✓ Accurate ({Number(((activity as any).accuracy ?? (activity as any).metadata?.accuracy)).toFixed(0)}m)
+                                        </Badge>
+                                      )}
+                                      {(() => {
+                                        const src = (activity as any).locationSource || (activity as any).metadata?.locationSource;
+                                        const acc = (activity as any).accuracy ?? (activity as any).metadata?.accuracy;
+                                        return src === 'gps' && typeof acc === 'number' && acc > 100;
+                                      })() && (
+                                        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                                          ⚠ Low Accuracy ({Number(((activity as any).accuracy ?? (activity as any).metadata?.accuracy)).toFixed(0)}m)
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    {activity.latitude && activity.longitude && (
+                                      <Button
+                                        variant="link"
+                                        size="sm"
+                                        className="h-auto p-0 mt-1 text-blue-600"
+                                        onClick={() => window.open(`https://maps.google.com/?q=${activity.latitude},${activity.longitude}`, '_blank')}
+                                      >
+                                        <Map className="h-3 w-3" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              {/* Show coordinates only when no address is available */}
+                              {!activity.location && activity.latitude && activity.longitude && (
+                                <div className="flex items-start gap-2 text-sm text-gray-500">
+                                  <MapPin className="h-3 w-3 mt-0.5" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-500 break-words">
+                                      {typeof activity.latitude === 'number' ? activity.latitude.toFixed(6) : activity.latitude}, {typeof activity.longitude === 'number' ? activity.longitude.toFixed(6) : activity.longitude}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                      {((activity as any).locationSource === 'manual' || (activity as any).metadata?.locationSource === 'manual') && (
+                                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                          ✓ Manual
+                                        </Badge>
+                                      )}
+                                      {(() => {
+                                        const src = (activity as any).locationSource || (activity as any).metadata?.locationSource;
+                                        const acc = (activity as any).accuracy ?? (activity as any).metadata?.accuracy;
+                                        return src === 'gps' && typeof acc === 'number' && acc <= 100;
+                                      })() && (
+                                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                          ✓ Accurate ({Number(((activity as any).accuracy ?? (activity as any).metadata?.accuracy)).toFixed(0)}m)
+                                        </Badge>
+                                      )}
+                                      {(() => {
+                                        const src = (activity as any).locationSource || (activity as any).metadata?.locationSource;
+                                        const acc = (activity as any).accuracy ?? (activity as any).metadata?.accuracy;
+                                        return src === 'gps' && typeof acc === 'number' && acc > 100;
+                                      })() && (
+                                        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                                          ⚠ Low Accuracy ({Number(((activity as any).accuracy ?? (activity as any).metadata?.accuracy)).toFixed(0)}m)
+                                        </Badge>
+                                      )}
+                                    </div>
                                     <Button
                                       variant="link"
                                       size="sm"
-                                      className="h-auto p-0 ml-1 text-blue-600"
+                                      className="h-auto p-0 mt-1 text-blue-600"
                                       onClick={() => window.open(`https://maps.google.com/?q=${activity.latitude},${activity.longitude}`, '_blank')}
                                     >
                                       <Map className="h-3 w-3" />
                                     </Button>
-                                  )}
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -1010,7 +1144,6 @@ export default function AttendanceDetailView({
                                                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                                                     {urls.slice(0, 6).map((url: string, photoIndex: number) => {
                                                       const fullUrl = `${getServerBaseUrl()}${url}`;
-                                                      console.log('🖼️ Loading image:', fullUrl);
                                                       return (
                                                       <div key={`note-photo-${photoIndex}`} className="group relative">
                                                         <div className="aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
@@ -1019,12 +1152,9 @@ export default function AttendanceDetailView({
                                                             alt={`Verification photo ${photoIndex + 1}`}
                                                             className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                                                             onError={(e) => {
-                                                              console.error('❌ Failed to load image:', fullUrl);
-                                                              console.error('Image error event:', e);
-                                                            }}
+                                                              }}
                                                             onLoad={() => {
-                                                              console.log('✅ Image loaded successfully:', fullUrl);
-                                                            }}
+                                                              }}
                                                           />
                                                         </div>
                                                         
@@ -1056,7 +1186,6 @@ export default function AttendanceDetailView({
                                                                   document.body.removeChild(link);
                                                                   window.URL.revokeObjectURL(downloadUrl);
                                                                 } catch (error) {
-                                                                  console.error('Download failed:', error);
                                                                   // Fallback to direct link
                                                                   window.open(`${getServerBaseUrl()}${url}`, '_blank');
                                                                 }
@@ -1155,7 +1284,6 @@ export default function AttendanceDetailView({
                                                         document.body.removeChild(link);
                                                         window.URL.revokeObjectURL(downloadUrl);
                                                       } catch (error) {
-                                                        console.error('Download failed:', error);
                                                         // Fallback to direct link
                                                         window.open(photo.cloudinaryUrl, '_blank');
                                                       }
@@ -1216,6 +1344,39 @@ export default function AttendanceDetailView({
                                       <span className="text-gray-500">{formatTime(statusChange.changedAt)}</span>
                                       <span className="text-gray-600">by {statusChange.changedBy.name}</span>
                                     </div>
+                                    {(() => {
+                                      const notes: string = statusChange.notes || '';
+                                      const manualFromSource = statusChange.locationSource === 'manual';
+                                      const manualFromNotes = /📌 Source: ✓ Manual/.test(notes);
+                                      const locMatch = notes.match(/📍 Location:\s*([^\n]+)/);
+                                      const displayLocation = (manualFromNotes && locMatch ? locMatch[1].trim() : statusChange.location);
+                                      if (!displayLocation) return null;
+                                      return (
+                                        <div className="flex items-start gap-2 mt-1">
+                                          <MapPin className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-gray-500 break-words">{shortenAddress(displayLocation)}</p>
+                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                              {(manualFromSource || manualFromNotes) && (
+                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                  ✓ Manual
+                                                </Badge>
+                                              )}
+                                              {statusChange.accuracy && statusChange.accuracy <= 100 && statusChange.locationSource === 'gps' && (
+                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                                  ✓ Accurate ({statusChange.accuracy.toFixed(0)}m)
+                                                </Badge>
+                                              )}
+                                              {statusChange.accuracy && statusChange.accuracy > 100 && statusChange.locationSource === 'gps' && (
+                                                <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs">
+                                                  ⚠ Low Accuracy ({statusChange.accuracy.toFixed(0)}m)
+                                                </Badge>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
                                     {statusChange.notes && (
                                       <p className="text-xs text-gray-600 mt-1">{statusChange.notes}</p>
                                     )}
@@ -1223,6 +1384,57 @@ export default function AttendanceDetailView({
                                 </div>
                               );
                             })}
+                          </div>
+                        )}
+                        
+                        {/* Onsite Location History from Ticket */}
+                        {activity.activityType === 'TICKET_WORK' && activity.ticket?.onsiteLocationHistory && (
+                          <div className="mt-2 ml-6 space-y-2">
+                            <div className="text-xs font-medium text-gray-600 mb-1">Complete Onsite Location History:</div>
+                            {(() => {
+                              try {
+                                const locationHistory = JSON.parse(activity.ticket.onsiteLocationHistory);
+                                return locationHistory.map((locationEvent: any, index: number) => {
+                                  const statusConfig = TICKET_STATUS_CONFIG[locationEvent.status as keyof typeof TICKET_STATUS_CONFIG] || { label: locationEvent.status, color: 'bg-gray-100 text-gray-800' };
+                                  const isManual = locationEvent.location.address && !locationEvent.location.address.match(/^\d+\.\d+,\s*\d+\.\d+$/);
+                                  return (
+                                    <div key={index} className="flex items-start gap-3">
+                                      <div className="flex flex-col items-center">
+                                        <div className={`w-2 h-2 rounded-full ${statusConfig.color.includes('bg-') ? statusConfig.color.split(' ')[0].replace('bg-', 'bg-') : 'bg-gray-400'}`}></div>
+                                        {index < locationHistory.length - 1 && <div className="w-0.5 h-6 bg-gray-200"></div>}
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2 text-sm">
+                                          <Badge variant="outline" className={`text-xs ${statusConfig.color}`}>
+                                            {statusConfig.label}
+                                          </Badge>
+                                          <span className="text-gray-500">{formatTime(locationEvent.location.timestamp)}</span>
+                                        </div>
+                                        <div className="flex items-start gap-2 mt-1">
+                                          <MapPin className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-gray-500 break-words">{shortenAddress(locationEvent.location.address)}</p>
+                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                              {isManual && (
+                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                  ✓ Manual
+                                                </Badge>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                });
+                              } catch (error) {
+                                return (
+                                  <div className="text-xs text-red-500">
+                                    Error parsing location history data
+                                  </div>
+                                );
+                              }
+                            })()}
                           </div>
                         )}
                       </div>

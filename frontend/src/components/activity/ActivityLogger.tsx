@@ -311,59 +311,43 @@ function ActivityLoggerComponent({
       const { latitude, longitude } = position.coords;
       const accuracy = position.coords.accuracy || 999999;
       
-      console.log('Activity location GPS Details:', {
-        latitude: latitude.toFixed(6),
-        longitude: longitude.toFixed(6),
-        accuracy: `±${Math.round(accuracy)}m`,
-        timestamp: new Date(position.timestamp).toISOString()
-      });
-      
       // Provide detailed accuracy feedback
       if (accuracy > 1000) {
-        console.error('Activity location: Very poor GPS accuracy (>1km):', accuracy, 'meters');
         toast({
           title: "Very Poor GPS Signal",
           description: `GPS accuracy is very poor (±${Math.round(accuracy)}m). Please move outdoors with clear sky view for better accuracy.`,
           variant: "destructive",
         });
       } else if (accuracy > 100) {
-        console.warn('Activity location: Poor GPS accuracy:', accuracy, 'meters');
         toast({
           title: "Poor GPS Accuracy",
           description: `GPS accuracy is poor (±${Math.round(accuracy)}m). Location may be less precise. Try moving to an open area.`,
           variant: "destructive",
         });
       } else if (accuracy > 50) {
-        console.warn('Activity location: Fair GPS accuracy:', accuracy, 'meters');
         toast({
           title: "Fair GPS Accuracy",
           description: `GPS accuracy is fair (±${Math.round(accuracy)}m). Location should be reasonably accurate.`,
         });
       } else if (accuracy <= 10) {
-        console.log('Activity location: Excellent GPS accuracy:', accuracy, 'meters');
         toast({
           title: "Excellent GPS Signal",
           description: `GPS accuracy is excellent (±${Math.round(accuracy)}m). Perfect for location tracking.`,
         });
       } else {
-        console.log('Activity location: Good GPS accuracy:', accuracy, 'meters');
-      }
+        }
 
       // Try to get address from coordinates using backend geocoding service
       let address = '';
       try {
-        console.log('Activity location: Calling backend geocoding service...');
         const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
         
         if (response.data?.success && response.data?.data?.address) {
           address = response.data.data.address;
-          console.log('Activity location: Backend geocoding successful:', address);
-        } else {
-          console.log('Activity location: Backend geocoding returned no address');
-        }
+          } else {
+          }
       } catch (geocodeError) {
-        console.warn('Activity location: Backend geocoding failed:', geocodeError);
-      }
+        }
 
       const locationData = { 
         lat: latitude, 
@@ -391,7 +375,6 @@ function ActivityLoggerComponent({
         errorMessage = "Location request timed out. Please try again.";
       }
 
-      console.error('Activity location capture error:', error);
       setLocationError(errorMessage);
       
       toast({
@@ -478,12 +461,12 @@ function ActivityLoggerComponent({
         ticketsData = responseData.tickets;
       }
 
-      // Filter tickets - exclude closed, resolved, pending, and cancelled statuses
+      // Filter tickets - exclude closed, resolved, and cancelled statuses
       const workableTicketsData = ticketsData.filter(
         (ticket: any) =>
           ticket &&
           ticket.status &&
-          !["CLOSED", "RESOLVED", "CLOSED_PENDING", "PENDING", "CANCELLED"].includes(ticket.status)
+          !["CLOSED", "RESOLVED", "CLOSED_PENDING", "CANCELLED"].includes(ticket.status)
       );
 
       setAllTickets(workableTicketsData);
@@ -555,10 +538,7 @@ function ActivityLoggerComponent({
       setShowLocationCapture(false);
       setDialogOpen(false);
 
-      // Force refresh activities immediately after creating new activity
-      await fetchActivities(true);
-
-      // Notify parent component immediately for faster UI updates
+      // Notify parent component to refresh dashboard data (activities will be updated there)
       if (onActivityChange) {
         await onActivityChange();
       }
@@ -615,15 +595,11 @@ function ActivityLoggerComponent({
         endTime: new Date().toISOString(),
       });
 
-      console.log('End Activity Response:', response);
-
       // Get updated activity data from response
       // Handle different response structures from apiClient
       const responseData = response as any;
       const updatedActivity = responseData.activity || responseData.data?.activity || responseData.data || responseData;
       
-      console.log('Updated Activity Data:', updatedActivity);
-
       // Immediately update local state for instant UI feedback
       const endTime = new Date().toISOString();
       const updatedActivityWithEndTime = {
@@ -671,21 +647,12 @@ function ActivityLoggerComponent({
         description: `"${activityToEnd.title}" - ${durationText}`,
       });
 
-      // Force refresh of activity data with reduced delay
+      // Notify parent to refresh dashboard data with a small delay to ensure backend processing
       setTimeout(async () => {
-        console.log('ActivityLogger: Refreshing activities after end...');
-        
-        // Force refresh with immediate update
-        const freshActivities = await fetchActivities(true);
-        
-        // Notify parent to refresh dashboard stats
         if (onActivityChange) {
-          console.log('ActivityLogger: Calling onActivityChange callback...');
           await onActivityChange();
-        } else {
-          console.log('ActivityLogger: No onActivityChange callback provided');
         }
-      }, 500);
+      }, 300);
     } catch (error: any) {
       // Determine appropriate error message
       let errorMessage = "Failed to end activity";

@@ -54,7 +54,6 @@ export default async function PasswordChangePage({ params }: PasswordChangePageP
       </div>
     );
   } catch (error) {
-    console.error('Error fetching admin:', error);
     notFound();
   }
 }

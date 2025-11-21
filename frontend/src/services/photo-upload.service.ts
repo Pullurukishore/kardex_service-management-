@@ -44,7 +44,6 @@ export class PhotoUploadService {
       return response.data;
 
     } catch (error) {
-      console.error('Photo upload failed:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
@@ -61,7 +60,6 @@ export class PhotoUploadService {
       return response.data;
 
     } catch (error) {
-      console.error('Failed to fetch ticket photos:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch photos'
@@ -78,7 +76,6 @@ export class PhotoUploadService {
       return response.data;
 
     } catch (error) {
-      console.error('Failed to fetch activity photos:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch photos'
@@ -97,7 +94,6 @@ export class PhotoUploadService {
       return response.data;
 
     } catch (error) {
-      console.error('Photo deletion failed:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Delete failed'

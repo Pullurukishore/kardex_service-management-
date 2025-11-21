@@ -101,7 +101,6 @@ export default function NewServicePersonPage() {
           setServiceZones(zones);
         }
       } catch (error) {
-        console.error('Error fetching service zones:', error);
         toast({
           title: 'Error',
           description: 'Failed to fetch service zones',
@@ -137,8 +136,6 @@ export default function NewServicePersonPage() {
 
       const response = await apiClient.post('/service-persons', payload);
       
-      console.log('Service person creation response:', response);
-      
       // Check if the response indicates success
       if (response && (response.success !== false)) {
         toast({
@@ -152,7 +149,6 @@ export default function NewServicePersonPage() {
         throw new Error(response?.error || 'Failed to create service person');
       }
     } catch (error: any) {
-      console.error('Error creating service person:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to create service person',

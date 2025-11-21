@@ -71,8 +71,7 @@ export const TicketStatus = {
   REOPENED: 'REOPENED',
   ON_HOLD: 'ON_HOLD',
   ESCALATED: 'ESCALATED',
-  RESOLVED: 'RESOLVED',
-  PENDING: 'PENDING'
+  RESOLVED: 'RESOLVED'
 } as const;
 
 // Export the TicketStatus enum values as a type
@@ -104,20 +103,18 @@ export type TicketStatusType =
   | 'REOPENED'
   | 'ON_HOLD'
   | 'ESCALATED'
-  | 'RESOLVED'
-  | 'PENDING';
+  | 'RESOLVED';
 
 // Valid status transitions based on backend business logic
 const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
-  // Initial state - can be assigned or moved to pending
-  [TicketStatus.OPEN]: [TicketStatus.ASSIGNED, TicketStatus.CANCELLED, TicketStatus.PENDING],
+  // Initial state - can be assigned
+  [TicketStatus.OPEN]: [TicketStatus.ASSIGNED, TicketStatus.CANCELLED],
   
   // Assigned state - can start working on it or schedule onsite visit
   [TicketStatus.ASSIGNED]: [
     TicketStatus.IN_PROGRESS, 
     TicketStatus.ONSITE_VISIT, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // IN_PROCESS (legacy) - same as IN_PROGRESS
@@ -130,8 +127,7 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.CANCELLED,
     TicketStatus.RESOLVED,
     TicketStatus.ON_HOLD,
-    TicketStatus.ESCALATED,
-    TicketStatus.PENDING
+    TicketStatus.ESCALATED
   ],
   
   // Main working state - multiple possible next steps
@@ -144,8 +140,7 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.CANCELLED,
     TicketStatus.RESOLVED,
     TicketStatus.ON_HOLD,
-    TicketStatus.ESCALATED,
-    TicketStatus.PENDING
+    TicketStatus.ESCALATED
   ],
   
   // Alternative formats for IN_PROGRESS - same transitions
@@ -158,8 +153,7 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.CANCELLED,
     TicketStatus.RESOLVED,
     TicketStatus.ON_HOLD,
-    TicketStatus.ESCALATED,
-    TicketStatus.PENDING
+    TicketStatus.ESCALATED
   ],
   
   [TicketStatus.WORK_IN_PROGRESS]: [
@@ -171,8 +165,7 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.CANCELLED,
     TicketStatus.RESOLVED,
     TicketStatus.ON_HOLD,
-    TicketStatus.ESCALATED,
-    TicketStatus.PENDING
+    TicketStatus.ESCALATED
   ],
   
   // Waiting for customer response
@@ -180,37 +173,32 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.IN_PROGRESS, 
     TicketStatus.ONSITE_VISIT,
     TicketStatus.CLOSED_PENDING, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // Onsite visit flow - comprehensive lifecycle
   [TicketStatus.ONSITE_VISIT]: [
     TicketStatus.ONSITE_VISIT_PLANNED, 
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_PLANNED]: [
     TicketStatus.ONSITE_VISIT_STARTED,
     TicketStatus.IN_PROGRESS,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_STARTED]: [
     TicketStatus.ONSITE_VISIT_REACHED,
     TicketStatus.ONSITE_VISIT_PENDING,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_REACHED]: [
     TicketStatus.ONSITE_VISIT_IN_PROGRESS,
     TicketStatus.ONSITE_VISIT_PENDING,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_IN_PROGRESS]: [
@@ -218,73 +206,62 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
     TicketStatus.ONSITE_VISIT_PENDING,
     TicketStatus.PO_NEEDED,
     TicketStatus.SPARE_PARTS_NEEDED,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_RESOLVED]: [
     TicketStatus.ONSITE_VISIT_COMPLETED,
-    TicketStatus.CLOSED_PENDING,
-    TicketStatus.PENDING
+    TicketStatus.CLOSED_PENDING
   ],
   
   [TicketStatus.ONSITE_VISIT_PENDING]: [
     TicketStatus.ONSITE_VISIT_IN_PROGRESS,
     TicketStatus.ONSITE_VISIT_COMPLETED,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.ONSITE_VISIT_COMPLETED]: [
     TicketStatus.CLOSED_PENDING,
-    TicketStatus.IN_PROGRESS,
-    TicketStatus.PENDING
+    TicketStatus.IN_PROGRESS
   ],
   
   // Purchase order flow
   [TicketStatus.PO_NEEDED]: [
     TicketStatus.PO_REACHED,
     TicketStatus.PO_RECEIVED, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.PO_REACHED]: [
     TicketStatus.PO_RECEIVED,
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.PO_RECEIVED]: [
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // Spare parts flow
   [TicketStatus.SPARE_PARTS_NEEDED]: [
     TicketStatus.SPARE_PARTS_BOOKED, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.SPARE_PARTS_BOOKED]: [
     TicketStatus.SPARE_PARTS_DELIVERED, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   [TicketStatus.SPARE_PARTS_DELIVERED]: [
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // Closing flow
   [TicketStatus.CLOSED_PENDING]: [
     TicketStatus.CLOSED, 
-    TicketStatus.REOPENED, 
-    TicketStatus.PENDING
+    TicketStatus.REOPENED
   ],
   
   // Final state - no transitions out except REOPENED
@@ -294,44 +271,32 @@ const validTransitions: Record<TicketStatusType, TicketStatusType[]> = {
   
   // Cancelled state - can be reopened
   [TicketStatus.CANCELLED]: [
-    TicketStatus.REOPENED, 
-    TicketStatus.PENDING
+    TicketStatus.REOPENED
   ],
   
   // Reopened ticket - goes back to assigned or in process
   [TicketStatus.REOPENED]: [
     TicketStatus.ASSIGNED, 
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED, 
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // On hold state - temporarily paused
   [TicketStatus.ON_HOLD]: [
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // Escalated state - needs attention
   [TicketStatus.ESCALATED]: [
     TicketStatus.IN_PROGRESS, 
-    TicketStatus.CANCELLED,
-    TicketStatus.PENDING
+    TicketStatus.CANCELLED
   ],
   
   // Resolved state - ready for closing
   [TicketStatus.RESOLVED]: [
     TicketStatus.CLOSED, 
-    TicketStatus.REOPENED, 
-    TicketStatus.PENDING
-  ],
-  
-  // Pending state - initial or temporary state
-  [TicketStatus.PENDING]: [
-    TicketStatus.OPEN, 
-    TicketStatus.ASSIGNED, 
-    TicketStatus.IN_PROGRESS
+    TicketStatus.REOPENED
   ]
 };
 
@@ -347,11 +312,7 @@ const getAvailableStatuses = (currentStatus: TicketStatusType, userRole?: UserRo
     mappedStatus = TicketStatus.IN_PROGRESS;
   }
   
-  console.log('StatusChangeDialog: Original status:', currentStatus, 'Mapped to:', mappedStatus);
-  
   const availableTransitions = validTransitions[mappedStatus] || [];
-  console.log('StatusChangeDialog: Available transitions:', availableTransitions);
-  
   // Statuses restricted for service person and zone users
   const restrictedStatusesForFieldUsers: TicketStatusType[] = [
     'CANCELLED',
@@ -359,7 +320,6 @@ const getAvailableStatuses = (currentStatus: TicketStatusType, userRole?: UserRo
     'ON_HOLD',
     'ESCALATED',
     'RESOLVED',
-    'PENDING',
     'CLOSED'
   ];
   
@@ -386,7 +346,7 @@ type LocationData = {
   address?: string;
   timestamp: string;
   accuracy?: number;
-  locationSource?: 'gps' | 'manual' | 'network';
+  source?: 'gps' | 'manual' | 'network';
 };
 
 // Enhanced location data from our new system
@@ -496,30 +456,23 @@ export function StatusChangeDialog({
         });
       });
       
-      console.log('StatusChangeDialog GPS Accuracy:', position.coords.accuracy, 'meters');
-      
       // Check if accuracy is good enough (less than 30 meters)
       if (position.coords.accuracy > 30) {
-        console.warn('StatusChangeDialog: GPS accuracy is poor:', position.coords.accuracy, 'meters');
-      }
+        }
 
       const { latitude, longitude } = position.coords;
       
       // Try to get address from coordinates using backend geocoding service
       let address = '';
       try {
-        console.log('StatusChangeDialog: Calling backend geocoding service...');
         const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
         
         if (response.data?.success && response.data?.data?.address) {
           address = response.data.data.address;
-          console.log('StatusChangeDialog: Backend geocoding successful:', address);
-        } else {
-          console.log('StatusChangeDialog: Backend geocoding returned no address');
-        }
+          } else {
+          }
       } catch (geocodeError) {
-        console.warn('StatusChangeDialog: Backend geocoding failed:', geocodeError);
-      }
+        }
 
       setCurrentLocation({
         lat: latitude,
@@ -527,7 +480,6 @@ export function StatusChangeDialog({
         address: address || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
       });
     } catch (error) {
-      console.error('Error capturing location:', error);
       alert('Failed to capture location. Please ensure location services are enabled.');
     } finally {
       setIsCapturingLocation(false);
@@ -609,7 +561,6 @@ export function StatusChangeDialog({
       [TicketStatus.SPARE_PARTS_DELIVERED]: { label: 'Parts Delivered', shortLabel: 'Parts Ready', category: 'Parts', description: 'Spare parts delivered' },
       [TicketStatus.ON_HOLD]: { label: 'On Hold', shortLabel: 'On Hold', category: 'Special', description: 'Ticket temporarily paused' },
       [TicketStatus.ESCALATED]: { label: 'Escalated', shortLabel: 'Escalated', category: 'Special', description: 'Escalated to higher level' },
-      [TicketStatus.PENDING]: { label: 'Pending', shortLabel: 'Pending', category: 'Special', description: 'Awaiting further action' },
       [TicketStatus.CANCELLED]: { label: 'Cancelled', shortLabel: 'Cancelled', category: 'Special', description: 'Ticket has been cancelled' },
       [TicketStatus.REOPENED]: { label: 'Reopened', shortLabel: 'Reopened', category: 'Special', description: 'Previously closed ticket reopened' }
     };
@@ -640,7 +591,6 @@ export function StatusChangeDialog({
   const handleStatusChange = async () => {
     if (!selectedStatus) return;
     if (!Object.values(TicketStatus).includes(selectedStatus as TicketStatusType)) {
-      console.error('Invalid status selected');
       return;
     }
 
@@ -667,7 +617,7 @@ export function StatusChangeDialog({
             address: enhancedLocationState.capturedLocation.address,
             timestamp: new Date().toISOString(),
             accuracy: enhancedLocationState.capturedLocation.accuracy,
-            locationSource: enhancedLocationState.capturedLocation.source
+            source: enhancedLocationState.capturedLocation.source
           }
         : undefined;
 
@@ -684,12 +634,6 @@ export function StatusChangeDialog({
       
       // Upload report file if provided for CLOSED_PENDING status
       if (selectedStatus === TicketStatus.CLOSED_PENDING && reportFile && ticketId) {
-        console.log('📄 Uploading report for CLOSED_PENDING status...', {
-          fileName: reportFile.name,
-          fileSize: reportFile.size,
-          ticketId
-        });
-        
         try {
           const formData = new FormData();
           formData.append('files', reportFile);
@@ -700,15 +644,11 @@ export function StatusChangeDialog({
             },
           });
           
-          console.log('✅ Report uploaded successfully:', response.data);
-          
           toast({
             title: 'Report Uploaded',
             description: `${reportFile.name} has been uploaded successfully`,
           });
         } catch (error) {
-          console.error('❌ Error uploading report:', error);
-          
           toast({
             title: 'Report Upload Failed',
             description: 'Failed to upload report. You can upload it manually from the Reports tab.',
@@ -719,8 +659,7 @@ export function StatusChangeDialog({
           // User can always upload manually later
         }
       } else if (selectedStatus === TicketStatus.CLOSED_PENDING && !reportFile) {
-        console.log('ℹ️ No report file selected for CLOSED_PENDING status (optional)');
-      }
+        }
       
       // Auto-transition from ONSITE_VISIT_REACHED to ONSITE_VISIT_IN_PROGRESS
       if (selectedStatus === TicketStatus.ONSITE_VISIT_REACHED) {
@@ -736,7 +675,6 @@ export function StatusChangeDialog({
             photoData
           );
         } catch (error) {
-          console.error('Error in automatic status transition:', error);
           // Don't show error to user as the main status change was successful
         }
       }
@@ -775,8 +713,6 @@ export function StatusChangeDialog({
         return <Pause className="h-4 w-4" />;
       case TicketStatus.IN_PROGRESS:
         return <Play className="h-4 w-4" />;
-      case TicketStatus.PENDING:
-        return <Clock className="h-4 w-4" />;
       default:
         return <Zap className="h-4 w-4" />;
     }

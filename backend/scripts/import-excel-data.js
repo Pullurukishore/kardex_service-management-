@@ -11,11 +11,7 @@ const ADMIN_USER_ID = 1; // Default admin user ID for createdBy/updatedBy fields
 
 // Logging utility
 const log = {
-  info: (message) => console.log(`[INFO] ${new Date().toISOString()} - ${message}`),
-  error: (message) => console.error(`[ERROR] ${new Date().toISOString()} - ${message}`),
-  success: (message) => console.log(`[SUCCESS] ${new Date().toISOString()} - ${message}`),
-  warn: (message) => console.warn(`[WARN] ${new Date().toISOString()} - ${message}`)
-};
+  info: (message) => };
 
 // Statistics tracking
 const stats = {
@@ -367,18 +363,7 @@ async function importExcelData() {
     
     // Print summary
     log.success('Import completed!');
-    console.log('\n=== IMPORT SUMMARY ===');
-    console.log(`Total rows processed: ${stats.totalRows}`);
-    console.log(`Successful imports: ${successCount}`);
-    console.log(`Errors: ${stats.errorsCount}`);
-    console.log(`ServiceZones created: ${stats.serviceZonesCreated}`);
-    console.log(`ServiceZones reused: ${stats.serviceZonesReused}`);
-    console.log(`Customers created: ${stats.customersCreated}`);
-    console.log(`Customers reused: ${stats.customersReused}`);
-    console.log(`Assets created: ${stats.assetsCreated}`);
-    console.log('=====================\n');
-    
-  } catch (error) {
+    } catch (error) {
     log.error(`Import failed: ${error.message}`);
     process.exit(1);
   } finally {

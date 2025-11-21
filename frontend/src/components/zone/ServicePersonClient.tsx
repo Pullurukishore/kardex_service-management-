@@ -165,7 +165,6 @@ export default function ZoneServicePersonClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch zone service person data:', err);
       setError('Failed to load service personnel. Please try again.');
       toast.error('Failed to refresh service personnel data');
       return false;

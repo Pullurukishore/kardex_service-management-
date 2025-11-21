@@ -68,8 +68,7 @@ export function TicketSummaryReport({ reportData }: TicketSummaryReportProps) {
       'ASSIGNED': 'bg-purple-500',
       'RESOLVED': 'bg-green-500',
       'CLOSED': 'bg-gray-500',
-      'ESCALATED': 'bg-red-500',
-      'PENDING': 'bg-orange-500'
+      'ESCALATED': 'bg-red-500'
     };
     return colors[status] || 'bg-gray-400';
   };

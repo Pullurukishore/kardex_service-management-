@@ -152,8 +152,6 @@ router.patch(
   assignTicket
 );
 
-
-
 // Assign ticket to zone user for onsite visit
 router.patch(
   '/:id/assign-zone-user',

@@ -82,8 +82,7 @@ export class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Error creating ticket status notification:', error);
-    }
+      }
   }
 
   // Create notification for ticket assignment
@@ -113,8 +112,7 @@ export class NotificationService {
         }
       });
     } catch (error) {
-      console.error('Error creating ticket assignment notification:', error);
-    }
+      }
   }
 
   // Create notification for PO requests
@@ -199,8 +197,7 @@ export class NotificationService {
         }
       }
     } catch (error) {
-      console.error('Error creating PO notification:', error);
-    }
+      }
   }
 
   // Create notification for onsite visit planning
@@ -232,8 +229,7 @@ export class NotificationService {
         }
       });
     } catch (error) {
-      console.error('Error creating onsite visit notification:', error);
-    }
+      }
   }
 
   // Create notification for spare parts updates
@@ -296,8 +292,7 @@ export class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Error creating spare parts notification:', error);
-    }
+      }
   }
 
   // Create system alert notifications
@@ -330,8 +325,7 @@ export class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Error creating system alert:', error);
-    }
+      }
   }
 
   // Mark notifications as read
@@ -348,8 +342,7 @@ export class NotificationService {
         }
       });
     } catch (error) {
-      console.error('Error marking notifications as read:', error);
-    }
+      }
   }
 
   // Get unread notifications count
@@ -362,7 +355,6 @@ export class NotificationService {
         }
       });
     } catch (error) {
-      console.error('Error getting unread notifications count:', error);
       return 0;
     }
   }
@@ -402,7 +394,6 @@ export class NotificationService {
         }
       };
     } catch (error) {
-      console.error('Error getting user notifications:', error);
       return {
         data: [],
         pagination: { total: 0, page: 1, limit: 20, totalPages: 0 }

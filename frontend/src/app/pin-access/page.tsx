@@ -47,8 +47,7 @@ const getLocalSession = (): PinSession | null => {
       }
     }
   } catch (error) {
-    console.error('Error reading PIN session from localStorage:', error);
-  }
+    }
   return null;
 };
 
@@ -59,8 +58,7 @@ const setLocalSession = (session: PinSession): boolean => {
       return true;
     }
   } catch (error) {
-    console.error('Error saving PIN session to localStorage:', error);
-  }
+    }
   return false;
 };
 
@@ -117,6 +115,7 @@ export default function PinAccessPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [mounted, setMounted] = useState(false);
   // Enhanced visual states
   const [animatePulse, setAnimatePulse] = useState(false);
   // Attempt tracking
@@ -128,6 +127,11 @@ export default function PinAccessPage() {
   
   // React ref for input focus
   const pinInputRef = useRef<HTMLInputElement>(null);
+  
+  // Ensure component is mounted before running client-side checks
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   
   // Pre-generate animation values to prevent layout shifts
@@ -145,6 +149,8 @@ export default function PinAccessPage() {
 
   // Check lockout status and fetch attempt count on page load
   useEffect(() => {
+    if (!mounted) return;
+
     const initializePinStatus = async () => {
       try {
         // First, check localStorage for lockout info
@@ -192,7 +198,7 @@ export default function PinAccessPage() {
     };
 
     initializePinStatus();
-  }, []);
+  }, [mounted]);
 
   // Countdown timer for lockout
   useEffect(() => {
@@ -228,6 +234,8 @@ export default function PinAccessPage() {
 
   // Check if user already has valid PIN session on page load
   useEffect(() => {
+    if (!mounted) return;
+
     const checkPinSession = async () => {
       // Don't check PIN session if we're locked out
       if (isLocked) {
@@ -250,8 +258,7 @@ export default function PinAccessPage() {
         } catch (cookieError) {
           // Handle error silently in development
           if (process.env.NODE_ENV === 'development') {
-            console.warn('Error checking cookies:', cookieError);
-          }
+            }
         }
         
         // If no cookie, check localStorage fallback
@@ -278,8 +285,7 @@ export default function PinAccessPage() {
     };
 
     checkPinSession();
-  }, [router, isLocked]);
-
+  }, [router, isLocked, mounted]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     // Prevent default form submission behavior
@@ -340,8 +346,7 @@ export default function PinAccessPage() {
               cookieWorking = true;
             }
           } catch (cookieError) {
-            console.error('Error checking cookies:', cookieError);
-          }
+            }
           
           // Add session ID to API client for future requests if cookies aren't working
           if (!cookieWorking && response.sessionId) {
@@ -432,8 +437,8 @@ export default function PinAccessPage() {
     }
   };
 
-  // Show loading screen while checking PIN status
-  if (checking) {
+  // Show loading screen while component is mounting or checking PIN status
+  if (!mounted || checking) {
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
         {/* Animated Background */}

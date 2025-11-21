@@ -26,13 +26,11 @@ export class PerformanceMonitor {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
         this.metrics.set('LCP', lastEntry.startTime);
-        console.log(`LCP: ${lastEntry.startTime.toFixed(2)}ms`);
-      });
+        });
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
       this.observers.push(lcpObserver);
     } catch (e) {
-      console.warn('LCP observer not supported');
-    }
+      }
 
     // First Input Delay (FID)
     try {
@@ -40,14 +38,12 @@ export class PerformanceMonitor {
         const entries = list.getEntries();
         entries.forEach((entry: any) => {
           this.metrics.set('FID', entry.processingStart - entry.startTime);
-          console.log(`FID: ${(entry.processingStart - entry.startTime).toFixed(2)}ms`);
-        });
+          });
       });
       fidObserver.observe({ type: 'first-input', buffered: true });
       this.observers.push(fidObserver);
     } catch (e) {
-      console.warn('FID observer not supported');
-    }
+      }
 
     // Cumulative Layout Shift (CLS)
     try {
@@ -60,13 +56,11 @@ export class PerformanceMonitor {
           }
         });
         this.metrics.set('CLS', clsValue);
-        console.log(`CLS: ${clsValue.toFixed(4)}`);
-      });
+        });
       clsObserver.observe({ type: 'layout-shift', buffered: true });
       this.observers.push(clsObserver);
     } catch (e) {
-      console.warn('CLS observer not supported');
-    }
+      }
 
     // Total Blocking Time (TBT) approximation
     try {
@@ -79,13 +73,11 @@ export class PerformanceMonitor {
           }
         });
         this.metrics.set('TBT', tbt);
-        console.log(`TBT (approx): ${tbt.toFixed(2)}ms`);
-      });
+        });
       tbtObserver.observe({ type: 'longtask', buffered: true });
       this.observers.push(tbtObserver);
     } catch (e) {
-      console.warn('TBT observer not supported');
-    }
+      }
   }
 
   // Mark performance points
@@ -119,7 +111,6 @@ export class PerformanceMonitor {
         
         return duration;
       } catch (e) {
-        console.warn('Performance measurement failed:', e);
         return 0;
       }
     }
@@ -159,8 +150,7 @@ export class PerformanceMonitor {
           break;
       }
       
-      console.log(`${status} ${key}: ${value.toFixed(2)}${key === 'CLS' ? '' : 'ms'}${threshold}`);
-    });
+      });
     
     console.groupEnd();
   }
@@ -180,8 +170,7 @@ export const trackComponentRender = (componentName: string) => {
   return () => {
     const duration = monitor.measure(`${componentName}-render`, `${componentName}-render-start`);
     if (duration > 16) { // Warn if render takes longer than one frame (16ms)
-      console.warn(`⚠️ Slow render detected: ${componentName} took ${duration.toFixed(2)}ms`);
-    }
+      }
   };
 };
 
@@ -195,11 +184,9 @@ export const trackAsyncOperation = async <T>(
   try {
     const result = await operation();
     const duration = monitor.measure(operationName, `${operationName}-start`);
-    console.log(`📊 ${operationName}: ${duration.toFixed(2)}ms`);
     return result;
   } catch (error) {
     const duration = monitor.measure(`${operationName}-error`, `${operationName}-start`);
-    console.error(`❌ ${operationName} failed after ${duration.toFixed(2)}ms:`, error);
     throw error;
   }
 };

@@ -45,7 +45,6 @@ export default async function ExternalTicketsPage({ searchParams }: Props) {
   try {
     ticketsData = await getTickets(filters);
   } catch (err) {
-    console.error('Error fetching tickets:', err);
     error = 'Failed to load tickets. Please try again.';
     ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 30, totalPages: 1 } };
   }
@@ -74,7 +73,6 @@ export default async function ExternalTicketsPage({ searchParams }: Props) {
           </Link>
         </div>
       </div>
-
 
       {/* External Ticket Client - No Actions, No Filters */}
       <ExternalTicketClient 

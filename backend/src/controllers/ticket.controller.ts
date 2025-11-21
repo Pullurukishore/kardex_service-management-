@@ -256,58 +256,30 @@ async function checkTicketAccess(user: any, ticketId: number) {
       subOwnerId: true,
       createdById: true
     }
-  });
-  
-  console.log('checkTicketAccess - User:', { 
-    id: user.id, 
-    role: user.role, 
-    zoneIds: user.zoneIds 
-  });
-  console.log('checkTicketAccess - Ticket:', ticket);
-  
-  if (!ticket) return { allowed: false, error: 'Ticket not found' };
+  });  if (!ticket) return { allowed: false, error: 'Ticket not found' };
   
   // Admin can access any ticket
-  if (user.role === UserRoleEnum.ADMIN) {
-    console.log('Access granted: Admin role');
-    return { allowed: true };
+  if (user.role === UserRoleEnum.ADMIN) {    return { allowed: true };
   }
   
   // Zone user can access tickets in their zones (check against zoneIds array)
   if (user.role === UserRoleEnum.ZONE_USER && user.zoneIds && ticket.zoneId) {
-    if (user.zoneIds.includes(ticket.zoneId)) {
-      console.log('Access granted: Zone user with matching zone');
-      return { allowed: true };
-    } else {
-      console.log('Access denied: Zone user but zone mismatch', { userZones: user.zoneIds, ticketZone: ticket.zoneId });
-    }
+    if (user.zoneIds.includes(ticket.zoneId)) {      return { allowed: true };
+    } else {    }
   }
   
   // Service person can access assigned tickets, tickets where they are sub-owner, or tickets they created
   if (user.role === UserRoleEnum.SERVICE_PERSON) {
-    if (ticket.assignedToId === user.id) {
-      console.log('Access granted: Service person assigned to ticket');
-      return { allowed: true };
+    if (ticket.assignedToId === user.id) {      return { allowed: true };
     }
-    if (ticket.subOwnerId === user.id) {
-      console.log('Access granted: Service person is sub-owner');
-      return { allowed: true };
+    if (ticket.subOwnerId === user.id) {      return { allowed: true };
     }
-    if (ticket.createdById === user.id) {
-      console.log('Access granted: Service person created the ticket');
-      return { allowed: true };
-    }
-    console.log('Access denied: Service person not assigned, sub-owner, or creator');
-  }
+    if (ticket.createdById === user.id) {      return { allowed: true };
+    }  }
   
   // Owner can access their own tickets
-  if (ticket.ownerId === user.id || ticket.subOwnerId === user.id) {
-    console.log('Access granted: User is owner or sub-owner');
-    return { allowed: true };
-  }
-  
-  console.log('Access denied: No matching access criteria');
-  return { allowed: false, error: 'You do not have permission to access this resource' };
+  if (ticket.ownerId === user.id || ticket.subOwnerId === user.id) {    return { allowed: true };
+  }  return { allowed: false, error: 'You do not have permission to access this resource' };
 }
 
 // Create a new ticket (Service Coordinator workflow)
@@ -435,9 +407,7 @@ export const createTicket = async (req: TicketRequest, res: Response) => {
         assignedTo: ticket.assignedToId?.toString(),
         estimatedResolution: ticket.dueDate || undefined
       });
-    } catch (notificationError) {
-      console.error('Failed to send WhatsApp notification for ticket creation:', notificationError);
-      // Don't fail the ticket creation if notification fails
+    } catch (notificationError) {      // Don't fail the ticket creation if notification fails
     }
 
     return res.status(201).json(ticket);
@@ -723,6 +693,9 @@ export const updateStatus = async (req: Request, res: Response) => {
     const { status, comments, location, photos } = req.body;
     const user = req.user as any;
 
+    // Log incoming location data for debugging
+    if (location) {    }
+
     const permission = await checkTicketAccess(user, Number(id));
     if (!permission.allowed) {
       return res.status(403).json({ error: permission.error });
@@ -832,14 +805,11 @@ export const updateStatus = async (req: Request, res: Response) => {
           ? `${(totalSize / (1024 * 1024)).toFixed(1)}MB`
           : `${Math.round(totalSize / 1024)}KB`;
         
-        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} stored permanently (${formattedSize})\n🕒 Photo Time: ${new Date().toLocaleString()}\n🔗 Local URLs: ${storedPhotos.map(p => p.url).join(', ')}`;
+        // Store photo info in notes but NOT the URLs (to avoid duplication)
+        // Photos will be fetched via the /photos API endpoint
+        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} stored permanently (${formattedSize})\n🕒 Photo Time: ${new Date().toLocaleString()}`;
         
-        // Log photo storage for audit trail
-        console.log(`Ticket ${id}: ${photoCount} photos stored locally for status ${status} by user ${user.id}`);
-        
-      } catch (error) {
-        console.error(`Failed to store photos for ticket ${id}:`, error);
-        // Fallback to metadata-only approach
+        // Log photo storage for audit trail      } catch (error) {        // Fallback to metadata-only approach
         const photoCount = photos.photos.length;
         const totalSize = photos.photos.reduce((sum: number, photo: any) => sum + photo.size, 0);
         const formattedSize = totalSize > 1024 * 1024 
@@ -859,21 +829,23 @@ export const updateStatus = async (req: Request, res: Response) => {
     // Prepare notes with location information if provided
     let notesWithLocation = comments || '';
     if (location) {
-      // Get real address from coordinates using geocoding service (same as attendance)
+      // For manual locations, preserve the user's original input
+      // For GPS locations, geocode to get full address
       let resolvedAddress = location.address || 'Unknown';
-      if (location.latitude && location.longitude) {
+      
+      if (location.source === 'manual' && location.address) {
+        // Manual address - preserve as-is
+        resolvedAddress = location.address;      } else if (location.latitude && location.longitude) {
+        // GPS location - geocode to get full address
         try {
           const { address: geocodedAddress } = await GeocodingService.reverseGeocode(location.latitude, location.longitude);
-          resolvedAddress = geocodedAddress || `${location.latitude}, ${location.longitude}`;
-          console.log(`Geocoded ticket location address: ${resolvedAddress}`);
-        } catch (error) {
-          console.error('Geocoding error for ticket location:', error);
-          // Fallback to provided address or coordinates
+          resolvedAddress = geocodedAddress || `${location.latitude}, ${location.longitude}`;        } catch (error) {          // Fallback to provided address or coordinates
           resolvedAddress = location.address || `${location.latitude}, ${location.longitude}`;
         }
       }
 
-      const locationInfo = `\n\n📍 Location: ${resolvedAddress}\n🕒 Time: ${new Date(location.timestamp).toLocaleString()}\n📍 Coordinates: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
+      const sourceIndicator = location.source === 'manual' ? '✓ Manual' : location.accuracy && location.accuracy <= 100 ? `✓ Accurate (${location.accuracy.toFixed(0)}m)` : location.accuracy ? `⚠ Low Accuracy (${location.accuracy.toFixed(0)}m)` : '';
+      const locationInfo = `\n\n📍 Location: ${resolvedAddress}\n🕒 Time: ${new Date(location.timestamp).toLocaleString()}\n📍 Coordinates: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}${sourceIndicator ? `\n📌 Source: ${sourceIndicator}` : ''}`;
       notesWithLocation = notesWithLocation + locationInfo;
     }
 
@@ -882,7 +854,13 @@ export const updateStatus = async (req: Request, res: Response) => {
       notesWithLocation = notesWithLocation + photoInfo;
     }
 
-    // Insert a new record into TicketStatusHistory
+    // Insert a new record into TicketStatusHistory with location data
+    // Only save location if it's manual or has good accuracy (≤100m)
+    const shouldSaveLocation = location && (
+      location.source === 'manual' || 
+      (location.accuracy && location.accuracy <= 100)
+    );
+
     await prisma.ticketStatusHistory.create({
       data: {
         ticket: { connect: { id: Number(id) } },
@@ -892,20 +870,27 @@ export const updateStatus = async (req: Request, res: Response) => {
         notes: notesWithLocation,
         timeInStatus,
         totalTimeOpen,
+        // Add location data if provided and valid
+        ...(shouldSaveLocation && {
+          location: location.address,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          accuracy: location.accuracy,
+          locationSource: location.source || 'gps'
+        })
       },
     });
 
     // Create automatic activity log for ticket status update
     try {
       await activityController.createTicketActivity(
-        user.id,
         Number(id),
+        user.id,
         currentTicket.status,
-        status
+        status,
+        location // Pass location data to preserve manual addresses
       );
-    } catch (activityError) {
-      console.error('Failed to create activity log:', activityError);
-      // Don't fail the status update if activity logging fails
+    } catch (activityError) {      // Don't fail the status update if activity logging fails
     }
 
     // Send WhatsApp notification only for OPEN and CLOSED_PENDING statuses
@@ -959,9 +944,7 @@ export const updateStatus = async (req: Request, res: Response) => {
           }
         }
       }
-    } catch (notificationError) {
-      console.error('Failed to send WhatsApp notification for status change:', notificationError);
-      // Don't fail the status update if notification fails
+    } catch (notificationError) {      // Don't fail the status update if notification fails
     }
 
     return res.json(updatedTicket);
@@ -1035,9 +1018,7 @@ export const getTicketComments = async (req: TicketRequest, res: Response) => {
     }));
 
     res.json(transformedComments);
-  } catch (error) {
-    console.error('Error fetching ticket comments:', error);
-    res.status(500).json({ message: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -1110,9 +1091,7 @@ export const addTicketComment = async (req: TicketRequest, res: Response) => {
     };
 
     res.status(201).json(transformedComment);
-  } catch (error) {
-    console.error('Error adding ticket comment:', error);
-    res.status(500).json({ message: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -1198,29 +1177,14 @@ export const assignTicket = async (req: TicketRequest, res: Response) => {
       user.id
     );
 
-    // Send WhatsApp notification to assigned service person
-    console.log('🎯 assignTicket: Starting WhatsApp notification process...');
-    console.log('🎯 assignTicket: Assigned user data:', {
-      id: assignedUser.id,
-      name: assignedUser.name,
-      phone: assignedUser.phone,
-      email: assignedUser.email
-    });
-    
-    try {
+    // Send WhatsApp notification to assigned service person    try {
       const ticketNotificationService = new TicketNotificationService();
       
       // Get customer details for the notification
       const customerDetails = await prisma.customer.findUnique({
         where: { id: updatedTicket.customerId },
         select: { companyName: true }
-      });
-
-      console.log('🎯 assignTicket: Customer details:', customerDetails);
-      
-      if (assignedUser.phone && customerDetails && assignedUser.name) {
-        console.log('🎯 assignTicket: All data present, sending WhatsApp notification...');
-        await ticketNotificationService.sendTicketAssignedNotification({
+      });      if (assignedUser.phone && customerDetails && assignedUser.name) {        await ticketNotificationService.sendTicketAssignedNotification({
           id: updatedTicket.id.toString(),
           title: updatedTicket.title,
           customerName: customerDetails.companyName,
@@ -1228,18 +1192,8 @@ export const assignTicket = async (req: TicketRequest, res: Response) => {
           assignedToPhone: assignedUser.phone,
           priority: updatedTicket.priority as any,
           estimatedResolution: updatedTicket.dueDate || undefined
-        });
-        console.log('✅ assignTicket: WhatsApp notification sent successfully');
-      } else {
-        console.log('⚠️ assignTicket: Missing data for WhatsApp notification:', {
-          hasPhone: !!assignedUser.phone,
-          hasCustomer: !!customerDetails,
-          hasName: !!assignedUser.name
-        });
-      }
-    } catch (whatsappError) {
-      console.error('❌ assignTicket: Failed to send WhatsApp assignment notification:', whatsappError);
-      // Don't throw error to avoid disrupting the main assignment flow
+        });      } else {      }
+    } catch (whatsappError) {      // Don't throw error to avoid disrupting the main assignment flow
     }
 
     // Create audit log
@@ -1379,7 +1333,6 @@ export const assignToZoneUser = async (req: TicketRequest, res: Response) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
-
     // Update only the subOwnerId and lastStatusChange, explicitly setting status to its current value
     const updatedTicket = await prisma.ticket.update({
       where: { id: Number(ticketId) },
@@ -1420,7 +1373,6 @@ export const assignToZoneUser = async (req: TicketRequest, res: Response) => {
       }
     });
 
-
     // Send notification to assigned user
     await NotificationService.createTicketAssignmentNotification(
       updatedTicket.id,
@@ -1428,29 +1380,14 @@ export const assignToZoneUser = async (req: TicketRequest, res: Response) => {
       user.id
     );
 
-    // Send WhatsApp notification to assigned zone user
-    console.log('🎯 assignToZoneUser: Starting WhatsApp notification process...');
-    console.log('🎯 assignToZoneUser: Zone user data:', {
-      id: zoneUser.id,
-      name: zoneUser.name,
-      phone: zoneUser.phone,
-      email: zoneUser.email
-    });
-    
-    try {
+    // Send WhatsApp notification to assigned zone user    try {
       const ticketNotificationService = new TicketNotificationService();
       
       // Get customer details for the notification
       const customerDetails = await prisma.customer.findUnique({
         where: { id: updatedTicket.customerId },
         select: { companyName: true }
-      });
-
-      console.log('🎯 assignToZoneUser: Customer details:', customerDetails);
-      
-      if (zoneUser.phone && customerDetails && zoneUser.name) {
-        console.log('🎯 assignToZoneUser: All data present, sending WhatsApp notification...');
-        await ticketNotificationService.sendTicketAssignedNotification({
+      });      if (zoneUser.phone && customerDetails && zoneUser.name) {        await ticketNotificationService.sendTicketAssignedNotification({
           id: updatedTicket.id.toString(),
           title: updatedTicket.title,
           customerName: customerDetails.companyName,
@@ -1458,18 +1395,8 @@ export const assignToZoneUser = async (req: TicketRequest, res: Response) => {
           assignedToPhone: zoneUser.phone,
           priority: updatedTicket.priority as any,
           estimatedResolution: updatedTicket.dueDate || undefined
-        });
-        console.log('✅ assignToZoneUser: WhatsApp notification sent successfully');
-      } else {
-        console.log('⚠️ assignToZoneUser: Missing data for WhatsApp notification:', {
-          hasPhone: !!zoneUser.phone,
-          hasCustomer: !!customerDetails,
-          hasName: !!zoneUser.name
-        });
-      }
-    } catch (whatsappError) {
-      console.error('❌ assignToZoneUser: Failed to send WhatsApp assignment notification to zone user:', whatsappError);
-      // Don't throw error to avoid disrupting the main assignment flow
+        });      } else {      }
+    } catch (whatsappError) {      // Don't throw error to avoid disrupting the main assignment flow
     }
 
     // Create audit log
@@ -1746,7 +1673,6 @@ export const updateSparePartsStatus = async (req: TicketRequest, res: Response) 
   }
 };
 
-
 // Close ticket (Zone Owner closes after resolution)
 export const closeTicket = async (req: TicketRequest, res: Response) => {
   try {
@@ -1833,7 +1759,16 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
       prisma.ticketStatusHistory.findMany({
         where: { ticketId },
         orderBy: { changedAt: 'desc' },
-        include: {
+        select: {
+          id: true,
+          status: true,
+          changedAt: true,
+          notes: true,
+          location: true,
+          latitude: true,
+          longitude: true,
+          accuracy: true,
+          locationSource: true,
           changedBy: {
             select: {
               id: true,
@@ -1879,7 +1814,15 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
         description: history.notes && history.notes.includes('assigned to') || history.notes && history.notes.includes('Assigned to') 
           ? history.notes 
           : `changed status to ${history.status}`,
-        data: { status: history.status, notes: history.notes },
+        data: { 
+          status: history.status, 
+          notes: history.notes,
+          location: history.location,
+          latitude: history.latitude,
+          longitude: history.longitude,
+          accuracy: history.accuracy,
+          locationSource: history.locationSource
+        },
         user: {
           ...history.changedBy,
           name: history.changedBy.name || history.changedBy.email.split('@')[0] // Use email prefix if name is not available
@@ -2029,9 +1972,7 @@ export const uploadTicketReports = async (req: TicketRequest, res: Response) => 
     }
     
     res.status(201).json(uploadedReports);
-  } catch (error) {
-    console.error('Error uploading reports:', error);
-    res.status(500).json({ error: 'Failed to upload reports' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to upload reports' });
   }
 };
 
@@ -2084,9 +2025,7 @@ export const getTicketReports = async (req: TicketRequest, res: Response) => {
     }));
     
     res.json(formattedReports);
-  } catch (error) {
-    console.error('Error fetching reports:', error);
-    res.status(500).json({ error: 'Failed to fetch reports' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to fetch reports' });
   }
 };
 
@@ -2094,17 +2033,7 @@ export const getTicketReports = async (req: TicketRequest, res: Response) => {
 export const downloadTicketReport = async (req: TicketRequest, res: Response) => {
   try {
     const { id: ticketId, reportId } = req.params;
-    const user = req.user as AuthUser;
-    
-    console.log('Download report request:', {
-      ticketId,
-      reportId,
-      user: user ? { id: user.id, role: user.role, zoneIds: user.zoneIds } : 'No user'
-    });
-    
-    if (!user) {
-      console.log('Authentication failed: No user in request');
-      return res.status(401).json({ error: 'Authentication required' });
+    const user = req.user as AuthUser;    if (!user) {      return res.status(401).json({ error: 'Authentication required' });
     }
     
     // Check if ticket exists and user has access
@@ -2121,19 +2050,8 @@ export const downloadTicketReport = async (req: TicketRequest, res: Response) =>
       }
     });
     
-    if (!ticket) {
-      console.log('Ticket not found:', ticketId);
-      return res.status(404).json({ error: 'Ticket not found' });
-    }
-    
-    console.log('Ticket details:', ticket);
-    
-    const hasAccess = await checkTicketAccess(user, Number(ticketId));
-    console.log('Access check result:', hasAccess);
-    
-    if (!hasAccess.allowed) {
-      console.log('Access denied:', hasAccess.error);
-      return res.status(403).json({ error: hasAccess.error });
+    if (!ticket) {      return res.status(404).json({ error: 'Ticket not found' });
+    }    const hasAccess = await checkTicketAccess(user, Number(ticketId));    if (!hasAccess.allowed) {      return res.status(403).json({ error: hasAccess.error });
     }
     
     const report = await prisma.ticketReport.findUnique({
@@ -2151,19 +2069,14 @@ export const downloadTicketReport = async (req: TicketRequest, res: Response) =>
     const fs = require('fs');
     const path = require('path');
     
-    if (!fs.existsSync(report.filePath)) {
-      console.warn(`File not found: ${report.filePath}. Database record exists but file is missing.`);
-      return res.status(404).json({ 
+    if (!fs.existsSync(report.filePath)) {      return res.status(404).json({ 
         error: 'File not found on server',
         details: 'The uploaded file has been removed or is no longer available. Please contact support if you need this file.'
       });
     }
     
     res.download(report.filePath, report.fileName);
-  } catch (error) {
-    console.error('Error downloading report:', error);
-    
-    // Handle specific file system errors
+  } catch (error) {    // Handle specific file system errors
     if (error && typeof error === 'object' && 'code' in error) {
       const errorCode = (error as any).code;
       if (errorCode === 'ENOENT') {
@@ -2239,9 +2152,7 @@ export const deleteTicketReport = async (req: TicketRequest, res: Response) => {
     });
     
     res.json({ success: true, message: 'Report deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting report:', error);
-    res.status(500).json({ error: 'Failed to delete report' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to delete report' });
   }
 };
 
@@ -2312,9 +2223,7 @@ export const startOnsiteVisit = async (req: TicketRequest, res: Response) => {
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error starting onsite visit:', error);
-    res.status(500).json({ error: 'Failed to start onsite visit' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to start onsite visit' });
   }
 };
 
@@ -2371,9 +2280,7 @@ export const reachOnsiteLocation = async (req: TicketRequest, res: Response) => 
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error updating onsite visit reach:', error);
-    res.status(500).json({ error: 'Failed to update onsite visit reach' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to update onsite visit reach' });
   }
 };
 
@@ -2428,9 +2335,7 @@ export const startOnsiteWork = async (req: TicketRequest, res: Response) => {
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error starting onsite work:', error);
-    res.status(500).json({ error: 'Failed to start onsite work' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to start onsite work' });
   }
 };
 
@@ -2486,9 +2391,7 @@ export const resolveOnsiteWork = async (req: TicketRequest, res: Response) => {
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error resolving onsite work:', error);
-    res.status(500).json({ error: 'Failed to resolve onsite work' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to resolve onsite work' });
   }
 };
 
@@ -2540,9 +2443,7 @@ export const markOnsiteVisitPending = async (req: TicketRequest, res: Response) 
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error marking onsite visit as pending:', error);
-    res.status(500).json({ error: 'Failed to mark onsite visit as pending' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to mark onsite visit as pending' });
   }
 };
 
@@ -2609,9 +2510,7 @@ export const completeOnsiteVisitAndReturn = async (req: TicketRequest, res: Resp
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error completing onsite visit:', error);
-    res.status(500).json({ error: 'Failed to complete onsite visit' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to complete onsite visit' });
   }
 };
 
@@ -2652,9 +2551,7 @@ export const updatePOReached = async (req: TicketRequest, res: Response) => {
     });
 
     res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error updating PO reached status:', error);
-    res.status(500).json({ error: 'Failed to update PO reached status' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to update PO reached status' });
   }
 };
 
@@ -2708,9 +2605,7 @@ export const getOnsiteVisitTracking = async (req: TicketRequest, res: Response) 
       ticket: ticket,
       onsiteVisitLogs: onsiteVisitLogs,
     });
-  } catch (error) {
-    console.error('Error fetching onsite visit tracking:', error);
-    res.status(500).json({ error: 'Failed to fetch onsite visit tracking' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to fetch onsite visit tracking' });
   }
 };
 
@@ -2848,14 +2743,10 @@ export const updateStatusWithLifecycle = async (req: Request, res: Response) => 
         currentTicket.status,
         status
       );
-    } catch (activityError) {
-      console.error('Failed to create activity log:', activityError);
-    }
+    } catch (activityError) {    }
 
     return res.json(updatedTicket);
-  } catch (error) {
-    console.error('Error updating ticket status:', error);
-    return res.status(500).json({ error: 'Failed to update status' });
+  } catch (error) {    return res.status(500).json({ error: 'Failed to update status' });
   }
 };
 
@@ -2879,9 +2770,7 @@ export const getTicketPhotos = async (req: TicketRequest, res: Response) => {
       photos: photos
     });
 
-  } catch (error) {
-    console.error('Error fetching ticket photos:', error);
-    return res.status(500).json({ 
+  } catch (error) {    return res.status(500).json({ 
       success: false, 
       error: 'Failed to fetch photos' 
     });

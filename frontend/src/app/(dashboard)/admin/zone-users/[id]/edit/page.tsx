@@ -101,31 +101,23 @@ export default function EditZoneUserPage() {
       if (!userId || Number.isNaN(userId)) return;
       setLoading(true);
       try {
-        console.log('Fetching zone user with ID:', userId);
         const [userRes, zonesRes] = await Promise.all([
           apiClient.get(`/zone-users/${userId}`),
           // fetch active zones
           apiClient.get('/service-zones', { params: { limit: 100, includeInactive: false } })
         ]);
         
-        console.log('Raw userRes:', userRes);
-        console.log('Raw zonesRes:', zonesRes);
-
         // Handle different response structures
         let userData = null;
         
         // Check if response has ApiResponse structure (userRes.data)
         if (userRes && typeof userRes === 'object' && 'data' in userRes && userRes.data) {
-          console.log('Using ApiResponse structure - userRes.data:', userRes.data);
           userData = userRes.data;
         }
         // Check if response is the user data directly
         else if (userRes && typeof userRes === 'object' && 'id' in userRes) {
-          console.log('Using direct response structure:', userRes);
           userData = userRes;
         }
-        
-        console.log('Final userData:', userData);
         
         if (!userData || typeof userData !== 'object' || !userData.id) {
           throw new Error('Invalid user data received from API');
@@ -145,7 +137,6 @@ export default function EditZoneUserPage() {
           zonesData = zonesRes;
         }
         
-        console.log('Final zonesData:', zonesData);
         const zones = zonesData || [];
 
         setZoneUser(user);
@@ -162,7 +153,6 @@ export default function EditZoneUserPage() {
           serviceZoneIds: assigned 
         });
       } catch (error: any) {
-        console.error('Failed to load zone user data:', error);
         toast({
           title: 'Error',
           description: error?.response?.data?.message || 'Failed to load zone user details',
@@ -214,19 +204,16 @@ export default function EditZoneUserPage() {
         phone: values.phone || undefined,
       };
       
-      console.log('Updating user profile with data:', profileUpdateData);
       promises.push(apiClient.put(`/admin/users/${userId}`, profileUpdateData));
       
       // 2. Update password if provided via separate password reset API
       if (values.password && values.password.length > 0) {
-        console.log('Updating user password');
         promises.push(apiClient.post(`/admin/users/${userId}/reset-password`, {
           newPassword: values.password
         }));
       }
       
       // 3. Update zone assignments via zone user API
-      console.log('Updating zone assignments:', values.serviceZoneIds);
       promises.push(apiClient.put(`/zone-users/${userId}`, {
         serviceZoneIds: values.serviceZoneIds
       }));
@@ -246,7 +233,6 @@ export default function EditZoneUserPage() {
       }, 1000);
       
     } catch (error: any) {
-      console.error('Failed to update zone user:', error);
       toast({
         title: 'Error',
         description: error?.response?.data?.message || 'Failed to update zone user',

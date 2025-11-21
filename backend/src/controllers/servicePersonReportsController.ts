@@ -56,31 +56,13 @@ export const servicePersonReportsController = {
         page = 1,
         limit = 50,
       } = req.query;
-
-      console.log('Received request with params:', {
-        fromDate,
-        toDate,
-        servicePersonIds,
-        zoneId,
-        status,
-        search,
-        page,
-        limit,
-        userRole,
-        userId
-      });
-
       // Debug: Check total service persons in database
       const totalServicePersonsInDb = await prisma.user.count({
         where: { role: 'SERVICE_PERSON' }
       });
-      console.log(`Total SERVICE_PERSON users in database: ${totalServicePersonsInDb}`);
-
       const activeServicePersonsInDb = await prisma.user.count({
         where: { role: 'SERVICE_PERSON', isActive: true }
       });
-      console.log(`Active SERVICE_PERSON users in database: ${activeServicePersonsInDb}`);
-
       // Parse date range
       const startDate = fromDate ? new Date(fromDate as string) : subDays(new Date(), 30);
       const endDate = toDate ? new Date(toDate as string) : new Date();
@@ -88,9 +70,6 @@ export const servicePersonReportsController = {
       // Set to start/end of day for proper filtering
       const fromDateTime = startOfDay(startDate);
       const toDateTime = endOfDay(endDate);
-
-      console.log('Processed date range:', { fromDateTime, toDateTime });
-
       const skip = (Number(page) - 1) * Number(limit);
 
       // Build service person filter
@@ -154,14 +133,9 @@ export const servicePersonReportsController = {
         skip: skip,
         take: Number(limit),
       });
-
-      console.log(`Found ${servicePersons.length} service persons matching criteria`);
-
       // Process each service person's report
       const servicePersonReports = await Promise.all(
         servicePersons.map(async (person) => {
-          console.log(`Processing report for user: ${person.email}`);
-          
           // Get attendance records for the date range
           const attendanceRecords = await prisma.attendance.findMany({
             where: {
@@ -185,9 +159,6 @@ export const servicePersonReportsController = {
               checkInAt: 'asc',
             },
           });
-
-          console.log(`Found ${attendanceRecords.length} attendance records for user ${person.email}`);
-
           // Get activities for the date range
           const activities = await prisma.dailyActivityLog.findMany({
             where: {
@@ -208,13 +179,8 @@ export const servicePersonReportsController = {
               startTime: 'asc',
             },
           });
-
-          console.log(`Found ${activities.length} activities for user ${person.email}`);
-
           // Get ticket performance metrics for this service person
           const ticketMetrics = await calculateServicePersonTicketMetrics(person.id, fromDateTime, toDateTime);
-          console.log(`Calculated ticket metrics for ${person.email}:`, ticketMetrics);
-
           // Process day-wise breakdown - only include Monday to Saturday (working days)
           const daysInRange = eachDayOfInterval({
             start: fromDateTime,
@@ -255,7 +221,6 @@ export const servicePersonReportsController = {
                 // Cap session hours at 24 hours max (prevent multi-day session issues)
                 // If someone is checked in for > 24 hours, it's likely a data quality issue
                 if (sessionHours > 24) {
-                  console.warn(`Session hours capped: User ${att.userId} had ${sessionHours.toFixed(1)}h session on ${dayKey}, capped to 24h`);
                   sessionHours = 24;
                   hasAutoCheckout = true; // Flag as problematic
                 } else if (sessionHours >= 12) {
@@ -263,7 +228,6 @@ export const servicePersonReportsController = {
                   hasAutoCheckout = true;
                 } else if (sessionHours < 0) {
                   // Handle negative hours (data issue)
-                  console.warn(`Negative session hours detected: User ${att.userId} on ${dayKey}, skipping`);
                   return; // Skip this session
                 }
                 
@@ -415,7 +379,6 @@ export const servicePersonReportsController = {
         },
       });
     } catch (error) {
-      console.error('Error in getServicePersonReports:', error);
       return res.status(500).json({ 
         success: false, 
         error: 'Internal server error',
@@ -660,7 +623,6 @@ export const servicePersonReportsController = {
         },
       });
     } catch (error) {
-      console.error('Get reports summary error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -737,7 +699,6 @@ export const servicePersonReportsController = {
         data: transformedServicePersons,
       });
     } catch (error) {
-      console.error('Get service persons error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -798,7 +759,6 @@ export const servicePersonReportsController = {
         data: serviceZones,
       });
     } catch (error) {
-      console.error('Get service zones error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -815,7 +775,6 @@ export const servicePersonReportsController = {
         return await servicePersonReportsController.exportServicePersonPerformanceReports(req, res);
       }
     } catch (error) {
-      console.error('Export reports routing error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1012,13 +971,6 @@ export const servicePersonReportsController = {
 
       // Generate PDF or Excel based on format
       if (format === 'excel') {
-        console.log('Generating Excel report with data:', {
-          dataLength: performanceData?.length,
-          hasData: !!performanceData,
-          isArray: Array.isArray(performanceData),
-          sampleData: performanceData?.[0]
-        });
-        
         const { generateExcel, getExcelColumns } = await import('../utils/excelGenerator');
         const excelColumns = getExcelColumns('service-person-performance');
         
@@ -1031,7 +983,6 @@ export const servicePersonReportsController = {
         await generatePdf(res, performanceData, columns, 'Service Person Performance Report', filters);
       }
     } catch (error) {
-      console.error('Export performance reports error:', error);
       res.status(500).json({ error: 'Failed to generate Excel report', details: error instanceof Error ? error.message : 'Unknown error' });
     }
   },
@@ -1240,10 +1191,8 @@ export const servicePersonReportsController = {
         await generatePdf(res, attendanceData, columns, 'Service Person Attendance Report', filters);
       }
     } catch (error) {
-      console.error('Export attendance reports error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
-      console.error('Error details:', { message: errorMessage, stack: errorStack });
       res.status(500).json({ error: 'Failed to generate attendance report', details: errorMessage });
     }
   },
@@ -1387,7 +1336,6 @@ export const servicePersonReportsController = {
         await generateDetailedPersonPdf(res, reportData);
       }
     } catch (error) {
-      console.error('Export detailed person report error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       res.status(500).json({ error: 'Failed to generate detailed report', details: errorMessage });
     }
@@ -1485,7 +1433,6 @@ export const servicePersonReportsController = {
         },
       });
     } catch (error) {
-      console.error('Get activity details error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -1632,7 +1579,6 @@ async function calculateServicePersonTicketMetrics(
       performanceScore: Math.max(0, Math.min(100, performanceScore)),
     };
   } catch (error) {
-    console.error('Error calculating service person ticket metrics:', error);
     return {
       totalTickets: 0,
       ticketsResolved: 0,

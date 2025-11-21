@@ -63,7 +63,6 @@ export default function AdminClient({
       // Refresh the page to show updated data
       router.refresh();
     } catch (error: any) {
-      console.error('Error deleting admin:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to delete administrator';
       toast.error(errorMessage);
     } finally {

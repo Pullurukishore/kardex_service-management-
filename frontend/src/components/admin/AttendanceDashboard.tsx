@@ -105,7 +105,6 @@ export function AttendanceDashboard() {
         ...response.data.pagination,
       }));
     } catch (error) {
-      console.error('Failed to load attendance data:', error);
       toast({
         title: "Error",
         description: "Failed to load attendance data. Please try again.",
@@ -122,8 +121,7 @@ export function AttendanceDashboard() {
       const response = await apiClient.get('/attendance/live-tracking');
       setLiveTracking(response.data);
     } catch (error) {
-      console.error('Failed to load live tracking:', error);
-    } finally {
+      } finally {
       setRefreshing(false);
     }
   };

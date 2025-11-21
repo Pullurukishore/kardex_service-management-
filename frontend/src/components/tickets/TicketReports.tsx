@@ -77,20 +77,12 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   const fetchReports = async () => {
     try {
-      console.log('📄 Fetching reports for ticket:', ticketId);
       const response = await apiClient.get(`/tickets/${ticketId}/reports`);
-      console.log('✅ Reports fetched:', response);
-      
       // apiClient.get() already returns response.data, so response itself is the array
       const reportsData = Array.isArray(response) ? response : [];
-      console.log('📊 Reports count:', reportsData.length);
-      console.log('📊 Reports array:', Array.isArray(reportsData));
-      
       setReports(reportsData);
-      console.log('✅ Reports state updated with', reportsData.length, 'reports');
-    } catch (error) {
-      console.error('❌ Error fetching reports:', error);
-    }
+      } catch (error) {
+      }
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,7 +163,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
       setUploadProgress(0);
       fetchReports();
     } catch (error) {
-      console.error('Error uploading files:', error);
       toast({
         title: 'Upload failed',
         description: 'Failed to upload files',
@@ -184,14 +175,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   const handleView = async (reportId: string, fileName: string) => {
     try {
-      console.log('Viewing report:', { reportId, fileName, ticketId });
-      
       const response = await downloadBlob(`/tickets/${ticketId}/reports/${reportId}/download`);
-      
-      console.log('View response:', response);
-      console.log('Response data type:', typeof response.data);
-      console.log('Response data size:', response.data.size);
-      console.log('Response headers:', response.headers);
       
       // Check if we have valid blob data
       if (!response.data || response.data.size === 0) {
@@ -207,10 +191,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
       const contentType = response.headers['content-type'] || 'application/octet-stream';
       const blob = new Blob([response.data], { type: contentType });
       const url = window.URL.createObjectURL(blob);
-      
-      console.log('Created blob URL:', url);
-      console.log('Blob size:', blob.size);
-      console.log('Blob type:', blob.type);
       
       // Open in new tab for viewing
       const newWindow = window.open(url, '_blank');
@@ -229,7 +209,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
         window.URL.revokeObjectURL(url);
       }, 5000); // Increased timeout to ensure file loads
     } catch (error) {
-      console.error('Error viewing report:', error);
       toast({
         title: 'View failed',
         description: 'Failed to view report',
@@ -240,11 +219,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   const handleDownload = async (reportId: string, fileName: string) => {
     try {
-      console.log('Downloading report:', { reportId, fileName, ticketId });
-      
       const response = await downloadBlob(`/tickets/${ticketId}/reports/${reportId}/download`);
-      
-      console.log('Download response:', response);
       
       // Check if we have valid blob data
       if (!response.data || response.data.size === 0) {
@@ -273,7 +248,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
         description: 'Report downloaded successfully',
       });
     } catch (error) {
-      console.error('Error downloading report:', error);
       toast({
         title: 'Download failed',
         description: 'Failed to download report',
@@ -291,7 +265,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
       });
       fetchReports();
     } catch (error) {
-      console.error('Error deleting report:', error);
       toast({
         title: 'Delete failed',
         description: 'Failed to delete report',
@@ -339,9 +312,6 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
   }, [ticketId]); // Refetch when ticketId changes
 
   // Debug: Log current reports state
-  console.log('🔍 Current reports state:', reports);
-  console.log('🔍 Reports length:', reports.length);
-
   return (
     <div className="space-y-4">
       {/* Upload Section */}

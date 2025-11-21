@@ -1,4 +1,4 @@
-export type TicketStatus = 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'WAITING_CUSTOMER' | 'ONSITE_VISIT' | 'RESOLVED' | 'CLOSED' | 'CANCELLED' | 'REOPENED' | 'ON_HOLD' | 'ESCALATED' | 'PENDING';
+export type TicketStatus = 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'WAITING_CUSTOMER' | 'ONSITE_VISIT' | 'RESOLVED' | 'CLOSED' | 'CANCELLED' | 'REOPENED' | 'ON_HOLD' | 'ESCALATED';
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface Ticket {

@@ -112,7 +112,7 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
           const zoneUsersRes = await api.get('/zone-users/zone-users');
           // Handle both array response and paginated response
           const usersData = zoneUsersRes.data.data || zoneUsersRes.data;
-          console.log('Zone users API response:', zoneUsersRes.data); // Debug log
+          // Debug log
           setZoneUsers(usersData
             .filter((user: any) => user.role === 'ZONE_USER')
             .map((user: any) => ({
@@ -133,9 +133,6 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
           const personsData = servicePersonsRes.data.data || servicePersonsRes.data;
           
           // Debug: Log the response to see what we're getting
-          console.log('Service persons response:', servicePersonsRes.data);
-          console.log('Persons data:', personsData);
-          
           if (Array.isArray(personsData)) {
             setServicePersons(personsData.map((user: any) => ({
               id: user.id.toString(),
@@ -146,12 +143,10 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
               serviceZones: user.serviceZones || []
             })));
           } else {
-            console.error('Expected array but got:', typeof personsData, personsData);
             setServicePersons([]);
           }
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
         toast({
           title: 'Error',
           description: 'Failed to load users',
@@ -206,19 +201,11 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
     try {
       setLoading(true);
       
-      console.log('Assigning ticket to zone user:', {
-        ticketId,
-        zoneUserId: parseInt(zoneUserId),
-        note: 'Assigned to zone user'
-      });
-      
       // Assign to zone user
       const response = await api.patch(`/tickets/${ticketId}/assign-zone-user`, {
         zoneUserId: parseInt(zoneUserId),
         note: 'Assigned to zone user'
       });
-      
-      console.log('Zone user assignment response:', response.data);
       
       // Update status to ASSIGNED
       await api.patch(`/tickets/${ticketId}/status`, {
@@ -237,7 +224,6 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
         throw new Error('Failed to assign ticket');
       }
     } catch (error: unknown) {
-      console.error('Error assigning ticket:', error);
       let errorMessage = 'Failed to assign ticket';
       
       if (error && typeof error === 'object' && 'response' in error) {
@@ -285,7 +271,6 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
         throw new Error('Failed to assign ticket');
       }
     } catch (error: unknown) {
-      console.error('Error assigning ticket:', error);
       let errorMessage = 'Failed to assign ticket';
       
       if (error && typeof error === 'object' && 'response' in error) {

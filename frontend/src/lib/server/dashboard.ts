@@ -96,7 +96,6 @@ export async function getDashboardData(): Promise<Partial<DashboardData>> {
   try {
     return await makeServerRequest('/dashboard');
   } catch (error) {
-    console.error('Failed to fetch dashboard data:', error);
     return {};
   }
 }
@@ -106,7 +105,6 @@ export async function getStatusDistribution(): Promise<StatusDistribution> {
     const data = await makeServerRequest('/dashboard/status-distribution');
     return data || { distribution: [] };
   } catch (error) {
-    console.error('Failed to fetch status distribution:', error);
     return { distribution: [] };
   }
 }
@@ -116,7 +114,6 @@ export async function getTicketTrends(): Promise<TrendsData> {
     const data = await makeServerRequest('/dashboard/ticket-trends');
     return data || { trends: [] };
   } catch (error) {
-    console.error('Failed to fetch ticket trends:', error);
     return { trends: [] };
   }
 }
@@ -135,7 +132,6 @@ export async function getAllDashboardData() {
       ticketTrends,
     };
   } catch (error) {
-    console.error('Failed to fetch all dashboard data:', error);
     return {
       dashboardData: {},
       statusDistribution: { distribution: [] },
@@ -154,7 +150,6 @@ export async function getAllZoneDashboardData() {
       zoneDashboardData,
     };
   } catch (error) {
-    console.error('Failed to fetch all zone dashboard data:', error);
     return {
       zoneDashboardData: null,
     };
@@ -165,7 +160,6 @@ export async function getZoneDashboardData(): Promise<ZoneDashboardData | null> 
   try {
     return await makeServerRequest('/zone-dashboard');
   } catch (error) {
-    console.error('Failed to fetch zone dashboard data:', error);
     return null;
   }
 }

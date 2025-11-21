@@ -113,7 +113,7 @@ export default function ZoneCreateTicketPage() {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        console.log('Current user:', user); // Debug log
+        // Debug log
         
         // Check if user has service zones assigned
         const hasServiceZones = user?.serviceZones && user.serviceZones.length > 0;
@@ -123,15 +123,15 @@ export default function ZoneCreateTicketPage() {
         
         // Fetch the zone that the zone user is assigned to
         if (userZoneId) {
-          console.log('Fetching zone with ID:', userZoneId); // Debug log
+          // Debug log
           
           try {
             const response = await api.get(`/service-zones/${userZoneId}`);
-            console.log('Zone API response:', response); // Debug log
+            // Debug log
             
             if (response.data) {
               const zoneData = response.data.data || response.data; // Handle both response formats
-              console.log('Zone data:', zoneData); // Debug log
+              // Debug log
               
               if (zoneData) {
                 setZones([zoneData]);
@@ -139,13 +139,10 @@ export default function ZoneCreateTicketPage() {
                 form.setValue('zoneId', zoneData.id, { shouldValidate: true });
                 return; // Exit early on success
               } else {
-                console.warn('No zone data found in response');
-              }
+                }
             } else {
-              console.warn('Unexpected API response format:', response);
-            }
+              }
           } catch (apiError) {
-            console.error('API Error fetching service zone:', apiError);
             // Don't throw here, we'll handle it below with a user-friendly message
           }
         } 
@@ -155,7 +152,6 @@ export default function ZoneCreateTicketPage() {
           ? 'Failed to load service zone details. Please try again.'
           : 'You are not assigned to any service zone. Please contact your administrator.';
           
-        console.error(errorMsg);
         toast({
           title: 'Error',
           description: errorMsg,
@@ -163,7 +159,6 @@ export default function ZoneCreateTicketPage() {
         });
         setZones([]);
       } catch (error: any) {
-        console.error('Error in fetchInitialData:', error);
         const errorMessage = error.response?.data?.message || 'Failed to load service zone. Please try again.';
         toast({
           title: 'Error',
@@ -226,7 +221,6 @@ export default function ZoneCreateTicketPage() {
         setContacts([]);
         setAssets([]);
       } catch (error) {
-        console.error('Error fetching zone customers:', error);
         toast({
           title: 'Error',
           description: 'Failed to load customers for your zone. Please try again.',
@@ -266,7 +260,6 @@ export default function ZoneCreateTicketPage() {
     try {
       updateCustomerData();
     } catch (error) {
-      console.error('Error updating customer data:', error);
       toast({
         title: 'Error',
         description: 'Failed to update customer data. Please try again.',
@@ -301,7 +294,6 @@ export default function ZoneCreateTicketPage() {
       setIsAddAssetOpen(false);
       toast({ title: 'Success', description: `Asset "${newAsset.model}" has been created and selected.` });
     } catch (error: any) {
-      console.error('Error creating asset:', error);
       let errorMessage = 'Failed to create asset. Please try again.';
       if (error.response?.data?.message) errorMessage = error.response.data.message;
       toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
@@ -336,7 +328,6 @@ export default function ZoneCreateTicketPage() {
       setIsAddContactOpen(false);
       toast({ title: 'Success', description: `Contact "${newContact.name}" has been created and selected.` });
     } catch (error: any) {
-      console.error('Error creating contact:', error);
       let errorMessage = 'Failed to create contact. Please try again.';
       if (error.response?.data?.message) errorMessage = error.response.data.message;
       toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
@@ -380,7 +371,6 @@ export default function ZoneCreateTicketPage() {
         router.refresh();
       }, 1500);
     } catch (error: any) {
-      console.error('Error creating ticket:', error);
       let errorMessage = 'Failed to create ticket. Please try again.';
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;

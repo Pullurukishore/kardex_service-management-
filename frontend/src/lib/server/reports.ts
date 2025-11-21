@@ -35,7 +35,6 @@ export async function getZones(): Promise<Zone[]> {
     const response = await makeServerRequest('/service-zones?isActive=true');
     return Array.isArray(response) ? response : response.data || [];
   } catch (error) {
-    console.error('Error fetching zones:', error);
     return [];
   }
 }
@@ -52,7 +51,6 @@ export async function getCustomers(zoneId?: string): Promise<Customer[]> {
       ? response 
       : (response.data || response.customers || []);
   } catch (error) {
-    console.error('Error fetching customers:', error);
     return [];
   }
 }
@@ -64,7 +62,6 @@ export async function getAssets(customerId?: string): Promise<Asset[]> {
     const response = await makeServerRequest(`/assets?customerId=${customerId}&isActive=true`);
     return Array.isArray(response) ? response : response.data || [];
   } catch (error) {
-    console.error('Error fetching assets:', error);
     return [];
   }
 }
@@ -114,7 +111,6 @@ export async function generateReport(filters: {
     const data = response?.data || response || {};
     return data;
   } catch (error) {
-    console.error('Error generating report:', error);
     return null;
   }
 }
@@ -194,7 +190,6 @@ export async function getServicePersonReports(params: {
     
     return null;
   } catch (error) {
-    console.error('Error fetching service person reports:', error);
     return null;
   }
 }
@@ -216,7 +211,6 @@ export async function getServicePersonReportsSummary(params: {
     
     return null;
   } catch (error) {
-    console.error('Error fetching service person reports summary:', error);
     return null;
   }
 }
@@ -233,7 +227,6 @@ export async function getUserZone(): Promise<{ id: number; name: string } | null
     }
     return null;
   } catch (error) {
-    console.error('Error fetching user zone:', error);
     return null;
   }
 }

@@ -61,12 +61,6 @@ async function serverFetch(endpoint: string) {
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
   
-  console.log('serverFetch called for endpoint:', endpoint);
-  console.log('Full URL:', `${API_BASE_URL}${endpoint}`);
-  console.log('Available cookies:', cookieStore.getAll());
-  console.log('AuthToken found:', !!authToken);
-  console.log('UserRole found:', userRole);
-  
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -75,17 +69,12 @@ async function serverFetch(endpoint: string) {
     cache: 'no-store', // Ensure fresh data
   });
 
-  console.log('Response status:', response.status, response.statusText);
-  
   if (!response.ok) {
-    console.error(`Failed to fetch ${endpoint}:`, response.status, response.statusText);
     const errorText = await response.text();
-    console.error('Error response:', errorText);
     throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
   }
 
   const data = await response.json();
-  console.log('Successful response data:', data);
   return data;
 }
 
@@ -96,7 +85,6 @@ export async function getServicePersons(params: {
   search?: string;
 } = {}): Promise<PaginatedResponse<ServicePerson>> {
   try {
-    console.log('getServicePersons called with params:', params);
     const { page = 1, limit = 30, search } = params;
     const searchParams = new URLSearchParams({
       page: page.toString(),
@@ -105,15 +93,9 @@ export async function getServicePersons(params: {
     });
 
     const endpoint = `/service-persons?${searchParams}`;
-    console.log('Calling endpoint:', endpoint);
-    
     const response = await serverFetch(endpoint);
-    console.log('Response received:', response);
-    
     // Handle both response.data and direct response like other working functions
     const servicePersons = response.data || response || [];
-    console.log('Service persons extracted:', servicePersons);
-    
     // Ensure isActive is properly set for each person
     const processedData = servicePersons.map((person: ServicePerson) => ({
       ...person,
@@ -130,7 +112,6 @@ export async function getServicePersons(params: {
       }
     };
   } catch (error) {
-    console.error('Error fetching service persons:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 30, total: 0, totalPages: 0 }
@@ -173,7 +154,6 @@ export async function getServiceZones(params: {
       }
     };
   } catch (error) {
-    console.error('Error fetching service zones:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 20, total: 0, totalPages: 0 }
@@ -223,7 +203,6 @@ export async function getZoneUsers(params: {
       }
     };
   } catch (error) {
-    console.error('Error fetching zone users:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 10, total: 0, totalPages: 0 }
@@ -360,7 +339,6 @@ export async function getAdmins(params: {
       }
     };
   } catch (error) {
-    console.error('Error fetching admins:', error);
     return {
       data: [],
       pagination: { page: 1, limit: 50, total: 0, totalPages: 0 }
@@ -412,7 +390,6 @@ export async function getAdminById(id: string): Promise<Admin | null> {
     // Backend returns { user: adminData }, so we need to extract the user
     return data.user || data;
   } catch (error) {
-    console.error('Error fetching admin by ID:', error);
     return null;
   }
 }

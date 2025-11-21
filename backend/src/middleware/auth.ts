@@ -88,8 +88,6 @@ export const authMiddleware = (roles: UserRole[] = []) => async (
     
     next();
   } catch (error: unknown) {
-    console.error('Authentication error:', error);
-    
     // Handle specific JWT errors
     if (error && typeof error === 'object' && 'name' in error) {
       const err = error as { name: string; message?: string };

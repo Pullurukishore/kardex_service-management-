@@ -87,7 +87,7 @@ const STATUS_OPTIONS = [
     description: 'Currently working at customer site',
     requiresLocation: true,
     requiresComment: false,
-    requiresPhoto: true,
+    requiresPhoto: false,
     color: 'bg-purple-100 text-purple-800'
   },
   {
@@ -164,7 +164,6 @@ export function TicketStatusDialogWithLocation({
   };
 
   const handleLocationCapture = (location: LocationData) => {
-    console.log('TicketStatusDialog: Location captured:', location);
     setCapturedLocation(location);
     setShowLocationCapture(false);
     
@@ -175,7 +174,6 @@ export function TicketStatusDialogWithLocation({
   };
 
   const handleLocationError = (error: string) => {
-    console.error('TicketStatusDialog: Location error:', error);
     toast({
       title: 'Location Error',
       description: error,
@@ -184,7 +182,6 @@ export function TicketStatusDialogWithLocation({
   };
 
   const handlePhotoCapture = (photos: CapturedPhoto[]) => {
-    console.log('TicketStatusDialog: Photos captured:', photos.length);
     setCapturedPhotos(photos);
   };
 
@@ -237,7 +234,8 @@ export function TicketStatusDialogWithLocation({
           longitude: capturedLocation.longitude,
           address: capturedLocation.address,
           accuracy: capturedLocation.accuracy,
-          timestamp: new Date(capturedLocation.timestamp).toISOString()
+          timestamp: new Date(capturedLocation.timestamp).toISOString(),
+          source: capturedLocation.source || 'gps'
         };
       }
 
@@ -248,8 +246,6 @@ export function TicketStatusDialogWithLocation({
           timestamp: new Date().toISOString()
         };
       }
-
-      console.log('TicketStatusDialog: Updating ticket status with data:', requestData);
 
       const response = await apiClient.patch(`/tickets/${ticket.id}/status`, requestData);
 
@@ -272,7 +268,6 @@ export function TicketStatusDialogWithLocation({
         await onStatusUpdate();
       }
     } catch (error: any) {
-      console.error('Status update failed:', error);
       toast({
         title: 'Update Failed',
         description: error.response?.data?.message || 'Failed to update ticket status',

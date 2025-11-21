@@ -76,7 +76,6 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         await videoRef.current.play();
       }
     } catch (error) {
-      console.error('Error starting camera:', error);
       toast({
         title: 'Camera Error',
         description: 'Failed to access camera. Please check permissions.',

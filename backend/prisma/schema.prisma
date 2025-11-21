@@ -396,16 +396,21 @@ model AssetValidationPending {
 }
 
 model TicketStatusHistory {
-  id            Int          @id @default(autoincrement())
-  ticketId      Int
-  status        TicketStatus
-  changedById   Int
-  changedAt     DateTime     @default(now())
-  notes         String?
-  timeInStatus  Int?
-  totalTimeOpen Int?
-  changedBy     User         @relation("UserStatusChanges", fields: [changedById], references: [id])
-  ticket        Ticket       @relation("TicketStatusHistory", fields: [ticketId], references: [id])
+  id              Int          @id @default(autoincrement())
+  ticketId        Int
+  status          TicketStatus
+  changedById     Int
+  changedAt       DateTime     @default(now())
+  notes           String?
+  timeInStatus    Int?
+  totalTimeOpen   Int?
+  location        String?      // Location where status change occurred
+  latitude        Float?       // GPS latitude
+  longitude       Float?       // GPS longitude
+  accuracy        Float?       // GPS accuracy in meters
+  locationSource  String?      // 'gps' | 'manual' | 'network'
+  changedBy       User         @relation("UserStatusChanges", fields: [changedById], references: [id])
+  ticket          Ticket       @relation("TicketStatusHistory", fields: [ticketId], references: [id])
 
   @@index([ticketId])
   @@index([changedById])

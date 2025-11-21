@@ -143,7 +143,6 @@ export default function ExternalTicketClient({ initialTickets, initialStats, sea
       setStats(calculatedStats);
       toast.success('Tickets refreshed successfully');
     } catch (error) {
-      console.error('Error refreshing tickets:', error);
       toast.error('Failed to refresh tickets');
     } finally {
       setLoading(false);

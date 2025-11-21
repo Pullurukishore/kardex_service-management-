@@ -333,20 +333,17 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
   // Legacy GPS capture function (kept for compatibility)
   const captureStageLocation = async (): Promise<void> => {
     // This is now handled by the EnhancedLocationCapture component
-    console.warn('Legacy captureStageLocation called - use EnhancedLocationCapture component instead');
-  };
+    };
 
   // Auto-capture location when location-required stage is selected
   useEffect(() => {
     if (selectedStage && requiresLocation(selectedStage) && !stageLocation && !isCapturingLocation) {
-      console.log('Auto-capturing location for stage:', selectedStage);
       captureStageLocation();
     }
   }, [selectedStage]);
 
   const handleStageUpdate = async () => {
     if (!selectedActivity || !selectedStage) {
-      console.error('No activity or stage selected');
       return;
     }
 
@@ -461,12 +458,9 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
       // Refresh data
       if (onActivityChange) {
-        setTimeout(() => {
-          onActivityChange();
-        }, 100);
+        onActivityChange();
       }
     } catch (error) {
-      console.error('Error updating activity stage:', error);
       toast({
         title: "Error",
         description: "Failed to update activity stage. Please try again.",
@@ -479,7 +473,6 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
   const handleReportUploadSuccess = async () => {
     if (!selectedActivity || !pendingStageData) {
-      console.error('No pending stage data');
       return;
     }
 
@@ -517,12 +510,9 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
       // Refresh data
       if (onActivityChange) {
-        setTimeout(() => {
-          onActivityChange();
-        }, 100);
+        onActivityChange();
       }
     } catch (error) {
-      console.error('Error completing activity:', error);
       toast({
         title: "Error",
         description: "Failed to complete activity. Please try again.",
@@ -535,12 +525,10 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
   const handleStatusChange = async (status: TicketStatusType, comments?: string, location?: any, photos?: any) => {
     if (!selectedActivity) {
-      console.error('No activity selected');
       return;
     }
     
     if (!selectedActivity.ticketId) {
-      console.error('Activity has no associated ticket ID:', selectedActivity);
       toast({
         title: "Error",
         description: "This activity is not associated with a ticket. Cannot update status.",
@@ -570,13 +558,8 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
         })
       };
 
-      console.log('ActivityStatusManager: Updating ticket status with data:', requestData);
-      console.log('ActivityStatusManager: Ticket ID:', selectedActivity.ticketId);
-
       // Update ticket status using the same endpoint as admin/zone users
       const response = await apiClient.patch(`/tickets/${selectedActivity.ticketId}/status`, requestData);
-      console.log('Ticket status update response:', response);
-
       toast({
         title: "Status Updated",
         description: `Ticket status changed to ${status}`,
@@ -588,17 +571,10 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
       // Refresh data - call parent callback immediately for UI responsiveness
       if (onActivityChange) {
-        console.log('ActivityStatusManager: Calling onActivityChange callback after status update');
-        // Add small delay to ensure backend processing is complete
-        setTimeout(() => {
-          onActivityChange();
-        }, 100);
-      } else {
-        console.warn('ActivityStatusManager: onActivityChange callback is not provided');
+        onActivityChange();
       }
 
     } catch (error) {
-      console.error('Error updating ticket status:', error);
       toast({
         title: "Error",
         description: "Failed to update ticket status. Please try again.",

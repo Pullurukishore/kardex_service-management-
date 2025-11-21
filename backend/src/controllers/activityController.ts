@@ -115,15 +115,12 @@ export const activityController = {
       if (validatedData.locationSource === 'manual' && validatedData.location) {
         // For manual locations, preserve the user's original input
         locationAddress = validatedData.location;
-        console.log(`Using manual location: ${locationAddress}`);
       } else if (latitude && longitude) {
         // For GPS locations, get real address from coordinates using geocoding service
         try {
           const { address } = await GeocodingService.reverseGeocode(latitude, longitude);
           locationAddress = address || `${latitude}, ${longitude}`;
-          console.log(`Geocoded address for activity: ${locationAddress}`);
         } catch (error) {
-          console.error('Geocoding error:', error);
           // Fallback to coordinates if geocoding fails
           locationAddress = `${latitude}, ${longitude}`;
         }
@@ -195,7 +192,6 @@ export const activityController = {
         activity,
       });
     } catch (error) {
-      console.error('Create activity error:', error);
       if (error instanceof Error) {
         return res.status(500).json({ 
           error: 'Failed to create activity',
@@ -259,9 +255,7 @@ export const activityController = {
           try {
             const { address } = await GeocodingService.reverseGeocode(latitude, longitude);
             locationAddress = address || `${latitude}, ${longitude}`;
-            console.log(`Geocoded address for activity update: ${locationAddress}`);
           } catch (error) {
-            console.error('Geocoding error on update:', error);
             // Fallback to coordinates if geocoding fails
             locationAddress = `${latitude}, ${longitude}`;
           }
@@ -340,7 +334,6 @@ export const activityController = {
         activity: updatedActivity,
       });
     } catch (error) {
-      console.error('Update activity error:', error);
       if (error instanceof Error) {
         return res.status(500).json({ 
           error: 'Failed to update activity',
@@ -437,13 +430,6 @@ export const activityController = {
 
       // Debug logging for stages
       if (includeStages === 'true') {
-        console.log('Activities with stages:', activities.map(a => ({ 
-          id: a.id, 
-          title: a.title, 
-          activityType: a.activityType,
-          stagesCount: (a as any).ActivityStage?.length || 0,
-          stages: (a as any).ActivityStage?.map((s: any) => ({ stage: s.stage, startTime: s.startTime, endTime: s.endTime })) || []
-        })));
       }
 
       res.json({
@@ -456,7 +442,6 @@ export const activityController = {
         },
       });
     } catch (error) {
-      console.error('Get activities error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -530,13 +515,18 @@ export const activityController = {
         activityTypeBreakdown: activityTypeStats,
       });
     } catch (error) {
-      console.error('Get activity stats error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
 
   // Auto-create activity when ticket status changes
-  async createTicketActivity(ticketId: number, userId: number, oldStatus: string, newStatus: string) {
+  async createTicketActivity(
+    ticketId: number, 
+    userId: number, 
+    oldStatus: string, 
+    newStatus: string,
+    location?: { latitude: number; longitude: number; address?: string; timestamp: string; accuracy?: number; source?: 'gps' | 'manual' | 'network' }
+  ) {
     try {
       const ticket = await prisma.ticket.findUnique({
         where: { id: ticketId },
@@ -556,6 +546,24 @@ export const activityController = {
       const title = `Ticket Status Update: ${oldStatus} → ${newStatus}`;
       const description = `Updated ticket "${ticket.title}" for ${ticket.customer.companyName} from ${oldStatus} to ${newStatus}`;
 
+      // Handle location data - preserve manual input, geocode GPS coordinates
+      let locationAddress: string | null = null;
+      if (location) {
+        if (location.source === 'manual' && location.address) {
+          // For manual locations, preserve the user's original input
+          locationAddress = location.address;
+        } else if (location.latitude && location.longitude) {
+          // For GPS locations, get real address from coordinates using geocoding service
+          try {
+            const { address: geocodedAddress } = await GeocodingService.reverseGeocode(location.latitude, location.longitude);
+            locationAddress = geocodedAddress || `${location.latitude}, ${location.longitude}`;
+          } catch (error) {
+            // Fallback to coordinates if geocoding fails
+            locationAddress = `${location.latitude}, ${location.longitude}`;
+          }
+        }
+      }
+
       await prisma.dailyActivityLog.create({
         data: {
           userId,
@@ -566,23 +574,172 @@ export const activityController = {
           startTime: new Date(),
           endTime: new Date(),
           duration: 5, // Assume 5 minutes for status update
+          ...(location && {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            location: locationAddress || location.address,
+            locationSource: location.source || 'gps'
+          }),
           metadata: {
             oldStatus,
             newStatus,
             ticketTitle: ticket.title,
             customerName: ticket.customer.companyName,
+            ...(location && {
+              locationAddress,
+              locationSource: location.source || 'gps',
+              accuracy: location.accuracy
+            })
           },
         },
       });
-
-      console.log(`Auto-created activity log for ticket ${ticketId} status change`);
     } catch (error) {
-      console.error('Error creating ticket activity:', error);
       // Don't throw error to avoid breaking the main ticket update flow
     }
   },
 
-  // Activity Stage Management Functions
+  // Utility function to fix a specific stage by ID
+  async fixSpecificStage(req: Request, res: Response) {
+    try {
+      const { stageId } = req.body;
+      
+      if (!stageId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Stage ID is required'
+        });
+      }
+
+      // Find the stage
+      const stage = await prisma.activityStage.findUnique({
+        where: { id: parseInt(stageId) }
+      });
+
+      if (!stage) {
+        return res.status(404).json({
+          success: false,
+          message: 'Stage not found'
+        });
+      }
+
+      // Check if it looks like coordinates
+      const coordPattern = /^\s*[-+]?\d*\.?\d+\s*,\s*[-+]?\d*\.?\d+\s*$/;
+      if (!coordPattern.test(stage.location || '')) {
+        return res.json({
+          success: true,
+          message: 'Stage already has proper address',
+          data: stage
+        });
+      }
+
+      // Parse coordinates
+      const [lat, lng] = stage.location!.split(',').map(coord => parseFloat(coord.trim()));
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid coordinates format'
+        });
+      }
+
+      // Geocode to get proper address
+      const { address } = await GeocodingService.reverseGeocode(lat, lng);
+      
+      // Update the stage
+      const updatedStage = await prisma.activityStage.update({
+        where: { id: parseInt(stageId) },
+        data: { 
+          location: address || stage.location 
+        }
+      });
+      
+      console.log(`Fixed stage ${stageId}: ${stage.location} → ${address}`);
+
+      res.json({
+        success: true,
+        message: 'Stage fixed successfully',
+        data: {
+          before: stage.location,
+          after: updatedStage.location
+        }
+      });
+    } catch (error: any) {
+      console.error('Error fixing stage:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fix stage',
+        error: error.message
+      });
+    }
+  },
+
+  async fixStageLocations(req: Request, res: Response) {
+    try {
+      // Find all stages with coordinate-only locations (pattern: "lat, lng")
+      const stagesToFix = await prisma.activityStage.findMany({
+        where: {
+          location: {
+            contains: ',',
+            mode: 'insensitive'
+          },
+          metadata: {
+            path: ['locationSource'],
+            equals: 'gps'
+          }
+        }
+      });
+
+      console.log(`Found ${stagesToFix.length} stages to fix`);
+
+      let fixedCount = 0;
+      for (const stage of stagesToFix) {
+        // Check if location looks like coordinates (contains numbers and comma)
+        const coordPattern = /^\s*[-+]?\d*\.?\d+\s*,\s*[-+]?\d*\.?\d+\s*$/;
+        if (coordPattern.test(stage.location || '')) {
+          try {
+            // Parse coordinates
+            const [lat, lng] = stage.location!.split(',').map(coord => parseFloat(coord.trim()));
+            
+            if (!isNaN(lat) && !isNaN(lng)) {
+              // Geocode to get proper address
+              const { address } = await GeocodingService.reverseGeocode(lat, lng);
+              
+              // Update the stage with proper address
+              await prisma.activityStage.update({
+                where: { id: stage.id },
+                data: { 
+                  location: address || stage.location 
+                }
+              });
+              
+              console.log(`Fixed stage ${stage.id}: ${stage.location} → ${address}`);
+              fixedCount++;
+            }
+          } catch (error) {
+            console.log(`Failed to fix stage ${stage.id}: ${error}`);
+          }
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Fixed ${fixedCount} out of ${stagesToFix.length} stages`,
+        data: {
+          totalFound: stagesToFix.length,
+          fixed: fixedCount,
+          failed: stagesToFix.length - fixedCount
+        }
+      });
+    } catch (error: any) {
+      console.error('Error fixing stage locations:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fix stage locations',
+        error: error.message
+      });
+    }
+  },
+
   createActivityStage: async (req: Request, res: Response) => {
     try {
       const { activityId } = req.params;
@@ -604,7 +761,7 @@ export const activityController = {
         });
       }
 
-      // Handle location based on source - preserve manual input, use coordinates for GPS
+      // Handle location based on source - preserve manual input, geocode GPS coordinates
       let finalLocation = location;
       let finalLatitude = latitude;
       let finalLongitude = longitude;
@@ -621,8 +778,15 @@ export const activityController = {
         finalLocation = location;
         console.log(`Using manual stage location: ${finalLocation}`);
       } else if (finalLatitude && finalLongitude) {
-        // For GPS locations, could geocode but for stages we'll keep it simple
-        finalLocation = location || `${finalLatitude}, ${finalLongitude}`;
+        // For GPS locations, geocode to get proper address
+        try {
+          const { address } = await GeocodingService.reverseGeocode(finalLatitude, finalLongitude);
+          finalLocation = address || `${finalLatitude}, ${finalLongitude}`;
+          console.log(`Geocoded stage location: ${finalLocation}`);
+        } catch (error) {
+          console.log(`Geocoding failed for stage, using coordinates: ${error}`);
+          finalLocation = location || `${finalLatitude}, ${finalLongitude}`;
+        }
       }
 
       // Handle photo data for verification - now store permanently in local storage
@@ -660,10 +824,7 @@ export const activityController = {
           notesWithPhotos = notesWithPhotos + photoInfo;
           
           // Log photo storage for audit trail
-          console.log(`Activity ${activityId} Stage ${stage}: ${photoCount} photos stored locally by user ${user.id}`);
-          
         } catch (error) {
-          console.error(`Failed to store photos for activity ${activityId}:`, error);
           // Fallback to metadata-only approach
           const photoCount = photos.length;
           const totalSize = photos.reduce((sum: number, photo: any) => sum + photo.size, 0);
@@ -711,7 +872,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error creating activity stage:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to create activity stage'
@@ -779,7 +939,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error updating activity stage:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to update activity stage'
@@ -824,7 +983,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error fetching activity stages:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch activity stages'
@@ -904,7 +1062,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error fetching stage template:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch stage template'
@@ -1025,7 +1182,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error uploading activity report:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to upload activity report',
@@ -1081,7 +1237,6 @@ export const activityController = {
       });
 
     } catch (error) {
-      console.error('Error fetching activity reports:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch activity reports'
@@ -1132,7 +1287,6 @@ export const getActivityPhotos = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Error fetching activity photos:', error);
     return res.status(500).json({ 
       success: false, 
       error: 'Failed to fetch photos' 

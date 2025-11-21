@@ -89,8 +89,6 @@ const convertServicePersonServiceZoneToServiceZone = (serviceZone: any): Service
 
 // Type conversion function to convert ServicePersonServiceType to ServicePersonType
 const convertServicePersonServiceToType = (servicePerson: any): ServicePersonType => {
-  console.log('Converting service person:', servicePerson);
-  
   // Handle name field - API returns 'name' as null, but we need firstName and lastName
   let firstName = '';
   let lastName = '';
@@ -140,15 +138,12 @@ export default function EditServicePersonPage() {
   });
 
   // Debug: Log form errors
-  console.log('Form errors:', form.formState.errors);
-
   const loadZones = async () => {
     try {
       const response = await getServiceZones(1, 100); // Get first 100 zones
       const convertedZones = response.data.map(convertZoneServiceZoneToServiceZone);
       setZones(convertedZones || []);
     } catch (error) {
-      console.error('Error loading zones:', error);
       toast.error('Failed to load service zones');
     } finally {
       // Loading zones completed
@@ -157,19 +152,14 @@ export default function EditServicePersonPage() {
 
   const loadServicePerson = async (id: number) => {
     try {
-      console.log('Loading service person with ID:', id);
       const response = await getServicePerson(id);
-      console.log('Service person response:', response);
-      
       if (!response) {
-        console.error('No response data received from API');
         setServicePerson(null);
         return;
       }
       
       try {
         const convertedServicePerson = convertServicePersonServiceToType(response);
-        console.log('Converted service person:', convertedServicePerson);
         setServicePerson(convertedServicePerson);
         
         // Reset form with service person data
@@ -182,9 +172,7 @@ export default function EditServicePersonPage() {
           confirmPassword: '', // Password should be empty for security
           serviceZoneIds: convertedServicePerson.serviceZones?.map(sz => sz.id) || [],
         });
-        console.log('Form reset with service person data');
-      } catch (conversionError) {
-        console.error('Error converting service person:', conversionError);
+        } catch (conversionError) {
         // If conversion fails, try to set the raw response
         setServicePerson(response as any);
         
@@ -204,17 +192,10 @@ export default function EditServicePersonPage() {
       // Set selected zones based on the service person's zones
       if (response && response.serviceZones) {
         const zoneIds = response.serviceZones.map(sz => sz.serviceZone.id);
-        console.log('Setting selected zones:', zoneIds);
         setSelectedZones(zoneIds);
         form.setValue('serviceZoneIds', zoneIds);
       }
     } catch (error) {
-      console.error('Error loading service person:', error);
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : 'No stack trace',
-        response: error && typeof error === 'object' && 'response' in error ? error.response : 'No response'
-      });
       toast.error(`Failed to load service person: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setServicePerson(null); // Explicitly set to null to trigger the "not found" message
     } finally {
@@ -243,8 +224,6 @@ export default function EditServicePersonPage() {
   };
 
   const onSubmit = async (data: UpdateServicePersonForm) => {
-    console.log('onSubmit function called with data:', data);
-    
     // Validate required fields
     if (!data.email || !data.email.trim()) {
       toast.error('Email address is required');
@@ -278,8 +257,6 @@ export default function EditServicePersonPage() {
     
     try {
       setLoading(true);
-      console.log('Form submission data:', data);
-      
       // Prepare update data (only include fields expected by UpdateServicePersonPayload)
       const updateData = {
         email: data.email,
@@ -289,19 +266,11 @@ export default function EditServicePersonPage() {
         serviceZoneIds: data.serviceZoneIds,
       };
       
-      console.log('Cleaned update data:', updateData);
-      
-      console.log('Calling updateServicePerson API...');
-      console.log('About to call updateServicePerson with:', servicePersonId, updateData);
-      
       // Show loading toast and store the promise to dismiss it later
       const loadingToastId = toast.loading('Updating service person...');
       
       try {
         const result = await updateServicePerson(servicePersonId, updateData);
-        console.log('updateServicePerson API call successful:', result);
-        console.log('Continuing execution after API call...');
-        
         // Dismiss loading toast and show success
         toast.dismiss(loadingToastId);
         toast.success('Service person updated successfully! Redirecting...');
@@ -315,15 +284,12 @@ export default function EditServicePersonPage() {
         }, 1000);
         
       } catch (apiError) {
-        console.error('updateServicePerson API call failed:', apiError);
         // Dismiss loading toast before showing error
         toast.dismiss(loadingToastId);
         throw apiError; // Re-throw to be caught by the outer catch block
       }
       
     } catch (error: any) {
-      console.error('Error updating service person:', error);
-      
       // Handle specific error messages
       let errorMessage = 'Failed to update service person';
       if (error.response?.data?.error) {

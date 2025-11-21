@@ -104,16 +104,7 @@ export default function LoginPage() {
       const savedPassword = localStorage.getItem('rememberedPassword');
       const wasRemembered = localStorage.getItem('wasRemembered') === 'true';
       
-      console.log('LoginPage: Checking for saved credentials...', {
-        savedEmail: !!savedEmail,
-        savedPassword: !!savedPassword,
-        wasRemembered,
-        emailValue: savedEmail,
-      });
-      
       if (savedEmail && savedPassword && wasRemembered) {
-        console.log('LoginPage: Loading saved credentials for:', savedEmail);
-        
         // Use reset to set all values at once and trigger re-render
         form.reset({
           email: savedEmail,
@@ -121,14 +112,8 @@ export default function LoginPage() {
           rememberMe: true,
         });
         
-        console.log('LoginPage: Form values set to:', {
-          email: savedEmail,
-          password: '***',
-          rememberMe: true,
-        });
-      } else {
-        console.log('LoginPage: No saved credentials found or wasRemembered is false');
-      }
+        } else {
+        }
     }, 100);
 
     return () => clearTimeout(timer);
@@ -138,30 +123,16 @@ export default function LoginPage() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     
-    console.log('LoginPage: Starting login submission for:', values.email);
-    console.log('LoginPage: Remember Me selected:', values.rememberMe);
-    
     try {
       const result = await login(values.email, values.password, values.rememberMe);
       
-      console.log('LoginPage: Login result received:', {
-        success: result.success,
-        hasUser: !!result.user,
-        userEmail: result.user?.email,
-        error: result.error
-      });
-      
       if (result.success) {
-        console.log('LoginPage: Login successful, showing success state');
-        
         // Save credentials if Remember Me is checked
         if (values.rememberMe) {
-          console.log('LoginPage: Saving credentials for future logins');
           localStorage.setItem('rememberedEmail', values.email);
           localStorage.setItem('rememberedPassword', values.password);
           localStorage.setItem('wasRemembered', 'true');
         } else {
-          console.log('LoginPage: Clearing saved credentials');
           localStorage.removeItem('rememberedEmail');
           localStorage.removeItem('rememberedPassword');
           localStorage.removeItem('wasRemembered');
@@ -181,10 +152,8 @@ export default function LoginPage() {
           setLoginSuccess(false);
         }, 2000);
       } else {
-        console.error('LoginPage: Login failed:', result.error);
-      }
+        }
     } catch (error: any) {
-      console.error('LoginPage: Login exception:', error);
       toast({
         title: "Login failed",
         description:
@@ -193,7 +162,6 @@ export default function LoginPage() {
         variant: "destructive",
       });
     } finally {
-      console.log('LoginPage: Login submission finished');
       setIsSubmitting(false);
     }
   };

@@ -35,10 +35,9 @@ export default function ServicePersonDetailPage() {
       try {
         setLoading(true);
         const data = await getServicePerson(servicePersonId);
-        console.log('Service Person Data:', data); // Debug log
+        // Debug log
         setServicePerson(data);
       } catch (error) {
-        console.error('Error fetching service person:', error);
         toast({
           title: 'Error',
           description: 'Failed to fetch service person details',
@@ -63,7 +62,6 @@ export default function ServicePersonDetailPage() {
       });
       router.push('/admin/service-person');
     } catch (error: any) {
-      console.error('Error deleting service person:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to delete service person',

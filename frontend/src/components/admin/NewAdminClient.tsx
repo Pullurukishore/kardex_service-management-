@@ -78,7 +78,6 @@ export default function NewAdminClient() {
         throw new Error(response.message || 'Failed to create admin');
       }
     } catch (error: any) {
-      console.error('Error creating admin:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create admin';
       setMessage({ 
         type: 'error', 

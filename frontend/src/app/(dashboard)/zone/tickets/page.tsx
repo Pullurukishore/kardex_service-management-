@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 type TicketStatus = 'OPEN' | 'ASSIGNED' | 'IN_PROGRESS' | 'WAITING_CUSTOMER' | 'ONSITE_VISIT' | 
   'ONSITE_VISIT_PLANNED' | 'PO_NEEDED' | 'PO_RECEIVED' | 'SPARE_PARTS_NEEDED' | 
   'SPARE_PARTS_BOOKED' | 'SPARE_PARTS_DELIVERED' | 'CLOSED_PENDING' | 'CLOSED' | 
-  'CANCELLED' | 'REOPENED' | 'ON_HOLD' | 'ESCALATED' | 'RESOLVED' | 'PENDING';
+  'CANCELLED' | 'REOPENED' | 'ON_HOLD' | 'ESCALATED' | 'RESOLVED';
 
 type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
@@ -94,7 +94,6 @@ export default function ZoneTicketsPage() {
       setTickets(data.data);
       setPagination(data.pagination);
     } catch (error) {
-      console.error('Error fetching tickets:', error);
       toast({
         title: 'Error',
         description: 'Failed to load tickets. Please try again.',

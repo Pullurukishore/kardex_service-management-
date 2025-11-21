@@ -29,7 +29,6 @@ export class RatingModel {
 
       return rating;
     } catch (error) {
-      console.error('Error creating rating:', error);
       throw new Error('Failed to create rating record');
     }
   }
@@ -57,7 +56,6 @@ export class RatingModel {
         },
       });
     } catch (error) {
-      console.error('Error fetching rating:', error);
       throw new Error('Failed to fetch rating');
     }
   }
@@ -81,7 +79,6 @@ export class RatingModel {
         orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
-      console.error('Error fetching customer ratings:', error);
       throw new Error('Failed to fetch customer ratings');
     }
   }
@@ -127,7 +124,6 @@ export class RatingModel {
         })),
       };
     } catch (error) {
-      console.error('Error fetching rating stats:', error);
       throw new Error('Failed to fetch rating statistics');
     }
   }
@@ -142,7 +138,6 @@ export class RatingModel {
       });
       return !!rating;
     } catch (error) {
-      console.error('Error checking rating existence:', error);
       throw new Error('Failed to check rating existence');
     }
   }

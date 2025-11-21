@@ -85,7 +85,6 @@ export default function EditAssetPage() {
       
       setAsset(assetData);
     } catch (error) {
-      console.error('Error loading asset:', error);
       toast({
         title: 'Error',
         description: 'Failed to load asset data',
@@ -114,7 +113,6 @@ export default function EditAssetPage() {
       }
       router.refresh();
     } catch (error) {
-      console.error('Error updating asset:', error);
       toast({
         title: 'Error',
         description: 'Failed to update asset',

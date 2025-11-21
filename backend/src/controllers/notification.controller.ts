@@ -37,7 +37,6 @@ export const getNotifications = async (req: NotificationRequest, res: Response) 
 
     res.json(result);
   } catch (error) {
-    console.error('Error fetching notifications:', error);
     res.status(500).json({ error: 'Error fetching notifications' });
   }
 };
@@ -54,7 +53,6 @@ export const getUnreadCount = async (req: NotificationRequest, res: Response) =>
     const count = await NotificationService.getUnreadCount(user.id);
     res.json({ count });
   } catch (error) {
-    console.error('Error fetching unread count:', error);
     res.status(500).json({ error: 'Error fetching unread count' });
   }
 };
@@ -76,7 +74,6 @@ export const markAsRead = async (req: NotificationRequest, res: Response) => {
     await NotificationService.markAsRead(notificationIds, user.id);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error marking notifications as read:', error);
     res.status(500).json({ error: 'Error marking notifications as read' });
   }
 };
@@ -98,7 +95,6 @@ export const markSingleAsRead = async (req: NotificationRequest, res: Response) 
     await NotificationService.markAsRead([parseInt(id)], user.id);
     res.json({ success: true });
   } catch (error) {
-    console.error('Error marking notification as read:', error);
     res.status(500).json({ error: 'Error marking notification as read' });
   }
 };

@@ -100,7 +100,6 @@ export default function NewZoneUserPage() {
           setServiceZones(zones);
         }
       } catch (error) {
-        console.error('Error fetching service zones:', error);
         toast({
           title: 'Error',
           description: 'Failed to fetch service zones',
@@ -138,8 +137,6 @@ export default function NewZoneUserPage() {
 
       const response = await apiClient.post('/zone-users/create-with-zones', payload);
       
-      console.log('Zone user creation response:', response);
-      
       if (response && (response.success !== false)) {
         toast({
           title: 'Success',
@@ -151,7 +148,6 @@ export default function NewZoneUserPage() {
         throw new Error(response?.error || 'Failed to create zone user');
       }
     } catch (error: any) {
-      console.error('Error creating zone user:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to create zone user',

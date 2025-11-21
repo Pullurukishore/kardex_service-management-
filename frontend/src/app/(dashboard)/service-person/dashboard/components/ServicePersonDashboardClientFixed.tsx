@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api/api-client';
 import { toast } from 'sonner';
@@ -104,7 +104,9 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
   const [activities, setActivities] = useState<Activity[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [attendanceStatus, setAttendanceStatus] = useState<any>(initialAttendanceData || null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialAttendanceData);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const hasLoadedRef = useRef<boolean>(Boolean(initialAttendanceData));
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [showNewActivityDialog, setShowNewActivityDialog] = useState(false);
@@ -112,8 +114,11 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
   // Fetch dashboard data
   const fetchDashboardData = useCallback(async () => {
     try {
-      console.log('fetchDashboardData: Starting data refresh...');
-      setIsLoading(true);
+      if (!hasLoadedRef.current) {
+        setIsLoading(true);
+      } else {
+        setIsRefreshing(true);
+      }
       
       // Fetch all data in parallel with individual error handling
       const [activitiesResponse, ticketsResponse, attendanceResponse] = await Promise.allSettled([
@@ -127,16 +132,13 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
       if (activitiesResponse.status === 'fulfilled') {
         // The response is directly the data, not wrapped in .data
         const responseData = activitiesResponse.value as any;
-        console.log('Activities API response:', responseData);
         if (responseData?.activities) {
           activitiesData = responseData.activities;
-          console.log('Activities with stages:', activitiesData.map((a: any) => ({ id: a.id, title: a.title, stages: a.ActivityStage })));
-        } else if (Array.isArray(responseData)) {
+          } else if (Array.isArray(responseData)) {
           activitiesData = responseData;
         }
       } else {
-        console.error('Activities API failed:', activitiesResponse.reason);
-      }
+        }
       setActivities(activitiesData);
 
       // Handle tickets response
@@ -157,35 +159,26 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
           ticket.status !== 'CANCELLED'
         );
       } else {
-        console.error('Tickets API failed:', ticketsResponse.reason);
-      }
+        }
       setTickets(ticketsData);
-      console.log('Active tickets loaded:', ticketsData.length, ticketsData);
       // Debug: Check if contact data is present
       if (ticketsData.length > 0) {
-        console.log('First ticket contact data:', ticketsData[0].contact);
-        console.log('First ticket full structure:', JSON.stringify(ticketsData[0], null, 2));
-      }
+        }
 
       // Handle attendance response
       if (attendanceResponse.status === 'fulfilled') {
         const attendanceData = attendanceResponse.value as any;
-        console.log('fetchDashboardData: Attendance API response:', attendanceData);
-        console.log('fetchDashboardData: isCheckedIn:', attendanceData?.isCheckedIn);
-        console.log('fetchDashboardData: attendance status:', attendanceData?.attendance?.status);
         // Force state update with new object reference to ensure React detects the change
         setAttendanceStatus((prev: any) => {
           const newData = attendanceData ? JSON.parse(JSON.stringify(attendanceData)) : null;
           // Only update if data actually changed to prevent unnecessary re-renders
           if (JSON.stringify(prev) !== JSON.stringify(newData)) {
-            console.log('fetchDashboardData: Attendance status updated from:', prev, 'to:', newData);
             return newData;
           }
           return prev;
         });
       } else {
-        console.error('Attendance API failed:', attendanceResponse.reason);
-      }
+        }
 
       // Use the extracted data for stats computation
 
@@ -209,15 +202,17 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
         completedToday,
       };
 
-      console.log('Dashboard stats updated:', stats);
-
       setDashboardStats(stats);
 
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
-      setIsLoading(false);
+      if (!hasLoadedRef.current) {
+        setIsLoading(false);
+        hasLoadedRef.current = true;
+      } else {
+        setIsRefreshing(false);
+      }
     }
   }, []);
 
@@ -226,7 +221,6 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
     
     // Set up periodic refresh for active activities (every 5 minutes)
     const interval = setInterval(() => {
-      console.log('Periodic refresh for active activities...');
       fetchDashboardData();
     }, 5 * 60 * 1000); // 5 minutes
 
@@ -235,25 +229,19 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
 
   // Log initial attendance data for debugging
   useEffect(() => {
-    console.log('ServicePersonDashboardClientFixed: Initial attendance data received:', initialAttendanceData);
-    console.log('ServicePersonDashboardClientFixed: Current attendance status state:', attendanceStatus);
-  }, [initialAttendanceData, attendanceStatus]);
+    }, [initialAttendanceData, attendanceStatus]);
 
   const handleActivityChange = useCallback(async () => {
-    console.log('handleActivityChange called - refreshing dashboard data...');
     // Add a small delay to ensure backend has processed the activity change
     setTimeout(async () => {
       try {
         await fetchDashboardData();
-        console.log('Dashboard data refreshed after activity change');
-      } catch (error) {
-        console.error('Failed to refresh dashboard after activity change:', error);
-      }
-    }, 500); // Increased delay to ensure backend processing is complete
+        } catch (error) {
+        }
+    }, 200); // Reduced delay for better responsiveness
   }, [fetchDashboardData]);
 
   const handleAttendanceChange = useCallback(async () => {
-    console.log('handleAttendanceChange called - refreshing dashboard data...');
     // Refresh dashboard data instead of reloading the page
     await fetchDashboardData();
   }, [fetchDashboardData]);
@@ -269,7 +257,6 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
   };
 
   const handleStatusUpdate = async () => {
-    console.log('handleStatusUpdate called - refreshing dashboard data...');
     // Refresh dashboard data instead of reloading the page
     await fetchDashboardData();
   };
@@ -334,7 +321,6 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
               {attendanceStatus && (
                 <div className="mt-2.5 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
                   {(() => {
-                    console.log('Header: Rendering attendance status, isCheckedIn:', attendanceStatus.isCheckedIn);
                     return attendanceStatus.isCheckedIn ? (
                       <>
                         <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse flex-shrink-0 shadow-lg shadow-green-400/50"></div>
@@ -608,8 +594,6 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
                             const contactPerson = ticketWithContact.contact;
                             
                             // Debug: Always show this section for now to test
-                            console.log('Rendering contact for ticket:', ticket.id, 'contact:', contactPerson);
-                            
                             // Show placeholder if no contact data
                             if (!contactPerson) {
                               return (
@@ -674,6 +658,16 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
           </div>
         </div>
       </div>
+
+      {/* Subtle Refreshing Overlay */}
+      {isRefreshing && (
+        <div className="fixed top-0 right-0 z-50 p-4">
+          <div className="bg-white/90 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 px-4 py-3 flex items-center gap-3">
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+            <span className="text-sm text-gray-600 font-medium">Updating...</span>
+          </div>
+        </div>
+      )}
 
       {/* Ticket Status Dialog */}
       <TicketStatusDialogWithLocation

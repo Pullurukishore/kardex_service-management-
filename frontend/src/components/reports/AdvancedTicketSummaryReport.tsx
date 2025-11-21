@@ -38,7 +38,6 @@ const STATUS_COLORS: Record<string, string> = {
   
   // Waiting/Pending States
   'WAITING_CUSTOMER': '#FBBF24',         // Yellow-400
-  'PENDING': '#F59E0B',                  // Amber-500
   'ON_HOLD': '#FB923C',                  // Orange-400
   
   // Spare Parts States
@@ -252,7 +251,6 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           </CardContent>
         </Card>
       </div>
-
 
       {/* Charts Row 1: Status and Priority Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

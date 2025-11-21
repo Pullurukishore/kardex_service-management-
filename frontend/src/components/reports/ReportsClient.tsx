@@ -57,8 +57,6 @@ export default function ReportsClient({
   }, [filters.reportType, filters.customerId]);
 
   const handleFilterChange = async (newFilters: ReportFiltersType) => {
-    console.log('Filters changed - no auto-generation');
-    
     // Reset dynamic data when switching away from industrial-data reports
     if (filters.reportType === 'industrial-data' && newFilters.reportType !== 'industrial-data') {
       setDynamicCustomers([]);
@@ -106,7 +104,6 @@ export default function ReportsClient({
       const customersData = Array.isArray(response) ? response : (response.data || []);
       setDynamicCustomers(customersData);
     } catch (error) {
-      console.error('Error fetching customers for zone:', error);
       setDynamicCustomers([]);
     } finally {
       setIsLoadingCustomers(false);
@@ -123,7 +120,6 @@ export default function ReportsClient({
       const assetsData = response.data?.data || response.data || [];
       setDynamicAssets(assetsData);
     } catch (error) {
-      console.error('Error fetching assets for customer:', error);
       setDynamicAssets([]);
     } finally {
       setIsLoadingAssets(false);
@@ -208,20 +204,14 @@ export default function ReportsClient({
           }
         });
         // Handle different response structures
-        console.log('Full API response:', response);
-        console.log('response.data:', response.data);
-        
         // Try multiple levels of nesting to find the actual data
         let data = response.data?.data?.data || response.data?.data || response.data || response || {};
         
-        console.log('Extracted report data:', data);
-        console.log('Data keys:', Object.keys(data));
         setReportData(data);
       }
       
       toast.success('Report refreshed successfully');
     } catch (error) {
-      console.error('Failed to refresh report:', error);
       toast.error('Failed to refresh report');
     } finally {
       setIsLoading(false);
@@ -254,10 +244,7 @@ export default function ReportsClient({
       const token = getToken();
       const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
       
-      console.log('Export token check:', { hasToken: !!token, tokenPrefix: token?.substring(0, 20) });
-      
       if (!token) {
-        console.error('No authentication token found');
         toast.error('Authentication required. Please log in again.');
         return;
       }
@@ -285,7 +272,6 @@ export default function ReportsClient({
 
         if (!fetchResponse.ok) {
           const errorText = await fetchResponse.text();
-          console.error(`Service person ${exportType} export failed:`, { status: fetchResponse.status, statusText: fetchResponse.statusText, body: errorText });
           try {
             const errorData = JSON.parse(errorText);
             throw new Error(errorData.error || errorData.message || `Export failed: ${fetchResponse.status}`);
@@ -319,7 +305,6 @@ export default function ReportsClient({
 
         if (!fetchResponse.ok) {
           const errorText = await fetchResponse.text();
-          console.error('Report export failed:', { status: fetchResponse.status, statusText: fetchResponse.statusText, body: errorText });
           try {
             const errorData = JSON.parse(errorText);
             throw new Error(errorData.error || errorData.message || `Export failed: ${fetchResponse.status}`);
@@ -336,14 +321,12 @@ export default function ReportsClient({
       
       // Validate blob exists
       if (!blob) {
-        console.error('Export error: No data received from server');
         toast.error('Failed to export report. No data received.');
         return;
       }
 
       // Check if it's a Blob object
       if (!(blob instanceof Blob)) {
-        console.error('Export error: Response is not a Blob', blob);
         toast.error('Failed to export report. Invalid response format.');
         return;
       }
@@ -352,8 +335,6 @@ export default function ReportsClient({
       if (blob.size < 100 || blob.type.includes('text/html') || blob.type.includes('application/json')) {
         // Try to read the blob as text to get error message
         const text = await blob.text();
-        console.error('Export error response:', text);
-        
         try {
           const errorData = JSON.parse(text);
           toast.error(errorData.error || errorData.message || 'Failed to export report');
@@ -377,8 +358,6 @@ export default function ReportsClient({
 
       toast.success(`Report exported as ${fileExtension.toUpperCase()}`);
     } catch (error: any) {
-      console.error('Failed to export report:', error);
-      
       // Try to extract error message from response
       if (error.response?.data) {
         try {

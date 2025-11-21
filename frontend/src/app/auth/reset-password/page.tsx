@@ -93,7 +93,6 @@ export default function ResetPasswordPage() {
         throw new Error(response.data.message || 'Failed to reset password');
       }
     } catch (error: any) {
-      console.error('Reset password error:', error);
       toast({
         title: "Reset failed",
         description: error?.response?.data?.message || "Failed to reset password. Please try again.",

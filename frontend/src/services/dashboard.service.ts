@@ -5,15 +5,12 @@ const handleApiError = (error: any) => {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    console.error('API Error:', error.response.status, error.response.data);
     throw new Error(error.response.data?.message || 'API request failed');
   } else if (error.request) {
     // The request was made but no response was received
-    console.error('No response from server:', error.request);
     throw new Error('No response from server. Please check your connection.');
   } else {
     // Something happened in setting up the request that triggered an Error
-    console.error('Request setup error:', error.message);
     throw new Error('Request setup failed');
   }
 };

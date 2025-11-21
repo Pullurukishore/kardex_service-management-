@@ -58,7 +58,6 @@ export function ServicePersonActions({ person, onRefresh }: ServicePersonActions
         router.refresh(); // Fallback to router refresh if no callback provided
       }
     } catch (error: any) {
-      console.error('Error deleting service person:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to delete service person',

@@ -68,8 +68,7 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
       await logout();
       router.push('/auth/login');
     } catch (error) {
-      console.error('Logout failed:', error);
-    }
+      }
   };
 
   const getEmailInitial = () => {

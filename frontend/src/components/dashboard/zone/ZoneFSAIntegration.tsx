@@ -129,7 +129,6 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
         throw new Error(response.error || 'Failed to fetch FSA data');
       }
     } catch (err: any) {
-      console.error('Error fetching FSA data:', err);
       setError(err.message || 'Failed to load FSA data');
       if (showSuccessMessage) {
         toast.error('Failed to load FSA data');

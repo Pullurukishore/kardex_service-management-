@@ -98,7 +98,6 @@ export default function ReportUpload({
         onSuccess();
       }
     } catch (error) {
-      console.error('Error uploading report:', error);
       toast({
         title: 'Upload Failed',
         description: 'There was an error uploading your report. Please try again.',

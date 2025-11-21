@@ -11,14 +11,9 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
   const authReq = req as AuthenticatedRequest;
   const userRole = authReq.user?.role || 'UNAUTHENTICATED';
   
-  console.log(`--- API Request ---`);
-  console.log(`[${timestamp}] ${method} ${url}`);
-  console.log(`User Role: ${userRole}`);
-  
   // Log unauthorized access attempts for protected routes (exclude auth endpoints)
   if (!authReq.user && url.startsWith('/api/') && !url.startsWith('/api/auth/')) {
-    console.log('Unauthorized API access attempt');
-  }
+    }
   
   next();
 };
@@ -28,11 +23,6 @@ export const errorLogger = (err: any, req: Request, res: Response, next: NextFun
   const timestamp = new Date().toISOString();
   const method = req.method;
   const url = req.originalUrl || req.url;
-  
-  console.error(`--- API Error ---`);
-  console.error(`[${timestamp}] ${method} ${url}`);
-  console.error(`Error: ${err.message}`);
-  console.error(`Stack: ${err.stack}`);
   
   next(err);
 };

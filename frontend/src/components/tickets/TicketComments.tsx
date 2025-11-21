@@ -33,7 +33,6 @@ export function TicketComments({ ticketId }: { ticketId: number }) {
       const response = await api.get(`/tickets/${ticketId}/comments`);
       setComments(response.data || []);
     } catch (error) {
-      console.error('Error fetching comments:', error);
       toast({
         title: 'Error',
         description: 'Failed to load comments',
@@ -68,7 +67,6 @@ export function TicketComments({ ticketId }: { ticketId: number }) {
         description: 'Comment added successfully',
       });
     } catch (error) {
-      console.error('Error adding comment:', error);
       toast({
         title: 'Error',
         description: 'Failed to add comment',

@@ -42,8 +42,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
       if (typeof window === 'undefined') return;
 
       try {
-        console.log('MapPicker: Starting to load Leaflet...');
-        
         // Load Leaflet CSS
         if (!document.querySelector('link[href*="leaflet"]')) {
           const link = document.createElement('link');
@@ -52,23 +50,19 @@ const MapPicker: React.FC<MapPickerProps> = ({
           link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
           link.crossOrigin = '';
           document.head.appendChild(link);
-          console.log('MapPicker: Leaflet CSS loaded');
-        }
+          }
 
         // Load Leaflet JS
         if (!(window as any).L) {
-          console.log('MapPicker: Loading Leaflet JS...');
           await new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
             script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
             script.crossOrigin = '';
             script.onload = () => {
-              console.log('MapPicker: Leaflet JS loaded successfully');
               resolve(true);
             };
             script.onerror = (error) => {
-              console.error('MapPicker: Failed to load Leaflet JS:', error);
               reject(error);
             };
             document.head.appendChild(script);
@@ -78,13 +72,10 @@ const MapPicker: React.FC<MapPickerProps> = ({
         // Wait a bit for Leaflet to initialize
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        console.log('MapPicker: Leaflet ready, setting map loaded to true');
         setIsMapLoaded(true);
       } catch (error) {
-        console.error('MapPicker: Failed to load Leaflet:', error);
         // Set a timeout to show fallback after 10 seconds
         setTimeout(() => {
-          console.log('MapPicker: Timeout reached, showing fallback');
           setIsMapLoaded(true);
         }, 10000);
       }
@@ -96,13 +87,11 @@ const MapPicker: React.FC<MapPickerProps> = ({
   // Get current location
   const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
-      console.log('MapPicker: Geolocation not supported');
       return;
     }
 
     setIsGettingLocation(true);
     try {
-      console.log('MapPicker: Getting current location...');
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
           resolve,
@@ -120,7 +109,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
         lng: position.coords.longitude
       };
 
-      console.log('MapPicker: Current location obtained:', location);
       setCurrentLocation(location);
       
       // If no initial location was provided, use current location as default
@@ -130,8 +118,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
       }
 
     } catch (error) {
-      console.error('MapPicker: Failed to get current location:', error);
-    } finally {
+      } finally {
       setIsGettingLocation(false);
     }
   };
@@ -149,7 +136,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
 
     const L = (window as any).L;
     if (!L) {
-      console.error('MapPicker: Leaflet not available after loading');
       return;
     }
 
@@ -212,11 +198,8 @@ const MapPicker: React.FC<MapPickerProps> = ({
 
   const handleLocationSelect = (lat: number, lng: number, source?: string) => {
     try {
-      console.log(`MapPicker: Attempting to select location - ${source || 'Unknown'}: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-      
       const L = (window as any).L;
       if (!L) {
-        console.error('MapPicker: Leaflet not available for location selection');
         // Still call onLocationSelect even if map update fails
         setSelectedLocation({ lat, lng });
         onLocationSelect(lat, lng);
@@ -224,7 +207,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
       }
 
       if (!mapInstanceRef.current) {
-        console.error('MapPicker: Map instance not available for location selection');
         // Still call onLocationSelect even if map update fails
         setSelectedLocation({ lat, lng });
         onLocationSelect(lat, lng);
@@ -234,8 +216,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
       setSelectedLocation({ lat, lng });
       onLocationSelect(lat, lng);
       
-      console.log(`MapPicker: Location selected successfully - ${source || 'Unknown'}: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-
       // Update or create marker
       const customIcon = L.divIcon({
         html: '<div style="background-color: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
@@ -246,8 +226,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
 
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
-        console.log('MapPicker: Updated existing marker position');
-      } else {
+        } else {
         markerRef.current = L.marker([lat, lng], { 
           icon: customIcon,
           draggable: true 
@@ -258,23 +237,17 @@ const MapPicker: React.FC<MapPickerProps> = ({
           const position = e.target.getLatLng();
           handleLocationSelect(position.lat, position.lng, 'Marker Drag');
         });
-        console.log('MapPicker: Created new marker');
-      }
+        }
 
       // Center map on selected location
       mapInstanceRef.current.setView([lat, lng], Math.max(mapInstanceRef.current.getZoom(), 15));
-      console.log('MapPicker: Centered map on selected location');
-
-    } catch (error) {
-      console.error('MapPicker: Error in handleLocationSelect:', error);
+      } catch (error) {
       // Still try to call onLocationSelect to not break the flow
       try {
         setSelectedLocation({ lat, lng });
         onLocationSelect(lat, lng);
-        console.log('MapPicker: Location selection completed despite map error');
-      } catch (fallbackError) {
-        console.error('MapPicker: Critical error in location selection:', fallbackError);
-      }
+        } catch (fallbackError) {
+        }
     }
   };
 
@@ -302,8 +275,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
         setShowResults(true);
       }
     } catch (error) {
-      console.error('Address search failed:', error);
-    } finally {
+      } finally {
       setIsSearching(false);
     }
   };
@@ -312,11 +284,8 @@ const MapPicker: React.FC<MapPickerProps> = ({
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
     
-    console.log('MapPicker: Search result selected:', { lat, lng, display_name: result.display_name });
-    
     // Validate coordinates
     if (isNaN(lat) || isNaN(lng)) {
-      console.error('MapPicker: Invalid coordinates from search result:', { lat, lng, result });
       return;
     }
     
@@ -523,7 +492,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
           {/* City Quick Buttons */}
           <button
             onClick={() => {
-              console.log('MapPicker: Bangalore button clicked');
               handleLocationSelect(12.9716, 77.5946, 'Bangalore');
             }}
             className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
@@ -532,7 +500,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
           </button>
           <button
             onClick={() => {
-              console.log('MapPicker: Mumbai button clicked');
               handleLocationSelect(19.0760, 72.8777, 'Mumbai');
             }}
             className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
@@ -541,7 +508,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
           </button>
           <button
             onClick={() => {
-              console.log('MapPicker: Delhi button clicked');
               handleLocationSelect(28.6139, 77.2090, 'Delhi');
             }}
             className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"

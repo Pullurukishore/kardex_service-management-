@@ -173,9 +173,7 @@ export const getZoneDashboard = async (req: Request, res: Response) => {
       timeframe
     });
 
-  } catch (error) {
-    console.error('Error fetching zone dashboard:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -215,9 +213,7 @@ export const getTicketStatusDistribution = async (req: Request, res: Response) =
 
     res.json({ distribution, totalTickets, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching ticket status distribution:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -257,9 +253,7 @@ export const getPriorityDistribution = async (req: Request, res: Response) => {
 
     res.json({ distribution, totalTickets, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching priority distribution:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -321,9 +315,7 @@ export const getCustomerPerformance = async (req: Request, res: Response) => {
 
     res.json({ customers: customerPerformance, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching customer performance:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -390,9 +382,7 @@ export const getServicePersonPerformance = async (req: Request, res: Response) =
 
     res.json({ servicePersons: performance, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching service person performance:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -460,9 +450,7 @@ export const getAssetPerformance = async (req: Request, res: Response) => {
 
     res.json({ assets: assetPerformance, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching asset performance:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -527,9 +515,7 @@ export const getTicketTrends = async (req: Request, res: Response) => {
 
     res.json({ trends, timeframe });
 
-  } catch (error) {
-    console.error('Error fetching ticket trends:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -579,9 +565,7 @@ export const getSLAMetrics = async (req: Request, res: Response) => {
       timeframe 
     });
 
-  } catch (error) {
-    console.error('Error fetching SLA metrics:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -633,9 +617,7 @@ export const getRecentActivities = async (req: Request, res: Response) => {
 
     res.json({ activities: formattedActivities });
 
-  } catch (error) {
-    console.error('Error fetching recent activities:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -661,9 +643,7 @@ export const exportZoneReport = async (req: Request, res: Response) => {
       res.json(dashboardData);
     }
 
-  } catch (error) {
-    console.error('Error exporting zone report:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
   }
 };
 

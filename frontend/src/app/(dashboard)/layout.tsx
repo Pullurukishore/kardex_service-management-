@@ -42,7 +42,6 @@ export default async function DashboardRootLayout({
       </TooltipProvider>
     );
   } catch (error) {
-    console.error('Error getting user:', error);
     redirect('/auth/login');
   }
 }

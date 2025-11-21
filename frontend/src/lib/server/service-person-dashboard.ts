@@ -81,7 +81,6 @@ export async function getServicePersonDashboardData(): Promise<DashboardData | n
     const accessToken = cookieStore.get('accessToken')?.value || cookieStore.get('token')?.value;
     
     if (!accessToken) {
-      console.error('No access token found');
       return null;
     }
 
@@ -103,7 +102,6 @@ export async function getServicePersonDashboardData(): Promise<DashboardData | n
     ]);
 
     if (!userResponse.ok) {
-      console.error('Failed to fetch user profile');
       return null;
     }
 
@@ -240,7 +238,6 @@ export async function getServicePersonDashboardData(): Promise<DashboardData | n
       },
     };
   } catch (error) {
-    console.error('Error fetching service person dashboard data:', error);
     return null;
   }
 }

@@ -82,9 +82,7 @@ export const getFSADashboard = async (req: Request, res: Response) => {
         userRole: user.role
       }
     });
-  } catch (error) {
-    console.error('Error fetching FSA dashboard data:', error);
-    return res.status(500).json({ error: 'Failed to fetch FSA dashboard data' });
+  } catch (error) {    return res.status(500).json({ error: 'Failed to fetch FSA dashboard data' });
   }
 };
 
@@ -126,9 +124,7 @@ export const getServiceZoneAnalytics = async (req: Request, res: Response) => {
             select: { serviceZoneId: true }
           });
           hasAccess = customer?.serviceZoneId === targetZoneId;
-        } catch (error) {
-          console.error('Error checking customer zone:', error);
-        }
+        } catch (error) {        }
       }
     } else if (user.role === 'SERVICE_PERSON') {
       // Service persons have access to zones they're assigned to
@@ -148,9 +144,7 @@ export const getServiceZoneAnalytics = async (req: Request, res: Response) => {
     // Serialize BigInt values to numbers before sending response
     const serializedData = serializeBigInts(zoneData);
     return res.json(serializedData);
-  } catch (error) {
-    console.error('Error fetching service zone analytics:', error);
-    return res.status(500).json({ error: 'Failed to fetch service zone analytics' });
+  } catch (error) {    return res.status(500).json({ error: 'Failed to fetch service zone analytics' });
   }
 };
 
@@ -178,9 +172,7 @@ export const getUserPerformance = async (req: Request, res: Response) => {
     // Serialize BigInt values to numbers before sending response
     const serializedData = serializeBigInts(userData);
     return res.json(serializedData);
-  } catch (error) {
-    console.error('Error fetching user performance:', error);
-    return res.status(500).json({ error: 'Failed to fetch user performance' });
+  } catch (error) {    return res.status(500).json({ error: 'Failed to fetch user performance' });
   }
 };
 
@@ -208,9 +200,7 @@ export const getServicePersonPerformance = async (req: Request, res: Response) =
     // Serialize BigInt values to numbers before sending response
     const serializedData = serializeBigInts(servicePersonData);
     return res.json(serializedData);
-  } catch (error) {
-    console.error('Error fetching service person performance:', error);
-    return res.status(500).json({ error: 'Failed to fetch service person performance' });
+  } catch (error) {    return res.status(500).json({ error: 'Failed to fetch service person performance' });
   }
 };
 
@@ -953,9 +943,7 @@ export const getRealTimeMetrics = async (req: Request, res: Response) => {
       success: true,
       data: serializeBigInts(realTimeMetrics)
     });
-  } catch (error) {
-    console.error('Error fetching real-time metrics:', error);
-    res.status(500).json({ error: 'Failed to fetch real-time metrics' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to fetch real-time metrics' });
   }
 };
 
@@ -1029,9 +1017,7 @@ export const getPredictiveAnalytics = async (req: Request, res: Response) => {
       success: true,
       data: serializeBigInts(predictiveAnalytics)
     });
-  } catch (error) {
-    console.error('Error fetching predictive analytics:', error);
-    res.status(500).json({ error: 'Failed to fetch predictive analytics' });
+  } catch (error) {    res.status(500).json({ error: 'Failed to fetch predictive analytics' });
   }
 };
 
@@ -1110,7 +1096,6 @@ export const getAdvancedPerformanceMetrics = async (req: Request, res: Response)
       data: serializeBigInts(performanceMetrics)
     });
   } catch (error) {
-    console.error('Error fetching performance metrics:', error);
     res.status(500).json({ error: 'Failed to fetch performance metrics' });
   }
 };
@@ -1150,7 +1135,6 @@ export const getEquipmentAnalytics = async (req: Request, res: Response) => {
       data: equipmentAnalytics
     });
   } catch (error) {
-    console.error('Error fetching equipment analytics:', error);
     res.status(500).json({ error: 'Failed to fetch equipment analytics' });
   }
 };
@@ -1238,7 +1222,6 @@ export const getCustomerSatisfactionMetrics = async (req: Request, res: Response
       })
     });
   } catch (error) {
-    console.error('Error fetching customer satisfaction metrics:', error);
     res.status(500).json({ error: 'Failed to fetch customer satisfaction metrics' });
   }
 };
@@ -1329,7 +1312,6 @@ export const getResourceOptimization = async (req: Request, res: Response) => {
       })
     });
   } catch (error) {
-    console.error('Error fetching resource optimization:', error);
     res.status(500).json({ error: 'Failed to fetch resource optimization' });
   }
 };
@@ -1364,7 +1346,6 @@ export const getServiceReports = async (req: Request, res: Response) => {
 
     res.json(serializeBigInts(reportData));
   } catch (error) {
-    console.error('Error generating service reports:', error);
     res.status(500).json({ error: 'Failed to generate service reports' });
   }
 };
@@ -1402,7 +1383,6 @@ export const exportFSAData = async (req: Request, res: Response) => {
       res.send('CSV export not implemented yet');
     }
   } catch (error) {
-    console.error('Error exporting FSA data:', error);
     res.status(500).json({ error: 'Failed to export FSA data' });
   }
 };
@@ -1444,9 +1424,7 @@ async function calculateSlaCompliance(zoneIds: number[] | null): Promise<number>
     });
     
     return Math.round((slaCompliantTickets / totalTickets) * 100);
-  } catch (error) {
-    console.error('Error calculating SLA compliance:', error);
-    return 0;
+  } catch (error) {    return 0;
   }
 }
 

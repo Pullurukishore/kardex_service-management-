@@ -236,13 +236,11 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
   const fetchAttendanceData = useCallback(async (refresh = false) => {
     // Prevent concurrent fetches
     if (isFetching.current) {
-      console.log('⚠️ Fetch already in progress, skipping...');
       return;
     }
     
     try {
       isFetching.current = true;
-      console.log('🔄 Starting fetch attendance data...', { refresh, currentPage, dateRange });
       if (refresh) setIsRefreshing(true);
       else setLoading(true);
 
@@ -301,7 +299,6 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
           setStats(null);
         }
       } else {
-        console.error('Error fetching stats:', statsResponse.reason);
         setStats(null);
       }
 
@@ -314,7 +311,6 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
           setServicePersons([]);
         }
       } else {
-        console.error('Error fetching service persons:', servicePersonsResponse.reason);
         setServicePersons([]);
       }
 
@@ -327,12 +323,10 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
           setServiceZones([]);
         }
       } else {
-        console.error('Error fetching service zones:', serviceZonesResponse.reason);
         setServiceZones([]);
       }
 
     } catch (error) {
-      console.error('Error fetching attendance data:', error);
       toast({
         title: "Error",
         description: "Failed to load attendance data. Please try again.",
@@ -343,8 +337,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
       setIsRefreshing(false);
       isFetching.current = false;
       hasInitialFetchCompleted.current = true;
-      console.log('✅ Fetch completed');
-    }
+      }
   }, [currentPage, dateRange, selectedDate, selectedUser, selectedStatus, selectedActivityType, selectedZone, searchQuery, toast]);
 
   // Format duration
@@ -397,25 +390,20 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
     }
   }, [currentPage, totalPages]);
 
-
   // Single useEffect to handle all data fetching with proper debouncing
   useEffect(() => {
     // For initial mount, fetch immediately without debouncing
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      console.log('🚀 Initial mount - fetching data immediately');
       fetchAttendanceData();
       return;
     }
     
     // Skip if initial fetch hasn't completed yet (prevents race conditions during mount)
     if (!hasInitialFetchCompleted.current) {
-      console.log('⏭️ Skipping - waiting for initial fetch to complete');
       return;
     }
     
-    console.log('⏱️ Filter changed - setting up debounced fetch');
-
     // Debounce all filter changes to prevent rapid-fire API calls
     const timeoutId = setTimeout(() => {
       // If we're already fetching, the guard will prevent duplicate calls
@@ -423,7 +411,6 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
         fetchAttendanceData();
       } else {
         // Reset to page 1 when filters change (will trigger another effect cycle)
-        console.log('📄 Resetting to page 1 due to filter change');
         setCurrentPage(1);
       }
     }, 500);

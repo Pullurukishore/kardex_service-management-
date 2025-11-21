@@ -54,13 +54,12 @@ export default function ZoneServicePersonDetailPage() {
       try {
         setLoading(true);
         const response = await apiClient.get(`/service-persons/${servicePersonId}`);
-        console.log('Zone Service Person Data:', response); // Debug log
+        // Debug log
         
         // Handle different response formats
         const data = response.data || response;
         setServicePerson(data);
       } catch (error) {
-        console.error('Error fetching zone service person:', error);
         toast({
           title: 'Error',
           description: 'Failed to fetch service person details',
@@ -85,7 +84,6 @@ export default function ZoneServicePersonDetailPage() {
       });
       router.push('/zone/service-persons');
     } catch (error: any) {
-      console.error('Error deleting service person:', error);
       toast({
         title: 'Error',
         description: error.message || 'Failed to delete service person',

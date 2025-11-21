@@ -47,7 +47,6 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
         throw new Error(response.message || 'Failed to update admin');
       }
     } catch (error: any) {
-      console.error('Error updating admin:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update admin';
       setMessage({ 
         type: 'error', 

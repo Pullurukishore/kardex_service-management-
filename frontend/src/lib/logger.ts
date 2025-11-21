@@ -32,32 +32,27 @@ class Logger {
 
   log(...args: any[]): void {
     if (this.shouldLog('log')) {
-      console.log(...args);
-    }
+      }
   }
 
   info(...args: any[]): void {
     if (this.shouldLog('info')) {
-      console.info(...args);
-    }
+      }
   }
 
   warn(...args: any[]): void {
     if (this.shouldLog('warn')) {
-      console.warn(...args);
-    }
+      }
   }
 
   error(...args: any[]): void {
     if (this.shouldLog('error')) {
-      console.error(...args);
-    }
+      }
   }
 
   debug(...args: any[]): void {
     if (this.shouldLog('debug')) {
-      console.debug(...args);
-    }
+      }
   }
 
   table(data: any): void {

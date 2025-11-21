@@ -233,7 +233,6 @@ export function Sidebar({
     return () => clearTimeout(timer);
   }, []);
 
-
   const filteredNavItems = React.useMemo(() => {
     if (!userRole) return [];
     return navigation.filter((item) => item.roles.includes(userRole));
@@ -269,7 +268,6 @@ export function Sidebar({
       setHoveredItem(null);
     }
   }, [isMobile]);
-
 
   const renderNavItem = React.useCallback((item: NavItem, index: number) => {
     const isActive = pathname?.startsWith(item.href) ?? false;

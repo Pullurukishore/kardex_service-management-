@@ -63,7 +63,6 @@ export class WhatsAppController {
         },
       });
     } catch (error) {
-      console.error('Error sending WhatsApp notification:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to send WhatsApp notification',
@@ -119,7 +118,6 @@ export class WhatsAppController {
         },
       });
     } catch (error) {
-      console.error('Error sending rating request:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to send rating request',
@@ -134,21 +132,9 @@ export class WhatsAppController {
   async handleIncomingMessage(req: Request, res: Response): Promise<void> {
     try {
       const { Body, From, To } = req.body;
-      
-      console.log('📱 [WHATSAPP WEBHOOK] Received message:', { 
-        timestamp: new Date().toISOString(),
-        from: From, 
-        body: Body,
-        to: To,
-        headers: req.headers
-      });
-
       // Extract rating from message body
       const ratingValue = parseInt(Body.trim());
-      console.log('📱 [WHATSAPP WEBHOOK] Parsed rating value:', { ratingValue, originalBody: Body });
-      
       if (isNaN(ratingValue) || ratingValue < 1 || ratingValue > 5) {
-        console.log('📱 [WHATSAPP WEBHOOK] Invalid rating detected:', { ratingValue, isValid: false });
         // Send invalid rating response
         await this.whatsappService.sendMessage({
           to: From,
@@ -163,10 +149,7 @@ export class WhatsAppController {
       }
 
       // Find the most recent ticket for this customer based on phone number
-      console.log('📱 [WHATSAPP WEBHOOK] Starting ticket lookup for phone:', From);
       const ticketInfo = await this.findTicketByPhoneNumber(From);
-      console.log('📱 [WHATSAPP WEBHOOK] Ticket lookup result:', { ticketInfo, phone: From });
-      
       if (!ticketInfo) {
         // Send error message if no ticket found
         await this.whatsappService.sendMessage({
@@ -201,10 +184,8 @@ export class WhatsAppController {
             return this;
           },
           json: function(data: any) {
-            console.log('Rating controller response:', data);
             // Handle the case where rating already exists
             if (this.statusCode === 400 && data.message && data.message.includes('Rating already exists')) {
-              console.log('Rating already exists for this ticket - treating as success');
               this.statusCode = 200; // Treat as success since user already rated
             } else if (this.statusCode !== 201 && this.statusCode !== 200) {
               throw new Error(`Rating creation failed with status ${this.statusCode}: ${JSON.stringify(data)}`);
@@ -212,29 +193,18 @@ export class WhatsAppController {
             return this;
           },
           send: function(data: any) {
-            console.log('Rating controller response:', data);
             return this;
           },
           sendStatus: function(code: number) {
             this.statusCode = code;
-            console.log('Rating controller status:', code);
             return this;
           },
         } as any;
         
         try {
-          console.log('📱 [WHATSAPP WEBHOOK] Creating rating:', { 
-            ticketId: ticketInfo.ticketId, 
-            customerId: ticketInfo.customerId, 
-            rating: ratingValue,
-            phone: From,
-            source: 'WHATSAPP'
-          });
-          
           // Check if rating already exists before attempting to create
           const ratingExists = await this.ratingController['ratingModel'].ratingExists(ticketInfo.ticketId);
           if (ratingExists) {
-            console.log('📱 [WHATSAPP WEBHOOK] Rating already exists for ticket:', ticketInfo.ticketId);
             // Send message to user indicating they already rated
             await this.whatsappService.sendMessage({
               to: From,
@@ -242,19 +212,16 @@ export class WhatsAppController {
             });
           } else {
             await this.ratingController.createRating(mockRequest, mockResponse as Response);
-            console.log('📱 [WHATSAPP WEBHOOK] Rating created successfully for ticket:', ticketInfo.ticketId);
           }
         } catch (ratingError: any) {
           // Check if the error is because rating already exists
           if (ratingError.message && (ratingError.message.includes('Rating already exists') || ratingError.message.includes('Unique constraint'))) {
-            console.log('Rating already exists for this ticket - sending appropriate response');
             // Send message to user indicating they already rated
             await this.whatsappService.sendMessage({
               to: From,
               body: `We see you've already rated this ticket. Thank you for your feedback! Your previous rating has been recorded.`,
             });
           } else {
-            console.error('Error creating rating:', ratingError);
             // Send error message to user
             await this.whatsappService.sendMessage({
               to: From,
@@ -271,13 +238,10 @@ export class WhatsAppController {
         }
 
         // Send thank you message
-        console.log('📱 [WHATSAPP WEBHOOK] Sending thank you message for rating:', ratingValue);
         await this.whatsappService.sendMessage({
           to: From,
           body: `Thank you for rating your experience ${ratingValue} out of 5! We appreciate your feedback and will use it to improve our service.`,
         });
-
-        console.log('📱 [WHATSAPP WEBHOOK] Webhook processing completed successfully');
         res.status(200).json({
           success: true,
           message: 'Rating processed successfully',
@@ -289,7 +253,6 @@ export class WhatsAppController {
           },
         });
       } catch (error) {
-        console.error('Error handling incoming WhatsApp message:', error);
         res.status(500).json({
           success: false,
           message: 'Failed to handle incoming message',
@@ -297,7 +260,6 @@ export class WhatsAppController {
         });
       }
     } catch (error) {
-      console.error('Error handling incoming WhatsApp message:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to handle incoming message',
@@ -342,14 +304,6 @@ export class WhatsAppController {
         `whatsapp:${digitsOnly}`, // WhatsApp format: whatsapp:918639224022
       ];
       
-      console.log('📱 [PHONE DEBUG] Searching for phone number:', { 
-        original: phoneNumber, 
-        cleanPhone, 
-        digitsOnly, 
-        phoneFormats,
-        timestamp: new Date().toISOString()
-      });
-      
       // Find contacts with this phone number
       const contacts = await prisma.contact.findMany({
         where: {
@@ -377,19 +331,7 @@ export class WhatsAppController {
           },
         },
       });
-
-      console.log('📱 [PHONE DEBUG] Found contacts:', contacts.length);
-      console.log('📱 [PHONE DEBUG] Contact details:', contacts.map(c => ({ 
-        id: c.id, 
-        phone: c.phone, 
-        customer: c.customer ? { 
-          id: c.customer.id, 
-          tickets: c.customer.tickets.length,
-          ticketStatuses: c.customer.tickets.map(t => t.status)
-        } : null 
-      })));
-      console.log('📱 [PHONE DEBUG] All phone formats tried:', phoneFormats);
-
+      
       // Look for the most recent ticket across all contacts with this phone number
       let mostRecentTicket = null;
       let customerId = null;
@@ -413,7 +355,6 @@ export class WhatsAppController {
 
       return null;
     } catch (error) {
-      console.error('Error finding ticket by phone number:', error);
       return null;
     }
   }

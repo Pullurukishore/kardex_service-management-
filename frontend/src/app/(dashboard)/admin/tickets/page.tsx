@@ -38,7 +38,6 @@ export default async function AdminTicketsPage({ searchParams }: Props) {
   try {
     ticketsData = await getTickets(filters);
   } catch (err) {
-    console.error('Error fetching tickets:', err);
     error = 'Failed to load tickets. Please try again.';
     ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 100, totalPages: 1 } };
   }

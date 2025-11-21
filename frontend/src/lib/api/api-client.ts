@@ -99,8 +99,7 @@ class ApiClient {
   // Method to set PIN session manually (for fallbacks)
   public setPinSession(sessionId: string): void {
     if (process.env.NODE_ENV === 'development') {
-      console.log('Setting manual PIN session ID:', sessionId);
-    }
+      }
     this.pinSessionId = sessionId;
     // Note: Backend now controls expiration in the main PIN validation response
     // This manual session storage is just for fallback cases
@@ -126,18 +125,15 @@ class ApiClient {
                 if (parsedData.sessionId && new Date(parsedData.expiresAt) > new Date()) {
                   config.headers['Authorization'] = `PinSession ${parsedData.sessionId}`;
                   this.pinSessionId = parsedData.sessionId;
-                  console.log('Using PIN session from localStorage:', parsedData.sessionId);
-                }
+                  }
               }
             }
           } catch (error) {
-            console.error('Error retrieving PIN session from localStorage:', error);
-          }
+            }
         }
         return config;
       },
       (error) => {
-        console.error('Request interceptor error:', error);
         return Promise.reject(error);
       }
     );

@@ -32,7 +32,6 @@ export default function EditServiceZonePage() {
 
   const zoneId = params?.id ? parseInt(params.id as string) : null;
 
-
   const form = useForm<ServiceZoneFormValues>({
     resolver: zodResolver(serviceZoneFormSchema),
     defaultValues: {
@@ -59,7 +58,6 @@ export default function EditServiceZonePage() {
           isActive: zoneData.isActive,
         });
       } catch (error) {
-        console.error('Failed to load data:', error);
         toast({
           title: 'Error',
           description: 'Failed to load service zone data',
@@ -90,7 +88,6 @@ export default function EditServiceZonePage() {
       
       router.push(`/admin/service-zones/${zoneId}`);
     } catch (error: any) {
-      console.error('Error updating service zone:', error);
       toast({
         title: 'Error',
         description: error.response?.data?.error || 'Failed to update service zone',

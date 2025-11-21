@@ -62,7 +62,6 @@ export default function CustomerFormComponent({ customer, customerId }: Customer
         const response = await getServiceZones(1, 100);
         setServiceZones(response.data);
       } catch (error) {
-        console.error('Failed to load service zones:', error);
         toast({
           title: 'Error',
           description: 'Failed to load service zones. Please try again later.',
@@ -98,11 +97,9 @@ export default function CustomerFormComponent({ customer, customerId }: Customer
   const onSubmit = async (data: CustomerFormValues) => {
     if (customer && customerId) {
       // Handle update logic here
-      console.log('Updating customer:', data);
-    } else {
+      } else {
       // Handle create logic here
-      console.log('Creating customer:', data);
-    }
+      }
     try {
       setFormError(null);
       setIsLoading(true);
@@ -149,7 +146,6 @@ export default function CustomerFormComponent({ customer, customerId }: Customer
       
       router.push('/admin/customers');
     } catch (error: any) {
-      console.error('Error creating/updating customer:', error);
       const errorMessage = error.response?.data?.error || 'Failed to process customer. Please try again.';
       
       setFormError(errorMessage);

@@ -132,7 +132,6 @@ const TicketClient = memo(function TicketClient({
       
       return true;
     } catch (err) {
-      console.error('Failed to fetch ticket data:', err);
       setError('Failed to load ticket data. Please try again.');
       toast.error('Failed to refresh ticket data');
       return false;
@@ -147,11 +146,9 @@ const TicketClient = memo(function TicketClient({
     
     // Only fetch data if search params have actually changed (not on initial mount)
     if (initialLoadComplete.current && currentSearchParams !== lastSearchParams.current) {
-      console.log('TicketClient - Search params changed, fetching new data');
       fetchTicketData();
     } else if (!initialLoadComplete.current) {
       // Mark initial load as complete without fetching (we already have server-side data)
-      console.log('TicketClient - Initial load complete, using server-side data');
       initialLoadComplete.current = true;
     }
     

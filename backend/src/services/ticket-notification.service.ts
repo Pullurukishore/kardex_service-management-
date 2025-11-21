@@ -37,9 +37,7 @@ export class TicketNotificationService {
 
       await this.whatsappService.sendTicketNotification(notificationData);
       
-      console.log(`Ticket opened notification sent for ticket ${ticketData.id}`);
-    } catch (error) {
-      console.error('Failed to send ticket opened notification:', error);
+      } catch (error) {
       // Don't throw error to avoid disrupting the main ticket creation flow
     }
   }
@@ -73,10 +71,8 @@ export class TicketNotificationService {
 
       await this.whatsappService.sendTicketNotification(notificationData);
       
-      console.log(`Ticket pending notification sent for ticket ${ticketData.id}`);
-    } catch (error) {
-      console.error('Failed to send ticket pending notification:', error);
-    }
+      } catch (error) {
+      }
   }
 
   /**
@@ -116,17 +112,13 @@ export class TicketNotificationService {
         setTimeout(async () => {
           try {
             await this.whatsappService.sendRatingRequest(notificationData);
-            console.log(`Rating request sent for ticket ${ticketData.id}`);
-          } catch (error) {
-            console.error('Failed to send rating request:', error);
-          }
+            } catch (error) {
+            }
         }, 5000); // 5 second delay
       }
 
-      console.log(`Ticket closed notification sent for ticket ${ticketData.id}`);
-    } catch (error) {
-      console.error('Failed to send ticket closed notification:', error);
-    }
+      } catch (error) {
+      }
   }
 
   /**
@@ -189,8 +181,7 @@ export class TicketNotificationService {
           break;
       }
     } catch (error) {
-      console.error('Failed to handle ticket status change notification:', error);
-    }
+      }
   }
 
   /**
@@ -207,8 +198,6 @@ export class TicketNotificationService {
     estimatedResolution?: Date;
   }): Promise<void> {
     try {
-      console.log(`🔔 Sending ticket assignment notification to ${ticketData.assignedToName} (${ticketData.assignedToPhone}) for ticket ${ticketData.id}`);
-      
       await this.whatsappService.sendTicketAssignedNotification({
         ticketId: ticketData.id,
         ticketTitle: ticketData.title,
@@ -220,9 +209,7 @@ export class TicketNotificationService {
         estimatedResolution: ticketData.estimatedResolution,
       });
       
-      console.log(`✅ Ticket assigned notification sent successfully to ${ticketData.assignedToName}`);
-    } catch (error) {
-      console.error('❌ Failed to send ticket assigned notification:', error);
+      } catch (error) {
       // Don't throw error to avoid disrupting the main ticket assignment flow
     }
   }
@@ -242,7 +229,6 @@ export class TicketNotificationService {
       const ratingExists = await this.ratingModel.ratingExists(data.ticketId);
       
       if (ratingExists) {
-        console.log(`Rating already exists for ticket ${data.ticketId}`);
         return;
       }
 
@@ -255,15 +241,12 @@ export class TicketNotificationService {
         customerPhone: data.customerPhone,
       });
 
-      console.log(`Rating ${data.rating} recorded for ticket ${data.ticketId}`);
-
       // Send thank you message via WhatsApp
       await this.whatsappService.sendMessage({
         to: data.customerPhone,
         body: `Thank you for rating our service ${data.rating} star${data.rating !== 1 ? 's' : ''}! We appreciate your feedback and will use it to improve our service.`,
       });
     } catch (error) {
-      console.error('Failed to process rating response:', error);
-    }
+      }
   }
 }

@@ -71,7 +71,6 @@ export default async function CustomersPage({
       </div>
     );
   } catch (error) {
-    console.error('Error loading customers:', error);
     return (
       <div>
         <div className="text-center py-12">

@@ -22,4 +22,3 @@ router.post('/back', coordinateValidators, requireRole(['ADMIN', 'SERVICE_PERSON
 
 export default router;
 
-

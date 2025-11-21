@@ -16,6 +16,7 @@ import {
   generateNewPin 
 } from '../controllers/pinAuthController';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth.middleware';
+import rateLimit from 'express-rate-limit';
 
 // Type guard for UserRole
 const isUserRole = (value: unknown): value is UserRole => {
@@ -105,8 +106,21 @@ router.post('/logout', authenticate, (req, res, next) => {
   return logout(authReq, res).catch(next);
 });
 
-// Refresh token route (no authentication required)
-router.post('/refresh-token', (req, res, next) => {
+// Rate limiting for refresh token endpoint to prevent abuse
+const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 refresh requests per window
+  message: {
+    success: false,
+    message: 'Too many refresh attempts, please try again later.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Refresh token route (no authentication required) with rate limiting
+router.post('/refresh-token', refreshLimiter, (req, res, next) => {
   return refreshToken(req, res).catch(next);
 });
 
@@ -135,7 +149,6 @@ router.post(
 
 // PIN Authentication routes
 router.post('/validate-pin', (req: Request, res: Response, next: NextFunction) => {
-  console.log('🚀 Auth Route - /validate-pin hit!');
   return validatePin(req, res).catch(next);
 });
 

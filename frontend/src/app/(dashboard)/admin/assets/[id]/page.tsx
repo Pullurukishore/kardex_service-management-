@@ -97,8 +97,6 @@ export default function AssetDetailPage() {
   const loadAsset = async () => {
     try {
       setLoading(true);
-      console.log('Fetching asset with ID:', id);
-      
       const response = await fetch(`/api/assets/${id}`, {
         headers: {
           'Cache-Control': 'no-cache',
@@ -106,26 +104,18 @@ export default function AssetDetailPage() {
         }
       });
       
-      console.log('Response status:', response.status);
-      
       // Get the response text first to see what we're dealing with
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
-      
       let data;
       try {
         data = responseText ? JSON.parse(responseText) : null;
       } catch (e) {
-        console.error('Error parsing JSON:', e);
         throw new Error('Invalid response from server');
       }
-      
-      console.log('Parsed data:', data);
       
       // Handle 304 Not Modified
       if (response.status === 304) {
         if (!data) {
-          console.log('No data in 304 response, trying to load again...');
           // If no data in 304 response, try a fresh request without cache
           return loadAsset();
         }
@@ -135,7 +125,6 @@ export default function AssetDetailPage() {
       
       // Handle other status codes
       if (!response.ok) {
-        console.error('API error:', response.status, response.statusText, data);
         if (response.status === 404) {
           throw new Error('Asset not found');
         }
@@ -148,7 +137,6 @@ export default function AssetDetailPage() {
       
       setAsset(data);
     } catch (error) {
-      console.error('Error in loadAsset:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to load asset details',
@@ -181,7 +169,6 @@ export default function AssetDetailPage() {
       
       router.push(`/admin/customers/${asset.customer.id}`);
     } catch (error) {
-      console.error('Error deleting asset:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to delete asset. Please try again.',

@@ -26,6 +26,9 @@ const api: AxiosInstance = axios.create({
 
 // Track refresh promise to prevent multiple simultaneous refresh attempts
 let refreshTokenPromise: Promise<string> | null = null;
+let retryCount = 0;
+const maxRetries = 3;
+let isBackendDown = false;
 
 // Request interceptor to add auth token and handle token refresh
 api.interceptors.request.use(
@@ -45,12 +48,9 @@ api.interceptors.request.use(
     if (authToken) {
       // Check if token is expired or about to expire (within 5 minutes)
       if (isTokenExpired(authToken)) {
-        console.log('[Axios] Token expired or expiring soon, refreshing...');
-        
         try {
           // Reuse existing refresh promise if one is in flight
           if (!refreshTokenPromise) {
-            console.log('[Axios] Starting new token refresh');
             refreshTokenPromise = (async () => {
               try {
                 const response = await axios.post(
@@ -60,7 +60,6 @@ api.interceptors.request.use(
                 );
                 
                 if (response.data?.success && response.data.accessToken) {
-                  console.log('[Axios] Token refresh successful');
                   setCookie('accessToken', response.data.accessToken);
                   setCookie('token', response.data.accessToken);
                   
@@ -84,27 +83,30 @@ api.interceptors.request.use(
               }
             })();
           } else {
-            console.log('[Axios] Reusing existing token refresh promise');
-          }
+            }
           
           // Wait for the refresh to complete
           const newToken = await refreshTokenPromise;
           config.headers.Authorization = `Bearer ${newToken}`;
           
         } catch (error: any) {
-          console.error('[Axios] Token refresh failed:', error?.response?.data || error.message);
-          
           // Clear tokens on refresh failure
           deleteCookie('accessToken');
           deleteCookie('token');
           deleteCookie('refreshToken');
+          
+          // Check if backend is down
+          if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || !error.response) {
+            isBackendDown = true;
+            // Don't redirect immediately when backend is down
+            return Promise.reject(error);
+          }
           
           // Redirect to login (client-side only)
           if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
             // Show user-friendly message
             const errorCode = error?.response?.data?.code;
             if (errorCode === 'REFRESH_TOKEN_EXPIRED') {
-              console.log('[Axios] Session expired, redirecting to login');
               // Store a flag to show session expired message
               if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.setItem('sessionExpired', 'true');
@@ -142,7 +144,12 @@ if (typeof window !== 'undefined') {
 
 // Response interceptor to handle token refresh
 api.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    // Reset backend down flag and retry count on successful response
+    isBackendDown = false;
+    retryCount = 0;
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
     
@@ -152,21 +159,43 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Check if backend is down before attempting refresh
+    if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || !error.response) {
+      isBackendDown = true;
+      return Promise.reject(error);
+    }
+
     // If error is 401 and we haven't already tried to refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log('[Axios Response] Got 401 error, attempting token refresh');
-      
       // If we're already on the login page, don't try to refresh (client-side only)
       if (typeof window !== 'undefined' && window.location.pathname === '/auth/login') {
         return Promise.reject(error);
       }
       
+      // Check retry count to prevent infinite loops
+      if (retryCount >= maxRetries) {
+        // Max retries reached, clear tokens and redirect
+        if (typeof window !== 'undefined') {
+          deleteCookie('accessToken');
+          deleteCookie('token');
+          deleteCookie('refreshToken');
+          if (window.location.pathname !== '/auth/login') {
+            window.location.href = '/auth/login';
+          }
+        }
+        return Promise.reject(error);
+      }
+      
       originalRequest._retry = true;
+      retryCount++;
 
       try {
+        // Implement exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000); // 1s, 2s, 4s max
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
         // Reuse the refresh token promise if one is in flight
         if (!refreshTokenPromise) {
-          console.log('[Axios Response] Starting token refresh from 401 handler');
           refreshTokenPromise = (async () => {
             try {
               const response = await axios.post(
@@ -181,7 +210,6 @@ api.interceptors.response.use(
               );
               
               if (response.data?.success && response.data.accessToken) {
-                console.log('[Axios Response] Token refresh successful');
                 setCookie('accessToken', response.data.accessToken);
                 setCookie('token', response.data.accessToken);
                 
@@ -195,16 +223,18 @@ api.interceptors.response.use(
                   setCookie('userRole', response.data.user.role);
                 }
                 
+                // Reset retry count on success
+                retryCount = 0;
                 return response.data.accessToken;
               }
-              throw new Error('No access token in response');
+              throw new Error('No access token in refresh response');
             } finally {
+              // Clear the promise after completion (success or failure)
               refreshTokenPromise = null;
             }
           })();
         } else {
-          console.log('[Axios Response] Reusing existing refresh promise');
-        }
+          }
         
         const newToken = await refreshTokenPromise;
         
@@ -212,12 +242,9 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         
         // Retry the original request with new token
-        console.log('[Axios Response] Retrying original request with new token');
         return api(originalRequest);
         
       } catch (refreshError: any) {
-        console.error('[Axios Response] Token refresh failed:', refreshError?.response?.data || refreshError.message);
-        
         // Clear any existing tokens (client-side only)
         if (typeof window !== 'undefined') {
           deleteCookie('accessToken');
@@ -227,7 +254,6 @@ api.interceptors.response.use(
           // Check error code for user-friendly messaging
           const errorCode = refreshError?.response?.data?.code;
           if (errorCode === 'REFRESH_TOKEN_EXPIRED' || errorCode === 'NO_REFRESH_TOKEN') {
-            console.log('[Axios Response] Session expired, storing flag');
             if (typeof sessionStorage !== 'undefined') {
               sessionStorage.setItem('sessionExpired', 'true');
               sessionStorage.setItem('sessionExpiredReason', errorCode);
@@ -236,7 +262,6 @@ api.interceptors.response.use(
           
           // Only redirect to login if not already there
           if (window.location.pathname !== '/auth/login') {
-            console.log('[Axios Response] Redirecting to login');
             window.location.href = '/auth/login';
           }
         }
