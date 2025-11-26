@@ -1,6 +1,7 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { authenticate } from '../middleware/auth.middleware';
+import prisma from '../config/db';
 import {
   getFSADashboard,
   exportFSAData
@@ -25,8 +26,6 @@ router.post('/fsa/export', authMiddleware(['ADMIN']), exportFSAData);
 router.get('/zone-users', authMiddleware(['ADMIN']), async (req, res) => {
   try {
     const { page = 1, search = '', limit = 10 } = req.query;
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
 
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
     const take = parseInt(limit as string);

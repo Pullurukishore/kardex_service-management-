@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { JwtPayload } from '../middleware/auth.middleware';
 import { serializeBigInts } from '../utils/bigint';
 import { differenceInMinutes, getDay, addDays, startOfDay, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
+import prisma from '../config/db';
 
 // Custom type definitions to replace problematic Prisma exports
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'IN_PROCESS' | 'RESOLVED' | 'CLOSED' | 'CANCELLED';
@@ -56,8 +57,6 @@ interface QueryResult<T = any> {
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
-
-const prisma = new PrismaClient();
 
 interface TicketCount {
   status: string;
@@ -131,10 +130,10 @@ function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number
   return totalMinutes;
 }
 
-async function calculateAverageResponseTime(zoneId: number): Promise<{ hours: number; minutes: number }> {
+async function calculateAverageResponseTime(zoneId: number): Promise<{ hours: number; minutes: number; change: number; isPositive: boolean }> {
   try {
-    // Get tickets for this zone with ASSIGNED status
-    const tickets = await prisma.ticket.findMany({
+    // Get tickets that have moved from OPEN to ASSIGNED status (no date filter - match admin dashboard)
+    const ticketsWithStatusHistory = await prisma.ticket.findMany({
       where: {
         customer: {
           serviceZoneId: zoneId
@@ -147,42 +146,49 @@ async function calculateAverageResponseTime(zoneId: number): Promise<{ hours: nu
           where: {
             status: 'ASSIGNED'
           },
-          select: {
-            changedAt: true
-          },
-          take: 1,
           orderBy: {
             changedAt: 'asc'
+          },
+          select: {
+            status: true,
+            changedAt: true
           }
         }
       }
     });
-
-    // Calculate response times using business hours
-    const responseTimes = tickets
-      .filter(t => t.statusHistory.length > 0)
-      .map(t => calculateBusinessHoursInMinutes(t.createdAt, t.statusHistory[0].changedAt))
-      .filter(time => time > 0);
-
+    
+    // Calculate response times (time from ticket creation to ASSIGNED - first response)
+    const responseTimes = ticketsWithStatusHistory
+      .map((ticket: any) => {
+        const assignedAt = ticket.statusHistory[0]?.changedAt;
+        if (assignedAt) {
+          return calculateBusinessHoursInMinutes(ticket.createdAt, assignedAt);
+        }
+        return 0;
+      })
+      .filter((time: number) => time > 0); // Filter out negative times
+    
     if (responseTimes.length === 0) {
-      return { hours: 0, minutes: 0 };
+      return { hours: 0, minutes: 0, change: 0, isPositive: true };
     }
-
+    
     const avgMinutes = responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length;
-
+    
     return {
       hours: Math.floor(avgMinutes / 60),
-      minutes: Math.round(avgMinutes % 60)
+      minutes: Math.round(avgMinutes % 60),
+      change: 0, // Zone dashboard doesn't calculate change
+      isPositive: true
     };
   } catch (error) {
-    return { hours: 0, minutes: 0 };
+    return { hours: 0, minutes: 0, change: 0, isPositive: true };
   }
 }
 
-async function calculateAverageResolutionTime(zoneId: number): Promise<{ days: number; hours: number }> {
+async function calculateAverageResolutionTime(zoneId: number): Promise<{ days: number; hours: number; change: number; isPositive: boolean }> {
   try {
-    // Get closed tickets for this zone
-    const tickets = await prisma.ticket.findMany({
+    // Get tickets that are CLOSED (final resolution) - no date filter to match admin dashboard
+    const closedTickets = await prisma.ticket.findMany({
       where: {
         status: 'CLOSED',
         customer: {
@@ -190,93 +196,156 @@ async function calculateAverageResolutionTime(zoneId: number): Promise<{ days: n
         }
       },
       select: {
-        id: true,
         createdAt: true,
         updatedAt: true,
-        statusHistory: {
-          where: {
-            status: 'CLOSED'
-          },
-          select: {
-            changedAt: true
-          },
-          take: 1,
-          orderBy: {
-            changedAt: 'desc'
-          }
-        }
+        status: true
       }
     });
-
-    // Calculate resolution times using business hours
-    const resolutionTimes = tickets
-      .map(t => {
-        const closedAt = t.statusHistory.length > 0 ? t.statusHistory[0].changedAt : t.updatedAt;
-        return calculateBusinessHoursInMinutes(t.createdAt, closedAt);
+    
+    // Calculate resolution times (business hours from ticket open to CLOSED)
+    const resolutionTimes = closedTickets
+      .map((ticket: any) => {
+        return calculateBusinessHoursInMinutes(ticket.createdAt, ticket.updatedAt);
       })
-      .filter(time => time > 0);
-
+      .filter((time: any) => time > 0); // Filter out negative times
+    
     if (resolutionTimes.length === 0) {
-      return { days: 0, hours: 0 };
+      // If no resolved tickets, check for any tickets that might be resolved
+      const allTickets = await prisma.ticket.findMany({
+        where: {
+          customer: {
+            serviceZoneId: zoneId
+          }
+        },
+        select: {
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+      
+      const allResolutionTimes = allTickets
+        .map((ticket: any) => {
+          return calculateBusinessHoursInMinutes(ticket.createdAt, ticket.updatedAt);
+        })
+        .filter((time: any) => time > 0);
+      
+      if (allResolutionTimes.length === 0) {
+        return { days: 0, hours: 0, change: 0, isPositive: true };
+      }
+      
+      const avgMinutes = allResolutionTimes.reduce((sum, time) => sum + time, 0) / allResolutionTimes.length;
+      const businessHoursPerDay = 8.5 * 60; // 510 minutes per business day (8.5 hours)
+      const days = Math.floor(avgMinutes / businessHoursPerDay);
+      const remainingMinutes = avgMinutes % businessHoursPerDay;
+      const hours = remainingMinutes / 60;
+      
+      return { days, hours: Math.round(hours * 10) / 10, change: 0, isPositive: true };
     }
-
+    
     const avgMinutes = resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length;
-    const businessHoursPerDay = 8 * 60; // 480 minutes per business day
+    const businessHoursPerDay = 8.5 * 60; // 510 minutes per business day (8.5 hours)
     const days = Math.floor(avgMinutes / businessHoursPerDay);
     const remainingMinutes = avgMinutes % businessHoursPerDay;
-    // Keep decimal hours for proper display of sub-hour values (e.g., 0.25h = 15 minutes)
-    const hours = Math.round((remainingMinutes / 60) * 10) / 10;
-
-    return { days, hours };
+    const hours = remainingMinutes / 60;
+    
+    return { days, hours: Math.round(hours * 10) / 10, change: 0, isPositive: true };
   } catch (error) {
-    return { days: 0, hours: 0 };
+    return { days: 0, hours: 0, change: 0, isPositive: true };
   }
 }
 
-async function calculateAverageDowntime(zoneId: number): Promise<{ hours: number; minutes: number }> {
+async function calculateAverageDowntime(zoneId: number): Promise<{ hours: number; minutes: number; change: number; isPositive: boolean }> {
   try {
-    // Calculate machine downtime: time from OPEN to CLOSED for tickets that were PENDING
-    // This represents the time machines were down waiting for resolution
-    const result = await prisma.$queryRaw<Array<{ avg_downtime: number | null }>>`
-      SELECT AVG(EXTRACT(EPOCH FROM (sh_closed."changedAt" - t."createdAt")) / 60) as avg_downtime
-      FROM "Ticket" t
-      JOIN "Customer" c ON t."customerId" = c.id
-      JOIN "TicketStatusHistory" sh_closed ON t.id = sh_closed."ticketId"
-      WHERE c."serviceZoneId" = ${zoneId}
-      AND sh_closed.status = 'CLOSED'
-      AND t."createdAt" >= NOW() - INTERVAL '30 days'
-      AND sh_closed."changedAt" IS NOT NULL
-      AND EXISTS (
-        SELECT 1 FROM "TicketStatusHistory" sh_pending 
-        WHERE sh_pending."ticketId" = t.id 
-        AND sh_pending.status IN ('OPEN', 'PENDING', 'IN_PROGRESS')
-        AND sh_pending."changedAt" < sh_closed."changedAt"
-      )
-    `;
+    // Calculate machine downtime using status history (ticket open to CLOSED_PENDING/RESOLVED/CLOSED)
+    // Find tickets that reached CLOSED_PENDING status in the period
+    const closedStatusHistory = await prisma.ticketStatusHistory.findMany({
+      where: {
+        status: {
+          in: ['CLOSED_PENDING', 'RESOLVED', 'CLOSED']
+        },
+        ticket: {
+          customer: {
+            serviceZoneId: zoneId
+          }
+        }
+      },
+      include: {
+        ticket: {
+          select: {
+            createdAt: true,
+            id: true
+          }
+        }
+      },
+      orderBy: {
+        changedAt: 'asc'
+      }
+    });
     
-    let avgMinutes = result[0]?.avg_downtime || 0;
-    
-    // If no data with PENDING status, fallback to all OPEN to CLOSED tickets
-    if (avgMinutes === 0) {
-      const fallbackResult = await prisma.$queryRaw<Array<{ avg_downtime: number | null }>>`
-        SELECT AVG(EXTRACT(EPOCH FROM (sh."changedAt" - t."createdAt")) / 60) as avg_downtime
-        FROM "Ticket" t
-        JOIN "Customer" c ON t."customerId" = c.id
-        JOIN "TicketStatusHistory" sh ON t.id = sh."ticketId"
-        WHERE c."serviceZoneId" = ${zoneId}
-        AND sh.status = 'CLOSED'
-        AND t."createdAt" >= NOW() - INTERVAL '30 days'
-        AND sh."changedAt" IS NOT NULL
-      `;
-      avgMinutes = fallbackResult[0]?.avg_downtime || 0;
+    if (closedStatusHistory.length === 0) {
+      // If no closed tickets, calculate based on currently open tickets
+      const openTickets = await prisma.ticket.findMany({
+        where: {
+          customer: {
+            serviceZoneId: zoneId
+          },
+          status: {
+            in: ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ONSITE_VISIT', 'WAITING_CUSTOMER']
+          }
+        },
+        select: {
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+      
+      if (openTickets.length > 0) {
+        // Use current age of open tickets as downtime (business hours)
+        const now = new Date();
+        const avgDowntime = openTickets.reduce((sum: any, ticket: any) => {
+          return sum + calculateBusinessHoursInMinutes(ticket.createdAt, now);
+        }, 0) / openTickets.length;
+        
+        const hours = Math.floor(avgDowntime / 60);
+        const minutes = Math.round(avgDowntime % 60);
+        const isPositive = avgDowntime < 240; // Less than 4 hours is positive
+        
+        return { hours, minutes, change: 0, isPositive };
+      }
+      
+      return { hours: 0, minutes: 0, change: 0, isPositive: true };
     }
     
-    return {
-      hours: Math.floor(avgMinutes / 60),
-      minutes: Math.round(avgMinutes % 60)
-    };
+    // Group by ticket ID and find first closure time for each ticket
+    const ticketClosureTimes = new Map<number, Date>();
+    closedStatusHistory.forEach(history => {
+      if (!ticketClosureTimes.has(history.ticketId)) {
+        ticketClosureTimes.set(history.ticketId, history.changedAt);
+      }
+    });
+    
+    // Calculate downtime for each ticket (creation to first closure)
+    const downtimes = Array.from(ticketClosureTimes.entries()).map(([ticketId, closedAt]) => {
+      const ticket = closedStatusHistory.find(h => h.ticketId === ticketId)?.ticket;
+      if (!ticket) return 0;
+      return calculateBusinessHoursInMinutes(ticket.createdAt, closedAt);
+    }).filter((time: number) => time > 0);
+    
+    if (downtimes.length === 0) {
+      return { hours: 0, minutes: 0, change: 0, isPositive: true };
+    }
+    
+    const averageMinutes = downtimes.reduce((sum: number, time: number) => sum + time, 0) / downtimes.length;
+    
+    // Convert to hours and minutes
+    const hours = Math.floor(averageMinutes / 60);
+    const minutes = Math.round(averageMinutes % 60);
+    
+    const isPositive = averageMinutes < 240; // Positive if less than 4 hours
+    
+    return { hours, minutes, change: 0, isPositive };
   } catch (error) {
-    return { hours: 0, minutes: 0 };
+    return { hours: 0, minutes: 0, change: 0, isPositive: true };
   }
 }
 
@@ -302,32 +371,77 @@ async function calculateTechnicianEfficiency(zoneId: number): Promise<number> {
   }
 }
 
-async function calculateAverageTravelTime(zoneId: number): Promise<number> {
+async function calculateAverageTravelTime(zoneId: number): Promise<{ hours: number; minutes: number; change: number; isPositive: boolean }> {
   try {
-    // Calculate travel time from STARTED to REACHED events in onsite visit logs
-    const result = await prisma.$queryRaw<Array<{ avg_travel_time: number | null }>>`
-      SELECT AVG(EXTRACT(EPOCH FROM (reached."createdAt" - started."createdAt")) / 60) as avg_travel_time
-      FROM "OnsiteVisitLog" started
-      JOIN "OnsiteVisitLog" reached ON started."ticketId" = reached."ticketId" 
-        AND started."userId" = reached."userId"
-      JOIN "Ticket" t ON started."ticketId" = t.id
-      JOIN "Customer" c ON t."customerId" = c.id
-      WHERE c."serviceZoneId" = ${zoneId}
-      AND started.event = 'STARTED'
-      AND reached.event = 'REACHED'
-      AND reached."createdAt" > started."createdAt"
-      AND started."createdAt" >= NOW() - INTERVAL '30 days'
-    `;
-    
-    const avgMinutes = Number(result[0]?.avg_travel_time) || 0;
-    
-    // If no onsite visit data, return 0 (no meaningful fallback for travel time)
-    if (avgMinutes === 0) {
+    // Get all tickets for this zone (no date filter on createdAt - match admin dashboard logic)
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        customer: {
+          serviceZoneId: zoneId
+        }
+      },
+      include: {
+        statusHistory: {
+          orderBy: {
+            changedAt: 'asc',
+          },
+        },
+      },
+    });
+
+    const travelTimes: number[] = [];
+
+    for (const ticket of tickets) {
+      const statusHistory = ticket.statusHistory;
+      if (statusHistory.length > 0) {
+        // Travel time: ONSITE_VISIT_STARTED to ONSITE_VISIT_REACHED + ONSITE_VISIT_RESOLVED to ONSITE_VISIT_COMPLETED
+        const goingStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_STARTED');
+        const goingEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_REACHED');
+        const returnStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_RESOLVED');
+        const returnEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_COMPLETED');
+
+        let ticketTravelTime = 0;
+        
+        // Going travel time
+        if (goingStart && goingEnd && goingStart.changedAt < goingEnd.changedAt) {
+          ticketTravelTime += differenceInMinutes(goingEnd.changedAt, goingStart.changedAt);
+        }
+        
+        // Return travel time
+        if (returnStart && returnEnd && returnStart.changedAt < returnEnd.changedAt) {
+          ticketTravelTime += differenceInMinutes(returnEnd.changedAt, returnStart.changedAt);
+        }
+        
+        if (ticketTravelTime > 0) {
+          travelTimes.push(ticketTravelTime);
+        }
+      }
     }
+
+    if (travelTimes.length === 0) {
+      return {
+        hours: 0,
+        minutes: 0,
+        change: 0,
+        isPositive: true
+      };
+    }
+
+    const avgMinutes = travelTimes.reduce((sum, time) => sum + time, 0) / travelTimes.length;
     
-    return avgMinutes;
+    return {
+      hours: Math.floor(avgMinutes / 60),
+      minutes: Math.round(avgMinutes % 60),
+      change: 0,
+      isPositive: true
+    };
   } catch (error) {
-    return 0;
+    return {
+      hours: 0,
+      minutes: 0,
+      change: 0,
+      isPositive: true
+    };
   }
 }
 
@@ -686,21 +800,27 @@ export const getZoneDashboardData = async (req: Request, res: Response) => {
         avgResponseTime: { 
           hours: avgResponseTime.hours, 
           minutes: avgResponseTime.minutes, 
-          change: 0, 
-          isPositive: true 
+          change: avgResponseTime.change || 0, 
+          isPositive: avgResponseTime.isPositive ?? true 
         },
         avgResolutionTime: { 
           days: avgResolutionTime.days, 
           hours: avgResolutionTime.hours, 
           minutes: 0,
-          change: 0, 
-          isPositive: true 
+          change: avgResolutionTime.change || 0, 
+          isPositive: avgResolutionTime.isPositive ?? true 
         },
         avgDowntime: { 
           hours: avgDowntime.hours, 
           minutes: avgDowntime.minutes, 
-          change: 0, 
-          isPositive: true 
+          change: avgDowntime.change || 0, 
+          isPositive: avgDowntime.isPositive ?? true 
+        },
+        avgTravelTime: { 
+          hours: avgTravelTime.hours, 
+          minutes: avgTravelTime.minutes, 
+          change: avgTravelTime.change || 0, 
+          isPositive: avgTravelTime.isPositive ?? true 
         },
         monthlyTickets: { count: resolvedTickets.length, change: 0 },
         activeMachines: { 
@@ -718,7 +838,8 @@ export const getZoneDashboardData = async (req: Request, res: Response) => {
         inProgressTickets: Number(inProgressTickets) || 0,
         resolvedTickets: Number(resolvedTickets.length) || 0,
         technicianEfficiency: Number(technicianEfficiency) || 0,
-        avgTravelTime: Number(avgTravelTime) || 0,
+        avgTravelTime: Number(avgTravelTime.hours * 60 + avgTravelTime.minutes) || 0, // Total minutes
+        avgDowntime: Number(avgDowntime.hours * 60 + avgDowntime.minutes) || 0, // Total minutes
         partsAvailability: Number(partsAvailability) || 0,
         equipmentUptime: Number(equipmentUptime) || 0,
         firstCallResolutionRate: Number(firstCallResolutionRate) || 0,
@@ -793,7 +914,7 @@ export const getFSAData = async (req: Request, res: Response) => {
         return 0;
       }),
       calculateAverageTravelTime(zoneId).catch(e => {
-        return 0;
+        return { hours: 0, minutes: 0, change: 0, isPositive: true };
       }),
       calculatePartsAvailability(zoneId).catch(e => {
         return 0;
@@ -815,7 +936,7 @@ export const getFSAData = async (req: Request, res: Response) => {
     const responseData = {
       kpis: {
         efficiency: Math.round(efficiency * 10) / 10, // 1 decimal place
-        travelTime: Math.round(travelTime * 10) / 10,
+        travelTime: Math.round((travelTime.hours * 60 + travelTime.minutes) * 10) / 10,
         partsAvailability: Math.round(partsAvailability * 10) / 10,
         firstCallResolution: Math.round(firstCallResolution * 10) / 10,
       },

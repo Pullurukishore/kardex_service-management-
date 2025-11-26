@@ -2,12 +2,11 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { PrismaClient, User, UserRole } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { JWT_CONFIG, REFRESH_TOKEN_CONFIG, generateRefreshToken, verifyRefreshToken } from '../config/auth';
 import { sendEmail } from '../utils/email';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 // Type for user data that's safe to return to the client
 type SafeUser = {

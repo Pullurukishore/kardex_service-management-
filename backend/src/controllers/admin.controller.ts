@@ -1,10 +1,9 @@
 import { Response } from 'express';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 // Get all users with optional role filter
 export const getUsers = async (req: AuthenticatedRequest, res: Response) => {

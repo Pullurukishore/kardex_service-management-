@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { format as formatDate, subDays, eachDayOfInterval, startOfDay, endOfDay, differenceInMinutes } from 'date-fns';
 import { generatePdf, getPdfColumns } from '../utils/pdfGenerator';
 import { AuthUser } from '../types/express';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 interface ServicePersonReport {
   id: number;

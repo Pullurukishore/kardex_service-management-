@@ -2,38 +2,33 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    // Enable new CSS features
-    optimizeCss: true,
-    // Enable server actions
-    serverActions: true,
-    // Enable modern bundling
-    esmExternals: true,
-  },
-  // Performance optimizations
+  // Performance optimizations for development
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
   
   // Webpack configuration for performance
   webpack: (config, { isServer, dev }) => {
-    // Remove console logs in production
-    if (!dev) {
-      config.optimization.minimizer = config.optimization.minimizer || [];
-      const TerserPlugin = require('terser-webpack-plugin');
-      config.optimization.minimizer.push(
-        new TerserPlugin({
-          terserOptions: {
-            compress: {
-              drop_console: process.env.NEXT_PUBLIC_ENABLE_LOGS !== 'true',
-            },
-          },
-        })
-      );
+    // Skip complex optimizations in development
+    if (dev) {
+      return config;
     }
 
-    // Advanced code splitting for better performance
-    if (!isServer && !dev) {
+    // Remove console logs in production only
+    config.optimization.minimizer = config.optimization.minimizer || [];
+    const TerserPlugin = require('terser-webpack-plugin');
+    config.optimization.minimizer.push(
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: process.env.NEXT_PUBLIC_ENABLE_LOGS !== 'true',
+          },
+        },
+      })
+    );
+
+    // Advanced code splitting for better performance (PRODUCTION ONLY)
+    if (!isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
@@ -97,6 +92,7 @@ const nextConfig = {
 
     return config;
   },
+  
   // Enable CSS source maps in development
   productionBrowserSourceMaps: process.env.NODE_ENV === 'development',
   // Enable styled-components support
@@ -121,39 +117,40 @@ const nextConfig = {
     minimumCacheTTL: 60,
     unoptimized: process.env.NEXT_EXPORT === 'true',
   },
+  
   // Enable TypeScript checking
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: false,
   },
+  
   // Enable ESLint checking
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: false,
   },
   
-  // Add headers for Google Fonts optimization
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Link',
-            value: '<https://fonts.googleapis.com>; rel=preconnect; crossorigin',
-          },
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-        ],
-      },
-    ];
+  // Development optimizations
+  devIndicators: {
+    buildActivityPosition: 'bottom-right',
   },
+  
+  // Add headers for Google Fonts optimization (disabled since we use system fonts)
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/:path*',
+  //       headers: [
+  //         {
+  //           key: 'Link',
+  //           value: '<https://fonts.googleapis.com>; rel=preconnect; crossorigin',
+  //         },
+  //         {
+  //           key: 'X-DNS-Prefetch-Control',
+  //           value: 'on',
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // },
 }
 
 module.exports = nextConfig

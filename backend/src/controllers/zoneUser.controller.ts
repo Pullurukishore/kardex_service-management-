@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 import prisma from '../config/db';
 import { AuthUser } from '../types/express';
@@ -325,7 +324,6 @@ export const deleteZoneUser = async (req: Request, res: Response) => {
 
 export const createZoneUserWithZones = async (req: Request, res: Response) => {
   const { name, email, phone, password, serviceZoneIds, isActive = true } = req.body;
-  const prisma = new PrismaClient();
 
   try {
     // Hash the password before saving

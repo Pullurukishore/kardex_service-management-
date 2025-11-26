@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { EnhancedPhotoStorageService } from '../services/enhanced-photo-storage.service';
 import { authenticate } from '../middleware/auth.middleware';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 const router = Router();
 

@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 export class CronService {
   private static instance: CronService;

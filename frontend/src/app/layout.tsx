@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Fira_Code } from "next/font/google";
 import { Toaster } from "sonner";
 import dynamic from 'next/dynamic';
 import AuthProvider from "@/contexts/AuthContext";
@@ -13,22 +12,6 @@ const ErrorBoundary = dynamic(
   () => import('@/components/ErrorBoundary'),
   { ssr: false }
 );
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
-  adjustFontFallback: true,
-});
-
-const firaCode = Fira_Code({
-  variable: "--font-fira-code",
-  subsets: ["latin"],
-  display: "swap",
-  fallback: ["Courier New", "Courier", "monospace"],
-  adjustFontFallback: true,
-});
 
 export const metadata: Metadata = {
   title: "Kardex Ticket Management",
@@ -52,13 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${firaCode.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-      </head>
-      <body className={inter.className}>
+    <html lang="en">
+      <body className="font-sans antialiased">
         <ErrorBoundary>
           <AuthProvider>
             <QueryProvider>

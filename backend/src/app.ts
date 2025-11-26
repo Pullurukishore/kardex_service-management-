@@ -3,6 +3,7 @@ import path from 'path';
 import http from 'http';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 import { WebSocket as BaseWebSocket, WebSocketServer } from 'ws';
 import { Request, Response, NextFunction } from 'express-serve-static-core';
 import customerRoutes from './routes/customer.routes';
@@ -147,6 +148,17 @@ app.use(cookieParser());
 
 // Ensure storage directories exist and serve storage files with CORS headers
 initializeStorage();
+
+// Global rate limiting for 50 users
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1500, // Limit each IP to 1500 requests per window
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(globalLimiter);
 // Use storageConfig.root to keep serving path consistent with where files are saved
 const storagePath = storageConfig.root;
 app.use('/storage', (req, res, next) => {

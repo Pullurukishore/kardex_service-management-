@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { GeocodingService } from '../services/geocoding.service';
 import { LocalPhotoStorageService } from '../services/local-photo-storage.service';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 // Simple validation functions (replacing zod for now)
 function validateCreateActivity(data: any) {

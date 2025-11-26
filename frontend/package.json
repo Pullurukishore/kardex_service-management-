@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev-optimization.js && next dev",
+    "dev:fast": "next dev --turbo",
+    "dev:prod": "npm run build && npm run dev",
     "build": "next build",
     "build:standalone": "BUILD_STANDALONE=true next build",
     "build:export": "NEXT_EXPORT=true next build && next export",

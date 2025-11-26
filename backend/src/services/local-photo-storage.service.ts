@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 import { storageConfig, initializeStorage } from '../config/storage.config';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 export interface PhotoData {
   filename: string;

@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { GeocodingService } from '../services/geocoding.service';
 import { Parser } from 'json2csv';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 export const zoneAttendanceController = {
   // Get all attendance records for the current zone with comprehensive filtering

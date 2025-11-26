@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { GeocodingService } from '../services/geocoding.service';
 import { AuthUser } from '../types/express';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 // Enhanced validation functions with coordinate range checks
 const validateCheckIn = (data: any) => {

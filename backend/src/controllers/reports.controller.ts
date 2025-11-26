@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { format, subDays, eachDayOfInterval, differenceInMinutes, getDay, setHours, setMinutes, setSeconds, setMilliseconds, addDays, startOfDay } from 'date-fns';
 import { generatePdf, getPdfColumns } from '../utils/pdfGenerator';
 import { generateExcel, getExcelColumns } from '../utils/excelGenerator';
+import prisma from '../config/db';
 
 // Define enums since they're not exported from Prisma client
 enum TicketStatus {
@@ -71,9 +71,9 @@ type IndustrialZoneData = {
   machineDowntime: any[];
   detailedDowntime: any[];
   summary: any;
+  zoneName: string;
+  zoneId: number;
 };
-
-const prisma = new PrismaClient();
 
 // Helper function to calculate business hours between two dates (9 AM to 5 PM, excluding Sundays)
 function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number {
@@ -1277,6 +1277,8 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
   
   // Prepare response
   const response: IndustrialZoneData = {
+    zoneName: whereClause?.zoneId ? `Zone ${whereClause.zoneId}` : 'All Zones',
+    zoneId: whereClause?.zoneId ? parseInt(whereClause.zoneId) : 0,
     zoneUsers: zoneUsers.map((user: any) => ({
       id: user.id,
       name: user.name || user.email,
@@ -2179,6 +2181,8 @@ async function getIndustrialDataData(whereClause: any, startDate: Date, endDate:
   }));
 
   return {
+    zoneName: whereClause?.zoneId ? `Zone ${whereClause.zoneId}` : 'All Zones',
+    zoneId: whereClause?.zoneId ? parseInt(whereClause.zoneId) : 0,
     zoneUsers: zoneUsers.map((user: any) => ({
       id: user.id,
       name: user.name,
