@@ -254,6 +254,90 @@ export const generateExcel = async (
         currentRow++;
 
         // ==================================================
+        // SUMMARY STATISTICS SECTION (if summaryData provided)
+        // ==================================================
+        if (summaryData && Object.keys(summaryData).length > 0) {
+            // Summary section title
+            worksheet.mergeCells(`A${currentRow}:D${currentRow}`);
+            const summaryTitle = worksheet.getCell(`A${currentRow}`);
+            summaryTitle.value = '📊 SUMMARY STATISTICS';
+            summaryTitle.font = { size: 12, bold: true, color: { argb: COLORS.titleText } };
+            summaryTitle.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: COLORS.titleBg }
+            };
+            summaryTitle.alignment = { horizontal: 'left', vertical: 'middle' };
+            summaryTitle.border = {
+                bottom: { style: 'medium', color: { argb: COLORS.brandSecondary } }
+            };
+            worksheet.getRow(currentRow).height = 24;
+            currentRow++;
+
+            // Create summary metrics grid (2 columns layout)
+            const summaryMetrics: Array<{ label: string; value: string | number; color?: string }> = [];
+
+            // Add ticket-specific summary metrics
+            if (summaryData.totalTickets !== undefined) {
+                summaryMetrics.push({ label: 'Total Tickets', value: summaryData.totalTickets, color: COLORS.brandPrimary });
+            }
+            if (summaryData.resolvedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Resolved Tickets', value: summaryData.resolvedTickets, color: COLORS.success });
+            }
+            if (summaryData.openTickets !== undefined) {
+                summaryMetrics.push({ label: 'Open Tickets', value: summaryData.openTickets, color: COLORS.warning });
+            }
+            if (summaryData.closedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Closed Tickets', value: summaryData.closedTickets, color: COLORS.textMedium });
+            }
+            if (summaryData.inProgressTickets !== undefined) {
+                summaryMetrics.push({ label: 'In Progress', value: summaryData.inProgressTickets, color: COLORS.info });
+            }
+            if (summaryData.escalatedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Escalated Tickets', value: summaryData.escalatedTickets, color: COLORS.danger });
+            }
+            if (summaryData.averageResolutionTime !== undefined) {
+                const hours = Math.floor(summaryData.averageResolutionTime / 60);
+                const mins = Math.round(summaryData.averageResolutionTime % 60);
+                const timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+                summaryMetrics.push({ label: 'Avg Resolution Time', value: timeStr, color: COLORS.brandSecondary });
+            }
+
+            // Add generic summary metrics (for any type of report)
+            Object.entries(summaryData).forEach(([key, value]) => {
+                if (!['totalTickets', 'resolvedTickets', 'openTickets', 'closedTickets', 'inProgressTickets', 'escalatedTickets', 'averageResolutionTime'].includes(key)) {
+                    const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    if (typeof value === 'number' || typeof value === 'string') {
+                        summaryMetrics.push({ label, value: value as string | number });
+                    }
+                }
+            });
+
+            // Render summary metrics in a grid (2 per row)
+            for (let i = 0; i < summaryMetrics.length; i += 2) {
+                const metric1 = summaryMetrics[i];
+                const metric2 = summaryMetrics[i + 1];
+
+                // First metric
+                worksheet.getCell(`A${currentRow}`).value = metric1.label + ':';
+                worksheet.getCell(`A${currentRow}`).font = { size: 10, bold: true, color: { argb: COLORS.textMedium } };
+                worksheet.getCell(`B${currentRow}`).value = metric1.value;
+                worksheet.getCell(`B${currentRow}`).font = { size: 11, bold: true, color: { argb: metric1.color || COLORS.textDark } };
+
+                // Second metric (if exists)
+                if (metric2) {
+                    worksheet.getCell(`C${currentRow}`).value = metric2.label + ':';
+                    worksheet.getCell(`C${currentRow}`).font = { size: 10, bold: true, color: { argb: COLORS.textMedium } };
+                    worksheet.getCell(`D${currentRow}`).value = metric2.value;
+                    worksheet.getCell(`D${currentRow}`).font = { size: 11, bold: true, color: { argb: metric2.color || COLORS.textDark } };
+                }
+
+                currentRow++;
+            }
+            currentRow++;
+        }
+
+        // ==================================================
         // DATA TABLE SECTION
         // ==================================================
 
@@ -457,20 +541,28 @@ export const getExcelColumns = (reportType: string): ColumnDefinition[] => {
             { key: 'updatedAt', header: 'Updated', width: 12, dataType: 'date' },
         ],
         'ticket-summary': [
+            { key: 'ticketNumber', header: 'Ticket #', width: 10 },
             { key: 'customer.companyName', header: 'Company Name', width: 22 },
-            { key: 'asset.location', header: 'Place', width: 16 },
-            { key: 'id', header: 'Ticket ID', width: 10, dataType: 'number' },
-            { key: 'createdAt', header: 'Date', width: 12, dataType: 'date' },
-            { key: 'asset.serialNo', header: 'Machine S/N', width: 16 },
+            { key: 'customer.address', header: 'Customer Address', width: 20 },
+            { key: 'createdAt', header: 'Created Date', width: 12, dataType: 'date' },
+            { key: 'asset.serialNo', header: 'Serial Number', width: 16 },
+            { key: 'asset.model', header: 'Model', width: 14 },
             { key: 'callType', header: 'Call Type', width: 14 },
-            { key: 'description', header: 'Error/Issue', width: 28 },
-            { key: 'assignedTo.name', header: 'Responsible', width: 16 },
+            { key: 'priority', header: 'Priority', width: 10 },
+            { key: 'title', header: 'Title', width: 22 },
+            { key: 'description', header: 'Issue/Error', width: 28 },
+            { key: 'contact.name', header: 'Contact Person', width: 16 },
+            { key: 'contact.phone', header: 'Contact Phone', width: 14 },
+            { key: 'assignedTo.name', header: 'Assigned To', width: 16 },
             { key: 'zone.name', header: 'Zone', width: 10 },
-            { key: 'visitPlannedDate', header: 'Scheduled', width: 12, dataType: 'date' },
-            { key: 'visitCompletedDate', header: 'Closed', width: 12, dataType: 'date' },
-            { key: 'travelTime', header: 'Travel', width: 10, dataType: 'duration' },
-            { key: 'onsiteWorkingTime', header: 'Onsite', width: 10, dataType: 'duration' },
-            { key: 'actualResolutionTime', header: 'Res Time', width: 12, dataType: 'duration' },
+            { key: 'visitPlannedDate', header: 'Scheduled Date', width: 12, dataType: 'date' },
+            { key: 'visitStartedAt', header: 'Visit Started', width: 12, dataType: 'date' },
+            { key: 'visitReachedAt', header: 'Visit Reached', width: 12, dataType: 'date' },
+            { key: 'visitResolvedAt', header: 'Visit Resolved', width: 12, dataType: 'date' },
+            { key: 'visitCompletedDate', header: 'Completed Date', width: 12, dataType: 'date' },
+            { key: 'travelTime', header: 'Travel Time', width: 12, dataType: 'duration' },
+            { key: 'onsiteWorkingTime', header: 'Onsite Time', width: 12, dataType: 'duration' },
+            { key: 'totalResolutionTime', header: 'Resolution Time', width: 14, dataType: 'duration' },
             { key: 'status', header: 'Status', width: 12 },
         ],
         'target-report': [

@@ -3,6 +3,7 @@ export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface Ticket {
   id: string;
+  ticketNumber?: number;
   subject: string;
   description: string;
   status: TicketStatus;

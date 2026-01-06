@@ -89,8 +89,11 @@ const SelectContent = React.forwardRef<
             'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
         )}
         style={{
-          maxHeight: 'min(300px, var(--radix-select-content-available-height))',
+          maxHeight: 'min(400px, var(--radix-select-content-available-height))',
           overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(100, 116, 139, 0.3) transparent',
         }}
       >
         {children}

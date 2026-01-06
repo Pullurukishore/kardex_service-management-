@@ -278,33 +278,35 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
                 </Button>
               </a>
               
-              {/* New Offer Button */}
-              <a href={getNewOfferUrl()}>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "relative overflow-hidden rounded-xl px-4 py-2.5 h-11",
-                    "bg-gradient-to-r from-[#aac01d] to-[#96b216]",
-                    "hover:from-[#96b216] hover:to-[#82a010]",
-                    "text-white font-semibold text-sm",
-                    "shadow-lg shadow-[#aac01d]/25 hover:shadow-xl hover:shadow-[#aac01d]/30",
-                    "transition-all duration-300",
-                    "hover:scale-105 active:scale-95",
-                    "border border-white/10",
-                    "group"
-                  )}
-                >
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  
-                  <span className="relative flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>New Offer</span>
-                  </span>
-                </Button>
-              </a>
+              {/* New Offer Button - Hidden for External Users */}
+              {user?.role !== UserRole.EXTERNAL_USER && (
+                <a href={getNewOfferUrl()}>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "relative overflow-hidden rounded-xl px-4 py-2.5 h-11",
+                      "bg-gradient-to-r from-[#aac01d] to-[#96b216]",
+                      "hover:from-[#96b216] hover:to-[#82a010]",
+                      "text-white font-semibold text-sm",
+                      "shadow-lg shadow-[#aac01d]/25 hover:shadow-xl hover:shadow-[#aac01d]/30",
+                      "transition-all duration-300",
+                      "hover:scale-105 active:scale-95",
+                      "border border-white/10",
+                      "group"
+                    )}
+                  >
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    
+                    <span className="relative flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>New Offer</span>
+                    </span>
+                  </Button>
+                </a>
+              )}
             </div>
           )}
 

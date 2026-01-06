@@ -626,7 +626,6 @@ export default function EditOfferPage() {
                                  sp.partNumber.toLowerCase().includes(search) ||
                                  sp.category?.toLowerCase().includes(search)
                         })
-                        .slice(0, 50)
                         .map(sp => (
                           <SelectItem key={sp.id} value={sp.id.toString()}>
                             <div className="flex items-center gap-2">
@@ -787,16 +786,19 @@ export default function EditOfferPage() {
                     <Target className="h-3.5 w-3.5 text-purple-500" />
                     Win Probability (%)
                   </Label>
-                  <Input
-                    id="probabilityPercentage"
-                    type="number"
-                    min="0"
-                    max="100"
+                  <Select
                     value={formData.probabilityPercentage}
-                    onChange={(e) => handleInputChange('probabilityPercentage', e.target.value)}
-                    placeholder="0-100"
-                    className="h-10 border-gray-200 focus:border-emerald-400"
-                  />
+                    onValueChange={(value) => handleInputChange('probabilityPercentage', value)}
+                  >
+                    <SelectTrigger className="h-10 border-gray-200 focus:border-emerald-400">
+                      <SelectValue placeholder="Select probability" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+                        <SelectItem key={value} value={value.toString()}>{value}%</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">

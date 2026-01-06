@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { query } from 'express-validator';
-import { getDashboardData, getStatusDistribution, getTicketTrendsData } from '../controllers/dashboard.controller';
+import { getDashboardData, getStatusDistribution, getTicketTrendsData, getTeamMembers } from '../controllers/dashboard.controller';
 import { exportDashboardReport } from '../controllers/export.controller';
 import { authenticate, requireRole } from '../middleware/auth.middleware';
 import { validateRequest } from '../middleware/validate-request';
@@ -35,6 +35,14 @@ router.get(
   ],
   requireRole(['ADMIN', 'SERVICE_PERSON', 'ZONE_MANAGER', 'ZONE_USER', 'EXPERT_HELPDESK']),
   getTicketTrendsData
+);
+
+// Get team members (zone users and service technicians) - ADMIN only
+router.get(
+  '/team-members',
+  validateRequest,
+  requireRole(['ADMIN']),
+  getTeamMembers
 );
 
 // Export dashboard data as Excel (kept for admin functionality)

@@ -198,12 +198,12 @@ export interface ReportType {
 }
 
 export interface Zone {
-  id: string;
+  id: number;
   name: string;
 }
 
 export interface Customer {
-  id: string;
+  id: number;
   companyName: string;
 }
 
@@ -216,37 +216,31 @@ export interface Asset {
 }
 
 export const REPORT_TYPES: ReportType[] = [
-  { 
-    value: 'ticket-summary', 
-    label: 'Ticket Analytics Report', 
+  {
+    value: 'ticket-summary',
+    label: 'Ticket Analytics Report',
     description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
     icon: 'BarChart3',
     color: 'from-blue-500 to-blue-600'
   },
-  { 
-    value: 'customer-satisfaction', 
-    label: 'Customer Experience Report', 
-    description: 'Customer satisfaction ratings, feedback analysis, and experience metrics',
-    icon: 'Star',
-    color: 'from-amber-500 to-amber-600'
-  },
-  { 
-    value: 'industrial-data', 
-    label: 'Machine Reports', 
+
+  {
+    value: 'industrial-data',
+    label: 'Machine Reports',
     description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
     icon: 'Settings',
     color: 'from-green-500 to-green-600'
   },
-  { 
-    value: 'zone-performance', 
-    label: 'Zone Performance Report', 
+  {
+    value: 'zone-performance',
+    label: 'Zone Performance Report',
     description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
     color: 'from-purple-500 to-purple-600'
   },
-  { 
-    value: 'service-person-reports', 
-    label: 'Service Person Performance Report', 
+  {
+    value: 'service-person-reports',
+    label: 'Service Person Performance Report',
     description: 'Comprehensive performance analytics for all service persons and zone users including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
     color: 'from-indigo-500 to-indigo-600'
@@ -274,11 +268,11 @@ export const STATUS_COLORS: Record<string, string> = {
   // Initial/Open States
   OPEN: '#3B82F6',                    // Blue
   ASSIGNED: '#8B5CF6',                 // Purple
-  
+
   // In Progress States
   IN_PROCESS: '#F59E0B',               // Amber
   IN_PROGRESS: '#F97316',              // Orange
-  
+
   // Onsite Visit States
   ONSITE_VISIT: '#06B6D4',             // Cyan
   ONSITE_VISIT_PLANNED: '#0891B2',     // Cyan-600
@@ -288,26 +282,26 @@ export const STATUS_COLORS: Record<string, string> = {
   ONSITE_VISIT_RESOLVED: '#0D9488',    // Teal-600
   ONSITE_VISIT_PENDING: '#14B8A6',     // Teal-500
   ONSITE_VISIT_COMPLETED: '#2DD4BF',   // Teal-400
-  
+
   // Waiting/Pending States
   WAITING_CUSTOMER: '#FBBF24',         // Yellow-400
   ON_HOLD: '#FB923C',                  // Orange-400
-  
+
   // Spare Parts States
   SPARE_PARTS_NEEDED: '#A855F7',       // Purple-500
   SPARE_PARTS_BOOKED: '#9333EA',       // Purple-600
   SPARE_PARTS_DELIVERED: '#7C3AED',    // Purple-700
-  
+
   // Purchase Order States
   PO_NEEDED: '#EC4899',                // Pink-500
   PO_RECEIVED: '#DB2777',              // Pink-600
   PO_REACHED: '#BE185D',               // Pink-700
-  
+
   // Resolution States
   RESOLVED: '#10B981',                 // Emerald-500
   CLOSED_PENDING: '#84CC16',           // Lime-500
   CLOSED: '#6B7280',                   // Gray-500
-  
+
   // Issue/Problem States
   ESCALATED: '#EF4444',                // Red-500
   CANCELLED: '#9CA3AF',                // Gray-400

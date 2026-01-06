@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -40,7 +40,7 @@ import {
   RefreshCw,
   Loader2,
   Package,
-  DollarSign,
+
   Tag,
   Image,
   Save,
@@ -66,8 +66,8 @@ export default function SparePartsManagement() {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showBulkPriceDialog, setShowBulkPriceDialog] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
-  const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, pages: 0 })
-  const [pageSize, setPageSize] = useState(100)
+  const [pagination, setPagination] = useState({ page: 1, limit: 1000, total: 0, pages: 0 })
+  const [pageSize, setPageSize] = useState(1000)
   const [showAll, setShowAll] = useState(false)
 
   // Filter states
@@ -95,6 +95,10 @@ export default function SparePartsManagement() {
   const [bulkPriceOperation, setBulkPriceOperation] = useState<'increase' | 'decrease' | 'set'>('increase')
   const [individualPrices, setIndividualPrices] = useState<Record<number, string>>({})
   const [bulkUpdateLoading, setBulkUpdateLoading] = useState(false)
+  
+  // Ref to prevent duplicate API calls
+  const fetchingRef = useRef(false)
+  const initialFetchRef = useRef(false)
 
   // Debounce search term
   useEffect(() => {
@@ -105,11 +109,18 @@ export default function SparePartsManagement() {
   }, [searchTerm])
 
   useEffect(() => {
+    // Prevent multiple simultaneous fetches
+    if (fetchingRef.current) return
+    
     fetchSpareParts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm, selectedStatus, selectedCategory, pagination.page, pageSize, showAll])
 
   const fetchSpareParts = useCallback(async () => {
+    // Prevent duplicate calls
+    if (fetchingRef.current) return
+    fetchingRef.current = true
+    
     setLoading(true)
     try {
       const params: any = {
@@ -130,8 +141,10 @@ export default function SparePartsManagement() {
       setSpareParts([])
     } finally {
       setLoading(false)
+      fetchingRef.current = false
     }
   }, [pagination.page, pageSize, debouncedSearchTerm, selectedStatus, selectedCategory, showAll])
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -465,7 +478,7 @@ export default function SparePartsManagement() {
               className="bg-white/20 hover:bg-white/30 backdrop-blur-xl border border-white/30 text-white px-6 py-6 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg"
               disabled={selectedParts.length === 0}
             >
-              <DollarSign className="w-5 h-5 mr-2" />
+              <span className="w-5 h-5 mr-2 text-lg font-bold">₹</span>
               Bulk Price {selectedParts.length > 0 && `(${selectedParts.length})`}
             </Button>
             <Button onClick={handleCreatePart} className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-6 rounded-xl font-bold transition-all hover:scale-105 shadow-lg">
@@ -635,6 +648,8 @@ export default function SparePartsManagement() {
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
                     <SelectItem value="200">200</SelectItem>
+                    <SelectItem value="500">500</SelectItem>
+                    <SelectItem value="1000">1000</SelectItem>
                     <SelectItem value="9999">✨ Show All</SelectItem>
                   </SelectContent>
                 </Select>
@@ -689,7 +704,7 @@ export default function SparePartsManagement() {
               </div>
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleBulkPriceUpdate} className="bg-blue-600 hover:bg-blue-700 shadow-md">
-                  <DollarSign className="h-4 w-4 mr-1" />
+                  <span className="h-4 w-4 mr-1 text-sm font-bold">₹</span>
                   Update Prices
                 </Button>
                 <Button size="sm" variant="destructive" className="shadow-md">
@@ -823,12 +838,9 @@ export default function SparePartsManagement() {
                   <div className="pt-3 border-t-2 border-gray-100">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-600">Price</span>
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-5 w-5 text-green-600" />
-                        <span className="text-2xl font-bold text-blue-600">
-                          {formatCurrency(Number(part.basePrice))}
-                        </span>
-                      </div>
+                      <span className="text-2xl font-bold text-blue-600">
+                        {formatCurrency(Number(part.basePrice))}
+                      </span>
                     </div>
                   </div>
                   
@@ -987,12 +999,9 @@ export default function SparePartsManagement() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-bold text-gray-900">
-                          {formatCurrency(Number(part.basePrice))}
-                        </span>
-                      </div>
+                      <span className="text-sm font-bold text-gray-900">
+                        {formatCurrency(Number(part.basePrice))}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border-2 shadow-sm ${getStatusColor(part.status)}`}>
@@ -1204,7 +1213,7 @@ export default function SparePartsManagement() {
             {/* Price */}
             <div className="space-y-3">
               <Label htmlFor="basePrice" className="text-base font-bold text-gray-800 flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
+                <span className="h-4 w-4 text-green-600 font-bold">₹</span>
                 Base Price (₹) *
               </Label>
               <div className="relative">
@@ -1353,7 +1362,7 @@ export default function SparePartsManagement() {
             {/* Price */}
             <div className="space-y-3">
               <Label htmlFor="editBasePrice" className="text-base font-bold text-gray-800 flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
+                <span className="h-4 w-4 text-green-600 font-bold">₹</span>
                 Base Price (₹) *
               </Label>
               <div className="relative">
@@ -1420,7 +1429,7 @@ export default function SparePartsManagement() {
           <DialogHeader className="border-b pb-4">
             <DialogTitle className="flex items-center gap-3 text-2xl">
               <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
-                <DollarSign className="h-6 w-6 text-white" />
+                <span className="h-6 w-6 text-white text-xl font-bold">₹</span>
               </div>
               Bulk Price Update
             </DialogTitle>
@@ -1449,7 +1458,7 @@ export default function SparePartsManagement() {
                   onClick={() => setBulkPriceType('fixed')}
                   className="h-20 flex-col gap-2"
                 >
-                  <DollarSign className="h-6 w-6" />
+                  <span className="h-6 w-6 text-xl font-bold">₹</span>
                   <span className="text-sm font-semibold">Fixed Amount</span>
                 </Button>
                 <Button
@@ -1488,7 +1497,7 @@ export default function SparePartsManagement() {
                       </SelectItem>
                       <SelectItem value="set">
                         <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-blue-600" />
+                          <span className="h-4 w-4 text-blue-600 font-bold">₹</span>
                           Set to (Fixed only)
                         </div>
                       </SelectItem>

@@ -87,15 +87,7 @@ const navigation: NavItem[] = [
     iconColor: "text-amber-600",
     iconBgColor: "bg-amber-50"
   },
-  { 
-    title: "Forecast", 
-    href: "/admin/forecast", 
-    icon: TrendingUp, 
-    roles: [UserRole.ADMIN],
-    iconColor: "text-teal-600",
-    iconBgColor: "bg-teal-50"
-  },
-  { 
+    { 
     title: "Reports", 
     href: "/admin/reports", 
     icon: BarChart2, 

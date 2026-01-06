@@ -119,7 +119,7 @@ export async function exportDashboardReport(req: Request, res: Response) {
   try {
     const user = req.user as AuthUser;
     const zoneIds = await getUserZoneIds(user.id);
-    
+
     // Build the filter based on query parameters
     const filter = buildTicketFilterFromQuery(req.query, zoneIds.length ? zoneIds : null);
 
@@ -145,7 +145,7 @@ export async function exportDashboardReport(req: Request, res: Response) {
       const customer = ticket.customer as (Customer & { serviceZone?: ServiceZone | null }) | undefined;
       const assignedTo = ticket.assignedTo as User | undefined;
       const asset = ticket.asset as Asset | undefined;
-      
+
       return {
         'Ticket ID': ticket.id,
         'Title': ticket.title,
@@ -179,11 +179,11 @@ export async function exportDashboardReport(req: Request, res: Response) {
     );
 
     // Send the Excel file
-    return excel.write(workbook, { type: 'buffer', bookType: 'xlsx' }).then((buffer: Buffer) => {
-      res.send(buffer);
-    });
+    const buffer = excel.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    return res.send(buffer);
 
-  } catch (error) {    return res.status(500).json({
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: 'Failed to export report',
       error: error instanceof Error ? error.message : 'Unknown error'

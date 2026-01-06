@@ -186,13 +186,7 @@ export const REPORT_TYPES: ReportType[] = [
     icon: 'BarChart3',
     color: 'from-blue-500 to-blue-600'
   },
-  {
-    value: 'customer-satisfaction',
-    label: 'Customer Experience Report',
-    description: 'Customer satisfaction ratings, feedback analysis, and experience metrics',
-    icon: 'Star',
-    color: 'from-amber-500 to-amber-600'
-  },
+
   {
     value: 'industrial-data',
     label: 'Machine Reports',
@@ -229,27 +223,6 @@ export const REPORT_TYPES: ReportType[] = [
     icon: 'FileText',
     color: 'from-blue-500 to-blue-600',
   },
-  {
-    value: 'target-report',
-    label: 'Target Report',
-    description: 'Complete target performance analysis showing zone targets and user targets with actual performance, achievement rates, and variance analysis',
-    icon: 'Target',
-    color: 'from-orange-500 to-orange-600',
-  },
-  {
-    value: 'product-type-analysis',
-    label: 'Product Type Analysis',
-    description: 'Performance metrics by product type including win rates, revenue, and conversion analysis',
-    icon: 'Package',
-    color: 'from-purple-500 to-purple-600',
-  },
-  {
-    value: 'customer-performance',
-    label: 'Customer Performance',
-    description: 'Customer-wise performance analysis with revenue, win rates, and deal metrics',
-    icon: 'Users',
-    color: 'from-green-500 to-green-600',
-  },
 ];
 
 // Ticket-specific report types (matching backend implementation)
@@ -267,13 +240,6 @@ export const TICKET_REPORT_TYPES: ReportType[] = [
     description: 'SLA compliance analysis with breach rates, response times, and resolution performance metrics',
     icon: 'Clock',
     color: 'from-red-500 to-red-600',
-  },
-  {
-    value: 'customer-satisfaction',
-    label: 'Customer Satisfaction Report',
-    description: 'Customer feedback analysis with ratings, satisfaction trends, and service quality metrics',
-    icon: 'Users',
-    color: 'from-green-500 to-green-600',
   },
   {
     value: 'zone-performance',
@@ -321,26 +287,97 @@ export const SALES_REPORT_TYPES: ReportType[] = [
     icon: 'FileText',
     color: 'from-blue-500 to-blue-600',
   },
+];
+
+// Zone User specific report types - same as REPORT_TYPES but with offer-summary replaced by zone-user-offer-summary
+export const ZONE_USER_REPORT_TYPES: ReportType[] = [
   {
-    value: 'target-report',
-    label: 'Target Report',
-    description: 'Complete target performance analysis showing zone targets and user targets with actual performance, achievement rates, and variance analysis',
+    value: 'ticket-summary',
+    label: 'Ticket Analytics Report',
+    description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
+    icon: 'BarChart3',
+    color: 'from-blue-500 to-blue-600'
+  },
+  {
+    value: 'industrial-data',
+    label: 'Machine Reports',
+    description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
+    icon: 'Settings',
+    color: 'from-green-500 to-green-600'
+  },
+  {
+    value: 'zone-performance',
+    label: 'Zone Performance Report',
+    description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
-    color: 'from-orange-500 to-orange-600',
+    color: 'from-purple-500 to-purple-600'
   },
   {
-    value: 'product-type-analysis',
-    label: 'Product Type Analysis',
-    description: 'Performance metrics by product type including win rates, revenue, and conversion analysis',
-    icon: 'Package',
-    color: 'from-purple-500 to-purple-600',
-  },
-  {
-    value: 'customer-performance',
-    label: 'Customer Performance',
-    description: 'Customer-wise performance analysis with revenue, win rates, and deal metrics',
+    value: 'agent-productivity',
+    label: 'Service Person Performance Report',
+    description: 'Comprehensive performance analytics for all service persons including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
-    color: 'from-green-500 to-green-600',
+    color: 'from-indigo-500 to-indigo-600'
+  },
+  {
+    value: 'sla-performance',
+    label: 'Service Person Attendance Report',
+    description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
+    icon: 'UserCheck',
+    color: 'from-teal-500 to-teal-600'
+  },
+  {
+    value: 'zone-user-offer-summary',
+    label: 'My Offers Summary',
+    description: 'View and analyze all offers you have created or been assigned to. Includes status, stage, value, and performance metrics for your offers only.',
+    icon: 'FileText',
+    color: 'from-indigo-500 to-indigo-600',
+  },
+];
+
+// Zone Manager specific report types - includes offer-summary to see ALL zone offers
+export const ZONE_MANAGER_REPORT_TYPES: ReportType[] = [
+  {
+    value: 'offer-summary',
+    label: 'Zone Offer Summary',
+    description: 'View and analyze ALL offers in your zone. Comprehensive offer analytics with status, stage, value, and performance metrics.',
+    icon: 'FileText',
+    color: 'from-blue-500 to-blue-600',
+  },
+  {
+    value: 'ticket-summary',
+    label: 'Ticket Analytics Report',
+    description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
+    icon: 'BarChart3',
+    color: 'from-blue-500 to-blue-600'
+  },
+  {
+    value: 'industrial-data',
+    label: 'Machine Reports',
+    description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
+    icon: 'Settings',
+    color: 'from-green-500 to-green-600'
+  },
+  {
+    value: 'zone-performance',
+    label: 'Zone Performance Report',
+    description: 'Service zone efficiency, resource utilization, and performance benchmarks',
+    icon: 'Target',
+    color: 'from-purple-500 to-purple-600'
+  },
+  {
+    value: 'agent-productivity',
+    label: 'Service Person Performance Report',
+    description: 'Comprehensive performance analytics for all service persons including productivity, resolution rates, and efficiency metrics',
+    icon: 'Users',
+    color: 'from-indigo-500 to-indigo-600'
+  },
+  {
+    value: 'sla-performance',
+    label: 'Service Person Attendance Report',
+    description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
+    icon: 'UserCheck',
+    color: 'from-teal-500 to-teal-600'
   },
 ];
 

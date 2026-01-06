@@ -13,6 +13,8 @@ interface ExecutiveHeaderProps {
     totalCustomers?: number;
     totalServicePersons?: number;
     totalServiceZones?: number;
+    totalZoneUsers?: number;
+    totalZoneManagers?: number;
   };
 }
 
@@ -55,13 +57,29 @@ export default function ExecutiveHeader({
           </div>
 
           {/* Admin Stats */}
-          {stats && (stats.totalCustomers || stats.totalServicePersons || stats.totalServiceZones) && (
+          {stats && (stats.totalCustomers || stats.totalServicePersons || stats.totalServiceZones || stats.totalZoneUsers || stats.totalZoneManagers) && (
             <div className="flex flex-wrap items-center gap-3 mt-4">
               {stats.totalCustomers !== undefined && (
                 <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 rounded-xl shadow-sm">
                   <Users className="h-4 w-4 text-blue-600" />
                   <span className="font-semibold text-blue-800">
                     {stats.totalCustomers} Customers
+                  </span>
+                </div>
+              )}
+              {stats.totalZoneManagers !== undefined && stats.totalZoneManagers > 0 && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-amber-100 to-amber-200 px-4 py-2 rounded-xl shadow-sm">
+                  <Users className="h-4 w-4 text-amber-600" />
+                  <span className="font-semibold text-amber-800">
+                    {stats.totalZoneManagers} Zone Managers
+                  </span>
+                </div>
+              )}
+              {stats.totalZoneUsers !== undefined && stats.totalZoneUsers > 0 && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-indigo-200 px-4 py-2 rounded-xl shadow-sm">
+                  <Users className="h-4 w-4 text-indigo-600" />
+                  <span className="font-semibold text-indigo-800">
+                    {stats.totalZoneUsers} Zone Users
                   </span>
                 </div>
               )}

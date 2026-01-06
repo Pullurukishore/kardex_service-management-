@@ -1433,24 +1433,27 @@ export default function OfferDetailPage() {
                   />
                 </div>
 
-                {/* Win Probability */}
                 <div className="space-y-2">
                   <Label className="text-sm text-gray-600">
                     Win Probability (%) {updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields && <span className="text-red-500">*</span>}
                   </Label>
-                  <Input 
-                    type="number"
-                    min="1"
-                    max="100"
+                  <Select
                     value={updateData.probabilityPercentage}
-                    onChange={(e) => setUpdateData(prev => ({ ...prev, probabilityPercentage: e.target.value }))}
-                    placeholder="1-100"
-                    className={`h-11 border-2 transition-colors rounded-lg ${
+                    onValueChange={(value) => setUpdateData(prev => ({ ...prev, probabilityPercentage: value }))}
+                  >
+                    <SelectTrigger className={`h-11 border-2 transition-colors rounded-lg ${
                       updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields && !updateData.probabilityPercentage 
                         ? 'border-red-300' 
                         : 'border-gray-200 hover:border-green-300 focus:border-green-500'
-                    }`}
-                  />
+                    }`}>
+                      <SelectValue placeholder="Select probability" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+                        <SelectItem key={value} value={value.toString()}>{value}%</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

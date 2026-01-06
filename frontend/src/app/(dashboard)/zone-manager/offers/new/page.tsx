@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { ArrowLeft, Save, Loader2, Plus, Users, HardDrive, Search, X, Building2, MapPin, FileText, Calendar, DollarSign, Target, MessageSquare, Image } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, Users, HardDrive, Search, X, Building2, MapPin, FileText, Calendar, DollarSign, Target, MessageSquare, Image, Package, TrendingUp, Sparkles } from 'lucide-react'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
 import { useAuth } from '@/contexts/AuthContext'
@@ -61,17 +61,20 @@ export default function NewOfferPage() {
     customer.companyName?.toLowerCase().includes(customerSearch.toLowerCase())
   )
   
-  const filteredContacts = contacts.filter(contact =>
-    contact.contactPersonName?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.contactNumber?.includes(contactSearch)
-  )
+  const filteredContacts = contacts.filter(contact => {
+    const contactName = contact.name || contact.contactPersonName || ''
+    const contactPhone = contact.phone || contact.contactNumber || ''
+    return contactName.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      contactPhone.includes(contactSearch)
+  })
   
-  const filteredAssets = assets.filter(asset =>
-    asset.assetName?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-    asset.machineSerialNumber?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-    asset.model?.toLowerCase().includes(assetSearch.toLowerCase())
-  )
+  const filteredAssets = assets.filter(asset => {
+    const assetName = asset.serialNo || asset.machineId || asset.assetName || ''
+    const model = asset.model || ''
+    return assetName.toLowerCase().includes(assetSearch.toLowerCase()) ||
+      model.toLowerCase().includes(assetSearch.toLowerCase())
+  })
   
   
   const [formData, setFormData] = useState({
@@ -101,10 +104,7 @@ export default function NewOfferPage() {
       try {
         setLoadingZones(true)
         const me = await apiService.getMe()
-        console.log('👤 User data:', me)
         const user = me?.user ?? me
-        console.log('🗺️ User zones:', user?.zones)
-        console.log('🗺️ User zoneId:', user?.zoneId)
 
         // Prefer zones array, else fall back to zoneId
         const zoneFromArray = Array.isArray(user?.zones) && user.zones.length > 0 ? user.zones[0] : null
@@ -113,16 +113,12 @@ export default function NewOfferPage() {
 
         if (zoneId) {
           const zone = { id: zoneId, name: zoneName || 'Your Zone' }
-          console.log('🔧 Setting zone:', zone)
           setZones([zone])
           setFormData(prev => ({ ...prev, zoneId: String(zone.id) }))
-          console.log('✨ Zone set successfully')
         } else {
-          console.warn('⚠️ No zone found for user')
           toast.error('No zone assigned to your account')
         }
       } catch (error: any) {
-        console.error('Failed to get user zone:', error)
         toast.error('Failed to load your zone')
       } finally {
         setLoadingZones(false)
@@ -202,25 +198,16 @@ export default function NewOfferPage() {
         include: 'contacts,assets' // Request full data
       })
       
-      console.log('🔍 Zone ID:', zoneId)
-      console.log('🔍 API Response:', response)
-      console.log('🔍 Customers fetched:', response.customers?.length || 0)
+      // apiService.getCustomers returns an array directly, not { customers: [...] }
+      const customersArray = Array.isArray(response) ? response : (response.customers || response.data || [])
       
-      if (response.customers && response.customers.length > 0) {
-        console.log('🔍 Sample customer data:', response.customers[0])
-        console.log('🔍 Sample customer contacts:', response.customers[0]?.contacts?.length || 0)
-        console.log('🔍 Sample customer assets:', response.customers[0]?.assets?.length || 0)
-      }
-      
-      setCustomers(response.customers || [])
+      setCustomers(customersArray)
       
       // Reset customer-dependent fields
       setFormData(prev => ({ ...prev, customerId: '', contactId: '', assetIds: [], spareParts: [] }))
       setContacts([])
       setAssets([])
     } catch (error: any) {
-      console.error('❌ Failed to fetch customers:', error)
-      console.error('❌ Error response:', error.response?.data)
       toast.error(`Failed to fetch customers: ${error.response?.data?.message || error.message}`)
       setCustomers([])
     } finally {
@@ -248,7 +235,7 @@ export default function NewOfferPage() {
   const fetchSpareParts = async () => {
     try {
       setLoadingSpareParts(true)
-      const response = await apiService.getSpareParts({ status: 'ACTIVE', limit: 100 })
+      const response = await apiService.getSpareParts({ status: 'ACTIVE', limit: 1000 })
       setSpareParts(response.spareParts || [])
     } catch (error: any) {
       console.error('Failed to fetch spare parts:', error)
@@ -274,24 +261,29 @@ export default function NewOfferPage() {
       const response = await apiService.createCustomerContact(
         parseInt(formData.customerId),
         {
-          contactPersonName: newContact.name,
-          contactNumber: newContact.phone,
-          email: newContact.email,
-          designation: '' // Optional field
+          name: newContact.name,
+          phone: newContact.phone,
+          email: newContact.email || undefined,
+          role: 'CONTACT' // Default role
         }
       )
       
-      const createdContact = response.contact || response
+      // Backend returns: { message: "...", data: { contact: {...}, user: null } }
+      const createdContact = response?.data?.contact || response?.contact || response
+      
+      if (!createdContact || !createdContact.id) {
+        throw new Error('Invalid response from server')
+      }
+      
       setContacts(prev => [...prev, createdContact])
-      setFormData(prev => ({ ...prev, contactId: createdContact.id.toString() }))
+      setFormData(prev => ({ ...prev, contactId: String(createdContact.id) }))
       
       // Reset form and close dialog
       setNewContact({ name: '', email: '', phone: '' })
       setIsAddContactOpen(false)
       toast.success('Contact created successfully')
     } catch (error: any) {
-      console.error('Failed to create contact:', error)
-      toast.error(error.response?.data?.error || 'Failed to create contact')
+      toast.error(error.response?.data?.error || error.message || 'Failed to create contact')
     } finally {
       setIsCreatingContact(false)
     }
@@ -667,9 +659,9 @@ export default function NewOfferPage() {
                               <div className="flex items-center space-x-2">
                                 <Users className="h-3 w-3 text-purple-500" />
                                 <div className="flex flex-col">
-                                  <span className="font-medium">{contact.contactPersonName}</span>
+                                  <span className="font-medium">{contact.name || contact.contactPersonName}</span>
                                   <div className="flex items-center space-x-2 text-xs text-gray-500">
-                                    {contact.contactNumber && <span>{contact.contactNumber}</span>}
+                                    {(contact.phone || contact.contactNumber) && <span>{contact.phone || contact.contactNumber}</span>}
                                     {contact.email && <span>{contact.email}</span>}
                                   </div>
                                 </div>
@@ -714,7 +706,7 @@ export default function NewOfferPage() {
                           return (
                             <div key={assetId} className="flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md text-sm">
                               <HardDrive className="h-3 w-3" />
-                              <span>{asset?.assetName || asset?.machineSerialNumber || 'Unknown'}</span>
+                              <span>{asset?.serialNo || asset?.machineId || 'Unknown'}{asset?.model ? ` - ${asset.model}` : ''}</span>
                               <button
                                 type="button"
                                 onClick={() => {
@@ -785,10 +777,9 @@ export default function NewOfferPage() {
                                   <div className="flex items-center space-x-2">
                                     <HardDrive className="h-3 w-3 text-indigo-500" />
                                     <div className="flex flex-col">
-                                      <span className="font-medium">{asset.assetName || asset.machineSerialNumber || 'Unknown'}</span>
+                                      <span className="font-medium">{asset.serialNo || asset.machineId || 'Unknown'}</span>
                                       <span className="text-xs text-gray-500">
-                                        {asset.model && `Model: ${asset.model} • `}
-                                        SN: {asset.machineSerialNumber || 'N/A'}
+                                        {asset.model ? `Model: ${asset.model}` : 'No model info'}
                                       </span>
                                     </div>
                                   </div>
@@ -837,7 +828,10 @@ export default function NewOfferPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="productType" className="text-red-600">Product Type *</Label>
+                <Label htmlFor="productType" className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-blue-500" />
+                  Product Type *
+                </Label>
                 <Select value={formData.productType} onValueChange={(value) => handleInputChange('productType', value)}>
                   <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
                     <SelectValue placeholder="Select product type" />
@@ -857,7 +851,10 @@ export default function NewOfferPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lead" className="text-red-600">Lead Status *</Label>
+                <Label htmlFor="lead" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  Lead Status *
+                </Label>
                 <Select value={formData.lead} onValueChange={(value) => handleInputChange('lead', value)}>
                   <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
                     <SelectValue placeholder="Select lead status" />
@@ -921,54 +918,96 @@ export default function NewOfferPage() {
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                              <Label>Quantity</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={part.quantity || 1}
-                                onChange={(e) => {
-                                  const newParts = [...formData.spareParts];
-                                  newParts[index].quantity = e.target.value;
-                                  // Recalculate total
-                                  const unitPrice = parseFloat(newParts[index].price) || 0;
-                                  const quantity = parseInt(e.target.value) || 1;
-                                  newParts[index].total = (unitPrice * quantity).toString();
-                                  handleInputChange('spareParts', newParts);
-                                }}
-                                placeholder="1"
-                                className="focus:ring-2 focus:ring-orange-500"
-                              />
+                              <Label className="flex items-center gap-1 text-sm">
+                                <Package className="h-3 w-3 text-gray-500" />
+                                Quantity
+                              </Label>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentQty = parseInt(part.quantity || '1') || 1;
+                                    if (currentQty > 1) {
+                                      const newParts = [...formData.spareParts];
+                                      const newQty = currentQty - 1;
+                                      newParts[index].quantity = newQty.toString();
+                                      const unitPrice = parseFloat(newParts[index].price) || 0;
+                                      newParts[index].total = (unitPrice * newQty).toString();
+                                      handleInputChange('spareParts', newParts);
+                                    }
+                                  }}
+                                  className="h-10 w-10 p-0 text-lg font-bold border-orange-200 hover:bg-orange-50"
+                                >
+                                  −
+                                </Button>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  value={part.quantity || '1'}
+                                  onChange={(e) => {
+                                    const newParts = [...formData.spareParts];
+                                    const value = e.target.value;
+                                    newParts[index].quantity = value;
+                                    const unitPrice = parseFloat(newParts[index].price) || 0;
+                                    const quantity = parseInt(value) || 1;
+                                    newParts[index].total = (unitPrice * quantity).toString();
+                                    handleInputChange('spareParts', newParts);
+                                  }}
+                                  onBlur={(e) => {
+                                    // Ensure minimum value of 1 on blur
+                                    const newParts = [...formData.spareParts];
+                                    const value = parseInt(e.target.value) || 1;
+                                    const finalValue = Math.max(1, value);
+                                    newParts[index].quantity = finalValue.toString();
+                                    const unitPrice = parseFloat(newParts[index].price) || 0;
+                                    newParts[index].total = (unitPrice * finalValue).toString();
+                                    handleInputChange('spareParts', newParts);
+                                  }}
+                                  className="w-20 text-center focus:ring-2 focus:ring-orange-500 font-medium"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentQty = parseInt(part.quantity || '1') || 1;
+                                    const newParts = [...formData.spareParts];
+                                    const newQty = currentQty + 1;
+                                    newParts[index].quantity = newQty.toString();
+                                    const unitPrice = parseFloat(newParts[index].price) || 0;
+                                    newParts[index].total = (unitPrice * newQty).toString();
+                                    handleInputChange('spareParts', newParts);
+                                  }}
+                                  className="h-10 w-10 p-0 text-lg font-bold border-orange-200 hover:bg-orange-50 text-orange-600"
+                                >
+                                  +
+                                </Button>
+                              </div>
                             </div>
                             <div className="space-y-2">
-                              <Label>Unit Price (₹) *</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={part.price}
-                                onChange={(e) => {
-                                  const newParts = [...formData.spareParts];
-                                  newParts[index].price = e.target.value;
-                                  // Recalculate total
-                                  const unitPrice = parseFloat(e.target.value) || 0;
-                                  const quantity = parseInt(newParts[index].quantity || '1') || 1;
-                                  newParts[index].total = (unitPrice * quantity).toString();
-                                  handleInputChange('spareParts', newParts);
-                                }}
-                                placeholder={`Base: ₹${sparePart.basePrice || 0}`}
-                                className="focus:ring-2 focus:ring-orange-500"
-                              />
+                              <Label className="flex items-center gap-1 text-sm text-gray-600">
+                                <DollarSign className="h-3 w-3 text-gray-400" />
+                                Unit Price (₹)
+                                <span className="text-xs text-gray-400 ml-1">(Fixed)</span>
+                              </Label>
+                              <div className="h-10 px-3 py-2 bg-gray-100 border border-gray-200 rounded-md flex items-center text-gray-700 font-medium">
+                                ₹{parseFloat(part.price || '0').toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="flex items-center gap-1 text-sm text-orange-700 font-medium">
+                                <TrendingUp className="h-3 w-3 text-orange-500" />
+                                Line Total
+                              </Label>
+                              <div className="h-10 px-3 py-2 bg-orange-100 border border-orange-200 rounded-md flex items-center text-orange-800 font-bold">
+                                ₹{parseFloat(part.total || '0').toLocaleString('en-IN')}
+                              </div>
                             </div>
                           </div>
-                          {part.total && (
-                            <div className="mt-3 p-2 bg-orange-100 rounded text-right">
-                              <span className="text-sm font-medium text-orange-800">
-                                Total: ₹{parseFloat(part.total).toLocaleString('en-IN')}
-                              </span>
-                            </div>
-                          )}
                         </div>
                       );
                     })}

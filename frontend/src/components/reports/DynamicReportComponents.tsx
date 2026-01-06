@@ -53,9 +53,7 @@ interface AdvancedTicketSummaryReportProps {
   reportData: ReportData;
 }
 
-interface CustomerSatisfactionReportProps {
-  reportData: any;
-}
+
 
 interface AdvancedMachineAnalyticsReportProps {
   reportData: any;
@@ -105,13 +103,7 @@ export const DynamicAdvancedTicketSummaryReport = dynamic<AdvancedTicketSummaryR
   }
 );
 
-export const DynamicCustomerSatisfactionReport = dynamic<CustomerSatisfactionReportProps>(
-  () => import('./CustomerSatisfactionReport').then(mod => mod.CustomerSatisfactionReport as ComponentType<CustomerSatisfactionReportProps>),
-  {
-    loading: () => <ReportLoadingSkeleton />,
-    ssr: false,
-  }
-);
+
 
 export const DynamicAdvancedMachineAnalyticsReport = dynamic<AdvancedMachineAnalyticsReportProps>(
   () => import('./AdvancedMachineAnalyticsReport').then(mod => mod.AdvancedMachineAnalyticsReport as ComponentType<AdvancedMachineAnalyticsReportProps>),
@@ -175,7 +167,7 @@ export const DynamicTargetReportAnalytics = dynamic<TargetReportAnalyticsProps>(
 
 export const DynamicReportComponents = {
   AdvancedTicketSummary: DynamicAdvancedTicketSummaryReport,
-  CustomerSatisfaction: DynamicCustomerSatisfactionReport,
+
   AdvancedMachineAnalytics: DynamicAdvancedMachineAnalyticsReport,
   AdvancedZonePerformance: DynamicAdvancedZonePerformanceReport,
   ServicePersonPerformance: DynamicServicePersonPerformanceReport,

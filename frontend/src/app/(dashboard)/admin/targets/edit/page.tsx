@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/user.types';
 import { apiService } from '@/services/api';
 import { 
   ArrowLeft, Target, Save, Package, TrendingUp, AlertCircle, BarChart3,
-  Building2, Users, CheckCircle, Sparkles, Zap, Crown, DollarSign
+  Building2, Users, CheckCircle, Sparkles, Zap, Crown, DollarSign, Activity, RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -46,6 +48,7 @@ const PRODUCT_TYPE_LABELS: { [key: string]: { label: string; icon: string; color
 export default function EditTargetPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   
   const targetType = (searchParams.get('type') || 'ZONE') as 'ZONE' | 'USER';
   const entityId = searchParams.get('id');
@@ -65,12 +68,30 @@ export default function EditTargetPage() {
   // Product types from backend enum
   const productTypes = ['RELOCATION', 'CONTRACT', 'SPP', 'UPGRADE_KIT', 'SOFTWARE', 'BD_CHARGES', 'BD_SPARE', 'MIDLIFE_UPGRADE', 'RETROFIT_KIT'];
   const [productTargets, setProductTargets] = useState<{ [key: string]: string }>({});
+  
+  // NEW: Track input values as strings to prevent automatic value changes while typing
+  const [inputValues, setInputValues] = useState<{ [key: number]: string }>({});
+
+  // Protect this page - only ADMIN can access
+  useEffect(() => {
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        router.push('/auth/login?callbackUrl=' + encodeURIComponent('/admin/targets'))
+        return
+      }
+      if (user?.role !== UserRole.ADMIN) {
+        router.push('/admin/dashboard')
+        return
+      }
+    }
+  }, [authLoading, isAuthenticated, user?.role, router])
 
   useEffect(() => {
-    if (entityId && targetPeriod) {
+    if (entityId && targetPeriod && !authLoading && isAuthenticated && user?.role === UserRole.ADMIN) {
       fetchTargets();
     }
-  }, [entityId, targetPeriod, targetType]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId, targetPeriod, targetType, authLoading, isAuthenticated, user?.role]);
 
   const fetchTargets = async () => {
     setLoading(true);
@@ -101,6 +122,32 @@ export default function EditTargetPage() {
       const existingTargets = entityTargets.filter((target: Target) => target.id);
       
       setTargets(existingTargets);
+      
+      // Initialize input values from existing targets
+      // Handle floating point precision issues (e.g., 29999999.96 should be 30000000)
+      const initialInputValues: { [key: number]: string } = {};
+      existingTargets.forEach((target: Target) => {
+        const rawValue = Number(target.targetValue);
+        const rounded = Math.round(rawValue);
+        
+        // For large numbers (>= 1000), if close to a whole number (within 0.5), use the whole number
+        // This handles precision issues like 29999999.96 -> 30000000
+        let displayValue: number;
+        if (Math.abs(rawValue) >= 1000 && Math.abs(rawValue - rounded) < 0.5) {
+          displayValue = rounded;
+        } else if (Math.abs(rawValue - rounded) < 0.01) {
+          // For smaller numbers but very close to whole, also round
+          displayValue = rounded;
+        } else {
+          // Otherwise round to 2 decimal places
+          displayValue = Math.round(rawValue * 100) / 100;
+        }
+        
+        initialInputValues[target.id] = Number.isInteger(displayValue) 
+          ? displayValue.toString() 
+          : displayValue.toFixed(2);
+      });
+      setInputValues(initialInputValues);
       
       // Set entity name
       if (existingTargets.length > 0) {
@@ -137,10 +184,19 @@ export default function EditTargetPage() {
     }
   };
 
-  const updateTarget = (index: number, field: 'targetValue', value: string) => {
-    const updated = [...targets];
-    updated[index].targetValue = parseFloat(value) || 0;
-    setTargets(updated);
+  // Update input value (string) - only updates the display
+  const updateInputValue = (targetId: number, value: string) => {
+    setInputValues(prev => ({
+      ...prev,
+      [targetId]: value
+    }));
+  };
+  
+  // Get the parsed numeric value for a target
+  const getTargetNumericValue = (targetId: number): number => {
+    const value = inputValues[targetId];
+    if (value === undefined || value === '') return 0;
+    return parseFloat(value) || 0;
   };
 
   const formatCurrency = (value: number) => {
@@ -222,11 +278,12 @@ export default function EditTargetPage() {
           }
         }
       } else {
-        // Update existing targets
+        // Update existing targets using inputValues
         for (const target of targets) {
           try {
+            const targetValue = parseFloat(inputValues[target.id] || '0') || 0;
             const updateData = {
-              targetValue: Number(target.targetValue),
+              targetValue: targetValue,
               targetOfferCount: target.targetOfferCount ? Number(target.targetOfferCount) : null
             };
 
@@ -240,6 +297,41 @@ export default function EditTargetPage() {
           } catch (error: any) {
             const productLabel = target.productType || 'Overall';
             errors.push(`${productLabel}: ${error.response?.data?.message || 'Failed'}`);
+          }
+        }
+
+        // Also create NEW product-specific targets that don't exist yet
+        for (const [productType, value] of Object.entries(productTargets)) {
+          if (value && parseFloat(value) > 0) {
+            // Check if this product type doesn't have an existing target
+            const existingTarget = targets.find(t => t.productType === productType);
+            if (!existingTarget) {
+              try {
+                const createData = {
+                  targetPeriod,
+                  periodType: 'YEARLY',
+                  targetValue: parseFloat(value),
+                  targetOfferCount: null,
+                  productType
+                };
+
+                if (targetType === 'ZONE') {
+                  await apiService.setZoneTarget({
+                    ...createData,
+                    serviceZoneId: parseInt(entityId!)
+                  });
+                } else {
+                  await apiService.setUserTarget({
+                    ...createData,
+                    userId: parseInt(entityId!)
+                  });
+                }
+                
+                successCount++;
+              } catch (error: any) {
+                errors.push(`${productType}: ${error.response?.data?.message || 'Failed to create'}`);
+              }
+            }
           }
         }
       }
@@ -263,16 +355,50 @@ export default function EditTargetPage() {
     }
   };
 
+  // Show loading state while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+        <div className="text-center">
+          <div className="relative">
+            <div className="w-24 h-24 border-4 border-blue-400/20 rounded-full"></div>
+            <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-blue-400 border-r-blue-400/50 rounded-full animate-spin"></div>
+            <div className="absolute inset-2 w-20 h-20 border-4 border-transparent border-b-purple-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+          </div>
+          <p className="text-blue-200 font-medium mt-6 text-lg animate-pulse">Loading...</p>
+          <div className="flex justify-center gap-1 mt-3">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated or not ADMIN
+  if (!isAuthenticated || user?.role !== UserRole.ADMIN) {
+    return null
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex items-center justify-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border border-slate-100">
-          <div className="relative w-20 h-20 mx-auto mb-6">
-            <div className="absolute inset-0 w-20 h-20 border-4 border-blue-100 rounded-full"></div>
-            <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-blue-600 rounded-full animate-spin"></div>
+        <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border border-slate-100 relative overflow-hidden">
+          {/* Animated gradient orb */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-2xl animate-pulse"></div>
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <div className="absolute inset-0 w-24 h-24 border-4 border-blue-100 rounded-full"></div>
+            <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-blue-600 border-r-blue-400/50 rounded-full animate-spin"></div>
+            <div className="absolute inset-2 w-20 h-20 border-4 border-transparent border-b-indigo-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
           </div>
           <p className="text-slate-700 font-bold text-xl">Loading targets...</p>
           <p className="text-slate-500 text-sm mt-2">Please wait while we fetch the data</p>
+          <div className="flex justify-center gap-1 mt-4">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
         </div>
       </div>
     );
@@ -294,20 +420,22 @@ export default function EditTargetPage() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-all group"
         >
-          <div className="p-2 rounded-lg bg-white shadow-sm group-hover:shadow-md transition-all">
+          <div className="p-2 rounded-lg bg-white shadow-sm group-hover:shadow-md group-hover:-translate-x-1 transition-all">
             <ArrowLeft className="w-5 h-5" />
           </div>
           <span className="font-medium">Back to Targets</span>
         </button>
         
         {/* Hero Header */}
-        <div className={`relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl mb-8 bg-gradient-to-r ${
+        <div className={`relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl mb-8 bg-gradient-to-r group ${
           targetType === 'ZONE' 
             ? 'from-blue-600 via-indigo-600 to-purple-700' 
             : 'from-purple-600 via-pink-600 to-rose-600'
         }`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOGM5Ljk0MSAwIDE4LTguMDU5IDE4LTE4cy04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          {/* Animated gradient orbs */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" style={{ animation: 'pulse 3s ease-in-out infinite alternate' }}></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-5 mb-5">
@@ -378,7 +506,7 @@ export default function EditTargetPage() {
                       onChange={(e) => setNewTargetValue(e.target.value)}
                       className="w-full pl-14 pr-6 py-5 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold transition-all hover:border-emerald-300"
                       min="0"
-                      step="0.01"
+                      step="1"
                       placeholder="50,00,000"
                     />
                   </div>
@@ -395,73 +523,63 @@ export default function EditTargetPage() {
               {/* Product-Specific Targets Section */}
               <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
                 <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 px-6 py-5">
-                  <div className="flex items-center justify-between text-white">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
-                        <Package className="w-7 h-7" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold">Product-Specific Targets</h3>
-                        <p className="text-violet-100 text-sm mt-0.5">Set individual targets for each product type</p>
-                      </div>
+                  <div className="flex items-center gap-4 text-white">
+                    <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
+                      <Package className="w-7 h-7" />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowProductTypes(!showProductTypes)}
-                      className="px-5 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-xl transition-all font-semibold border border-white/30"
-                    >
-                      {showProductTypes ? '🙈 Hide' : '👁️ Show'}
-                    </button>
+                    <div>
+                      <h3 className="text-xl font-bold">Product-Specific Targets</h3>
+                      <p className="text-violet-100 text-sm mt-0.5">Set individual targets for each product type</p>
+                    </div>
                   </div>
                 </div>
                 
-                {showProductTypes && (
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {productTypes.map((productType) => {
-                        const config = PRODUCT_TYPE_LABELS[productType];
-                        return (
-                          <div 
-                            key={productType} 
-                            className={`group relative bg-white border-2 rounded-xl p-5 hover:shadow-lg transition-all ${
-                              productTargets[productType] ? `border-${config.color}-300 bg-${config.color}-50/30` : 'border-slate-200 hover:border-slate-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className={`p-2 rounded-lg bg-gradient-to-br ${config.gradient} shadow-lg`}>
-                                <Package className="w-5 h-5 text-white" />
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-slate-900">{config.label}</h4>
-                                <p className="text-xs text-slate-500">{config.icon} Product Type</p>
-                              </div>
+                
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {productTypes.map((productType) => {
+                      const config = PRODUCT_TYPE_LABELS[productType];
+                      return (
+                        <div 
+                          key={productType} 
+                          className={`group relative bg-white border-2 rounded-xl p-5 hover:shadow-lg transition-all ${
+                            productTargets[productType] ? `border-${config.color}-300 bg-${config.color}-50/30` : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className={`p-2 rounded-lg bg-gradient-to-br ${config.gradient} shadow-lg`}>
+                              <Package className="w-5 h-5 text-white" />
                             </div>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">₹</span>
-                              <input
-                                type="number"
-                                value={productTargets[productType] || ''}
-                                onChange={(e) => setProductTargets({
-                                  ...productTargets,
-                                  [productType]: e.target.value
-                                })}
-                                className="w-full pl-8 pr-3 py-3 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-semibold transition-all hover:border-purple-300"
-                                min="0"
-                                step="0.01"
-                                placeholder="Enter yearly target"
-                              />
+                            <div>
+                              <h4 className="font-bold text-slate-900">{config.label}</h4>
+                              <p className="text-xs text-slate-500">{config.icon} Product Type</p>
                             </div>
-                            {productTargets[productType] && (
-                              <p className="text-xs text-slate-500 mt-2">
-                                📅 Monthly: {formatCurrency(parseFloat(productTargets[productType]) / 12)}
-                              </p>
-                            )}
                           </div>
-                        );
-                      })}
-                    </div>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">₹</span>
+                            <input
+                              type="number"
+                              value={productTargets[productType] || ''}
+                              onChange={(e) => setProductTargets({
+                                ...productTargets,
+                                [productType]: e.target.value
+                              })}
+                              className="w-full pl-8 pr-3 py-3 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-semibold transition-all hover:border-purple-300"
+                              min="0"
+                              step="1"
+                              placeholder="Enter yearly target"
+                            />
+                          </div>
+                          {productTargets[productType] && (
+                            <p className="text-xs text-slate-500 mt-2">
+                              📅 Monthly: {formatCurrency(parseFloat(productTargets[productType]) / 12)}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
               </div>
             </>
           ) : (
@@ -534,17 +652,17 @@ export default function EditTargetPage() {
                         <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-2xl">₹</span>
                         <input
                           type="number"
-                          value={target.targetValue}
-                          onChange={(e) => updateTarget(actualIndex, 'targetValue', e.target.value)}
+                          value={inputValues[target.id] ?? ''}
+                          onChange={(e) => updateInputValue(target.id, e.target.value)}
                           className="w-full pl-14 pr-6 py-5 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold transition-all hover:border-emerald-300"
                           required
                           min="0"
-                          step="0.01"
+                          step="1"
                         />
                       </div>
                       <div className="flex items-center gap-4 mt-4 text-sm">
                         <span className="px-3 py-1.5 bg-emerald-50 rounded-lg text-emerald-600 font-medium">
-                          📅 Monthly: {formatCurrency(target.targetValue / 12)}
+                          📅 Monthly: {formatCurrency(getTargetNumericValue(target.id) / 12)}
                         </span>
                         <span className="px-3 py-1.5 bg-blue-50 rounded-lg text-blue-600 font-medium">
                           💰 Actual: {formatCurrency(target.actualValue || 0)}
@@ -573,12 +691,18 @@ export default function EditTargetPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {productTypes.map((productType) => {
                       const existingTarget = targets.find(t => t.productType === productType);
-                      const actualIndex = existingTarget ? targets.findIndex(t => t.id === existingTarget.id) : -1;
-                      const targetValue = existingTarget?.targetValue || 0;
                       const hasTarget = !!existingTarget;
+                      // For existing targets, use inputValues; for new targets, use productTargets
+                      const targetInputValue = hasTarget 
+                        ? (inputValues[existingTarget!.id] ?? '') 
+                        : (productTargets[productType] || '');
+                      const targetValue = hasTarget 
+                        ? getTargetNumericValue(existingTarget!.id) 
+                        : (parseFloat(productTargets[productType] || '0') || 0);
                       const actualValue = existingTarget?.actualValue || 0;
                       const achievement = targetValue > 0 ? (actualValue / targetValue) * 100 : 0;
                       const config = PRODUCT_TYPE_LABELS[productType];
+                      const hasNewValue = !hasTarget && productTargets[productType] && parseFloat(productTargets[productType]) > 0;
                       
                       return (
                         <div 
@@ -586,20 +710,27 @@ export default function EditTargetPage() {
                           className={`group relative rounded-xl p-5 transition-all ${
                             hasTarget 
                               ? 'bg-white border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl' 
-                              : 'bg-slate-50 border-2 border-dashed border-slate-200'
+                              : hasNewValue
+                                ? 'bg-green-50 border-2 border-green-300 hover:border-green-400 hover:shadow-xl'
+                                : 'bg-white border-2 border-dashed border-slate-200 hover:border-purple-300'
                           }`}
                         >
                           {/* Header Section */}
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <div className={`p-2 rounded-lg ${hasTarget ? `bg-gradient-to-br ${config.gradient}` : 'bg-slate-300'} shadow-md`}>
+                              <div className={`p-2 rounded-lg ${hasTarget || hasNewValue ? `bg-gradient-to-br ${config.gradient}` : 'bg-slate-300'} shadow-md`}>
                                 <Package className="w-5 h-5 text-white" />
                               </div>
                               <div>
                                 <h4 className="font-bold text-slate-900">{config.label}</h4>
-                                {!hasTarget && (
-                                  <span className="text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full font-medium">
-                                    No Target
+                                {!hasTarget && !hasNewValue && (
+                                  <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-medium">
+                                    ✨ New Target
+                                  </span>
+                                )}
+                                {hasNewValue && (
+                                  <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                                    🆕 Will be created
                                   </span>
                                 )}
                               </div>
@@ -623,34 +754,40 @@ export default function EditTargetPage() {
                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
                               <input
                                 type="number"
-                                value={targetValue}
+                                value={targetInputValue}
                                 onChange={(e) => {
-                                  if (hasTarget && actualIndex !== -1) {
-                                    updateTarget(actualIndex, 'targetValue', e.target.value);
+                                  if (hasTarget && existingTarget) {
+                                    updateInputValue(existingTarget.id, e.target.value);
+                                  } else {
+                                    // Store new product target value
+                                    setProductTargets(prev => ({
+                                      ...prev,
+                                      [productType]: e.target.value
+                                    }));
                                   }
                                 }}
-                                className={`w-full pl-8 pr-3 py-3 border-2 rounded-lg font-semibold text-sm transition-all ${
-                                  hasTarget
-                                    ? 'border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-purple-300 bg-white'
-                                    : 'border-slate-200 bg-slate-100 cursor-not-allowed text-slate-400'
-                                }`}
+                                className="w-full pl-8 pr-3 py-3 border-2 rounded-lg font-semibold text-sm transition-all border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-purple-300 bg-white"
                                 required={hasTarget}
                                 min="0"
-                                step="0.01"
-                                placeholder={hasTarget ? "Enter value" : "Not set"}
-                                disabled={!hasTarget}
+                                step="1"
+                                placeholder={hasTarget ? "Enter value" : "Enter to create new target"}
                               />
                             </div>
                             
-                            {hasTarget ? (
+                            {targetValue > 0 ? (
                               <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
                                 <span className="px-2 py-1 bg-purple-50 rounded text-purple-600">
                                   📅 Monthly: {formatCurrency(targetValue / 12)}
                                 </span>
+                                {hasTarget && (
+                                  <span className="px-2 py-1 bg-blue-50 rounded text-blue-600">
+                                    💰 Actual: {formatCurrency(actualValue)}
+                                  </span>
+                                )}
                               </div>
                             ) : (
                               <p className="text-xs text-slate-400 mt-2">
-                                💡 Create this target from the main page
+                                💡 Enter a value to create a new target for this product
                               </p>
                             )}
                           </div>
@@ -686,12 +823,15 @@ export default function EditTargetPage() {
                 {saving ? (
                   <>
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                    {isCreatingNew ? 'Creating...' : 'Updating...'}
+                    {isCreatingNew ? 'Creating...' : 'Saving...'}
                   </>
                 ) : (
                   <>
                     <Save className="w-6 h-6" />
-                    {isCreatingNew ? 'Create Targets' : `Update ${targets.length} Target${targets.length > 1 ? 's' : ''}`}
+                    {isCreatingNew 
+                      ? 'Create Targets' 
+                      : `Save Changes${Object.values(productTargets).some(v => v && parseFloat(v) > 0) ? ' & Create New' : ''}`
+                    }
                   </>
                 )}
               </button>

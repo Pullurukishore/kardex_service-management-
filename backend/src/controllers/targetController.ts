@@ -5,6 +5,28 @@ import { logger } from '../utils/logger';
 import { Prisma } from '@prisma/client';
 
 /**
+ * Helper function to properly convert Prisma Decimal to JavaScript number
+ * Avoids floating point precision issues by using string conversion and smart rounding
+ */
+function toNumber(value: any): number {
+  if (value === null || value === undefined) return 0;
+  // Convert to string first to avoid precision issues, then parse
+  const stringValue = value.toString();
+  const parsed = parseFloat(stringValue);
+  if (isNaN(parsed)) return 0;
+
+  // For large numbers (>= 1000), check if it's very close to a whole number
+  // This handles precision issues like 29999999.96 -> 30000000
+  const rounded = Math.round(parsed);
+  if (Math.abs(parsed) >= 1000 && Math.abs(parsed - rounded) < 0.5) {
+    return rounded;
+  }
+
+  // For smaller numbers or those with significant decimals, round to 2 decimal places
+  return Math.round(parsed * 100) / 100;
+}
+
+/**
  * TargetController - Handles target management for zones, users, and product types
  * Accessible only by ADMIN users (Director functionality)
  */
@@ -66,24 +88,43 @@ export class TargetController {
     try {
       const { serviceZoneId, targetPeriod, periodType, targetValue, targetOfferCount, productType } = req.body;
 
-      if (!serviceZoneId || !targetPeriod || !periodType || !targetValue) {
+      if (!serviceZoneId || !targetPeriod || !periodType || targetValue === undefined || targetValue === null) {
         return res.status(400).json({
           success: false,
           message: 'Zone ID, target period, period type, and target value are required'
         });
       }
 
+      // Check if user is authenticated
+      if (!req.user?.id) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not authenticated'
+        });
+      }
+
       // Check if target already exists (with optional product type)
-      const existingTarget = await prisma.zoneTarget.findUnique({
-        where: {
-          serviceZoneId_targetPeriod_periodType_productType: {
+      // Use findFirst when productType is null/undefined because Prisma doesn't support null in findUnique composite keys
+      let existingTarget;
+      if (productType) {
+        existingTarget = await prisma.zoneTarget.findFirst({
+          where: {
             serviceZoneId: parseInt(serviceZoneId),
             targetPeriod,
             periodType,
-            productType: productType || null
+            productType: productType
           }
-        }
-      });
+        });
+      } else {
+        existingTarget = await prisma.zoneTarget.findFirst({
+          where: {
+            serviceZoneId: parseInt(serviceZoneId),
+            targetPeriod,
+            periodType,
+            productType: null
+          }
+        });
+      }
 
       let target;
       if (existingTarget) {
@@ -94,7 +135,7 @@ export class TargetController {
             targetValue: new Prisma.Decimal(targetValue),
             targetOfferCount: targetOfferCount || null,
             productType: productType || null,
-            updatedById: req.user!.id
+            updatedById: req.user.id
           },
           include: {
             serviceZone: {
@@ -112,8 +153,8 @@ export class TargetController {
             productType: productType || null,
             targetValue: new Prisma.Decimal(targetValue),
             targetOfferCount: targetOfferCount || null,
-            createdById: req.user!.id,
-            updatedById: req.user!.id
+            createdById: req.user.id,
+            updatedById: req.user.id
           },
           include: {
             serviceZone: {
@@ -240,12 +281,24 @@ export class TargetController {
             undefined // Overall performance (no product filter)
           );
 
-          // If zone has targets, sum them up
+          // If zone has targets, determine the total target value
           if (zoneTargets.length > 0) {
-            const totalTargetValue = zoneTargets.reduce((sum: number, t: any) => sum + Number(t.targetValue), 0);
+            // Check if there's an overall target (productType is null)
+            const overallTarget = zoneTargets.find((t: any) => t.productType === null || t.productType === undefined);
+            const productSpecificTargets = zoneTargets.filter((t: any) => t.productType !== null && t.productType !== undefined);
+
+            // Use overall target if it exists, otherwise sum product-specific targets
+            // This prevents double-counting when both overall and product-specific targets exist
+            let totalTargetValue: number;
+            if (overallTarget) {
+              totalTargetValue = toNumber(overallTarget.targetValue);
+            } else {
+              totalTargetValue = productSpecificTargets.reduce((sum: number, t: any) => sum + toNumber(t.targetValue), 0);
+            }
+
             const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
             return {
-              id: zoneTargets[0].id, // Use first target's ID
+              id: overallTarget?.id || zoneTargets[0].id, // Prefer overall target's ID
               serviceZoneId: zone.id,
               targetPeriod: isMonthlyView ? (actualValuePeriod as string) : (targetPeriod as string),
               periodType: isMonthlyView ? 'MONTHLY' : (periodType as string),
@@ -256,7 +309,9 @@ export class TargetController {
               totalOffers: totalOffers,
               targetOfferCount: zoneTargets.reduce((sum: number, t: any) => sum + (t.targetOfferCount || 0), 0),
               achievement: totalTargetValue > 0 ? (actual.value / totalTargetValue) * 100 : 0,
-              targetCount: zoneTargets.length
+              targetCount: zoneTargets.length,
+              hasOverallTarget: !!overallTarget,
+              hasProductTargets: productSpecificTargets.length > 0
             };
           } else {
             // Zone has no targets - show with 0 target value
@@ -370,7 +425,8 @@ export class TargetController {
           // Skip if trying to use yearly period with monthly period type
           if (actualPeriodType === 'MONTHLY' && !actualPeriod.includes('-')) {
             const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
-            const displayTargetValue = isMonthlyView ? Math.round(Number(target.targetValue) / 12) : Number(target.targetValue);
+            // Use toNumber helper for proper Decimal conversion
+            const displayTargetValue = isMonthlyView ? Math.round(toNumber(target.targetValue) / 12) : toNumber(target.targetValue);
             const variance = 0 - displayTargetValue;
             return {
               id: target.id,
@@ -398,7 +454,8 @@ export class TargetController {
 
           // For monthly view, divide target by 12 before calculating variance
           const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
-          const displayTargetValue = isMonthlyView ? Math.round(Number(target.targetValue) / 12) : Number(target.targetValue);
+          // Use toNumber helper for proper Decimal conversion
+          const displayTargetValue = isMonthlyView ? Math.round(toNumber(target.targetValue) / 12) : toNumber(target.targetValue);
           const variance = actual.value - displayTargetValue;
           return {
             id: target.id,
@@ -512,24 +569,43 @@ export class TargetController {
     try {
       const { userId, targetPeriod, periodType, targetValue, targetOfferCount, productType } = req.body;
 
-      if (!userId || !targetPeriod || !periodType || !targetValue) {
+      if (!userId || !targetPeriod || !periodType || targetValue === undefined || targetValue === null) {
         return res.status(400).json({
           success: false,
           message: 'User ID, target period, period type, and target value are required'
         });
       }
 
+      // Check if user is authenticated
+      if (!req.user?.id) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not authenticated'
+        });
+      }
+
       // Check if target already exists (with optional product type)
-      const existingTarget = await prisma.userTarget.findUnique({
-        where: {
-          userId_targetPeriod_periodType_productType: {
+      // Use findFirst when productType is null/undefined because Prisma doesn't support null in findUnique composite keys
+      let existingTarget;
+      if (productType) {
+        existingTarget = await prisma.userTarget.findFirst({
+          where: {
             userId: parseInt(userId),
             targetPeriod,
             periodType,
-            productType: productType || null
+            productType: productType
           }
-        }
-      });
+        });
+      } else {
+        existingTarget = await prisma.userTarget.findFirst({
+          where: {
+            userId: parseInt(userId),
+            targetPeriod,
+            periodType,
+            productType: null
+          }
+        });
+      }
 
       let target;
       if (existingTarget) {
@@ -540,7 +616,7 @@ export class TargetController {
             targetValue: new Prisma.Decimal(targetValue),
             targetOfferCount: targetOfferCount || null,
             productType: productType || null,
-            updatedById: req.user!.id
+            updatedById: req.user.id
           },
           include: {
             user: {
@@ -558,8 +634,8 @@ export class TargetController {
             productType: productType || null,
             targetValue: new Prisma.Decimal(targetValue),
             targetOfferCount: targetOfferCount || null,
-            createdById: req.user!.id,
-            updatedById: req.user!.id
+            createdById: req.user.id,
+            updatedById: req.user.id
           },
           include: {
             user: {
@@ -727,12 +803,24 @@ export class TargetController {
             undefined // Overall performance (no product filter)
           );
 
-          // If user has targets, sum them up
+          // If user has targets, determine the total target value
           if (userTargets.length > 0) {
-            const totalTargetValue = userTargets.reduce((sum: number, t: any) => sum + Number(t.targetValue), 0);
+            // Check if there's an overall target (productType is null)
+            const overallTarget = userTargets.find((t: any) => t.productType === null || t.productType === undefined);
+            const productSpecificTargets = userTargets.filter((t: any) => t.productType !== null && t.productType !== undefined);
+
+            // Use overall target if it exists, otherwise sum product-specific targets
+            // This prevents double-counting when both overall and product-specific targets exist
+            let totalTargetValue: number;
+            if (overallTarget) {
+              totalTargetValue = toNumber(overallTarget.targetValue);
+            } else {
+              totalTargetValue = productSpecificTargets.reduce((sum: number, t: any) => sum + toNumber(t.targetValue), 0);
+            }
+
             const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
             return {
-              id: userTargets[0].id, // Use first target's ID
+              id: overallTarget?.id || userTargets[0].id, // Prefer overall target's ID
               userId: user.id,
               targetPeriod: isMonthlyView ? (actualValuePeriod as string) : (targetPeriod as string),
               periodType: isMonthlyView ? 'MONTHLY' : (periodType as string),
@@ -743,7 +831,9 @@ export class TargetController {
               totalOffers: totalOffers,
               targetOfferCount: userTargets.reduce((sum: number, t: any) => sum + (t.targetOfferCount || 0), 0),
               achievement: totalTargetValue > 0 ? (actual.value / totalTargetValue) * 100 : 0,
-              targetCount: userTargets.length
+              targetCount: userTargets.length,
+              hasOverallTarget: !!overallTarget,
+              hasProductTargets: productSpecificTargets.length > 0
             };
           } else {
             // User has no targets - show with 0 target value
@@ -856,7 +946,7 @@ export class TargetController {
           // Skip if trying to use yearly period with monthly period type
           if (actualPeriodType === 'MONTHLY' && !actualPeriod.includes('-')) {
             const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
-            const displayTargetValue = isMonthlyView ? Math.round(Number(target.targetValue) / 12) : Number(target.targetValue);
+            const displayTargetValue = isMonthlyView ? Math.round(toNumber(target.targetValue) / 12) : toNumber(target.targetValue);
             const variance = 0 - displayTargetValue;
             return {
               id: target.id,
@@ -884,7 +974,7 @@ export class TargetController {
 
           // For monthly view, divide target by 12 before calculating variance
           const isMonthlyView = actualValuePeriod && String(actualValuePeriod).includes('-');
-          const displayTargetValue = isMonthlyView ? Math.round(Number(target.targetValue) / 12) : Number(target.targetValue);
+          const displayTargetValue = isMonthlyView ? Math.round(toNumber(target.targetValue) / 12) : toNumber(target.targetValue);
           const variance = actual.value - displayTargetValue;
           return {
             id: target.id,

@@ -39,7 +39,14 @@ import {
   ArrowUpDown,
   Grid3x3,
   List,
-  ChevronUp
+  ChevronUp,
+  Download,
+  Sparkles,
+  Target,
+  ArrowUp,
+  ArrowDown,
+  Briefcase,
+  PhoneCall
 } from 'lucide-react';
 import { apiClient } from '@/lib/api/api-client';
 import { format, parseISO, startOfDay, endOfDay, isToday, isYesterday } from 'date-fns';
@@ -166,6 +173,57 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
   const isInitialMount = useRef(true);
   const isFetching = useRef(false);
   const hasInitialFetchCompleted = useRef(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Live clock update
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return dateRange !== 'today' || 
+           selectedUser !== 'all' || 
+           selectedStatus !== 'all' || 
+           selectedActivityType !== 'all' || 
+           selectedZone !== 'all' || 
+           searchQuery.trim() !== '';
+  }, [dateRange, selectedUser, selectedStatus, selectedActivityType, selectedZone, searchQuery]);
+
+  // Reset all filters
+  const resetFilters = useCallback(() => {
+    setDateRange('today');
+    setSelectedDate(new Date());
+    setSelectedUser('all');
+    setSelectedStatus('all');
+    setSelectedActivityType('all');
+    setSelectedZone('all');
+    setSearchQuery('');
+    setCurrentPage(1);
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been cleared.",
+    });
+  }, [toast]);
+
+  // Calculate attendance rate
+  const attendanceRate = useMemo(() => {
+    if (!stats || servicePersons.length === 0) return 0;
+    const activeCount = (stats.statusBreakdown?.CHECKED_IN || 0) + (stats.statusBreakdown?.CHECKED_OUT || 0) + (stats.statusBreakdown?.AUTO_CHECKED_OUT || 0);
+    return Math.round((activeCount / Math.max(servicePersons.length, 1)) * 100);
+  }, [stats, servicePersons.length]);
+
+  // Status breakdown for quick chips
+  const statusBreakdown = useMemo(() => {
+    const breakdown: Record<string, number> = {};
+    attendanceRecords.forEach(record => {
+      breakdown[record.status] = (breakdown[record.status] || 0) + 1;
+    });
+    return breakdown;
+  }, [attendanceRecords]);
 
   // Get date range based on selection
   const getDateRange = () => {
@@ -440,7 +498,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 md:p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <div className="p-2 md:p-3 bg-white/20 rounded-xl backdrop-blur-sm animate-pulse">
                     <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
                   <div>
@@ -448,11 +506,11 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                     <p className="text-blue-100 text-sm md:text-lg">Monitor and manage service person attendance records</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 mt-4">
-                  <div className="flex items-center gap-2 text-white/90">
+                <div className="flex items-center gap-4 mt-4 flex-wrap">
+                  <div className="flex items-center gap-2 text-white/90 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     <Calendar className="h-4 w-4" />
                     <span className="text-sm font-medium">
-                      {new Date().toLocaleDateString('en-US', { 
+                      {currentTime.toLocaleDateString('en-US', { 
                         weekday: 'long', 
                         year: 'numeric', 
                         month: 'long', 
@@ -460,37 +518,34 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                       })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/90">
-                    <Clock className="h-4 w-4" />
-                    <span className="text-sm font-medium">
-                      {new Date().toLocaleTimeString('en-US', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </span>
-                  </div>
+
+                  {attendanceRate > 0 && (
+                    <div className="flex items-center gap-2 text-white bg-emerald-500/30 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                      <Target className="h-4 w-4" />
+                      <span className="text-sm font-semibold">{attendanceRate}% Attendance Rate</span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                 <Button 
                   onClick={() => fetchAttendanceData(true)} 
                   className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 min-h-[44px]" 
                   size="lg"
                   disabled={isRefreshing}
                 >
-                  {isRefreshing ? (
-                    <RefreshCw className={`h-5 w-5 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  ) : (
-                    <RefreshCw className={`h-5 w-5 mr-2`} />
-                  )}
-                  Refresh Data
+                  <RefreshCw className={`h-5 w-5 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Refresh Data</span>
+                  <span className="sm:hidden">Refresh</span>
                 </Button>
               </div>
+
             </div>
           </div>
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16"></div>
+          <div className="absolute top-1/2 right-1/4 w-20 h-20 bg-white/5 rounded-full"></div>
         </div>
 
         {/* Enhanced Statistics Overview */}
@@ -601,7 +656,46 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
           </Card>
         </div>
 
+        {/* Status Breakdown Chips - Quick Overview */}
+        {!loading && Object.keys(statusBreakdown).length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            <span className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-indigo-500" />
+              Quick Status:
+            </span>
+            {Object.entries(statusBreakdown).map(([status, count]) => {
+              const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] || { label: status, color: 'bg-gray-100 text-gray-800' };
+              return (
+                <button
+                  key={status}
+                  onClick={() => setSelectedStatus(selectedStatus === status ? 'all' : status)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 border ${
+                    selectedStatus === status 
+                      ? 'ring-2 ring-offset-2 ring-indigo-500 shadow-md' 
+                      : 'hover:shadow-md'
+                  } ${config.color}`}
+                >
+                  {config.label}
+                  <span className="bg-black/10 px-1.5 py-0.5 rounded-full text-xs font-bold">{count}</span>
+                </button>
+              );
+            })}
+            {hasActiveFilters && (
+              <Button
+                onClick={resetFilters}
+                variant="outline"
+                size="sm"
+                className="ml-2 bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-800 transition-all duration-200 hover:scale-105"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Reset Filters
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Mobile Filters - Same as Desktop */}
+
         <Card className="md:hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-t-xl">
             <CardTitle className="flex items-center gap-3 text-slate-800">
@@ -972,16 +1066,38 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gradient-to-r from-slate-100 to-slate-200 border-b-2 border-slate-300">
-                      <th className="text-left p-4 font-semibold text-slate-800 bg-gradient-to-r from-blue-50 to-blue-100">
+                      <th 
+                        className="text-left p-4 font-semibold text-slate-800 bg-gradient-to-r from-blue-50 to-blue-100 cursor-pointer hover:bg-blue-200 transition-colors group"
+                        onClick={() => {
+                          if (sortBy === 'name') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          else { setSortBy('name'); setSortOrder('asc'); }
+                        }}
+                      >
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-blue-600" />
                           User Name
+                          {sortBy === 'name' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="h-3 w-3 text-blue-600" /> : <ArrowDown className="h-3 w-3 text-blue-600" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </div>
                       </th>
-                      <th className="text-left p-4 font-semibold text-slate-800">
+                      <th 
+                        className="text-left p-4 font-semibold text-slate-800 cursor-pointer hover:bg-slate-300 transition-colors group"
+                        onClick={() => {
+                          if (sortBy === 'date') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          else { setSortBy('date'); setSortOrder('desc'); }
+                        }}
+                      >
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-green-600" />
                           Date
+                          {sortBy === 'date' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="h-3 w-3 text-green-600" /> : <ArrowDown className="h-3 w-3 text-green-600" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </div>
                       </th>
                       <th className="text-left p-4 font-semibold text-slate-800">
@@ -996,16 +1112,38 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                           Check-Out
                         </div>
                       </th>
-                      <th className="text-left p-4 font-semibold text-slate-800">
+                      <th 
+                        className="text-left p-4 font-semibold text-slate-800 cursor-pointer hover:bg-slate-300 transition-colors group"
+                        onClick={() => {
+                          if (sortBy === 'hours') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          else { setSortBy('hours'); setSortOrder('desc'); }
+                        }}
+                      >
                         <div className="flex items-center gap-2">
                           <Timer className="h-4 w-4 text-indigo-600" />
                           Total Hours
+                          {sortBy === 'hours' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="h-3 w-3 text-indigo-600" /> : <ArrowDown className="h-3 w-3 text-indigo-600" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </div>
                       </th>
-                      <th className="text-left p-4 font-semibold text-slate-800">
+                      <th 
+                        className="text-left p-4 font-semibold text-slate-800 cursor-pointer hover:bg-slate-300 transition-colors group"
+                        onClick={() => {
+                          if (sortBy === 'status') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          else { setSortBy('status'); setSortOrder('asc'); }
+                        }}
+                      >
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-emerald-600" />
                           Status
+                          {sortBy === 'status' ? (
+                            sortOrder === 'asc' ? <ArrowUp className="h-3 w-3 text-emerald-600" /> : <ArrowDown className="h-3 w-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </div>
                       </th>
                       <th className="text-left p-4 font-semibold text-slate-800">
@@ -1022,6 +1160,7 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                       </th>
                     </tr>
                   </thead>
+
                   <tbody className="divide-y divide-slate-200">
                     {loading ? (
                       // Enhanced skeleton rows with fixed heights to prevent CLS
@@ -1057,278 +1196,295 @@ const AdminAttendancePage = memo(function AdminAttendancePage() {
                         const StatusIcon = record.statusConfig.icon;
                         
                         return (
-                          <tr key={record.id} className={`transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:shadow-md ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} h-24`}>
+                          <tr 
+                            key={record.id} 
+                            className={`
+                              transition-all duration-300 ease-in-out
+                              hover:bg-gradient-to-r hover:from-blue-50/80 hover:via-indigo-50/60 hover:to-purple-50/40 
+                              hover:shadow-lg hover:shadow-blue-100/50 hover:-translate-y-0.5
+                              ${index % 2 === 0 ? 'bg-white' : 'bg-gradient-to-r from-slate-50/80 to-gray-50/50'}
+                              border-b border-slate-100 last:border-b-0
+                              group/row
+                            `}
+                          >
                             {/* User Name */}
-                            <td className="p-4">
+                            <td className="p-4 py-5">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                  {(record.user.name || record.user.email).charAt(0).toUpperCase()}
+                                <div className="relative">
+                                  <div className="w-11 h-11 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-200/50 group-hover/row:shadow-lg group-hover/row:shadow-blue-300/50 transition-all duration-300">
+                                    {(record.user.name || record.user.email).charAt(0).toUpperCase()}
+                                  </div>
+                                  {record.status === 'CHECKED_IN' && (
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
+                                  )}
                                 </div>
-                                <div>
-                                  <div className="font-semibold text-slate-800 text-sm">
+                                <div className="space-y-1">
+                                  <div className="font-semibold text-slate-800 text-sm group-hover/row:text-indigo-700 transition-colors duration-200">
                                     {record.user.name || record.user.email}
                                   </div>
-                                  {/* Fixed height container to prevent CLS */}
-                                  <div className="min-h-[20px] mt-1">
+                                  <div className="text-xs text-slate-500 truncate max-w-[150px]">
+                                    {record.user.email}
+                                  </div>
+                                  {/* Zones */}
+                                  <div className="flex flex-wrap gap-1 mt-1">
                                     {record.user.serviceZones.length > 0 ? (
-                                      <div className="flex flex-wrap gap-1">
-                                        {record.user.serviceZones.slice(0, 2).map((sz: any, idx: number) => (
-                                          <span key={idx} className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium">
-                                            📍 {sz.serviceZone.name}
+                                      <>
+                                        {record.user.serviceZones.slice(0, 1).map((sz: any, idx: number) => (
+                                          <span key={idx} className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md font-medium border border-blue-100">
+                                            <MapPin className="h-3 w-3" />
+                                            {sz.serviceZone.name}
                                           </span>
                                         ))}
-                                        {record.user.serviceZones.length > 2 && (
-                                          <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">+{record.user.serviceZones.length - 2}</span>
+                                        {record.user.serviceZones.length > 1 && (
+                                          <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md">+{record.user.serviceZones.length - 1}</span>
                                         )}
-                                      </div>
+                                      </>
                                     ) : (
-                                      <div className="text-xs text-slate-400">No zones assigned</div>
+                                      <span className="text-xs text-slate-400 italic">No zone</span>
                                     )}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             
+
                             {/* Date */}
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <div className="p-2 bg-green-100 rounded-lg">
+                            <td className="p-4 py-5">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl shadow-sm">
                                   <Calendar className="h-4 w-4 text-green-600" />
                                 </div>
                                 <div>
-                                  <div className="font-medium text-slate-800 text-sm">
+                                  <div className="font-semibold text-slate-800 text-sm">
                                     {record.checkInAt ? format(parseISO(record.checkInAt), 'MMM dd, yyyy') : format(new Date(), 'MMM dd, yyyy')}
                                   </div>
-                                  <div className="text-xs text-slate-500">
+                                  <div className={`text-xs font-medium mt-0.5 ${
+                                    record.checkInAt && isToday(parseISO(record.checkInAt)) 
+                                      ? 'text-emerald-600' 
+                                      : record.checkInAt && isYesterday(parseISO(record.checkInAt))
+                                        ? 'text-amber-600'
+                                        : 'text-slate-500'
+                                  }`}>
                                     {record.checkInAt ? (
-                                      isToday(parseISO(record.checkInAt)) ? '🟢 Today' :
-                                      isYesterday(parseISO(record.checkInAt)) ? '🟡 Yesterday' : '📅 Past'
-                                    ) : '📅 Today'}
+                                      isToday(parseISO(record.checkInAt)) ? 'Today' :
+                                      isYesterday(parseISO(record.checkInAt)) ? 'Yesterday' : format(parseISO(record.checkInAt), 'EEEE')
+                                    ) : 'Today'}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             
                             {/* Check-In Time */}
-                            <td className="p-4">
+                            <td className="p-4 py-5">
                               {record.checkInAt ? (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-purple-100 rounded-lg">
-                                      <Clock className="h-4 w-4 text-purple-600" />
-                                    </div>
-                                    <div>
-                                      <div className="font-semibold text-slate-800 text-sm">
-                                        {format(parseISO(record.checkInAt), 'HH:mm')}
-                                      </div>
-                                      <div className="text-xs text-slate-500">Check-in</div>
-                                    </div>
-                                    {record.checkInLatitude && record.checkInLongitude && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-8 w-8 p-0 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
-                                        onClick={() => window.open(`https://maps.google.com/?q=${record.checkInLatitude},${record.checkInLongitude}`, '_blank')}
-                                      >
-                                        <Map className="h-4 w-4 text-blue-600" />
-                                      </Button>
-                                    )}
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2.5 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl shadow-sm">
+                                    <Clock className="h-4 w-4 text-purple-600" />
                                   </div>
-                                  {/* Fixed height container for address */}
-                                  <div className="min-h-[24px] mt-2">
+                                  <div>
+                                    <div className="font-bold text-lg text-slate-800 tabular-nums">
+                                      {format(parseISO(record.checkInAt), 'HH:mm')}
+                                    </div>
                                     {record.checkInAddress ? (
-                                      <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded max-w-32 truncate">
-                                        📍 {record.checkInAddress}
+                                      <div className="text-xs text-slate-500 truncate max-w-[120px]" title={record.checkInAddress}>
+                                        {record.checkInAddress}
                                       </div>
                                     ) : (
-                                      <div className="text-xs text-slate-400">No address</div>
+                                      <div className="text-xs text-slate-400">Check-in</div>
                                     )}
                                   </div>
+                                  {record.checkInLatitude && record.checkInLongitude && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110"
+                                      onClick={() => window.open(`https://maps.google.com/?q=${record.checkInLatitude},${record.checkInLongitude}`, '_blank')}
+                                    >
+                                      <Map className="h-3.5 w-3.5 text-blue-600" />
+                                    </Button>
+                                  )}
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-red-100 rounded-lg">
-                                    <XCircle className="h-4 w-4 text-red-500" />
+                                  <div className="p-2 bg-red-50 rounded-lg">
+                                    <XCircle className="h-4 w-4 text-red-400" />
                                   </div>
-                                  <span className="text-sm text-red-600 font-medium">No check-in</span>
+                                  <span className="text-sm text-red-500 font-medium">Not checked in</span>
                                 </div>
                               )}
                             </td>
                             
+
                             {/* Check-Out Time */}
-                            <td className="p-4">
+                            <td className="p-4 py-5">
                               {record.checkOutAt ? (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <div className={`p-2 rounded-lg ${record.isAutoCheckout ? 'bg-purple-100' : 'bg-orange-100'}`}>
-                                      <Clock className={`h-4 w-4 ${record.isAutoCheckout ? 'text-purple-600' : 'text-orange-600'}`} />
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-slate-800 text-sm">
-                                          {format(parseISO(record.checkOutAt), 'HH:mm')}
-                                        </span>
-                                        {record.isAutoCheckout && (
-                                          <Zap className="h-3 w-3 text-purple-600" />
-                                        )}
-                                      </div>
-                                      <div className="text-xs text-slate-500">
-                                        {record.isAutoCheckout ? '⚡ Auto checkout' : 'Manual checkout'}
-                                      </div>
-                                    </div>
-                                    {record.checkOutLatitude && record.checkOutLongitude && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-8 w-8 p-0 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
-                                        onClick={() => window.open(`https://maps.google.com/?q=${record.checkOutLatitude},${record.checkOutLongitude}`, '_blank')}
-                                      >
-                                        <Map className="h-4 w-4 text-blue-600" />
-                                      </Button>
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2.5 rounded-xl shadow-sm ${
+                                    record.isAutoCheckout 
+                                      ? 'bg-gradient-to-br from-purple-100 to-violet-100' 
+                                      : 'bg-gradient-to-br from-orange-100 to-amber-100'
+                                  }`}>
+                                    {record.isAutoCheckout ? (
+                                      <Zap className="h-4 w-4 text-purple-600" />
+                                    ) : (
+                                      <Clock className="h-4 w-4 text-orange-600" />
                                     )}
                                   </div>
-                                  {/* Fixed height container for checkout address */}
-                                  <div className="min-h-[24px] mt-2">
-                                    {record.checkOutAddress ? (
-                                      <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded max-w-32 truncate">
-                                        📍 {record.checkOutAddress}
-                                      </div>
-                                    ) : (
-                                      <div className="text-xs text-slate-400">No address</div>
-                                    )}
+                                  <div>
+                                    <div className="font-bold text-lg text-slate-800 tabular-nums">
+                                      {format(parseISO(record.checkOutAt), 'HH:mm')}
+                                    </div>
+                                    <div className={`text-xs font-medium ${record.isAutoCheckout ? 'text-purple-600' : 'text-orange-600'}`}>
+                                      {record.isAutoCheckout ? 'Auto' : 'Manual'}
+                                    </div>
+                                  </div>
+                                  {record.checkOutLatitude && record.checkOutLongitude && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110"
+                                      onClick={() => window.open(`https://maps.google.com/?q=${record.checkOutLatitude},${record.checkOutLongitude}`, '_blank')}
+                                    >
+                                      <Map className="h-3.5 w-3.5 text-blue-600" />
+                                    </Button>
+                                  )}
+                                </div>
+                              ) : record.checkInAt ? (
+                                // User checked in but hasn't checked out yet - they're active
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2.5 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl shadow-sm">
+                                    <Activity className="h-4 w-4 text-emerald-600 animate-pulse" />
+                                  </div>
+                                  <div>
+                                    <span className="text-sm text-emerald-600 font-semibold">Active</span>
+                                    <div className="flex items-center gap-1 mt-0.5">
+                                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                      <span className="text-xs text-emerald-500">Working now</span>
+                                    </div>
                                   </div>
                                 </div>
                               ) : (
+                                // User never checked in - show N/A
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-yellow-100 rounded-lg">
-                                    <Clock className="h-4 w-4 text-yellow-600" />
+                                  <div className="p-2 bg-slate-100 rounded-lg">
+                                    <Clock className="h-4 w-4 text-slate-400" />
                                   </div>
-                                  <span className="text-sm text-yellow-600 font-medium">Still active</span>
+                                  <span className="text-sm text-slate-400 font-medium">—</span>
                                 </div>
                               )}
                             </td>
                             
+
                             {/* Total Hours */}
-                            <td className="p-4">
+                            <td className="p-4 py-5">
                               {record.totalHours ? (
-                                <div className="flex items-center gap-2">
-                                  <div className={`p-2 rounded-lg ${
-                                    Number(record.totalHours) > 12 ? 'bg-purple-100' : 
-                                    Number(record.totalHours) < 4 ? 'bg-orange-100' : 'bg-indigo-100'
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2.5 rounded-xl shadow-sm ${
+                                    Number(record.totalHours) > 10 ? 'bg-gradient-to-br from-purple-100 to-violet-100' : 
+                                    Number(record.totalHours) < 4 ? 'bg-gradient-to-br from-orange-100 to-amber-100' : 
+                                    'bg-gradient-to-br from-indigo-100 to-blue-100'
                                   }`}>
                                     <Timer className={`h-4 w-4 ${
-                                      Number(record.totalHours) > 12 ? 'text-purple-600' : 
+                                      Number(record.totalHours) > 10 ? 'text-purple-600' : 
                                       Number(record.totalHours) < 4 ? 'text-orange-600' : 'text-indigo-600'
                                     }`} />
                                   </div>
                                   <div>
-                                    <div className={`font-bold text-sm ${
-                                      Number(record.totalHours) > 12 ? 'text-purple-700' : 
+                                    <div className={`font-bold text-lg tabular-nums ${
+                                      Number(record.totalHours) > 10 ? 'text-purple-700' : 
                                       Number(record.totalHours) < 4 ? 'text-orange-700' : 'text-indigo-700'
                                     }`}>
                                       {Number(record.totalHours).toFixed(1)}h
                                     </div>
-                                    <div className="text-xs text-slate-500">
-                                      {Number(record.totalHours) > 12 ? '🔥 Long day' : 
-                                       Number(record.totalHours) < 4 ? '⚡ Short day' : '✅ Normal'}
+                                    <div className={`text-xs font-medium ${
+                                      Number(record.totalHours) > 10 ? 'text-purple-500' : 
+                                      Number(record.totalHours) < 4 ? 'text-orange-500' : 'text-indigo-500'
+                                    }`}>
+                                      {Number(record.totalHours) > 10 ? 'Overtime' : 
+                                       Number(record.totalHours) < 4 ? 'Short' : 'Standard'}
                                     </div>
                                   </div>
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-gray-100 rounded-lg">
-                                    <Timer className="h-4 w-4 text-gray-400" />
+                                  <div className="p-2 bg-slate-100 rounded-lg animate-pulse">
+                                    <Timer className="h-4 w-4 text-slate-400" />
                                   </div>
-                                  <span className="text-sm text-gray-500 font-medium">Calculating...</span>
+                                  <span className="text-sm text-slate-400">In progress</span>
                                 </div>
                               )}
                             </td>
                             
                             {/* Status */}
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <div className={`p-2 rounded-lg ${
-                                  record.status === 'CHECKED_IN' ? 'bg-emerald-100' :
-                                  record.status === 'CHECKED_OUT' ? 'bg-blue-100' :
-                                  record.status === 'AUTO_CHECKED_OUT' ? 'bg-purple-100' :
-                                  record.status === 'ABSENT' ? 'bg-red-100' :
-                                  record.status === 'LATE' ? 'bg-yellow-100' : 'bg-orange-100'
-                                }`}>
-                                  <StatusIcon className={`h-4 w-4 ${
-                                    record.status === 'CHECKED_IN' ? 'text-emerald-600' :
-                                    record.status === 'CHECKED_OUT' ? 'text-blue-600' :
-                                    record.status === 'AUTO_CHECKED_OUT' ? 'text-purple-600' :
-                                    record.status === 'ABSENT' ? 'text-red-600' :
-                                    record.status === 'LATE' ? 'text-yellow-600' : 'text-orange-600'
-                                  }`} />
-                                </div>
-                                <div>
-                                  <Badge className={`${record.statusConfig.color} border-0 font-semibold shadow-sm`}>
-                                    {record.statusConfig.label}
-                                  </Badge>
-                                  {/* Fixed height container for status indicator */}
-                                  <div className="min-h-[20px] mt-1">
-                                    {record.status === 'CHECKED_IN' ? (
-                                      <div className="text-xs text-emerald-600 flex items-center gap-1">
-                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                        Active now
-                                      </div>
-                                    ) : (
-                                      <div className="text-xs text-slate-400">Inactive</div>
-                                    )}
+                            <td className="p-4 py-5">
+                              <div className="flex flex-col gap-1.5">
+                                <Badge className={`${record.statusConfig.color} border shadow-sm font-semibold w-fit`}>
+                                  <StatusIcon className="h-3 w-3 mr-1" />
+                                  {record.statusConfig.label}
+                                </Badge>
+                                {record.status === 'CHECKED_IN' && (
+                                  <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    Online
                                   </div>
-                                </div>
+                                )}
                               </div>
                             </td>
                             
+
+                            
                             {/* Activity Count */}
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <div className={`p-2 rounded-lg ${
-                                  record.activityCount === 0 ? 'bg-red-100' :
-                                  record.activityCount < 3 ? 'bg-yellow-100' :
-                                  record.activityCount < 6 ? 'bg-blue-100' : 'bg-green-100'
+                            <td className="p-4 py-5">
+                              <div className="flex items-center gap-3">
+                                <div className={`p-2.5 rounded-xl shadow-sm ${
+                                  record.activityCount === 0 ? 'bg-gradient-to-br from-red-100 to-rose-100' :
+                                  record.activityCount < 3 ? 'bg-gradient-to-br from-amber-100 to-yellow-100' :
+                                  record.activityCount < 6 ? 'bg-gradient-to-br from-blue-100 to-cyan-100' : 
+                                  'bg-gradient-to-br from-green-100 to-emerald-100'
                                 }`}>
                                   <Activity className={`h-4 w-4 ${
                                     record.activityCount === 0 ? 'text-red-600' :
-                                    record.activityCount < 3 ? 'text-yellow-600' :
+                                    record.activityCount < 3 ? 'text-amber-600' :
                                     record.activityCount < 6 ? 'text-blue-600' : 'text-green-600'
                                   }`} />
                                 </div>
                                 <div>
-                                  <div className={`font-bold text-lg ${
+                                  <div className={`font-bold text-lg tabular-nums ${
                                     record.activityCount === 0 ? 'text-red-700' :
-                                    record.activityCount < 3 ? 'text-yellow-700' :
+                                    record.activityCount < 3 ? 'text-amber-700' :
                                     record.activityCount < 6 ? 'text-blue-700' : 'text-green-700'
                                   }`}>
                                     {record.activityCount}
                                   </div>
-                                  <div className="text-xs text-slate-500">
-                                    {record.activityCount === 0 ? '❌ No activity' :
-                                     record.activityCount < 3 ? '⚠️ Low activity' :
-                                     record.activityCount < 6 ? '✅ Good activity' : '🔥 High activity'}
+                                  <div className={`text-xs font-medium ${
+                                    record.activityCount === 0 ? 'text-red-500' :
+                                    record.activityCount < 3 ? 'text-amber-500' :
+                                    record.activityCount < 6 ? 'text-blue-500' : 'text-green-500'
+                                  }`}>
+                                    {record.activityCount === 0 ? 'None' :
+                                     record.activityCount < 3 ? 'Low' :
+                                     record.activityCount < 6 ? 'Good' : 'High'}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             
-                            
                             {/* Actions */}
-                            <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <Link href={`/admin/attendance/${record.id}/view`}>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-9 w-9 p-0 bg-blue-100 hover:bg-blue-200 rounded-lg transition-all duration-200 hover:scale-110" 
-                                    title="View Details"
-                                  >
-                                    <Eye className="h-4 w-4 text-blue-600" />
-                                  </Button>
-                                </Link>
-                              </div>
+                            <td className="p-4 py-5">
+                              <Link href={`/admin/attendance/${record.id}/view`}>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-10 px-4 bg-gradient-to-r from-indigo-100 to-purple-100 hover:from-indigo-200 hover:to-purple-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md group/btn" 
+                                  title="View Details"
+                                >
+                                  <Eye className="h-4 w-4 text-indigo-600 mr-2 group-hover/btn:scale-110 transition-transform" />
+                                  <span className="text-indigo-700 font-medium text-sm">View</span>
+                                </Button>
+                              </Link>
                             </td>
                           </tr>
+
                         );
                       })
                     )}

@@ -30,8 +30,29 @@ interface ServicePerson {
 
 interface Ticket {
   id: number;
+  ticketNumber?: number;
   title: string;
   status: string;
+  assignmentStatus?: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  // Scalar IDs from the ticket
+  customerId?: number;
+  zoneId?: number;
+  assetId?: number;
+  // Nested relations
+  customer?: {
+    id?: number;
+    companyName?: string;
+    address?: string;
+  };
+  zone?: {
+    id?: number;
+    name?: string;
+  };
+  asset?: {
+    id?: number;
+    model?: string;
+    serialNo?: string;
+  };
 }
 
 interface ActivityScheduleFormProps {
@@ -93,6 +114,7 @@ export default function ActivityScheduleForm({
 
   const [servicePersons, setServicePersons] = useState<ServicePerson[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -255,17 +277,38 @@ export default function ActivityScheduleForm({
           assets: customer.assets || []
         }));
         
-        // When editing, ensure the initial customer is in the list even if not in fetched data
+        // When editing, ensure the initial customer is in the list and has the correct assets
         if (isEditing && initialData?.customer && initialData.customer.id) {
-          const initialCustomerExists = formattedCustomers.some((c: any) => c.id === initialData.customer.id);
-          if (!initialCustomerExists) {
+          const initialCustomerIndex = formattedCustomers.findIndex((c: any) => c.id === initialData.customer.id);
+          const initialAssets = Array.isArray(initialData.assets) ? initialData.assets : [];
+          
+          if (initialCustomerIndex === -1) {
+            // Customer not in list, add it with initial assets
             formattedCustomers = [
               {
                 ...initialData.customer,
-                assets: Array.isArray(initialData.assets) ? initialData.assets : [],
+                assets: initialAssets,
               },
               ...formattedCustomers
             ];
+          } else {
+            // Customer exists in list - merge initial assets with fetched assets
+            // Prioritize initial assets to ensure selected assets are available
+            const existingCustomer = formattedCustomers[initialCustomerIndex];
+            const existingAssets = existingCustomer.assets || [];
+            
+            // Combine initial assets with fetched assets, avoiding duplicates
+            const mergedAssets = [...initialAssets];
+            existingAssets.forEach((asset: any) => {
+              if (!mergedAssets.some((a: any) => a.id === asset.id)) {
+                mergedAssets.push(asset);
+              }
+            });
+            
+            formattedCustomers[initialCustomerIndex] = {
+              ...existingCustomer,
+              assets: mergedAssets,
+            };
           }
         }
         
@@ -307,35 +350,49 @@ export default function ActivityScheduleForm({
       return;
     }
 
+    const isInitialCustomer = isEditing && initialData?.customerId?.toString() === formData.customerId;
     const selectedCustomer = customers.find(c => c.id.toString() === formData.customerId);
-    if (selectedCustomer) {
-      // If editing and customer hasn't changed, use initial assets first
-      if (isEditing && initialData?.customerId?.toString() === formData.customerId && initialData?.assets?.length) {
-        setAssets(initialData.assets);
-      } else {
-        setAssets(selectedCustomer.assets || []);
-      }
-      // Preserve initial asset IDs when editing and customer hasn't changed
-      if (isEditing && initialData?.customerId?.toString() === formData.customerId && initialData?.assetIds?.length) {
-        setFormData(prev => ({
-          ...prev,
-          assetIds: initialData.assetIds.map((id: any) => typeof id === 'string' ? id : String(id)),
-        }));
-      }
-    } else if (isEditing && initialData?.customerId?.toString() === formData.customerId) {
-      // Customer not in list yet, but we're editing - use initial assets
-      if (initialData?.assets?.length) {
-        setAssets(initialData.assets);
-      }
+    
+    // Determine which assets to use
+    let assetsToUse: any[] = [];
+    
+    if (isInitialCustomer && initialData?.assets?.length) {
+      // When editing and customer hasn't changed, always use initial assets
+      // This ensures the backend-fetched asset details are preserved
+      assetsToUse = initialData.assets;
+    } else if (selectedCustomer?.assets?.length) {
+      // Use selected customer's assets from the fetched customers list
+      assetsToUse = selectedCustomer.assets;
+    } else if (isEditing && isInitialCustomer) {
+      // Fallback for editing mode: use initial assets if available
+      assetsToUse = initialData?.assets || [];
+    }
+    
+    setAssets(assetsToUse);
+    
+    // Preserve initial asset IDs when editing and customer hasn't changed
+    if (isInitialCustomer && initialData?.assetIds?.length) {
+      setFormData(prev => ({
+        ...prev,
+        assetIds: initialData.assetIds.map((id: any) => typeof id === 'string' ? id : String(id)),
+      }));
+    } else if (!isInitialCustomer) {
+      // Customer changed from initial - clear asset selection
+      setFormData(prev => ({
+        ...prev,
+        assetIds: [],
+      }));
     }
   }, [formData.customerId, customers, isEditing, initialData?.customerId, initialData?.assets, initialData?.assetIds]);
 
-  // Fetch tickets based on activity type
+  // Fetch tickets based on activity type - only shows tickets assigned to the current user
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         if (formData.activityType === 'TICKET_WORK') {
-          const response: any = await apiClient.get('/tickets?status=OPEN,ASSIGNED&limit=100');
+          // API uses role-based filtering - for Zone Users/Zone Managers/Service Persons,
+          // it returns only tickets assigned to them
+          const response: any = await apiClient.get('/tickets?limit=100');
           let ticketData: Ticket[] = [];
           
           if (response.data && Array.isArray(response.data)) {
@@ -345,6 +402,14 @@ export default function ActivityScheduleForm({
           } else if (response.tickets && Array.isArray(response.tickets)) {
             ticketData = response.tickets;
           }
+          
+          // Filter tickets:
+          // 1. Must be ACCEPTED (user has accepted the assignment)
+          // 2. Must not be CLOSED or CANCELLED
+          ticketData = ticketData.filter((ticket: any) => 
+            ticket.assignmentStatus === 'ACCEPTED' &&
+            !['CLOSED', 'CANCELLED'].includes(ticket.status)
+          );
           
           setTickets(ticketData);
         } else {
@@ -378,12 +443,45 @@ export default function ActivityScheduleForm({
         [name]: value,
       };
       
-      if (name === 'zoneId') {
+      // When a ticket is selected in TICKET_WORK mode, auto-populate zone, customer, asset
+      if (name === 'ticketId' && value && prev.activityType === 'TICKET_WORK') {
+        const ticket = tickets.find(t => t.id.toString() === value);
+        if (ticket) {
+          setSelectedTicket(ticket);
+          // Auto-populate zone - use scalar zoneId or nested zone.id
+          const ticketZoneId = ticket.zoneId || ticket.zone?.id;
+          if (ticketZoneId) {
+            newData.zoneId = ticketZoneId.toString();
+          }
+          // Auto-populate customer - use scalar customerId or nested customer.id
+          const ticketCustomerId = ticket.customerId || ticket.customer?.id;
+          if (ticketCustomerId) {
+            newData.customerId = ticketCustomerId.toString();
+          }
+          // Auto-populate asset - use scalar assetId or nested asset.id
+          const ticketAssetId = ticket.assetId || ticket.asset?.id;
+          if (ticketAssetId) {
+            newData.assetIds = [ticketAssetId.toString()];
+          }
+          // Auto-populate location from customer address if available
+          if (ticket.customer?.address && !newData.location) {
+            newData.location = ticket.customer.address;
+          }
+        }
+      }
+      
+      // When activity type changes from TICKET_WORK, clear selected ticket
+      if (name === 'activityType' && value !== 'TICKET_WORK') {
+        setSelectedTicket(null);
+        newData.ticketId = '';
+      }
+      
+      if (name === 'zoneId' && !selectedTicket) {
         newData.customerId = '';
         newData.assetIds = [];
       }
       
-      if (name === 'customerId') {
+      if (name === 'customerId' && !selectedTicket) {
         newData.assetIds = [];
       }
       
@@ -505,6 +603,9 @@ export default function ActivityScheduleForm({
 
           {(formData.servicePersonIds as number[]).length > 0 && (
             <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+              <div className="w-full text-xs text-blue-600 font-medium mb-2">
+                {(formData.servicePersonIds as number[]).length} selected
+              </div>
               {selectedServicePersons.map(sp => (
                 <div key={sp.id} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md hover:shadow-lg transition-shadow">
                   <span>{sp.name || 'Unknown'}</span>
@@ -520,7 +621,21 @@ export default function ActivityScheduleForm({
             </div>
           )}
 
-          <div className="border-2 border-gray-200 rounded-xl p-4 max-h-72 overflow-y-auto space-y-2 bg-gradient-to-b from-white to-gray-50 shadow-sm">
+          {/* Count indicator */}
+          <div className="flex items-center justify-between text-xs text-gray-500 px-1">
+            <span>
+              {servicePersons.filter(sp => 
+                (sp.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                sp.email.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length} of {servicePersons.length} service persons
+              {searchQuery && ' (filtered)'}
+            </span>
+            {servicePersons.length > 30 && !searchQuery && (
+              <span className="text-blue-500">💡 Use search to find quickly</span>
+            )}
+          </div>
+
+          <div className="border-2 border-gray-200 rounded-xl p-4 max-h-[400px] overflow-y-auto space-y-2 bg-gradient-to-b from-white to-gray-50 shadow-sm">
             {loading ? (
               <div className="text-center py-8 text-gray-500">
                 <Loader className="h-5 w-5 animate-spin mx-auto mb-2" />
@@ -622,6 +737,46 @@ export default function ActivityScheduleForm({
             </Select>
           </div>
         </div>
+
+        {/* Related Ticket - only shown for TICKET_WORK activity type */}
+        {formData.activityType === 'TICKET_WORK' && (
+          <div className="space-y-2">
+            <Label htmlFor="ticketId" className="text-gray-700 font-semibold flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              Related Ticket *
+            </Label>
+            <Select value={formData.ticketId} onValueChange={(value) => handleSelectChange('ticketId', value)}>
+              <SelectTrigger id="ticketId" className="border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
+                <SelectValue placeholder="Select a ticket (required for Ticket Work)" />
+              </SelectTrigger>
+              <SelectContent>
+                {tickets.length === 0 ? (
+                  <div className="py-4 px-2 text-center text-gray-500 text-sm">
+                    No assigned tickets found
+                  </div>
+                ) : (
+                  tickets.map(ticket => (
+                    <SelectItem key={ticket.id} value={ticket.id.toString()}>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">#{ticket.ticketNumber ?? ticket.id}</span>
+                        <span className="text-gray-600">-</span>
+                        <span className="truncate max-w-[200px]">{ticket.title}</span>
+                        <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${
+                          ticket.status === 'ASSIGNED' ? 'bg-blue-100 text-blue-700' :
+                          ticket.status === 'OPEN' ? 'bg-yellow-100 text-yellow-700' :
+                          ticket.status === 'IN_PROGRESS' ? 'bg-purple-100 text-purple-700' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {ticket.status.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* SECTION 3: Scheduling Details */}
@@ -687,152 +842,197 @@ export default function ActivityScheduleForm({
         </div>
       </div>
 
-      {/* SECTION 4: Zone & Customer Information */}
-      <div className="space-y-4 pb-8 border-b-2 border-orange-200">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl">
-            <Building2 className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Zone & Customer Information</h3>
-            <p className="text-sm text-gray-500 mt-1">Select the zone and customer for this activity</p>
-          </div>
-        </div>
-
-        {(isAdmin || isZone || isExpert || isEditing) && (
-          <div className="space-y-2">
-            <Label htmlFor="zoneId" className="text-gray-700 font-semibold flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Zone {isAdmin && '*'}
-            </Label>
-            <Select 
-              value={formData.zoneId} 
-              onValueChange={(value) => handleSelectChange('zoneId', value)}
-              disabled={loading}
-            >
-              <SelectTrigger id="zoneId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
-                <SelectValue placeholder={loading ? 'Loading zones...' : 'Select a zone'} />
-              </SelectTrigger>
-              <SelectContent>
-                {zones.map(zone => (
-                  <SelectItem key={zone.id} value={zone.id.toString()}>
-                    {zone.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Label htmlFor="customerId" className="text-gray-700 font-semibold flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
-            Customer
-          </Label>
-          <Select 
-            value={formData.customerId} 
-            onValueChange={(value) => handleSelectChange('customerId', value)}
-            disabled={customersLoading || (!isAdmin && !isEditing && !formData.zoneId)}
-          >
-            <SelectTrigger id="customerId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
-              <SelectValue placeholder={
-                customersLoading ? 'Loading customers...' : 
-                (!isAdmin && !isEditing && !formData.zoneId) ? 'Select a zone first' :
-                'Select a customer'
-              } />
-            </SelectTrigger>
-            <SelectContent>
-              {customers.map(customer => (
-                <SelectItem key={customer.id} value={customer.id.toString()}>
-                  {customer.companyName || customer.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* SECTION 5: Assets & Related Ticket */}
-      <div className="space-y-4 pb-8 border-b-2 border-red-200">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl">
-            <Settings className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">Assets & Related Information</h3>
-            <p className="text-sm text-gray-500 mt-1">Select assets and related ticket if applicable</p>
-          </div>
-        </div>
-
-        {formData.customerId && (
-          <div className="space-y-2">
-            <Label className="text-gray-700 font-semibold flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Assets (Select multiple)
-            </Label>
-            <div className="space-y-2 max-h-48 overflow-y-auto border-2 border-gray-200 rounded-lg p-4 bg-gradient-to-b from-white to-gray-50">
-              {assetsLoading ? (
-                <div className="flex items-center gap-2 justify-center py-4">
-                  <Loader className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">Loading assets...</span>
-                </div>
-              ) : assets.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-4">No assets found for this customer</p>
-              ) : (
-                assets.map(asset => (
-                  <label key={asset.id} className="flex items-center gap-3 p-2 hover:bg-red-50 rounded cursor-pointer transition-colors">
-                    <Checkbox
-                      id={`asset-${asset.id}`}
-                      checked={formData.assetIds?.includes(asset.id.toString()) || formData.assetIds?.includes(asset.id)}
-                      onCheckedChange={() => {
-                        const assetIds = [...(formData.assetIds || [])];
-                        const assetIdStr = asset.id.toString();
-                        if (assetIds.includes(assetIdStr) || assetIds.includes(asset.id)) {
-                          setFormData(prev => ({
-                            ...prev,
-                            assetIds: assetIds.filter(id => id !== assetIdStr && id !== asset.id),
-                          }));
-                        } else {
-                          setFormData(prev => ({
-                            ...prev,
-                            assetIds: [...assetIds, assetIdStr],
-                          }));
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`asset-${asset.id}`} className="text-sm cursor-pointer">
-                      {asset.model || 'Unknown Model'} - {asset.serialNo || asset.serialNumber || 'No Serial'}
-                    </Label>
-                  </label>
-                ))
-              )}
+      {/* SECTION 4: Zone & Customer Information - Only show for non-TICKET_WORK or when no ticket is selected */}
+      {formData.activityType === 'TICKET_WORK' && selectedTicket ? (
+        // Show read-only ticket info when a ticket is selected
+        <div className="space-y-4 pb-8 border-b-2 border-orange-200">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl">
+              <Building2 className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Ticket Information</h3>
+              <p className="text-sm text-gray-500 mt-1">Auto-populated from selected ticket</p>
             </div>
           </div>
-        )}
 
-        {formData.activityType === 'TICKET_WORK' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Zone */}
+            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200">
+              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+                <MapPin className="h-3 w-3" />
+                Zone
+              </div>
+              <div className="font-semibold text-gray-900">
+                {selectedTicket.zone?.name || 'Not assigned'}
+              </div>
+            </div>
+
+            {/* Customer */}
+            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200">
+              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+                <Building2 className="h-3 w-3" />
+                Customer
+              </div>
+              <div className="font-semibold text-gray-900">
+                {selectedTicket.customer?.companyName || 'Not assigned'}
+              </div>
+              {selectedTicket.customer?.address && (
+                <div className="text-xs text-gray-500 mt-1">
+                  📍 {selectedTicket.customer.address}
+                </div>
+              )}
+            </div>
+
+            {/* Asset */}
+            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200 md:col-span-2">
+              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+                <Settings className="h-3 w-3" />
+                Asset
+              </div>
+              <div className="font-semibold text-gray-900">
+                {selectedTicket.asset ? (
+                  <span>
+                    {selectedTicket.asset.model || 'Unknown Model'}
+                    {selectedTicket.asset.serialNo && ` - ${selectedTicket.asset.serialNo}`}
+                  </span>
+                ) : 'No asset assigned'}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Show editable dropdowns for non-TICKET_WORK activities
+        <div className="space-y-4 pb-8 border-b-2 border-orange-200">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl">
+              <Building2 className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Zone & Customer Information</h3>
+              <p className="text-sm text-gray-500 mt-1">Select the zone and customer for this activity</p>
+            </div>
+          </div>
+
+          {(isAdmin || isZone || isExpert || isEditing) && (
+            <div className="space-y-2">
+              <Label htmlFor="zoneId" className="text-gray-700 font-semibold flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Zone {isAdmin && '*'}
+              </Label>
+              <Select 
+                value={formData.zoneId} 
+                onValueChange={(value) => handleSelectChange('zoneId', value)}
+                disabled={loading}
+              >
+                <SelectTrigger id="zoneId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
+                  <SelectValue placeholder={loading ? 'Loading zones...' : 'Select a zone'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {zones.map(zone => (
+                    <SelectItem key={zone.id} value={zone.id.toString()}>
+                      {zone.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
-            <Label htmlFor="ticketId" className="text-gray-700 font-semibold flex items-center gap-2">
-              <AlertCircle className="h-4 w-4" />
-              Related Ticket *
+            <Label htmlFor="customerId" className="text-gray-700 font-semibold flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              Customer
             </Label>
-            <Select value={formData.ticketId} onValueChange={(value) => handleSelectChange('ticketId', value)}>
-              <SelectTrigger id="ticketId" className="border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 h-11 rounded-lg transition-all">
-                <SelectValue placeholder="Select a ticket (required for Ticket Work)" />
+            <Select 
+              value={formData.customerId} 
+              onValueChange={(value) => handleSelectChange('customerId', value)}
+              disabled={customersLoading || (!isAdmin && !isEditing && !formData.zoneId)}
+            >
+              <SelectTrigger id="customerId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
+                <SelectValue placeholder={
+                  customersLoading ? 'Loading customers...' : 
+                  (!isAdmin && !isEditing && !formData.zoneId) ? 'Select a zone first' :
+                  'Select a customer'
+                } />
               </SelectTrigger>
               <SelectContent>
-                {tickets.map(ticket => (
-                  <SelectItem key={ticket.id} value={ticket.id.toString()}>
-                    #{ticket.id} - {ticket.title}
+                {customers.map(customer => (
+                  <SelectItem key={customer.id} value={customer.id.toString()}>
+                    {customer.companyName || customer.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* SECTION 5: Assets - Only show for non-TICKET_WORK activities */}
+      {formData.activityType !== 'TICKET_WORK' && (
+        <div className="space-y-4 pb-8 border-b-2 border-red-200">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl">
+              <Settings className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                Assets
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Select assets for this activity
+              </p>
+            </div>
+          </div>
+
+          {/* Show asset selection only when customer is selected */}
+          {formData.customerId && (
+            <div className="space-y-2">
+              <Label className="text-gray-700 font-semibold flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Assets (Select multiple)
+              </Label>
+              <div className="space-y-2 max-h-48 overflow-y-auto border-2 border-gray-200 rounded-lg p-4 bg-gradient-to-b from-white to-gray-50">
+                {assetsLoading ? (
+                  <div className="flex items-center gap-2 justify-center py-4">
+                    <Loader className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Loading assets...</span>
+                  </div>
+                ) : assets.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">No assets found for this customer</p>
+                ) : (
+                  assets.map(asset => (
+                    <label key={asset.id} className="flex items-center gap-3 p-2 hover:bg-red-50 rounded cursor-pointer transition-colors">
+                      <Checkbox
+                        id={`asset-${asset.id}`}
+                        checked={formData.assetIds?.includes(asset.id.toString()) || formData.assetIds?.includes(asset.id)}
+                        onCheckedChange={() => {
+                          const assetIds = [...(formData.assetIds || [])];
+                          const assetIdStr = asset.id.toString();
+                          if (assetIds.includes(assetIdStr) || assetIds.includes(asset.id)) {
+                            setFormData(prev => ({
+                              ...prev,
+                              assetIds: assetIds.filter(id => id !== assetIdStr && id !== asset.id),
+                            }));
+                          } else {
+                            setFormData(prev => ({
+                              ...prev,
+                              assetIds: [...assetIds, assetIdStr],
+                            }));
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`asset-${asset.id}`} className="text-sm cursor-pointer">
+                        {asset.model || 'Unknown Model'} - {asset.serialNo || asset.serialNumber || 'No Serial'}
+                      </Label>
+                    </label>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* SECTION 6: Additional Notes */}
       <div className="space-y-4 pb-8 border-b-2 border-indigo-200">

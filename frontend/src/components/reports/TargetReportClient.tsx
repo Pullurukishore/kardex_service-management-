@@ -418,11 +418,11 @@ const TargetReportClient: React.FC<TargetReportClientProps> = ({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{target.productType || 'Overall'}</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">₹{(target.targetValue / 100000).toFixed(2)}L</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">₹{(target.actualValue / 100000).toFixed(2)}L</td>
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">₹{((target.targetValue || 0) / 100000).toFixed(2)}L</td>
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">₹{((target.actualValue || 0) / 100000).toFixed(2)}L</td>
                       <td className="px-4 py-3 text-right">
-                        <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
-                          {target.achievement.toFixed(1)}%
+                        <Badge className={`${getAchievementColor(target.achievement || 0)} text-xs font-bold`}>
+                          {(target.achievement || 0).toFixed(1)}%
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -431,14 +431,14 @@ const TargetReportClient: React.FC<TargetReportClientProps> = ({
                         </Badge>
                       </td>
                       <td className={`px-4 py-3 text-right text-sm font-semibold flex items-center justify-end gap-1 ${
-                        target.variance >= 0 ? 'text-emerald-700' : 'text-red-700'
+                        (target.variance || 0) >= 0 ? 'text-emerald-700' : 'text-red-700'
                       }`}>
-                        {target.variance >= 0 ? (
+                        {(target.variance || 0) >= 0 ? (
                           <TrendingUp className="h-4 w-4" />
                         ) : (
                           <TrendingDown className="h-4 w-4" />
                         )}
-                        ₹{(Math.abs(target.variance) / 100000).toFixed(2)}L
+                        ₹{(Math.abs(target.variance || 0) / 100000).toFixed(2)}L
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button
@@ -503,11 +503,11 @@ const TargetReportClient: React.FC<TargetReportClientProps> = ({
                         }
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{target.productType || 'Overall'}</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">₹{(target.targetValue / 100000).toFixed(2)}L</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">₹{(target.actualValue / 100000).toFixed(2)}L</td>
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">₹{((target.targetValue || 0) / 100000).toFixed(2)}L</td>
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">₹{((target.actualValue || 0) / 100000).toFixed(2)}L</td>
                       <td className="px-4 py-3 text-right">
-                        <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
-                          {target.achievement.toFixed(1)}%
+                        <Badge className={`${getAchievementColor(target.achievement || 0)} text-xs font-bold`}>
+                          {(target.achievement || 0).toFixed(1)}%
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -516,14 +516,14 @@ const TargetReportClient: React.FC<TargetReportClientProps> = ({
                         </Badge>
                       </td>
                       <td className={`px-4 py-3 text-right text-sm font-semibold flex items-center justify-end gap-1 ${
-                        target.variance >= 0 ? 'text-emerald-700' : 'text-red-700'
+                        (target.variance || 0) >= 0 ? 'text-emerald-700' : 'text-red-700'
                       }`}>
-                        {target.variance >= 0 ? (
+                        {(target.variance || 0) >= 0 ? (
                           <TrendingUp className="h-4 w-4" />
                         ) : (
                           <TrendingDown className="h-4 w-4" />
                         )}
-                        ₹{(Math.abs(target.variance) / 100000).toFixed(2)}L
+                        ₹{(Math.abs(target.variance || 0) / 100000).toFixed(2)}L
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button

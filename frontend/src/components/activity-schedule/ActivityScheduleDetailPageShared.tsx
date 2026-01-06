@@ -426,6 +426,15 @@ export default function ActivityScheduleDetailPageShared() {
   const canComplete = schedule.status === 'ACCEPTED';
   const canCancel = schedule.status === 'PENDING';
 
+  // Combine directly linked assets and ticket asset
+  const displayAssets = [...(schedule.assets || [])];
+  if (schedule.ticket?.asset) {
+    const ticketAssetId = schedule.ticket.asset.id;
+    if (!displayAssets.some((a: any) => a.id === ticketAssetId)) {
+      displayAssets.push(schedule.ticket.asset);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Vibrant Hero Header */}
@@ -673,7 +682,7 @@ export default function ActivityScheduleDetailPageShared() {
             </Card>
 
             {/* Zone, Customer & Assets */}
-            {((schedule.zone || schedule.customer) || (schedule.assets && schedule.assets.length > 0)) && (
+            {((schedule.zone || schedule.customer) || (displayAssets.length > 0)) && (
               <Card className="shadow-lg border-0 overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
                   <CardTitle className="flex items-center gap-3 text-xl">
@@ -714,14 +723,14 @@ export default function ActivityScheduleDetailPageShared() {
                     </div>
                   )}
 
-                  {schedule.assets && schedule.assets.length > 0 && (
+                  {displayAssets.length > 0 && (
                     <div>
                       <label className="text-sm font-medium text-gray-600 mb-3 block flex items-center gap-2">
                         <Layers className="h-4 w-4 text-gray-400" />
-                        Linked Assets ({schedule.assets.length})
+                        Linked Assets ({displayAssets.length})
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {schedule.assets.map((asset: any) => (
+                        {displayAssets.map((asset: any) => (
                           <div key={asset.id} className="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100">
                             <div className="flex items-start gap-3">
                               <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg text-white">

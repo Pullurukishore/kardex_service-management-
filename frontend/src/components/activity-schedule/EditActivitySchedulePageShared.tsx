@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -86,7 +86,12 @@ export default function EditActivitySchedulePageShared() {
     }
   }, [scheduleId, getBasePath, router]);
 
+  // Ref to prevent duplicate API calls (React StrictMode protection)
+  const hasFetchedSchedule = useRef(false);
+
   useEffect(() => {
+    if (hasFetchedSchedule.current) return;
+    hasFetchedSchedule.current = true;
     fetchSchedule();
   }, [fetchSchedule]);
 

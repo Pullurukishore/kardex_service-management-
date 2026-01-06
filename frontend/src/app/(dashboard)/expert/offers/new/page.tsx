@@ -210,7 +210,7 @@ export default function NewOfferPage() {
   const fetchSpareParts = async () => {
     try {
       setLoadingSpareParts(true)
-      const response = await apiService.getSpareParts({ status: 'ACTIVE', limit: 100 })
+      const response = await apiService.getSpareParts({ status: 'ACTIVE', limit: 1000 })
       setSpareParts(response.spareParts || [])
     } catch (error: any) {
       console.error('Failed to fetch spare parts:', error)

@@ -1,82 +1,57 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 const prisma = new PrismaClient();
 
-async function createUsers() {
-  const users = [
-    {
-      email: 'admin@kardex.com',
-      password: 'admin123',
-      name: 'Admin User',
-      role: 'ADMIN'
-    },
-    {
-      email: 'kishore@gmail.com',
-      password: 'kishore@123',
-      name: 'Kishore',
-      role: 'ZONE_MANAGER',
-      zoneId: '2'
-    }
-  ];
+async function createAdminUser() {
+    try {
+        console.log('[INFO] Creating admin user...');
 
-  try {
-    for (const userData of users) {
-      const { email, password, name, role, zoneId } = userData;
-      
-      // Check if user already exists
-      const existingUser = await prisma.user.findUnique({
-        where: { email }
-      });
-
-      if (existingUser) {
-        console.log(`User with email ${email} already exists. Updating...`);
-        
-        // Update existing user
-        const updatedUser = await prisma.user.update({
-          where: { email },
-          data: {
-            role,
-            password: await bcrypt.hash(password, 10),
-            isActive: true,
-            lastPasswordChange: new Date(),
-            ...(zoneId && { zoneId })
-          }
+        // Check if admin already exists
+        const existingAdmin = await prisma.user.findFirst({
+            where: {
+                role: 'ADMIN'
+            }
         });
-        
-        console.log(`✅ ${role} user updated successfully!`);
-        console.log(`Email: ${updatedUser.email}`);
-        console.log(`Role: ${updatedUser.role}`);
-        continue;
-      }
 
-      // Create new user
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
-      const user = await prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          name,
-          role,
-          isActive: true,
-          tokenVersion: '1',
-          lastPasswordChange: new Date(),
-          ...(zoneId && { zoneId })
+        if (existingAdmin) {
+            console.log(`[INFO] Admin user already exists with ID: ${existingAdmin.id}`);
+            console.log(`[INFO] Email: ${existingAdmin.email}`);
+            return existingAdmin;
         }
-      });
 
-      console.log(`✅ ${role} user created successfully!`);
-      console.log(`Email: ${user.email}`);
-      console.log(`Role: ${user.role}`);
-      if (zoneId) console.log(`Zone ID: ${user.zoneId}`);
+        // Hash password
+        const hashedPassword = await bcrypt.hash('Admin@123', 10);
+
+        // Create admin user
+        const admin = await prisma.user.create({
+            data: {
+                email: 'admin@kardexcare.com',
+                password: hashedPassword,
+                role: 'ADMIN',
+                name: 'System Admin',
+                isActive: true,
+                tokenVersion: uuidv4()
+            }
+        });
+
+        console.log('[SUCCESS] ✓ Admin user created successfully!');
+        console.log(`[INFO] ID: ${admin.id}`);
+        console.log(`[INFO] Email: admin@kardexcare.com`);
+        console.log(`[INFO] Password: Admin@123`);
+        console.log('[WARN] ⚠ Please change the password after first login!');
+
+        return admin;
+
+    } catch (error) {
+        console.error(`[ERROR] ✗ Failed to create admin: ${error.message}`);
+        throw error;
+    } finally {
+        await prisma.$disconnect();
     }
-    
-  } catch (error) {
-    console.error('❌ Error creating users:', error);
-  } finally {
-    await prisma.$disconnect();
-  }
 }
 
-createUsers();
+createAdminUser()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));

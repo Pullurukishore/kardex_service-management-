@@ -654,7 +654,7 @@ export default function AdminTicketsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Link href={`/admin/tickets/${ticket.id}/list`} className="font-mono font-bold text-red-600 hover:text-red-700 text-sm hover:underline">
-                          #{ticket.id}
+                          #{ticket.ticketNumber ?? ticket.id}
                         </Link>
                         {ticket.status === 'OPEN' && (
                           <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded">NEW</span>

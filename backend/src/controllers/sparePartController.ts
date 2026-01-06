@@ -36,10 +36,10 @@ export class SparePartController {
   // Get all spare parts
   static async getSpareParts(req: AuthenticatedRequest, res: Response) {
     try {
-      const { 
-        search, 
-        page = 1, 
-        limit = 50,
+      const {
+        search,
+        page = 1,
+        limit = 1000,
         category,
         status = 'ACTIVE'
       } = req.query;
@@ -159,8 +159,8 @@ export class SparePartController {
 
       // Validation
       if (!name || !partNumber || !basePrice) {
-        return res.status(400).json({ 
-          error: 'Name, part number, and base price are required' 
+        return res.status(400).json({
+          error: 'Name, part number, and base price are required'
         });
       }
 
@@ -170,8 +170,8 @@ export class SparePartController {
       });
 
       if (existingPart) {
-        return res.status(400).json({ 
-          error: 'Part number already exists' 
+        return res.status(400).json({
+          error: 'Part number already exists'
         });
       }
 
@@ -230,8 +230,8 @@ export class SparePartController {
         });
 
         if (existingPart) {
-          return res.status(400).json({ 
-            error: 'Part number already exists' 
+          return res.status(400).json({
+            error: 'Part number already exists'
           });
         }
       }
@@ -354,7 +354,7 @@ export class SparePartController {
       }
 
       const results = [];
-      
+
       for (const update of updates) {
         if (!update.id || !update.basePrice) {
           continue;
@@ -376,9 +376,9 @@ export class SparePartController {
 
       logger.info(`Bulk price update completed by ${req.user?.email || 'unknown'}`);
 
-      res.json({ 
+      res.json({
         message: `Successfully updated ${results.length} spare parts`,
-        updatedParts: results 
+        updatedParts: results
       });
       return;
     } catch (error) {

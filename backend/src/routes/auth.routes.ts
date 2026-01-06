@@ -1,30 +1,30 @@
 import { Router, Request, Response, NextFunction, RequestHandler } from 'express';
 import { body, validationResult, ValidationChain } from 'express-validator';
 import { UserRole } from '@prisma/client';
-import { 
-  register, 
-  login, 
-  logout, 
+import {
+  register,
+  login,
+  logout,
   getCurrentUser,
   refreshToken,
   forgotPassword,
   resetPassword
 } from '../controllers/auth.controller';
-import { 
-  validatePin, 
-  checkPinStatus, 
-  generateNewPin 
+import {
+  validatePin,
+  checkPinStatus,
+  generateNewPin
 } from '../controllers/pinAuthController';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth.middleware';
 import rateLimit from 'express-rate-limit';
 
 // Type guard for UserRole
 const isUserRole = (value: unknown): value is UserRole => {
-  return typeof value === 'string' && 
-    (value === 'ADMIN' || 
-     value === 'ZONE_USER' || 
-     value === 'SERVICE_PERSON' || 
-     value === 'CUSTOMER_OWNER');
+  return typeof value === 'string' &&
+    (value === 'ADMIN' ||
+      value === 'ZONE_USER' ||
+      value === 'SERVICE_PERSON' ||
+      value === 'CUSTOMER_OWNER');
 };
 
 // Role validation middleware
@@ -48,6 +48,20 @@ const validateRequest = (validations: any[]) => {
 };
 const router = Router();
 
+// Rate limiting for login endpoint to prevent brute force attacks
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 login attempts per window
+  message: {
+    success: false,
+    message: 'Too many login attempts. Please try again after 15 minutes.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skipSuccessfulRequests: true, // Don't count successful logins against the limit
+});
+
 // Register route
 router.post(
   '/register',
@@ -62,9 +76,10 @@ router.post(
   (register as unknown) as RequestHandler
 );
 
-// Login route
+// Login route with rate limiting
 router.post(
   '/login',
+  loginLimiter,
   validateRequest([
     body('email').isEmail().normalizeEmail(),
     body('password').notEmpty()

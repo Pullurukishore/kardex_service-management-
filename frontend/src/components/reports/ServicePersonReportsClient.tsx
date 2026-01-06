@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -136,6 +136,10 @@ export default function ServicePersonReportsClient({
   const [dateRange, setDateRange] = useState(initialDateRange);
   const { toast } = useToast();
 
+  // Refs to prevent duplicate API calls (React StrictMode protection)
+  const hasFetchedInitialData = useRef(false);
+  const isFetching = useRef(false);
+
   // Handle date range change
   const handleDateRangeChange = (field: 'from' | 'to', value: string) => {
     setDateRange(prev => ({
@@ -146,6 +150,10 @@ export default function ServicePersonReportsClient({
 
   // Fetch report data
   const fetchReportData = useCallback(async () => {
+    // Prevent concurrent fetches
+    if (isFetching.current) return;
+    isFetching.current = true;
+
     try {
       setLoading(true);
       
@@ -200,11 +208,15 @@ export default function ServicePersonReportsClient({
       });
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   }, [dateRange.from, dateRange.to, toast]);
 
   // Fetch data when date range changes
   useEffect(() => {
+    // Skip if already fetched (React Strict Mode protection)
+    if (hasFetchedInitialData.current) return;
+    hasFetchedInitialData.current = true;
     fetchReportData();
   }, [fetchReportData]);
 

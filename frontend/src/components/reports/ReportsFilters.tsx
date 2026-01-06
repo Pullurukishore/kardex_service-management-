@@ -160,7 +160,7 @@ const ReportsFilters: React.FC<ReportsFiltersProps> = ({
       </div>
 
       {/* Customer Filter - only show for offer-summary */}
-      {filters.reportType === 'offer-summary' && (
+      {(filters.reportType === 'offer-summary' || filters.reportType === 'zone-user-offer-summary') && (
         <div className="space-y-1">
           <Label className="text-sm font-medium text-foreground">Customer</Label>
           <SearchableSelect
@@ -181,7 +181,7 @@ const ReportsFilters: React.FC<ReportsFiltersProps> = ({
       )}
 
       {/* Product Type Filter - only show for offer-summary */}
-      {filters.reportType === 'offer-summary' && (
+      {(filters.reportType === 'offer-summary' || filters.reportType === 'zone-user-offer-summary') && (
         <div className="space-y-1">
           <Label className="text-sm font-medium text-foreground">Product Type</Label>
           <Select
@@ -204,7 +204,7 @@ const ReportsFilters: React.FC<ReportsFiltersProps> = ({
       )}
 
       {/* Stage Filter - only show for offer-summary */}
-      {filters.reportType === 'offer-summary' && (
+      {(filters.reportType === 'offer-summary' || filters.reportType === 'zone-user-offer-summary') && (
         <div className="space-y-1">
           <Label className="text-sm font-medium text-foreground">Stage</Label>
           <Select

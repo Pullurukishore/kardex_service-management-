@@ -6,8 +6,6 @@ import {
   RefreshCw, 
   Target, 
   CheckCircle,
-  TrendingUp,
-  TrendingDown,
   Clock,
   Timer,
   FileText,
@@ -196,18 +194,7 @@ export default function ZoneExecutiveSummaryCards({
                   </p>
                   <p className="text-3xl font-bold text-slate-900">{metric.value}</p>
                   <p className="text-xs text-slate-500">{metric.description}</p>
-                  {metric.change !== undefined && (
-                    <div className="flex items-center gap-1">
-                      {metric.isPositive ? (
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-red-600" />
-                      )}
-                      <span className={`text-xs font-medium ${metric.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatChange(metric.change, metric.isPositive)}
-                      </span>
-                    </div>
-                  )}
+
                 </div>
                 <div className={`p-3 rounded-xl bg-gradient-to-r ${metric.color} shadow-lg`}>
                   {metric.icon && React.createElement(metric.icon, { className: "w-6 h-6 text-white" })}

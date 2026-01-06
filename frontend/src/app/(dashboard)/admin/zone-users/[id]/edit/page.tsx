@@ -59,6 +59,9 @@ const formSchema = z.object({
   phone: z.string().optional(),
   password: z.string().min(6, 'Password must be at least 6 characters').optional().or(z.literal('')),
   confirmPassword: z.string().optional(),
+  role: z.enum(['ZONE_USER', 'ZONE_MANAGER'], {
+    errorMap: () => ({ message: 'Please select a valid role' })
+  }),
   serviceZoneIds: z.array(z.number()).min(1, 'Please select a service zone')
 }).refine((data) => {
   if (data.password && data.password.length > 0) {
@@ -83,6 +86,7 @@ export default function EditZoneUserPage() {
   const [zoneUser, setZoneUser] = useState<ZoneUser | null>(null);
   const [serviceZones, setServiceZones] = useState<ServiceZone[]>([]);
   const [selectedZones, setSelectedZones] = useState<number[]>([]);
+  const [selectedRole, setSelectedRole] = useState<'ZONE_USER' | 'ZONE_MANAGER'>('ZONE_USER');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,6 +96,7 @@ export default function EditZoneUserPage() {
       phone: '',
       password: '',
       confirmPassword: '',
+      role: 'ZONE_USER',
       serviceZoneIds: [] 
     }
   });
@@ -144,12 +149,15 @@ export default function EditZoneUserPage() {
 
         const assigned = (user.serviceZones || []).map((z) => z.serviceZone.id);
         setSelectedZones(assigned);
+        const userRole = (user.role === 'ZONE_MANAGER' ? 'ZONE_MANAGER' : 'ZONE_USER') as 'ZONE_USER' | 'ZONE_MANAGER';
+        setSelectedRole(userRole);
         form.reset({ 
           email: user.email || '',
           name: user.name || '',
           phone: user.phone || '',
           password: '',
           confirmPassword: '',
+          role: userRole,
           serviceZoneIds: assigned 
         });
       } catch (error: any) {
@@ -197,18 +205,19 @@ export default function EditZoneUserPage() {
     try {
       const promises = [];
       
-      // 1. Update user profile (email, name, phone) via admin API
+      // 1. Update user profile (email, name, phone, role) via admin API
       const profileUpdateData = {
         email: values.email,
         name: values.name,
         phone: values.phone || undefined,
+        role: values.role,
       };
       
-      promises.push(apiClient.put(`/admin/users/${userId}`, profileUpdateData));
+      promises.push(apiClient.put(`/admin/${userId}`, profileUpdateData));
       
       // 2. Update password if provided via separate password reset API
       if (values.password && values.password.length > 0) {
-        promises.push(apiClient.post(`/admin/users/${userId}/reset-password`, {
+        promises.push(apiClient.post(`/admin/${userId}/reset-password`, {
           newPassword: values.password
         }));
       }
@@ -447,6 +456,90 @@ export default function EditZoneUserPage() {
                   )}
                 />
               </div>
+
+              {/* Role Selection */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                      <Shield className="h-4 w-4 text-indigo-600" />
+                      User Role *
+                    </FormLabel>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="relative">
+                        <input
+                          type="radio"
+                          id="role-zone-user"
+                          value="ZONE_USER"
+                          checked={selectedRole === 'ZONE_USER'}
+                          onChange={() => {
+                            setSelectedRole('ZONE_USER');
+                            form.setValue('role', 'ZONE_USER', { shouldValidate: true });
+                          }}
+                          className="sr-only"
+                        />
+                        <label
+                          htmlFor="role-zone-user"
+                          className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            selectedRole === 'ZONE_USER'
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 bg-white hover:border-blue-300'
+                          }`}
+                        >
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                            selectedRole === 'ZONE_USER'
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedRole === 'ZONE_USER' && <div className="h-2 w-2 bg-white rounded-full" />}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">Zone User</p>
+                            <p className="text-xs text-gray-600">Can manage assigned zones</p>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type="radio"
+                          id="role-zone-manager"
+                          value="ZONE_MANAGER"
+                          checked={selectedRole === 'ZONE_MANAGER'}
+                          onChange={() => {
+                            setSelectedRole('ZONE_MANAGER');
+                            form.setValue('role', 'ZONE_MANAGER', { shouldValidate: true });
+                          }}
+                          className="sr-only"
+                        />
+                        <label
+                          htmlFor="role-zone-manager"
+                          className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            selectedRole === 'ZONE_MANAGER'
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 bg-white hover:border-purple-300'
+                          }`}
+                        >
+                          <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                            selectedRole === 'ZONE_MANAGER'
+                              ? 'border-purple-500 bg-purple-500'
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedRole === 'ZONE_MANAGER' && <div className="h-2 w-2 bg-white rounded-full" />}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">Zone Manager</p>
+                            <p className="text-xs text-gray-600">Can manage and oversee zones</p>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {/* Password Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

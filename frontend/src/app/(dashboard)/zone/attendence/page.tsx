@@ -1353,16 +1353,24 @@ const ZoneAttendancePage = memo(function ZoneAttendancePage() {
                                     )}
                                   </div>
                                 </div>
-                              ) : (
+                              ) : record.checkInAt ? (
                                 <div className="flex items-center gap-2">
                                   <div className="p-2 bg-yellow-100 rounded-lg">
                                     <Clock className="h-4 w-4 text-yellow-600" />
                                   </div>
                                   <span className="text-sm text-yellow-600 font-medium">Still active</span>
                                 </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2 bg-slate-100 rounded-lg">
+                                    <Clock className="h-4 w-4 text-slate-400" />
+                                  </div>
+                                  <span className="text-sm text-slate-400 font-medium">—</span>
+                                </div>
                               )}
                             </td>
                             
+
                             {/* Total Hours */}
                             <td className="p-4">
                               {record.totalHours ? (

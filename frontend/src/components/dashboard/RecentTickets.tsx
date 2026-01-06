@@ -23,11 +23,12 @@ interface RecentTicketsProps {
   loading: boolean;
 }
 
-// Enhanced status colors with subtle gradients
+// Enhanced status colors with subtle gradients - covers all backend statuses
 const getStatusStyles = (status: string) => {
   const statusLower = status.toLowerCase();
   
   const styles: Record<string, { bg: string; text: string; border: string; dot: string }> = {
+    // Basic statuses
     'open': { 
       bg: 'bg-blue-50', 
       text: 'text-blue-700', 
@@ -46,12 +47,38 @@ const getStatusStyles = (status: string) => {
       border: 'border-amber-200',
       dot: 'bg-amber-500'
     },
+    'in_process': { 
+      bg: 'bg-amber-50', 
+      text: 'text-amber-700', 
+      border: 'border-amber-200',
+      dot: 'bg-amber-500'
+    },
     'waiting_customer': { 
       bg: 'bg-orange-50', 
       text: 'text-orange-700', 
       border: 'border-orange-200',
       dot: 'bg-orange-500'
     },
+    'pending': { 
+      bg: 'bg-yellow-50', 
+      text: 'text-yellow-700', 
+      border: 'border-yellow-200',
+      dot: 'bg-yellow-500'
+    },
+    'on_hold': { 
+      bg: 'bg-gray-50', 
+      text: 'text-gray-700', 
+      border: 'border-gray-200',
+      dot: 'bg-gray-500'
+    },
+    'reopened': { 
+      bg: 'bg-rose-50', 
+      text: 'text-rose-700', 
+      border: 'border-rose-200',
+      dot: 'bg-rose-500'
+    },
+    
+    // Resolution statuses
     'resolved': { 
       bg: 'bg-emerald-50', 
       text: 'text-emerald-700', 
@@ -64,11 +91,107 @@ const getStatusStyles = (status: string) => {
       border: 'border-green-200',
       dot: 'bg-green-500'
     },
+    'closed_pending': { 
+      bg: 'bg-teal-50', 
+      text: 'text-teal-700', 
+      border: 'border-teal-200',
+      dot: 'bg-teal-500'
+    },
     'escalated': { 
       bg: 'bg-red-50', 
       text: 'text-red-700', 
       border: 'border-red-200',
       dot: 'bg-red-500'
+    },
+    
+    // Onsite visit statuses
+    'onsite_visit': { 
+      bg: 'bg-cyan-50', 
+      text: 'text-cyan-700', 
+      border: 'border-cyan-200',
+      dot: 'bg-cyan-500'
+    },
+    'onsite_visit_planned': { 
+      bg: 'bg-sky-50', 
+      text: 'text-sky-700', 
+      border: 'border-sky-200',
+      dot: 'bg-sky-500'
+    },
+    'onsite_visit_started': { 
+      bg: 'bg-indigo-50', 
+      text: 'text-indigo-700', 
+      border: 'border-indigo-200',
+      dot: 'bg-indigo-500'
+    },
+    'onsite_visit_reached': { 
+      bg: 'bg-violet-50', 
+      text: 'text-violet-700', 
+      border: 'border-violet-200',
+      dot: 'bg-violet-500'
+    },
+    'onsite_visit_in_progress': { 
+      bg: 'bg-fuchsia-50', 
+      text: 'text-fuchsia-700', 
+      border: 'border-fuchsia-200',
+      dot: 'bg-fuchsia-500'
+    },
+    'onsite_visit_resolved': { 
+      bg: 'bg-emerald-50', 
+      text: 'text-emerald-700', 
+      border: 'border-emerald-200',
+      dot: 'bg-emerald-500'
+    },
+    'onsite_visit_pending': { 
+      bg: 'bg-yellow-50', 
+      text: 'text-yellow-700', 
+      border: 'border-yellow-200',
+      dot: 'bg-yellow-500'
+    },
+    'onsite_visit_completed': { 
+      bg: 'bg-green-50', 
+      text: 'text-green-700', 
+      border: 'border-green-200',
+      dot: 'bg-green-500'
+    },
+    
+    // PO statuses
+    'po_needed': { 
+      bg: 'bg-pink-50', 
+      text: 'text-pink-700', 
+      border: 'border-pink-200',
+      dot: 'bg-pink-500'
+    },
+    'po_received': { 
+      bg: 'bg-rose-50', 
+      text: 'text-rose-700', 
+      border: 'border-rose-200',
+      dot: 'bg-rose-500'
+    },
+    'po_reached': { 
+      bg: 'bg-lime-50', 
+      text: 'text-lime-700', 
+      border: 'border-lime-200',
+      dot: 'bg-lime-500'
+    },
+    
+    // Spare parts statuses
+    'spare_parts_needed': { 
+      bg: 'bg-orange-50', 
+      text: 'text-orange-700', 
+      border: 'border-orange-200',
+      dot: 'bg-orange-500'
+    },
+    'spare_parts_booked': { 
+      bg: 'bg-amber-50', 
+      text: 'text-amber-700', 
+      border: 'border-amber-200',
+      dot: 'bg-amber-500'
+    },
+    'spare_parts_delivered': { 
+      bg: 'bg-lime-50', 
+      text: 'text-lime-700', 
+      border: 'border-lime-200',
+      dot: 'bg-lime-500'
     }
   };
 

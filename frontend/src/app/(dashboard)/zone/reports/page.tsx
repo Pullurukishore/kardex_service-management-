@@ -1,5 +1,6 @@
 import ReportsClient from '@/components/reports/ReportsClient';
 import type { ReportFilters } from '@/types/reports';
+import { ZONE_USER_REPORT_TYPES } from '@/types/reports';
 import { subDays } from 'date-fns';
 import { getZones, getCustomers, getUserZone } from '@/lib/server/reports';
 
@@ -34,7 +35,7 @@ export default async function ReportsPage() {
       from: subDays(new Date(), 90),
       to: new Date(),
     },
-    reportType: 'ticket-summary',
+    reportType: 'ticket-summary', // Default to ticket summary, zone-user-offer-summary available for their own offers
     zoneId: userZone?.id.toString(),
   };
 
@@ -46,8 +47,8 @@ export default async function ReportsPage() {
         zones={zones}
         customers={customersData}
         isZoneUser={true}
+        reportTypes={ZONE_USER_REPORT_TYPES}
       />
     </div>
   );
 }
-

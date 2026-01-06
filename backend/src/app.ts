@@ -37,14 +37,11 @@ import activityScheduleRoutes from './routes/activityScheduleRoutes';
 import { storageConfig, initializeStorage } from './config/storage.config';
 import { pinAuthMiddleware } from './middleware/pinAuth';
 
-// Offer Funnel Routes
 import offerRoutes from './routes/offer.routes';
 import targetRoutes from './routes/target.routes';
 import sparePartRoutes from './routes/sparePart.routes';
-import forecastRoutes from './routes/forecast.routes';
-import offerDashboardRoutes from './routes/offerDashboard.routes';
-import forstRoutes from './routes/forst.routes';
 import imageManagementRoutes from './routes/image-management.routes';
+import forecastRoutes from './routes/forecast.routes';
 
 const app = express();
 const server = http.createServer(app);
@@ -159,10 +156,10 @@ app.use(cookieParser());
 // Ensure storage directories exist and serve storage files with CORS headers
 initializeStorage();
 
-// Global rate limiting for 50 users
+// Global rate limiting for 100+ users
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1500, // Limit each IP to 1500 requests per window
+  max: 3000, // Limit each IP to 3000 requests per window
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -226,10 +223,8 @@ app.use('/api/activity-schedule', activityScheduleRoutes);
 app.use('/api/offers', offerRoutes);
 app.use('/api/targets', targetRoutes);
 app.use('/api/spare-parts', sparePartRoutes);
-app.use('/api/forecast', forecastRoutes);
-app.use('/api/offer-dashboard', offerDashboardRoutes);
-app.use('/api/forst', forstRoutes);
 app.use('/api/image-management', imageManagementRoutes);
+app.use('/api/forecast', forecastRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {

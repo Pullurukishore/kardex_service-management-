@@ -25,6 +25,7 @@ export type User = {
   customerId?: string | number | null;  // Handle both string and number
   zoneId?: string | number | null;  // Handle both string and number
   serviceZones?: ServiceZone[];
+  zoneIds?: number[];  // Array of zone IDs for zone filtering
   // Add other user properties as needed
   [key: string]: any;  // Allow additional properties
 };

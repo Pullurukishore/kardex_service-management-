@@ -445,7 +445,26 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user);
+    // Transform serviceZones to zones array for frontend compatibility
+    // Frontend expects: zones: [{id, name}]
+    const zones = user.serviceZones?.map(sz => ({
+      id: sz.serviceZone.id,
+      name: sz.serviceZone.name
+    })) || [];
+
+    // Also set zone (single zone object) for backward compatibility
+    const zone = zones.length > 0 ? zones[0] : null;
+
+    // Extract zone IDs for frontend filtering
+    const zoneIds = zones.map(z => z.id);
+
+    // Return user with both original serviceZones and transformed zones
+    res.json({
+      ...user,
+      zones,    // Array of {id, name} - what frontend expects
+      zone,     // Single zone object for backward compatibility
+      zoneIds,  // Array of zone IDs - needed by ticket creation page
+    });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }

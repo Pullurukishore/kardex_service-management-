@@ -133,175 +133,8 @@ class ApiService {
     return this.bulkUpdatePrices(updates);
   }
 
-  // Forecast methods
-  async getForecastSummary(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/summary`, { params });
-    return response.data;
-  }
-
-  async getForecastBreakdown(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/zone-user-breakdown`, { params });
-    return response.data;
-  }
-
-  async getPoExpected(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/po-expected`, { params });
-    return response.data;
-  }
-
-  async getForecastHighlights(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/highlights`, { params });
-    return response.data;
-  }
-
-  async exportForecast(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/export`, {
-      params,
-      responseType: 'blob'
-    });
-    return response.data;
-  }
-
-  async exportForecastExcel(params?: any) {
-    const response = await api.get(`${this.baseURL}/forecast/export`, {
-      params,
-      responseType: 'blob'
-    });
-    return response.data;
-  }
-
-  // ============================================================================
-  // FORST (Field Operations Report Summary Tracking) - NEW REDESIGNED API
-  // ============================================================================
-
-  // New Dashboard API - Main KPI overview
-  async getForstDashboard(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/dashboard`, { params });
-    return response.data;
-  }
-
-  // Zone Performance API
-  async getForstZonePerformance(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/zones`, { params });
-    return response.data;
-  }
-
-  // Quarterly Analysis API
-  async getForstQuarterly(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/quarterly`, { params });
-    return response.data;
-  }
-
-  // Product Type Analysis API
-  async getForstProducts(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/products`, { params });
-    return response.data;
-  }
-
-  // Team Performance API
-  async getForstTeam(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/team`, { params });
-    return response.data;
-  }
-
-  // Pipeline Analysis API
-  async getForstPipeline(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/pipeline`, { params });
-    return response.data;
-  }
-
-  // Complete Report API
-  async getForstReport(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/report`, { params });
-    return response.data;
-  }
-
-  // Export Excel
-  async exportForstExcel(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/export`, {
-      params,
-      responseType: 'blob'
-    });
-    return response.data;
-  }
-
-  // ============================================================================
-  // COMPREHENSIVE FORECAST API - Zone, User, Product, Funnel, Hit Rate
-  // ============================================================================
-
-  // Forecast Summary - Executive KPIs
-  async getForstForecastSummary(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/summary`, { params });
-    return response.data;
-  }
-
-  // Zone-wise Forecast - Monthly breakdown with targets
-  async getForstZoneForecast(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/zones`, { params });
-    return response.data;
-  }
-
-  // User-wise Forecast - Individual performance with ranking
-  async getForstUserForecast(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/users`, { params });
-    return response.data;
-  }
-
-  // Product-wise Forecast - By product type
-  async getForstProductForecastDetail(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/products`, { params });
-    return response.data;
-  }
-
-  // Funnel Analysis - Pipeline stages with conversion
-  async getForstFunnelAnalysis(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/funnel`, { params });
-    return response.data;
-  }
-
-  // Hit Rate Analysis - By zone, user, product
-  async getForstHitRateAnalysis(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast/hitrate`, { params });
-    return response.data;
-  }
-
-  // ----- LEGACY FORST METHODS (Backward Compatibility) -----
 
 
-  async getForstCompleteReport(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/complete-report`, { params });
-    return response.data;
-  }
-
-  async getForstOffersHighlights(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/offers-highlights`, { params });
-    return response.data;
-  }
-
-  async getForstZoneMonthly(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/zone-monthly`, { params });
-    return response.data;
-  }
-
-  async getForstForecastQuarterly(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/forecast-quarterly`, { params });
-    return response.data;
-  }
-
-  async getForstProductTypeSummary(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/product-type-summary`, { params });
-    return response.data;
-  }
-
-  async getForstPersonWise(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/person-wise`, { params });
-    return response.data;
-  }
-
-  async getForstProductForecast(params?: any) {
-    const response = await api.get(`${this.baseURL}/forst/product-forecast`, { params });
-    return response.data;
-  }
 
 
   // Target methods
@@ -596,20 +429,6 @@ class ApiService {
   }
 
   // Dashboard methods
-  async getAdminDashboard(params?: any) {
-    const response = await api.get(`${this.baseURL}/offer-dashboard/admin`, { params });
-    return response.data;
-  }
-
-  async getZoneDashboard(params?: any) {
-    const response = await api.get(`${this.baseURL}/offer-dashboard/zone`, { params });
-    return response.data;
-  }
-
-  async getZoneManagerDashboard(params?: any) {
-    const response = await api.get(`${this.baseURL}/offer-dashboard/zone-manager`, { params });
-    return response.data;
-  }
 
   async getDashboardStats(params?: any) {
     const response = await api.get(`${this.baseURL}/dashboard/stats`, { params });
@@ -662,28 +481,189 @@ class ApiService {
     return response.data;
   }
 
-  // Zone Manager specific methods
-  async getZoneManagerOfferDashboard(params?: any) {
-    const response = await api.get(`${this.baseURL}/offer-dashboard/zone-manager`, { params });
-    return response.data;
-  }
+
 
   async getZoneManagerTargets(params?: any) {
     const response = await api.get(`${this.baseURL}/targets/zone-manager`, { params });
     return response.data;
   }
 
-  async getZoneManagerForecast(period?: string) {
-    const params = period ? { period } : {};
-    const response = await api.get(`${this.baseURL}/forecast/zone-manager`, { params });
+  // Forecast methods
+  async getForecastSummary(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/summary`, { params });
     return response.data;
   }
+
+  async getForecastMonthly(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/monthly`, { params });
+    return response.data;
+  }
+
+  async getUserMonthlyBreakdown(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/user-monthly`, { params });
+    return response.data;
+  }
+
+  async getPOExpectedMonthBreakdown(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/po-expected`, { params });
+    return response.data;
+  }
+
+  async getProductUserZoneBreakdown(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/product-user-zone`, { params });
+    return response.data;
+  }
+
+  async getProductWiseForecast(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/product-wise`, { params });
+    return response.data;
+  }
+
+  async getForecastAnalytics(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/analytics`, { params });
+    return response.data;
+  }
+
+  // Dashboard methods for Offer Analytics
+  // These methods fetch comprehensive offer/sales data for dashboard display
+  async getAdminDashboard(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/analytics`, { params });
+    return this.transformForecastToAdminDashboard(response.data);
+  }
+
+  async getZoneManagerDashboard(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/analytics`, { params });
+    return this.transformForecastToAdminDashboard(response.data);
+  }
+
+  async getZoneDashboard(params?: any) {
+    const response = await api.get(`${this.baseURL}/forecast/analytics`, { params });
+    return this.transformForecastToAdminDashboard(response.data);
+  }
+
+  // Transform forecast analytics data to dashboard format
+  private transformForecastToAdminDashboard(data: any) {
+    const analytics = data?.data || data;
+
+    // Extract totals from the response
+    const totals = analytics?.totals || {};
+    const zoneAnalytics = analytics?.zoneAnalytics || [];
+    const productAnalytics = analytics?.productAnalytics || [];
+    const monthlyTrends = analytics?.monthlyTrends || {};
+    const topUsers = analytics?.topUsers || [];
+
+    // Calculate stats
+    const totalOffers = totals.offers || 0;
+    const totalValue = totals.value || 0;
+    const wonValue = totals.won || 0;
+    const wonOffers = zoneAnalytics.reduce((sum: number, z: any) => sum + (z.metrics?.wonCount || 0), 0);
+    const lostOffers = zoneAnalytics.reduce((sum: number, z: any) => sum + (z.metrics?.lostCount || 0), 0);
+    const closedOffers = wonOffers + lostOffers;
+    const activeOffers = totalOffers - closedOffers;
+    const winRate = closedOffers > 0 ? (wonOffers / closedOffers) * 100 : 0;
+    const conversionRate = totalOffers > 0 ? (wonOffers / totalOffers) * 100 : 0;
+    const avgOfferValue = totalOffers > 0 ? totalValue / totalOffers : 0;
+
+    // Transform zone data
+    const offersByZone = zoneAnalytics.map((z: any) => ({
+      name: z.zoneName,
+      offers: z.metrics?.offers || 0,
+      value: z.metrics?.offersValue || 0,
+    }));
+
+    // Transform product type data
+    const offersByProductType = productAnalytics.map((p: any) => ({
+      productType: p.productType,
+      count: p.count || 0,
+      value: p.value || 0,
+    }));
+
+    const productTypePerformance = productAnalytics.map((p: any) => ({
+      productType: p.productType,
+      count: p.count || 0,
+      value: p.value || 0,
+      wonValue: p.won || 0,
+      targetValue: null,
+      targetOfferCount: null,
+      achievement: null,
+    }));
+
+    // Transform monthly trends
+    const monthlyTrendArray = Object.entries(monthlyTrends).map(([month, data]: [string, any]) => ({
+      month,
+      offers: data?.offers || 0,
+      value: data?.value || 0,
+    }));
+
+    // Transform zone analytics to stages
+    const offersByStage: Array<{ stage: string; count: number }> = [];
+    const stageCounts: Record<string, number> = {};
+    zoneAnalytics.forEach((z: any) => {
+      const stageBreakdown = z.stageBreakdown || {};
+      Object.entries(stageBreakdown).forEach(([stage, count]) => {
+        stageCounts[stage] = (stageCounts[stage] || 0) + (count as number);
+      });
+    });
+    Object.entries(stageCounts).forEach(([stage, count]) => {
+      offersByStage.push({ stage, count });
+    });
+
+    // Get zones list
+    const zones = zoneAnalytics.map((z: any) => ({
+      id: z.zoneId,
+      name: z.zoneName,
+    }));
+
+    return {
+      stats: {
+        totalOffers,
+        activeOffers,
+        wonOffers,
+        lostOffers,
+        closedOffers,
+        totalValue,
+        wonValue,
+        avgOfferValue,
+        wonThisMonth: wonOffers, // Simplified - would need month filter
+        wonLastMonth: 0,
+        wonLastYear: 0,
+        winRate,
+        conversionRate,
+        momGrowth: 0,
+        yoyGrowth: 0,
+        valueGrowth: 0,
+        last7DaysOffers: 0,
+        last30DaysOffers: 0,
+        avgDealTime: 0,
+        totalZones: zones.length,
+        activeUsers: topUsers.length,
+        wonValueThisMonth: wonValue,
+        totalTargetValue: totals.target || 0,
+        targetAchievement: totals.target > 0 ? (wonValue / totals.target) * 100 : 0,
+      },
+      recentOffers: [],
+      offersByStage,
+      offersByZone,
+      offersByProductType,
+      topCustomers: [],
+      monthlyTrend: monthlyTrendArray,
+      productTypePerformance,
+      zoneProductTypeBreakdown: [],
+      zones,
+      velocityMetrics: [],
+      currentMonthTargets: {
+        period: '',
+        zones: [],
+        users: [],
+        productTypes: [],
+      },
+    };
+  }
+
 }
 
 export const apiService = new ApiService();
 export default apiService;
 
 // Export individual methods for direct imports
-export const getZoneManagerOfferDashboard = (params?: any) => apiService.getZoneManagerOfferDashboard(params);
 export const getZoneManagerTargets = (params?: any) => apiService.getZoneManagerTargets(params);
-export const getZoneManagerForecast = (period?: string) => apiService.getZoneManagerForecast(period);

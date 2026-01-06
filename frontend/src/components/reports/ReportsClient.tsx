@@ -14,7 +14,7 @@ import ReportsFilters from './ReportsFilters';
 // Dynamic imports for heavy report components (lazy loaded for better performance)
 import {
   DynamicAdvancedTicketSummaryReport as AdvancedTicketSummaryReport,
-  DynamicCustomerSatisfactionReport as CustomerSatisfactionReport,
+
   DynamicAdvancedMachineAnalyticsReport as AdvancedMachineAnalyticsReport,
   DynamicAdvancedZonePerformanceReport as AdvancedZonePerformanceReport,
   DynamicServicePersonPerformanceReport as ServicePersonPerformanceReport,
@@ -23,6 +23,7 @@ import {
   DynamicCustomerPerformanceReport as CustomerPerformanceReport,
   DynamicTargetReportAnalytics as TargetReportAnalytics,
 } from './DynamicReportComponents';
+import ReportErrorBoundary from './ReportErrorBoundary';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -212,7 +213,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
   
   // Core Reports state
   const [ticketSummaryData, setTicketSummaryData] = useState<any>(null);
-  const [customerSatisfactionData, setCustomerSatisfactionData] = useState<any>(null);
+
   const [industrialDataReport, setIndustrialDataReport] = useState<any>(null);
   const [zonePerformanceData, setZonePerformanceData] = useState<any>(null);
   const [servicePersonPerformanceData, setServicePersonPerformanceData] = useState<any>(null);
@@ -464,33 +465,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           toast.error('Failed to load ticket summary report');
         }
       }
-      else if (reportType === 'customer-satisfaction') {
-        const params: any = {
-          reportType: 'customer-satisfaction'
-        };
-        if (filters.dateRange?.from) {
-          params.from = format(filters.dateRange.from, 'yyyy-MM-dd');
-        }
-        if (filters.dateRange?.to) {
-          params.to = format(filters.dateRange.to, 'yyyy-MM-dd');
-        }
-        if (filters.zoneId) {
-          params.zoneId = filters.zoneId;
-        }
-        
-        const response = isZoneUser 
-          ? await apiService.generateZoneReport(params)
-          : await apiService.generateReport(params);
-        const satisfactionData = (response.success && response.data) ? response.data : (response.summary ? response : null);
-        if (satisfactionData) {
-          setCustomerSatisfactionData(satisfactionData);
-          setOffers([]);
-          setReportData(null);
-          setZoneTargets([]);
-          setUserTargets([]);
-          setTargetSummary(null);
-        }
-      }
+
       else if (reportType === 'industrial-data') {
         const params: any = {
           reportType: 'industrial-data'
@@ -743,13 +718,18 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           setTargetSummary(null);
         }
       }
-      // Handle standard Offer Summary Report
-      else {
+      // Handle standard Offer Summary Report and Zone User Offer Summary Report
+      else if (reportType === 'offer-summary' || reportType === 'zone-user-offer-summary') {
         const params: any = {
-          reportType: reportType,
+          reportType: 'offer-summary', // Use the same backend report type
           page: currentPage,
           limit: 500,
         };
+
+        // For zone-user-offer-summary, add myOffers=true to filter only user's offers
+        if (reportType === 'zone-user-offer-summary') {
+          params.myOffers = 'true';
+        }
 
         if (filters.dateRange?.from) {
           params.from = format(filters.dateRange.from, 'yyyy-MM-dd');
@@ -771,9 +751,6 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
         }
         if (filters.search) {
           params.search = filters.search;
-        }
-        if (filters.reportType) {
-          params.reportType = filters.reportType;
         }
 
         // Use zone report endpoint for zone users, generate for admins
@@ -805,7 +782,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           setCustomerPerformanceData(null);
           // Clear Core Reports data
           setTicketSummaryData(null);
-          setCustomerSatisfactionData(null);
+
           setIndustrialDataReport(null);
           setZonePerformanceData(null);
           setServicePersonPerformanceData(null);
@@ -914,7 +891,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       setCustomerPerformanceData(null);
       // Clear Core Reports data
       setTicketSummaryData(null);
-      setCustomerSatisfactionData(null);
+
       setIndustrialDataReport(null);
       setZonePerformanceData(null);
       setServicePersonPerformanceData(null);
@@ -1008,11 +985,17 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       link.href = exportUrl;
       link.download = `offer-report-${exportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
       
-      // Add authorization header via fetch
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('accessToken') || row.startsWith('token'))
-        ?.split('=')[1] || localStorage.getItem('dev_accessToken') || '';
+      // Add authorization header via fetch - properly parse cookies that may contain = in value
+      const getCookieValue = (name: string): string | null => {
+        const cookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith(`${name}=`));
+        if (!cookie) return null;
+        // Only split on first = to handle values with = in them
+        const eqIndex = cookie.indexOf('=');
+        return eqIndex > -1 ? cookie.substring(eqIndex + 1) : null;
+      };
+      const token = getCookieValue('accessToken') || getCookieValue('token') || localStorage.getItem('dev_accessToken') || '';
 
       // Use fetch to download with auth
       const response = await fetch(exportUrl, {
@@ -1041,7 +1024,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
   }, [filters]);
 
   const summary = useMemo(() => reportData?.summary || {}, [reportData]);
-  const selectedReportType = REPORT_TYPES.find(type => type.value === filters.reportType);
+  const selectedReportType = reportTypes.find(type => type.value === filters.reportType) || REPORT_TYPES.find(type => type.value === filters.reportType);
 
   // Check if any report data is available for enabling export buttons
   const hasReportData = useMemo(() => {
@@ -1049,7 +1032,6 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       reportData ||
       targetSummary ||
       ticketSummaryData ||
-      customerSatisfactionData ||
       industrialDataReport ||
       zonePerformanceData ||
       servicePersonPerformanceData ||
@@ -1062,7 +1044,6 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
     reportData,
     targetSummary,
     ticketSummaryData,
-    customerSatisfactionData,
     industrialDataReport,
     zonePerformanceData,
     servicePersonPerformanceData,
@@ -1168,23 +1149,25 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       {/* Target Report Results */}
       {filters.reportType === 'target-report' && targetSummary && (zoneTargets.length > 0 || userTargets.length > 0) && (
         <div className="space-y-6">
-          <TargetReportAnalytics
-            zoneTargets={zoneTargets as any}
-            userTargets={userTargets as any}
-            summary={targetSummary}
-            targetPeriod={(filters.targetPeriod || '') as string}
-            periodType={(filters.periodType || 'MONTHLY') as 'MONTHLY' | 'YEARLY'}
-            zones={zones}
-            isZoneUser={isZoneUser}
-            onOpenZoneDetails={(zoneId, tp, pt) => {
-              setSelectedZoneDetails({ zoneId, targetPeriod: tp, periodType: pt });
-              setIsZoneDetailsOpen(true);
-            }}
-            onOpenUserDetails={(userId, tp, pt) => {
-              setSelectedUserDetails({ userId, targetPeriod: tp, periodType: pt });
-              setIsUserDetailsOpen(true);
-            }}
-          />
+          <ReportErrorBoundary onRetry={() => fetchReport()}>
+            <TargetReportAnalytics
+              zoneTargets={zoneTargets as any}
+              userTargets={userTargets as any}
+              summary={targetSummary}
+              targetPeriod={(filters.targetPeriod || '') as string}
+              periodType={(filters.periodType || 'MONTHLY') as 'MONTHLY' | 'YEARLY'}
+              zones={zones}
+              isZoneUser={isZoneUser}
+              onOpenZoneDetails={(zoneId, tp, pt) => {
+                setSelectedZoneDetails({ zoneId, targetPeriod: tp, periodType: pt });
+                setIsZoneDetailsOpen(true);
+              }}
+              onOpenUserDetails={(userId, tp, pt) => {
+                setSelectedUserDetails({ userId, targetPeriod: tp, periodType: pt });
+                setIsUserDetailsOpen(true);
+              }}
+            />
+          </ReportErrorBoundary>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-100">
@@ -1284,7 +1267,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-blue-600"></div>
-                            <span className="font-semibold text-gray-900">{target.serviceZone.name}</span>
+                            <span className="font-semibold text-gray-900">{target.serviceZone?.name || 'Unknown Zone'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{target.metrics?.noOfOffers || 0}</td>
@@ -1295,13 +1278,13 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                         <td className="px-4 py-3 text-right text-sm font-semibold text-cyan-700">{target.metrics?.orderBooking || 0}</td>
                         <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{formatCrLakh(target.targetValue)}</td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
-                            {target.achievement.toFixed(1)}%
+                          <Badge className={`${getAchievementColor(target.achievement || 0)} text-xs font-bold`}>
+                            {(target.achievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.expectedAchievement)} text-xs font-bold`}>
-                            {target.expectedAchievement.toFixed(1)}%
+                          <Badge className={`${getAchievementColor(target.expectedAchievement || 0)} text-xs font-bold`}>
+                            {(target.expectedAchievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-semibold ${
@@ -1401,13 +1384,13 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                         <td className="px-4 py-3 text-right text-sm font-semibold text-cyan-700">{target.metrics?.orderBooking || 0}</td>
                         <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{formatCrLakh(target.targetValue)}</td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
-                            {target.achievement?.toFixed(1) || 0}%
+                          <Badge className={`${getAchievementColor(target.achievement || 0)} text-xs font-bold`}>
+                            {(target.achievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.expectedAchievement)} text-xs font-bold`}>
-                            {target.expectedAchievement?.toFixed(1) || 0}%
+                          <Badge className={`${getAchievementColor(target.expectedAchievement || 0)} text-xs font-bold`}>
+                            {(target.expectedAchievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-semibold ${
@@ -1442,7 +1425,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       )}
 
       {/* Offer Report Results */}
-      {filters.reportType === 'offer-summary' && reportData && offers.length > 0 && (
+      {(filters.reportType === 'offer-summary' || filters.reportType === 'zone-user-offer-summary') && reportData && offers.length > 0 && (
         <div className="space-y-6">
           {/* Summary Cards - Enhanced Design */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1620,52 +1603,62 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
 
       {/* Product Type Analysis Report */}
       {filters.reportType === 'product-type-analysis' && productTypeAnalysisData && (
-        <ProductTypeAnalysisReport data={productTypeAnalysisData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <ProductTypeAnalysisReport data={productTypeAnalysisData} />
+        </ReportErrorBoundary>
       )}
 
       {/* Customer Performance Report */}
       {filters.reportType === 'customer-performance' && customerPerformanceData && (
-        <CustomerPerformanceReport data={customerPerformanceData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <CustomerPerformanceReport data={customerPerformanceData} />
+        </ReportErrorBoundary>
       )}
 
       {/* Advanced/New Reports */}
       {/* Advanced Ticket Summary Report */}
       {filters.reportType === 'ticket-summary' && ticketSummaryData && (
-        <AdvancedTicketSummaryReport reportData={ticketSummaryData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <AdvancedTicketSummaryReport reportData={ticketSummaryData} />
+        </ReportErrorBoundary>
       )}
 
-      {/* Customer Satisfaction Report */}
-      {filters.reportType === 'customer-satisfaction' && customerSatisfactionData && (
-        <CustomerSatisfactionReport reportData={customerSatisfactionData} />
-      )}
+
 
       {/* Advanced Machine Analytics Report */}
       {filters.reportType === 'industrial-data' && industrialDataReport && (
-        <AdvancedMachineAnalyticsReport reportData={industrialDataReport} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <AdvancedMachineAnalyticsReport reportData={industrialDataReport} />
+        </ReportErrorBoundary>
       )}
 
       {/* Advanced Zone Performance Report */}
       {filters.reportType === 'zone-performance' && zonePerformanceData && (
-        <AdvancedZonePerformanceReport reportData={zonePerformanceData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <AdvancedZonePerformanceReport reportData={zonePerformanceData} />
+        </ReportErrorBoundary>
       )}
 
       {/* Service Person Performance Report */}
       {filters.reportType === 'agent-productivity' && servicePersonPerformanceData && (
-        <ServicePersonPerformanceReport reportData={servicePersonPerformanceData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <ServicePersonPerformanceReport reportData={servicePersonPerformanceData} />
+        </ReportErrorBoundary>
       )}
 
       {/* Service Person Attendance Report */}
       {filters.reportType === 'sla-performance' && servicePersonAttendanceData && (
-        <ServicePersonAttendanceReport reportData={servicePersonAttendanceData} />
+        <ReportErrorBoundary onRetry={() => fetchReport()}>
+          <ServicePersonAttendanceReport reportData={servicePersonAttendanceData} />
+        </ReportErrorBoundary>
       )}
 
       {/* Empty State */}
-      {((filters.reportType === 'offer-summary' && !reportData) || 
+      {(((filters.reportType === 'offer-summary' || filters.reportType === 'zone-user-offer-summary') && !reportData) || 
         (filters.reportType === 'target-report' && !targetSummary) ||
         (filters.reportType === 'product-type-analysis' && !productTypeAnalysisData) ||
         (filters.reportType === 'customer-performance' && !customerPerformanceData) ||
         (filters.reportType === 'ticket-summary' && !ticketSummaryData) ||
-        (filters.reportType === 'customer-satisfaction' && !customerSatisfactionData) ||
         (filters.reportType === 'industrial-data' && !industrialDataReport) ||
         (filters.reportType === 'zone-performance' && !zonePerformanceData) ||
         (filters.reportType === 'agent-productivity' && !servicePersonPerformanceData) ||

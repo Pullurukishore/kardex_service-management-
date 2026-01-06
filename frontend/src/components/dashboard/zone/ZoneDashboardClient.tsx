@@ -13,8 +13,6 @@ import RecentTickets from '../RecentTickets';
 
 // Import heavy components dynamically
 import {
-  DynamicFieldServiceAnalytics,
-  DynamicPerformanceAnalytics,
   DynamicAdvancedAnalytics,
   DynamicZonePerformanceAnalytics,
 } from '../DynamicDashboardComponents';
@@ -82,6 +80,8 @@ const transformZoneDataToDashboardData = (zoneData: ZoneDashboardData): Partial<
       totalCustomers: zoneData.zone?.totalCustomers || 0,
       totalServicePersons: zoneData.zone?.totalTechnicians || 0,
       totalServiceZones: 1, // Zone user sees only their zone
+      totalZoneUsers: zoneData.zone?.totalZoneUsers || 0,
+      totalZoneManagers: zoneData.zone?.totalZoneManagers || 0,
       ticketStatusDistribution: {},
       ticketTrends: [],
       // Create zoneWiseTickets array with this single zone's data for ZonePerformanceAnalytics component
@@ -92,8 +92,8 @@ const transformZoneDataToDashboardData = (zoneData: ZoneDashboardData): Partial<
         servicePersonCount: zoneData.zone?.totalTechnicians || 0,
         customerCount: zoneData.zone?.totalCustomers || 0,
         avgResolutionTimeHours: avgResolutionTimeHours,
-        zoneManagerCount: 0,
-        zoneUserCount: 0,
+        zoneManagerCount: zoneData.zone?.totalZoneManagers || 0,
+        zoneUserCount: zoneData.zone?.totalZoneUsers || 0,
         assetCount: zoneData.zone?.totalAssets || 0
       }]
     },
@@ -247,6 +247,8 @@ export default function ZoneDashboardClient({
           description: '',
           totalCustomers: 0,
           totalTechnicians: 0,
+          totalZoneUsers: 0,
+          totalZoneManagers: 0,
           totalAssets: 0
         }}
         onRefresh={handleRefresh} 
@@ -268,18 +270,6 @@ export default function ZoneDashboardClient({
         dashboardData={dashboardData} 
       />
 
-      {/* Lazy-loaded analytics components */}
-      <div className="mb-8">
-        <DynamicFieldServiceAnalytics 
-          dashboardData={dashboardData} 
-        />
-      </div>
-
-      <div className="mb-8">
-        <DynamicPerformanceAnalytics 
-          dashboardData={dashboardData} 
-        />
-      </div>
 
       <div className="mb-8">
         <DynamicAdvancedAnalytics 

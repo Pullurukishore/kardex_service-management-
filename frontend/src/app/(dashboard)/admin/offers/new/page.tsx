@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -60,23 +60,27 @@ export default function NewOfferPage() {
   const [contactSearch, setContactSearch] = useState('')
   const [assetSearch, setAssetSearch] = useState('')
   
+  // Filtered lists based on search - memoized to prevent recalculation on every render
+  const filteredCustomers = useMemo(() => 
+    customers.filter(customer =>
+      customer.companyName?.toLowerCase().includes(customerSearch.toLowerCase())
+    ), [customers, customerSearch])
   
-  // Filtered lists based on search
-  const filteredCustomers = customers.filter(customer =>
-    customer.companyName?.toLowerCase().includes(customerSearch.toLowerCase())
-  )
+  const filteredContacts = useMemo(() => 
+    contacts.filter(contact =>
+      (contact.name || contact.contactPersonName)?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      (contact.phone || contact.contactNumber)?.includes(contactSearch)
+    ), [contacts, contactSearch])
   
-  const filteredContacts = contacts.filter(contact =>
-    (contact.name || contact.contactPersonName)?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
-    (contact.phone || contact.contactNumber)?.includes(contactSearch)
-  )
-  
-  const filteredAssets = assets.filter(asset =>
-    (asset.assetName || asset.machineId)?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-    (asset.machineSerialNumber || asset.serialNo)?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-    asset.model?.toLowerCase().includes(assetSearch.toLowerCase())
-  )
+  const filteredAssets = useMemo(() => {
+    return assets.filter(asset => {
+      const assetName = asset.serialNo || asset.machineId || asset.assetName || ''
+      const model = asset.model || ''
+      return assetName.toLowerCase().includes(assetSearch.toLowerCase()) ||
+        model.toLowerCase().includes(assetSearch.toLowerCase())
+    })
+  }, [assets, assetSearch])
   
   
   const [formData, setFormData] = useState({
@@ -138,16 +142,15 @@ export default function NewOfferPage() {
       setAssets([])
       setFormData(prev => ({ ...prev, contactId: '', assetIds: [], spareParts: [] }))
     }
-  }, [formData.customerId, customers])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.customerId])
 
   const fetchZones = async () => {
     try {
       setLoadingZones(true)
       const response = await apiService.getZones()
-      console.log('🔍 Zones fetched:', response.data?.length || 0)
       setZones(response.data || [])
     } catch (error: any) {
-      console.error('Failed to fetch zones:', error)
       toast.error('Failed to fetch zones')
     } finally {
       setLoadingZones(false)
@@ -157,34 +160,18 @@ export default function NewOfferPage() {
   const fetchCustomersByZone = async (zoneId: number) => {
     try {
       setLoadingCustomers(true)
-      // Request all customers for the zone (no pagination limit)
       const customers = await apiService.getCustomers({ 
         zoneId, 
-        limit: 100, // Using the maximum allowed limit
-        include: 'contacts,assets' // Request full data
+        limit: 100,
+        include: 'contacts,assets'
       })
-      
-      console.log('🔍 Zone ID:', zoneId)
-      console.log('🔍 API Response:', customers)
-      console.log('🔍 Customers fetched:', Array.isArray(customers) ? customers.length : 0)
-      
-      if (Array.isArray(customers) && customers.length > 0) {
-        console.log('🔍 Sample customer data:', customers[0])
-        console.log('🔍 Sample customer contacts:', customers[0]?.contacts?.length || 0)
-        console.log('🔍 Sample customer assets:', customers[0]?.assets?.length || 0)
-      } else {
-        console.log('🔍 No customers found or invalid response format')
-      }
       
       setCustomers(Array.isArray(customers) ? customers : [])
       
-      // Reset customer-dependent fields
       setFormData(prev => ({ ...prev, customerId: '', contactId: '', assetIds: [], spareParts: [] }))
       setContacts([])
       setAssets([])
     } catch (error: any) {
-      console.error('❌ Failed to fetch customers:', error)
-      console.error('❌ Error response:', error.response?.data)
       toast.error(`Failed to fetch customers: ${error.response?.data?.message || error.message}`)
       setCustomers([])
     } finally {
@@ -204,7 +191,6 @@ export default function NewOfferPage() {
         setFormData(prev => ({ ...prev, contactId: customerData.contacts[0].id.toString() }))
       }
     } catch (error: any) {
-      console.error('Failed to fetch customer data:', error)
       toast.error('Failed to load customer details')
     }
   }
@@ -220,10 +206,7 @@ export default function NewOfferPage() {
       // Extract unique categories
       const categories = [...new Set(parts.map((p: any) => p.category).filter(Boolean))] as string[]
       setSparePartCategories(categories)
-      
-      console.log(`✓ Loaded ${parts.length} spare parts with ${categories.length} categories`)
     } catch (error: any) {
-      console.error('Failed to fetch spare parts:', error)
       toast.error('Failed to fetch spare parts')
     } finally {
       setLoadingSpareParts(false)
@@ -268,7 +251,6 @@ export default function NewOfferPage() {
       setIsAddContactOpen(false)
       toast.success('Contact created successfully')
     } catch (error: any) {
-      console.error('Failed to create contact:', error)
       toast.error(error.response?.data?.error || 'Failed to create contact')
     } finally {
       setIsCreatingContact(false)
@@ -305,16 +287,15 @@ export default function NewOfferPage() {
       setIsAddAssetOpen(false)
       toast.success('Asset created successfully')
     } catch (error: any) {
-      console.error('Failed to create asset:', error)
       toast.error(error.response?.data?.error || 'Failed to create asset')
     } finally {
       setIsCreatingAsset(false)
     }
   }
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-  }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -410,7 +391,6 @@ export default function NewOfferPage() {
       toast.success('Initial offer created successfully! You can add more details later.')
       router.push('/admin/offers')
     } catch (error: any) {
-      console.error('Failed to create offer:', error)
       toast.error(error.response?.data?.error || 'Failed to create offer')
     } finally {
       setLoading(false)
@@ -419,14 +399,31 @@ export default function NewOfferPage() {
 
   if (loadingZones) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
-            <Loader2 className="h-8 w-8 animate-spin text-white" />
+      <div className="min-h-[70vh] flex items-center justify-center relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30"></div>
+        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-20 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl animate-pulse delay-300"></div>
+        
+        <div className="relative z-10 flex flex-col items-center space-y-6">
+          {/* Loading icon with animation */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-40 animate-pulse"></div>
+            <div className="relative h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-2xl">
+              <Loader2 className="h-10 w-10 animate-spin text-white" />
+            </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Form Data</h3>
-            <p className="text-gray-500">Preparing offer creation form...</p>
+          
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold text-gray-900">Loading Offer Form</h3>
+            <p className="text-gray-500 max-w-md">Preparing zones and customers data. Please wait...</p>
+          </div>
+          
+          {/* Loading skeleton preview */}
+          <div className="w-full max-w-md space-y-3 mt-4">
+            <div className="h-3 bg-gray-200/80 rounded-full w-3/4 mx-auto animate-pulse"></div>
+            <div className="h-3 bg-gray-200/80 rounded-full w-1/2 mx-auto animate-pulse delay-75"></div>
+            <div className="h-3 bg-gray-200/80 rounded-full w-2/3 mx-auto animate-pulse delay-150"></div>
           </div>
         </div>
       </div>
@@ -485,29 +482,47 @@ export default function NewOfferPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Customer & Contact Information */}
-        <Card className="shadow-xl border-0 bg-white backdrop-blur-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-xl border-b border-green-100 pb-6">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/20">
-                <Building2 className="h-6 w-6 text-white" />
+        <Card className="shadow-xl border-0 bg-white overflow-hidden">
+          {/* Top accent bar */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500"></div>
+          
+          <CardHeader className="bg-gradient-to-br from-green-50 via-emerald-50/50 to-teal-50/30 border-b border-green-100/50 pb-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg ring-2 ring-green-100">
+                  <Building2 className="h-7 w-7 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow ring-2 ring-white">
+                  <span className="text-xs font-bold text-white">1</span>
+                </div>
               </div>
-              Customer & Contact Information
-            </CardTitle>
-            <CardDescription className="text-slate-600 ml-12 mt-1">Select customer and contact person for this offer</CardDescription>
+              <div>
+                <CardTitle className="text-2xl font-bold text-gray-800">Customer & Contact Information</CardTitle>
+                <CardDescription className="text-gray-500 mt-1">Select customer and contact person for this offer</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Zone Selection - First */}
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="zoneId" className="text-sm font-semibold text-gray-700">Service Zone *</Label>
+                <Label htmlFor="zoneId" className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <div className="p-1.5 bg-blue-50 rounded-lg">
+                    <MapPin className="h-4 w-4 text-blue-600" />
+                  </div>
+                  Service Zone <span className="text-red-500">*</span>
+                </Label>
                 <Select value={formData.zoneId} onValueChange={(value) => handleInputChange('zoneId', value)}>
-                  <SelectTrigger className="h-11 border-2 hover:border-blue-300 focus:border-blue-500 transition-colors">
+                  <SelectTrigger className="h-12 border-2 hover:border-blue-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all bg-white shadow-sm">
                     <SelectValue placeholder="Select service zone" />
                   </SelectTrigger>
                   <SelectContent>
                     {zones.map(zone => (
-                      <SelectItem key={zone.id} value={zone.id.toString()}>
-                        {zone.name}
+                      <SelectItem key={zone.id} value={zone.id.toString()} className="h-11 rounded-lg mb-1 focus:bg-blue-50">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-blue-500" />
+                          <span className="font-medium text-gray-900">{zone.name}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -517,8 +532,10 @@ export default function NewOfferPage() {
               {/* Customer Selection */}
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="customerId" className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                  <Building2 className="h-4 w-4 text-green-500" />
-                  Customer *
+                  <div className="p-1.5 bg-green-50 rounded-lg">
+                    <Building2 className="h-4 w-4 text-green-500" />
+                  </div>
+                  Customer <span className="text-red-500">*</span>
                   {loadingCustomers && <Loader2 className="h-4 w-4 animate-spin text-green-500" />}
                 </Label>
                 <Select 
@@ -526,7 +543,7 @@ export default function NewOfferPage() {
                   onValueChange={(value) => handleInputChange('customerId', value)}
                   disabled={!formData.zoneId || loadingCustomers}
                 >
-                  <SelectTrigger className="h-11 border-2 hover:border-green-300 focus:border-green-500 transition-colors">
+                  <SelectTrigger className="h-12 border-2 hover:border-green-200 focus:border-green-500 focus:ring-green-500/20 transition-all bg-white shadow-sm">
                     <SelectValue placeholder={
                       !formData.zoneId 
                         ? "Select a service zone first" 
@@ -537,15 +554,15 @@ export default function NewOfferPage() {
                             : "Select customer"
                     } />
                   </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    <div className="sticky top-0 bg-white border-b p-2 z-10">
-                      <div className="relative">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <SelectContent className="max-h-96 w-[var(--radix-select-trigger-width)]">
+                    <div className="sticky top-0 bg-white/80 backdrop-blur-sm border-b p-3 z-10">
+                      <div className="relative group/search">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 group-focus-within/search:text-green-500 transition-colors" />
                         <Input
-                          placeholder="Search customers..."
+                          placeholder="Search customers by name..."
                           value={customerSearch}
                           onChange={(e) => setCustomerSearch(e.target.value)}
-                          className="pl-8 pr-8 h-8 text-sm"
+                          className="pl-9 pr-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                           onClick={(e) => e.stopPropagation()}
                         />
                         {customerSearch && (
@@ -554,34 +571,45 @@ export default function NewOfferPage() {
                               e.stopPropagation();
                               setCustomerSearch('');
                             }}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
                           >
-                            <X className="h-3 w-3" />
+                            <X className="h-4 w-4" />
                           </button>
                         )}
                       </div>
                     </div>
-                    <div className="max-h-60 overflow-y-auto">
+                    <div className="max-h-64 overflow-y-auto p-1 custom-scrollbar">
                       {filteredCustomers.length > 0 ? (
                         filteredCustomers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id.toString()}>
-                            <div className="flex items-center space-x-2">
-                              <Building2 className="h-3 w-3 text-green-500" />
-                              <div className="flex flex-col">
-                                <span className="font-medium">{customer.companyName}</span>
-                                {customer.location && (
-                                  <span className="text-xs text-gray-500 flex items-center gap-1">
-                                    <MapPin className="h-3 w-3" />
-                                    {customer.location}
-                                  </span>
-                                )}
+                          <SelectItem key={customer.id} value={customer.id.toString()} className="rounded-lg mb-1 focus:bg-green-50 transition-colors">
+                            <div className="flex items-center space-x-3 py-1">
+                              <div className="h-9 w-9 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <Building2 className="h-5 w-5 text-green-600" />
+                              </div>
+                              <div className="flex flex-col min-w-0">
+                                <span className="font-semibold text-gray-900 truncate">{customer.companyName}</span>
+                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                  {customer.location && (
+                                    <span className="flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {customer.location}
+                                    </span>
+                                  )}
+                                  {customer.department && (
+                                    <span className="flex items-center gap-1 before:content-['•'] before:mr-1">
+                                      {customer.department}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </SelectItem>
                         ))
                       ) : (
-                        <div className="p-2 text-sm text-gray-500 text-center">
-                          {customerSearch ? 'No customers found matching your search' : 'No customers available'}
+                        <div className="p-8 text-center bg-gray-50/50 rounded-xl m-2">
+                          <Building2 className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-gray-600">No customers found</p>
+                          <p className="text-xs text-gray-400 mt-1">Try a different search term or check the zone</p>
                         </div>
                       )}
                     </div>
@@ -592,16 +620,18 @@ export default function NewOfferPage() {
               {/* Contact Selection with Add Button */}
               <div className="space-y-2">
                 <Label htmlFor="contactId" className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                  <Users className="h-4 w-4 text-purple-500" />
-                  Contact Person *
+                  <div className="p-1.5 bg-purple-50 rounded-lg">
+                    <Users className="h-4 w-4 text-purple-600" />
+                  </div>
+                  Contact Person <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex gap-2">
                   <Select 
                     value={formData.contactId} 
                     onValueChange={(value) => handleInputChange('contactId', value)}
-                    disabled={!formData.customerId || contacts.length === 0}
+                    disabled={!formData.customerId || (loadingCustomers && contacts.length === 0)}
                   >
-                    <SelectTrigger className="flex-1 h-11 border-2 hover:border-purple-300 focus:border-purple-500 transition-colors">
+                    <SelectTrigger className="flex-1 h-12 border-2 hover:border-purple-200 focus:border-purple-500 focus:ring-purple-500/20 transition-all bg-white shadow-sm">
                       <SelectValue placeholder={
                         !formData.customerId 
                           ? 'Select a customer first' 
@@ -610,15 +640,15 @@ export default function NewOfferPage() {
                             : 'Select contact person'
                       } />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      <div className="sticky top-0 bg-white border-b p-2 z-10">
-                        <div className="relative">
-                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <SelectContent className="max-h-96 w-[var(--radix-select-trigger-width)]">
+                      <div className="sticky top-0 bg-white/80 backdrop-blur-sm border-b p-3 z-10">
+                        <div className="relative group/search">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 group-focus-within/search:text-purple-500 transition-colors" />
                           <Input
                             placeholder="Search contacts..."
                             value={contactSearch}
                             onChange={(e) => setContactSearch(e.target.value)}
-                            className="pl-8 pr-8 h-8 text-sm"
+                            className="pl-9 pr-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                             onClick={(e) => e.stopPropagation()}
                           />
                           {contactSearch && (
@@ -627,34 +657,46 @@ export default function NewOfferPage() {
                                 e.stopPropagation();
                                 setContactSearch('');
                               }}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
                             >
-                              <X className="h-3 w-3" />
+                              <X className="h-4 w-4" />
                             </button>
                           )}
                         </div>
                       </div>
-                      <div className="max-h-60 overflow-y-auto">
+                      <div className="max-h-72 overflow-y-auto p-1 custom-scrollbar">
                         {filteredContacts.length > 0 ? (
                           filteredContacts.map((contact) => (
-                            <SelectItem key={contact.id} value={contact.id.toString()}>
-                              <div className="flex items-center space-x-2">
-                                <Users className="h-3 w-3 text-purple-500" />
-                                <div className="flex flex-col">
-                                  <span className="font-medium">{contact.name}</span>
-                                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                            <SelectItem key={contact.id} value={contact.id.toString()} className="rounded-lg mb-1 focus:bg-purple-50 transition-colors">
+                              <div className="flex items-center space-x-3 py-1">
+                                <div className="h-9 w-9 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                  <Users className="h-5 w-5 text-purple-600" />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="font-semibold text-gray-900 truncate">{contact.name || contact.contactPersonName}</span>
+                                  <div className="flex items-center gap-3 text-xs text-gray-500">
                                     {contact.phone && (
-                                      <span>{contact.phone}</span>
+                                      <span className="flex items-center gap-1">
+                                        <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                        {contact.phone}
+                                      </span>
                                     )}
-                                    {contact.email && <span>{contact.email}</span>}
+                                    {contact.email && (
+                                      <span className="flex items-center gap-1">
+                                        <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                        {contact.email}
+                                      </span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
                             </SelectItem>
                           ))
                         ) : (
-                          <div className="p-2 text-sm text-gray-500 text-center">
-                            {contactSearch ? 'No contacts found matching your search' : 'No contacts available'}
+                          <div className="p-8 text-center bg-gray-50/50 rounded-xl m-2">
+                            <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-gray-600">No contacts found</p>
+                            <p className="text-xs text-gray-400 mt-1">Add a new contact using the button below</p>
                           </div>
                         )}
                       </div>
@@ -663,12 +705,11 @@ export default function NewOfferPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
                     onClick={() => setIsAddContactOpen(true)}
                     disabled={!formData.customerId}
-                    className="h-11 px-4 border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200"
+                    className="h-12 px-5 border-2 border-purple-100 text-purple-600 hover:bg-purple-50 hover:border-purple-300 hover:shadow-md transition-all duration-200 group"
                   >
-                    <Plus className="h-4 w-4 mr-1" />
+                    <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                     Add New
                   </Button>
                 </div>
@@ -677,37 +718,50 @@ export default function NewOfferPage() {
               {/* Asset Selection with Add Button - Multiple Selection */}
               <div className="space-y-2">
                 <Label htmlFor="assetIds" className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                  <HardDrive className="h-4 w-4 text-indigo-500" />
-                  Assets *
+                  <div className="p-1.5 bg-indigo-50 rounded-lg">
+                    <HardDrive className="h-4 w-4 text-indigo-600" />
+                  </div>
+                  Assets <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex gap-2">
-                  <div className="flex-1 space-y-2">
-                    {/* Selected Assets Display */}
-                    {formData.assetIds.length > 0 && (
-                      <div className="flex flex-wrap gap-2 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <div className="flex-1 space-y-3">
+                    {/* Selected Assets Display - Improved List View */}
+                    {formData.assetIds.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-2 p-4 bg-indigo-50/50 rounded-xl border-2 border-dashed border-indigo-100 transition-all">
                         {formData.assetIds.map((assetId) => {
                           const asset = assets.find(a => a.id === parseInt(assetId));
                           return (
-                            <div key={assetId} className="flex items-center gap-2 bg-white text-indigo-700 px-3 py-1.5 rounded-lg shadow-sm border border-indigo-200 hover:shadow-md transition-shadow">
-                              <HardDrive className="h-3.5 w-3.5" />
-                              <span className="text-sm font-medium">{asset?.assetName || asset?.machineId || asset?.serialNo || 'Unknown'}</span>
+                            <div key={assetId} className="flex items-center justify-between gap-3 bg-white text-indigo-900 p-2.5 rounded-lg shadow-sm border border-indigo-200 group/asset hover:border-indigo-400 transition-all animate-in fade-in zoom-in duration-200">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="h-8 w-8 rounded-md bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                  <HardDrive className="h-4 w-4 text-indigo-600" />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-sm font-bold truncate">{asset?.serialNo || asset?.machineId || 'Unknown'}</span>
+                                  {asset?.model && <span className="text-[10px] text-indigo-500 uppercase tracking-wider font-semibold">{asset.model}</span>}
+                                </div>
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => {
                                   const newAssetIds = formData.assetIds.filter(id => id !== assetId);
                                   handleInputChange('assetIds', newAssetIds);
                                 }}
-                                className="ml-1 text-indigo-500 hover:text-indigo-700 transition-colors"
+                                className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/asset:opacity-100"
                               >
-                                <X className="h-3.5 w-3.5" />
+                                <X className="h-4 w-4" />
                               </button>
                             </div>
                           );
                         })}
                       </div>
+                    ) : (
+                      <div className="h-10 flex items-center px-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 text-xs text-gray-400">
+                         No assets selected yet
+                      </div>
                     )}
                     
-                    {/* Asset Selection Dropdown */}
+                    {/* Asset Selection Dropdown - Improved Design */}
                     <Select 
                       value="" 
                       onValueChange={(value) => {
@@ -717,26 +771,26 @@ export default function NewOfferPage() {
                       }}
                       disabled={!formData.customerId}
                     >
-                      <SelectTrigger className="h-11 border-2 hover:border-indigo-300 focus:border-indigo-500 transition-colors">
+                      <SelectTrigger className="h-12 border-2 hover:border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all bg-white shadow-sm">
                         <SelectValue placeholder={
                           !formData.customerId 
                             ? 'Select a customer first' 
                             : assets.length === 0 
                               ? 'No assets available - Add one below' 
                               : formData.assetIds.length === 0
-                                ? 'Select assets (required)'
-                                : 'Add more assets'
+                                ? 'Search and select assets...'
+                                : 'Add another asset...'
                         } />
                       </SelectTrigger>
-                      <SelectContent className="max-h-80">
-                        <div className="sticky top-0 bg-white border-b p-2 z-10">
-                          <div className="relative">
-                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <SelectContent className="max-h-96 w-[var(--radix-select-trigger-width)]">
+                        <div className="sticky top-0 bg-white/80 backdrop-blur-sm border-b p-3 z-10">
+                          <div className="relative group/search">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 group-focus-within/search:text-indigo-500 transition-colors" />
                             <Input
-                              placeholder="Search assets..."
+                              placeholder="Search assets by serial or model..."
                               value={assetSearch}
                               onChange={(e) => setAssetSearch(e.target.value)}
-                              className="pl-8 pr-8 h-8 text-sm"
+                              className="pl-9 pr-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                               onClick={(e) => e.stopPropagation()}
                             />
                             {assetSearch && (
@@ -745,38 +799,49 @@ export default function NewOfferPage() {
                                   e.stopPropagation();
                                   setAssetSearch('');
                                 }}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="h-4 w-4" />
                               </button>
                             )}
                           </div>
                         </div>
-                        <div className="max-h-60 overflow-y-auto">
-                          {filteredAssets.length > 0 ? (
-                            filteredAssets
-                              .filter(asset => !formData.assetIds.includes(asset.id.toString()))
-                              .map((asset) => (
-                                <SelectItem key={asset.id} value={asset.id.toString()}>
-                                  <div className="flex items-center space-x-2">
-                                    <HardDrive className="h-3 w-3 text-indigo-500" />
-                                    <div className="flex flex-col">
-                                      <span className="font-medium">{asset.assetName || asset.machineId || 'Unknown'}</span>
-                                      <span className="text-xs text-gray-500">
-                                        {asset.model && `Model: ${asset.model} • `}
-                                        SN: {asset.serialNo || 'N/A'}
+                        <div className="max-h-72 overflow-y-auto p-1 custom-scrollbar">
+                          {(() => {
+                            const availableAssets = filteredAssets.filter(asset => !formData.assetIds.includes(asset.id.toString()));
+                            
+                            if (availableAssets.length > 0) {
+                              return availableAssets.map((asset) => (
+                                <SelectItem key={asset.id} value={asset.id.toString()} className="rounded-lg mb-1 focus:bg-indigo-50 transition-colors">
+                                  <div className="flex items-center space-x-3 py-1">
+                                    <div className="h-9 w-9 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                      <HardDrive className="h-5 w-5 text-indigo-600" />
+                                    </div>
+                                    <div className="flex flex-col min-w-0">
+                                      <span className="font-semibold text-gray-900 truncate">
+                                        {asset.serialNo || asset.machineId || 'Unknown Asset'}
+                                      </span>
+                                      <span className="text-xs text-indigo-500 font-medium tracking-tight">
+                                        {asset.model ? `Model: ${asset.model}` : 'Generic Asset'}
                                       </span>
                                     </div>
                                   </div>
                                 </SelectItem>
-                              ))
-                          ) : assets.length > 0 ? (
-                            <div className="p-2 text-sm text-gray-500 text-center">
-                              {formData.assetIds.length === assets.length 
-                                ? 'All assets selected' 
-                                : 'No assets found matching your search'}
-                            </div>
-                          ) : null}
+                              ));
+                            }
+                            
+                            return (
+                              <div className="p-8 text-center bg-gray-50/50 rounded-xl m-2">
+                                <HardDrive className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                                <p className="text-sm font-medium text-gray-600">
+                                  {assets.length === 0 ? 'No assets found' : 'All assets selected'}
+                                </p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  {assets.length === 0 ? 'Add a new asset using the button below' : 'Remove an asset above to re-select'}
+                                </p>
+                              </div>
+                            );
+                          })()}
                         </div>
                       </SelectContent>
                     </Select>
@@ -785,12 +850,11 @@ export default function NewOfferPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
                     onClick={() => setIsAddAssetOpen(true)}
                     disabled={!formData.customerId}
-                    className="h-11 px-4 border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200"
+                    className="h-12 px-5 border-2 border-indigo-100 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:shadow-md transition-all duration-200 group self-start"
                   >
-                    <Plus className="h-4 w-4 mr-1" />
+                    <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                     Add New
                   </Button>
                 </div>
@@ -800,211 +864,404 @@ export default function NewOfferPage() {
         </Card>
 
         {/* Essential Information */}
-        <Card className="shadow-xl border-0 bg-white backdrop-blur-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl border-b border-blue-100 pb-6">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/20">
-                <FileText className="h-6 w-6 text-white" />
+        <Card className="shadow-xl border-0 bg-white overflow-hidden">
+          {/* Top accent bar */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+          
+          <CardHeader className="bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border-b border-blue-100/50 pb-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg ring-2 ring-blue-100">
+                  <FileText className="h-7 w-7 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow ring-2 ring-white">
+                  <span className="text-xs font-bold text-white">2</span>
+                </div>
               </div>
-              Essential Information
-            </CardTitle>
-            <CardDescription className="text-slate-600 ml-12 mt-1">Basic details for initial offer stage</CardDescription>
+              <div>
+                <CardTitle className="text-2xl font-bold text-gray-800">Essential Information</CardTitle>
+                <CardDescription className="text-gray-500 mt-1">Select product type and lead status</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="productType" className="text-sm font-semibold text-gray-700 flex items-center gap-1">
-                  Product Type <span className="text-red-600">*</span>
+              {/* Product Type */}
+              <div className="space-y-3 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 p-6 rounded-2xl border border-blue-100 shadow-sm transition-all hover:shadow-md">
+                <Label htmlFor="productType" className="flex items-center gap-2 text-base font-bold text-gray-800">
+                  <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Target className="h-5 w-5 text-blue-600" />
+                  </div>
+                  Product Type <span className="text-red-500">*</span>
                 </Label>
                 <Select value={formData.productType} onValueChange={(value) => handleInputChange('productType', value)}>
-                  <SelectTrigger className="h-11 border-2 hover:border-blue-300 focus:border-blue-500 transition-colors">
-                    <SelectValue placeholder="Select product type" />
+                  <SelectTrigger className="h-14 text-base bg-white border-2 border-blue-50 hover:border-blue-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all rounded-xl shadow-sm">
+                    <SelectValue placeholder="Choose a product type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RELOCATION">Relocation</SelectItem>
-                    <SelectItem value="CONTRACT">Contract</SelectItem>
-                    <SelectItem value="SPP">SPP (Spare Parts)</SelectItem>
-                    <SelectItem value="UPGRADE_KIT">Upgrade Kit</SelectItem>
-                    <SelectItem value="SOFTWARE">Software</SelectItem>
-                    <SelectItem value="BD_CHARGES">BD Charges</SelectItem>
-                    <SelectItem value="BD_SPARE">BD Spare</SelectItem>
-                    <SelectItem value="MIDLIFE_UPGRADE">Midlife Upgrade</SelectItem>
-                    <SelectItem value="RETROFIT_KIT">Retrofit Kit</SelectItem>
+                  <SelectContent className="max-h-[400px] rounded-xl border-2 border-blue-50 shadow-2xl p-1">
+                    <SelectItem value="RELOCATION" className="py-3 rounded-lg focus:bg-purple-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 font-bold shadow-sm">RE</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Relocation</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Equipment relocation services</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="CONTRACT" className="py-3 rounded-lg focus:bg-green-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 font-bold shadow-sm">CO</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Contract</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Service contract agreement</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="SPP" className="py-3 rounded-lg focus:bg-orange-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 font-bold shadow-sm">SP</div>
+                        <div>
+                          <span className="font-bold text-gray-900">SPP (Spare Parts)</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Spare parts package</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="UPGRADE_KIT" className="py-3 rounded-lg focus:bg-blue-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 font-bold shadow-sm">UK</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Upgrade Kit</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Hardware upgrade package</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="SOFTWARE" className="py-3 rounded-lg focus:bg-indigo-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold shadow-sm">SW</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Software</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Software license or update</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="BD_CHARGES" className="py-3 rounded-lg focus:bg-red-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600 font-bold shadow-sm">BD</div>
+                        <div>
+                          <span className="font-bold text-gray-900">BD Charges</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Breakdown service charges</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="BD_SPARE" className="py-3 rounded-lg focus:bg-rose-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 font-bold shadow-sm">BS</div>
+                        <div>
+                          <span className="font-bold text-gray-900">BD Spare</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Breakdown spare parts</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="MIDLIFE_UPGRADE" className="py-3 rounded-lg focus:bg-cyan-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold shadow-sm">MU</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Midlife Upgrade</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Equipment midlife upgrade</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="RETROFIT_KIT" className="py-3 rounded-lg focus:bg-teal-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 font-bold shadow-sm">RK</div>
+                        <div>
+                          <span className="font-bold text-gray-900">Retrofit Kit</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Retrofit installation kit</p>
+                        </div>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+                {formData.productType && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/50 rounded-lg border border-blue-100 w-fit">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                    <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">{formData.productType.replace(/_/g, ' ')}</span>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lead" className="text-sm font-semibold text-gray-700 flex items-center gap-1">
-                  Lead Status <span className="text-red-600">*</span>
+              {/* Lead Status */}
+              <div className="space-y-3 bg-gradient-to-br from-purple-50/50 to-pink-50/30 p-6 rounded-2xl border border-purple-100 shadow-sm transition-all hover:shadow-md">
+                <Label htmlFor="lead" className="flex items-center gap-2 text-base font-bold text-gray-800">
+                  <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                  </div>
+                  Lead Status <span className="text-red-500">*</span>
                 </Label>
                 <Select value={formData.lead} onValueChange={(value) => handleInputChange('lead', value)}>
-                  <SelectTrigger className="h-11 border-2 hover:border-blue-300 focus:border-blue-500 transition-colors">
-                    <SelectValue placeholder="Select lead status" />
+                  <SelectTrigger className="h-14 text-base bg-white border-2 border-purple-50 hover:border-purple-200 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all rounded-xl shadow-sm">
+                    <SelectValue placeholder="Is this a lead?" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="YES">Yes</SelectItem>
-                    <SelectItem value="NO">No</SelectItem>
+                  <SelectContent className="rounded-xl border-2 border-purple-50 shadow-2xl p-1">
+                    <SelectItem value="YES" className="py-3 rounded-lg focus:bg-green-50">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shadow-sm">
+                          <span className="text-green-600 font-bold text-lg">✓</span>
+                        </div>
+                        <div>
+                          <span className="font-bold text-gray-900">Yes - This is a Lead</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Originated from sales pipeline</p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="NO" className="py-3 rounded-lg focus:bg-gray-50">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shadow-sm">
+                          <span className="text-gray-600 font-bold text-lg">—</span>
+                        </div>
+                        <div>
+                          <span className="font-bold text-gray-900">No - Direct Request</span>
+                          <p className="text-xs text-gray-500 mt-0.5">Standard customer inquiry</p>
+                        </div>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+                {formData.lead && (
+                   <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit ${formData.lead === 'YES' ? 'bg-green-50 border-green-100 text-green-700' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
+                    <div className={`w-2 h-2 rounded-full ${formData.lead === 'YES' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                    <span className="text-xs font-bold uppercase tracking-wider">{formData.lead === 'YES' ? 'Active Lead' : 'Direct Inquiry'}</span>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Spare Parts Section - Only for SPP */}
         {formData.productType === 'SPP' && (
-          <Card className="shadow-lg border-0 bg-white overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 border-b border-orange-100 py-4">
+          <Card className="shadow-xl border-0 bg-white overflow-hidden">
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-500"></div>
+            
+            <CardHeader className="bg-gradient-to-br from-orange-50 via-red-50/50 to-rose-50/30 border-b border-orange-100/50 pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
-                    <Target className="h-5 w-5 text-white" />
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg ring-2 ring-orange-100">
+                      <Target className="h-7 w-7 text-white" />
+                    </div>
+                    {formData.spareParts.length > 0 && (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow ring-2 ring-white">
+                        <span className="text-xs font-bold text-white">{formData.spareParts.length}</span>
+                      </div>
+                    )}
                   </div>
                   <div>
-                    <CardTitle className="text-lg">Spare Parts</CardTitle>
-                    <CardDescription className="text-xs mt-0.5">
-                      {loadingSpareParts ? 'Loading...' : `${spareParts.length} available`}
-                      {formData.spareParts.length > 0 && ` • ${formData.spareParts.length} selected`}
+                    <CardTitle className="text-2xl font-bold text-gray-800">Spare Parts Selection</CardTitle>
+                    <CardDescription className="text-gray-500 mt-1">
+                      {loadingSpareParts ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Loading spare parts catalog...
+                        </span>
+                      ) : (
+                        <span>{spareParts.length} parts available in catalog</span>
+                      )}
                     </CardDescription>
                   </div>
                 </div>
+                
+                {/* Grand Total Badge */}
                 {formData.spareParts.length > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 rounded-lg">
-                    <DollarSign className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-bold text-green-700">
-                      ₹{formData.spareParts.reduce((sum, p) => sum + (parseFloat(p.total || '0') || 0), 0).toLocaleString('en-IN')}
-                    </span>
+                  <div className="hidden md:flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                    <DollarSign className="h-5 w-5 text-white" />
+                    <div className="text-white">
+                      <span className="text-xs font-medium opacity-90">Total Value</span>
+                      <p className="text-xl font-bold">
+                        ₹{formData.spareParts.reduce((sum, p) => sum + (parseFloat(p.total || '0') || 0), 0).toLocaleString('en-IN')}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
             </CardHeader>
-            <CardContent className="p-4 space-y-4">
-              {/* Add Spare Part Dropdown */}
-              <Select 
-                value="" 
-                onValueChange={(value) => {
-                  if (value && !formData.spareParts.find(p => p.name === value)) {
-                    const selectedPart = spareParts.find(sp => sp.id === parseInt(value));
-                    if (selectedPart) {
-                      const newPart = {
-                        name: value,
-                        photo: selectedPart.imageUrl || '',
-                        price: selectedPart.basePrice?.toString() || '',
-                        quantity: '1',
-                        total: selectedPart.basePrice?.toString() || ''
-                      };
-                      handleInputChange('spareParts', [...formData.spareParts, newPart]);
-                      setSparePartSearch('');
-                    }
-                  }
-                }}
-                disabled={loadingSpareParts}
-              >
-                <SelectTrigger className="h-10 border-2 border-orange-200 hover:border-orange-400 bg-orange-50/50">
-                  <div className="flex items-center gap-2">
-                    <Plus className="h-4 w-4 text-orange-500" />
-                    <SelectValue placeholder={loadingSpareParts ? 'Loading...' : `Add spare part (${spareParts.length} available)`} />
+            
+            <CardContent className="p-6 space-y-6">
+              {/* Add Spare Part Section */}
+              <div className="bg-gradient-to-br from-orange-50/50 to-red-50/30 p-5 rounded-xl border border-orange-100">
+                <Label className="flex items-center gap-2 text-base font-semibold text-gray-700 mb-3">
+                  <div className="h-7 w-7 rounded-lg bg-orange-100 flex items-center justify-center">
+                    <Plus className="h-4 w-4 text-orange-600" />
                   </div>
-                </SelectTrigger>
-                <SelectContent className="max-h-[350px]">
-                  {/* Search */}
-                  <div className="sticky top-0 bg-white border-b p-2 z-10">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <Input
-                        placeholder="Search spare parts..."
-                        value={sparePartSearch}
-                        onChange={(e) => setSparePartSearch(e.target.value)}
-                        className="pl-9 pr-8 h-9 text-sm"
-                        onClick={(e) => e.stopPropagation()}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        onFocus={(e) => e.stopPropagation()}
-                      />
-                      {sparePartSearch && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setSparePartSearch(''); }}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="max-h-[250px] overflow-y-auto">
-                    {(() => {
-                      const availableParts = spareParts
-                        .filter(sp => !formData.spareParts.find(p => p.name === sp.id.toString()))
-                        .filter(sp => {
-                          if (!sparePartSearch) return true;
-                          const s = sparePartSearch.toLowerCase();
-                          return sp.name?.toLowerCase().includes(s) || sp.partNumber?.toLowerCase().includes(s) || sp.category?.toLowerCase().includes(s);
-                        });
-
-                      if (availableParts.length === 0) {
-                        return (
-                          <div className="p-4 text-center text-sm text-gray-500">
-                            {sparePartSearch ? `No results for "${sparePartSearch}"` : 'No spare parts available'}
-                          </div>
-                        );
+                  Add Spare Parts
+                  {!loadingSpareParts && spareParts.length > 0 && (
+                    <span className="text-sm font-normal text-gray-500 ml-2">
+                      ({spareParts.length - formData.spareParts.length} available)
+                    </span>
+                  )}
+                </Label>
+                
+                <Select 
+                  value="" 
+                  onValueChange={(value) => {
+                    if (value && !formData.spareParts.find(p => p.name === value)) {
+                      const selectedPart = spareParts.find(sp => sp.id === parseInt(value));
+                      if (selectedPart) {
+                        const newPart = {
+                          name: value,
+                          photo: selectedPart.imageUrl || '',
+                          price: selectedPart.basePrice?.toString() || '',
+                          quantity: '1',
+                          total: selectedPart.basePrice?.toString() || ''
+                        };
+                        handleInputChange('spareParts', [...formData.spareParts, newPart]);
+                        setSparePartSearch('');
                       }
+                    }
+                  }}
+                  disabled={loadingSpareParts}
+                >
+                  <SelectTrigger className="h-14 text-base bg-white border-2 border-orange-100 hover:border-orange-300 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all rounded-xl shadow-sm">
+                    <SelectValue placeholder={
+                      loadingSpareParts 
+                        ? 'Loading spare parts catalog...' 
+                        : spareParts.length === 0 
+                          ? 'No spare parts available' 
+                          : `Search and add from ${spareParts.length} parts...`
+                    } />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[500px] w-[var(--radix-select-trigger-width)] rounded-xl shadow-2xl border-orange-50 p-0">
+                    {/* Search Header */}
+                    <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b p-4 z-10">
+                      <div className="relative group/search">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 group-focus-within/search:text-orange-500 transition-colors" />
+                        <Input
+                          placeholder="Search by name, part number, or category..."
+                          value={sparePartSearch}
+                          onChange={(e) => setSparePartSearch(e.target.value)}
+                          className="pl-10 pr-10 h-11 text-sm border-gray-100 bg-gray-50 focus:bg-white transition-all rounded-lg"
+                          onClick={(e) => e.stopPropagation()}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                          onFocus={(e) => e.stopPropagation()}
+                        />
+                        {sparePartSearch && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setSparePartSearch(''); }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 transition-all"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Parts List */}
+                    <div className="max-h-[350px] overflow-y-auto p-2 custom-scrollbar">
+                      {(() => {
+                        const availableParts = spareParts
+                          .filter(sp => !formData.spareParts.find(p => p.name === sp.id.toString()))
+                          .filter(sp => {
+                            if (!sparePartSearch) return true;
+                            const s = sparePartSearch.toLowerCase();
+                            return sp.name?.toLowerCase().includes(s) || sp.partNumber?.toLowerCase().includes(s) || sp.category?.toLowerCase().includes(s);
+                          });
 
-                      return availableParts.map((sp) => (
-                        <SelectItem key={sp.id} value={sp.id.toString()} className="py-2">
-                          <div className="flex items-center gap-2">
-                            {sp.imageUrl ? (
-                              <img src={sp.imageUrl} alt="" className="w-8 h-8 rounded object-cover border" />
-                            ) : (
-                              <div className="w-8 h-8 bg-orange-100 rounded flex items-center justify-center">
-                                <Image className="h-4 w-4 text-orange-400" />
+                        if (availableParts.length === 0) {
+                          return (
+                            <div className="p-10 text-center">
+                              <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-200">
+                                <Target className="h-8 w-8 text-gray-300" />
                               </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm truncate">{sp.name}</p>
-                              <p className="text-xs text-gray-500">#{sp.partNumber} • ₹{parseFloat(sp.basePrice).toLocaleString('en-IN')}</p>
+                              <p className="text-sm font-bold text-gray-700">
+                                {sparePartSearch ? `No results for "${sparePartSearch}"` : 'All parts selected'}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {sparePartSearch ? 'Try a different search term' : 'Remove some parts to re-add them'}
+                              </p>
                             </div>
-                          </div>
-                        </SelectItem>
-                      ));
-                    })()}
-                  </div>
-                </SelectContent>
-              </Select>
+                          );
+                        }
 
-              {/* Selected Parts - Compact Table Layout */}
+                        return availableParts.map((sp) => (
+                          <SelectItem key={sp.id} value={sp.id.toString()} className="py-3 px-3 rounded-lg focus:bg-orange-50 transition-colors mb-1 cursor-pointer">
+                            <div className="flex items-center gap-4 w-full">
+                              <div className="flex-shrink-0">
+                                {sp.imageUrl ? (
+                                  <img src={sp.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover border-2 border-gray-100 shadow-sm" />
+                                ) : (
+                                  <div className="w-14 h-14 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center border-2 border-orange-50 shadow-sm">
+                                    <Image className="h-6 w-6 text-orange-400" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2 mb-1">
+                                  <p className="font-bold text-gray-900 truncate">{sp.name}</p>
+                                  <span className="font-black text-green-600 flex-shrink-0">
+                                    ₹{parseFloat(sp.basePrice).toLocaleString('en-IN')}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200 uppercase tracking-tight">#{sp.partNumber}</span>
+                                  {sp.category && (
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-600 border border-orange-200 uppercase tracking-tight">
+                                      {sp.category}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ));
+                      })()}
+                    </div>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Selected Parts Table */}
               {formData.spareParts.length > 0 && (
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm">
                   {/* Table Header */}
-                  <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600 border-b">
-                    <div className="col-span-5">Part</div>
-                    <div className="col-span-2 text-center">Qty</div>
-                    <div className="col-span-2 text-center">Price</div>
-                    <div className="col-span-2 text-right">Total</div>
+                  <div className="grid grid-cols-12 gap-3 px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 text-sm font-semibold text-gray-700 border-b">
+                    <div className="col-span-5 flex items-center gap-2">
+                      <Target className="h-4 w-4 text-orange-500" />
+                      Part Details
+                    </div>
+                    <div className="col-span-2 text-center">Quantity</div>
+                    <div className="col-span-2 text-center">Unit Price</div>
+                    <div className="col-span-2 text-right">Subtotal</div>
                     <div className="col-span-1"></div>
                   </div>
                   
                   {/* Table Rows */}
                   {formData.spareParts.map((part, index) => {
-                    const sp = spareParts.find(s => s.id === parseInt(part.name)) || {};
+                    const sp: any = spareParts.find(s => s.id === parseInt(part.name)) || {};
                     return (
-                      <div key={index} className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center border-b last:border-b-0 hover:bg-orange-50/30 transition-colors">
-                        <div className="col-span-5 flex items-center gap-2">
+                      <div key={index} className="grid grid-cols-12 gap-3 px-4 py-4 items-center border-b last:border-b-0 hover:bg-orange-50/50 transition-all duration-200 group">
+                        <div className="col-span-5 flex items-center gap-3">
                           {sp.imageUrl ? (
-                            <img src={sp.imageUrl} alt="" className="w-10 h-10 rounded object-cover border flex-shrink-0" />
+                            <img src={sp.imageUrl} alt="" className="w-14 h-14 rounded-lg object-cover border-2 border-gray-100 shadow-sm group-hover:border-orange-200 transition-colors" />
                           ) : (
-                            <div className="w-10 h-10 bg-orange-100 rounded flex items-center justify-center flex-shrink-0">
-                              <Image className="h-4 w-4 text-orange-400" />
+                            <div className="w-14 h-14 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:from-orange-200 group-hover:to-red-200 transition-colors">
+                              <Image className="h-6 w-6 text-orange-400" />
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="font-medium text-sm truncate">{sp.name}</p>
-                            <p className="text-xs text-gray-500">#{sp.partNumber}</p>
+                            <p className="font-semibold text-gray-900 truncate">{sp.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-xs text-gray-500">#{sp.partNumber}</span>
+                              {sp.category && (
+                                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                  {sp.category}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-2 flex justify-center">
                           <Input
                             type="number"
                             min="1"
@@ -1017,7 +1274,7 @@ export default function NewOfferPage() {
                               newParts[index].total = (price * qty).toString();
                               handleInputChange('spareParts', newParts);
                             }}
-                            className="h-8 text-center text-sm px-2"
+                            className="h-10 w-20 text-center text-sm font-medium border-2 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                           />
                         </div>
                         <div className="col-span-2 text-center">
@@ -1026,20 +1283,20 @@ export default function NewOfferPage() {
                           </span>
                         </div>
                         <div className="col-span-2 text-right">
-                          <span className="font-semibold text-green-600 text-sm">
+                          <span className="font-bold text-green-600">
                             ₹{parseFloat(part.total || '0').toLocaleString('en-IN')}
                           </span>
                         </div>
-                        <div className="col-span-1 text-right">
+                        <div className="col-span-1 flex justify-end">
                           <button
                             type="button"
                             onClick={() => {
                               const newParts = formData.spareParts.filter((_, i) => i !== index);
                               handleInputChange('spareParts', newParts);
                             }}
-                            className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-5 w-5" />
                           </button>
                         </div>
                       </div>
@@ -1047,17 +1304,21 @@ export default function NewOfferPage() {
                   })}
                   
                   {/* Grand Total Row */}
-                  <div className="grid grid-cols-12 gap-2 px-3 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white">
-                    <div className="col-span-5 flex items-center gap-2">
-                      <DollarSign className="h-5 w-5" />
-                      <span className="font-semibold">Grand Total</span>
-                      <span className="text-green-100 text-sm">
-                        ({formData.spareParts.length} items, {formData.spareParts.reduce((s, p) => s + (parseInt(p.quantity || '1') || 1), 0)} units)
-                      </span>
+                  <div className="grid grid-cols-12 gap-3 px-4 py-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white">
+                    <div className="col-span-5 flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center">
+                        <DollarSign className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-lg">Grand Total</span>
+                        <p className="text-green-100 text-sm">
+                          {formData.spareParts.length} items • {formData.spareParts.reduce((s, p) => s + (parseInt(p.quantity || '1') || 1), 0)} units
+                        </p>
+                      </div>
                     </div>
                     <div className="col-span-4"></div>
-                    <div className="col-span-2 text-right">
-                      <span className="text-xl font-bold">
+                    <div className="col-span-2 text-right flex items-center justify-end">
+                      <span className="text-2xl font-bold">
                         ₹{formData.spareParts.reduce((sum, p) => sum + (parseFloat(p.total || '0') || 0), 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -1068,18 +1329,26 @@ export default function NewOfferPage() {
               
               {/* Empty State */}
               {formData.spareParts.length === 0 && !loadingSpareParts && (
-                <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  <Target className="h-10 w-10 mx-auto mb-2 text-gray-300" />
-                  <p className="text-sm font-medium text-gray-600">No spare parts selected</p>
-                  <p className="text-xs text-gray-400 mt-1">Use the dropdown above to add parts</p>
+                <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-orange-50/30 rounded-xl border-2 border-dashed border-orange-200">
+                  <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
+                    <Target className="h-8 w-8 text-orange-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No Spare Parts Selected</h3>
+                  <p className="text-sm text-gray-500 max-w-md mx-auto">
+                    Use the dropdown above to search and add spare parts from the catalog. 
+                    Each part can be customized with quantity.
+                  </p>
                 </div>
               )}
               
               {/* Loading State */}
               {loadingSpareParts && formData.spareParts.length === 0 && (
-                <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  <Loader2 className="h-8 w-8 mx-auto mb-2 text-orange-400 animate-spin" />
-                  <p className="text-sm text-gray-500">Loading spare parts...</p>
+                <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-orange-50/30 rounded-xl border-2 border-dashed border-orange-200">
+                  <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
+                    <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">Loading Spare Parts</h3>
+                  <p className="text-sm text-gray-500">Fetching catalog from server...</p>
                 </div>
               )}
             </CardContent>

@@ -28,10 +28,10 @@ export type NavItem = {
 
 // Admin navigation - loaded only for admin users
 export const adminNavigation: NavItem[] = [
-  { 
-    title: "Dashboard", 
-    href: "/admin/dashboard", 
-    icon: LayoutDashboard, 
+  {
+    title: "Dashboard",
+    href: "/admin/dashboard",
+    icon: LayoutDashboard,
     roles: [UserRole.ADMIN],
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-50"
@@ -44,45 +44,37 @@ export const adminNavigation: NavItem[] = [
     iconColor: "text-purple-600",
     iconBgColor: "bg-purple-50",
     children: [
-      { 
-        title: "Offer Dashboard", 
-        href: "/admin/offer-dashboard", 
-        icon: BarChart2, 
-        roles: [UserRole.ADMIN],
-        iconColor: "text-blue-600",
-        iconBgColor: "bg-blue-50"
-      },
-      { 
-        title: "Offers", 
-        href: "/admin/offers", 
-        icon: DollarSign, 
+      {
+        title: "Offers",
+        href: "/admin/offers",
+        icon: DollarSign,
         roles: [UserRole.ADMIN],
         iconColor: "text-purple-600",
         iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Targets", 
-        href: "/admin/targets", 
-        icon: BarChart2, 
+      {
+        title: "Targets",
+        href: "/admin/targets",
+        icon: BarChart2,
         roles: [UserRole.ADMIN],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"
       },
-      { 
-        title: "Forecast", 
-        href: "/admin/forecast", 
-        icon: BarChart2, 
-        roles: [UserRole.ADMIN],
-        iconColor: "text-cyan-600",
-        iconBgColor: "bg-cyan-50"
-      },
-      { 
-        title: "Spare Parts", 
-        href: "/admin/spare-parts", 
-        icon: Activity, 
+      {
+        title: "Spare Parts",
+        href: "/admin/spare-parts",
+        icon: Activity,
         roles: [UserRole.ADMIN],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
+      },
+      {
+        title: "Forecast",
+        href: "/admin/forecast",
+        icon: BarChart2,
+        roles: [UserRole.ADMIN],
+        iconColor: "text-cyan-600",
+        iconBgColor: "bg-cyan-50"
       }
     ]
   },
@@ -94,51 +86,51 @@ export const adminNavigation: NavItem[] = [
     iconColor: "text-cyan-600",
     iconBgColor: "bg-cyan-50",
     children: [
-      { 
-        title: "Tickets", 
-        href: "/admin/tickets", 
-        icon: Ticket, 
+      {
+        title: "Tickets",
+        href: "/admin/tickets",
+        icon: Ticket,
         roles: [UserRole.ADMIN],
         iconColor: "text-cyan-600",
         iconBgColor: "bg-cyan-50"
       },
-      { 
-       title: "Customers", 
-       href: "/admin/customers", 
-       icon: Users, 
-       roles: [UserRole.ADMIN],
-       iconColor: "text-purple-600",
-       iconBgColor: "bg-purple-50"
+      {
+        title: "Customers",
+        href: "/admin/customers",
+        icon: Users,
+        roles: [UserRole.ADMIN],
+        iconColor: "text-purple-600",
+        iconBgColor: "bg-purple-50"
       },
-      
-      { 
-        title: "Service Zones", 
-        href: "/admin/service-zones", 
-        icon: MapPin, 
+
+      {
+        title: "Service Zones",
+        href: "/admin/service-zones",
+        icon: MapPin,
         roles: [UserRole.ADMIN],
         iconColor: "text-rose-600",
         iconBgColor: "bg-rose-50"
       },
-      { 
-        title: "Service Persons", 
-        href: "/admin/service-person", 
-        icon: Activity, 
+      {
+        title: "Service Persons",
+        href: "/admin/service-person",
+        icon: Activity,
         roles: [UserRole.ADMIN],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
       },
-      { 
-        title: "Zone Users", 
-        href: "/admin/zone-users", 
-        icon: Users, 
+      {
+        title: "Zone Users",
+        href: "/admin/zone-users",
+        icon: Users,
         roles: [UserRole.ADMIN],
         iconColor: "text-indigo-600",
         iconBgColor: "bg-indigo-50"
       }
     ]
   },
-  
-  
+
+
   {
     title: "Activity Management",
     href: "/admin/attendance",
@@ -147,23 +139,23 @@ export const adminNavigation: NavItem[] = [
     iconColor: "text-amber-600",
     iconBgColor: "bg-amber-50",
     children: [
-      { 
-        title: "Activity Scheduling", 
-        href: "/admin/activity-scheduling", 
-        icon: Clock, 
+      {
+        title: "Activity Scheduling",
+        href: "/admin/activity-scheduling",
+        icon: Clock,
         roles: [UserRole.ADMIN],
         iconColor: "text-indigo-600",
         iconBgColor: "bg-indigo-50"
       },
-      { 
-        title: "Daily Activity", 
-        href: "/admin/attendance", 
-        icon: Calendar, 
+      {
+        title: "Daily Activity",
+        href: "/admin/attendance",
+        icon: Calendar,
         roles: [UserRole.ADMIN],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"
       },
-     
+
     ]
   },
   {
@@ -178,18 +170,18 @@ export const adminNavigation: NavItem[] = [
 
 // Service Person navigation - loaded only for service persons
 export const servicePersonNavigation: NavItem[] = [
-  { 
-    title: "Dashboard", 
-    href: "/service-person/dashboard", 
-    icon: LayoutDashboard, 
+  {
+    title: "Dashboard",
+    href: "/service-person/dashboard",
+    icon: LayoutDashboard,
     roles: [UserRole.SERVICE_PERSON],
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-50"
   },
-  { 
-    title: "My Tickets", 
-    href: "/service-person/tickets", 
-    icon: Ticket, 
+  {
+    title: "My Tickets",
+    href: "/service-person/tickets",
+    icon: Ticket,
     roles: [UserRole.SERVICE_PERSON],
     iconColor: "text-cyan-600",
     iconBgColor: "bg-cyan-50"
@@ -198,10 +190,10 @@ export const servicePersonNavigation: NavItem[] = [
 
 // Zone Manager navigation - loaded only for zone managers
 export const zoneManagerNavigation: NavItem[] = [
-  { 
-    title: "Dashboard", 
-    href: "/zone/dashboard", 
-    icon: LayoutDashboard, 
+  {
+    title: "Dashboard",
+    href: "/zone/dashboard",
+    icon: LayoutDashboard,
     roles: [UserRole.ZONE_MANAGER],
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-50"
@@ -214,38 +206,30 @@ export const zoneManagerNavigation: NavItem[] = [
     iconColor: "text-purple-600",
     iconBgColor: "bg-purple-50",
     children: [
-      { 
-        title: "Offer Dashboard", 
-        href: "/zone-manager/offer-dashboard", 
-        icon: BarChart2, 
-        roles: [UserRole.ZONE_MANAGER],
-        iconColor: "text-blue-600",
-        iconBgColor: "bg-blue-50"
-      },
-      { 
-        title: "Offers", 
-        href: "/zone-manager/offers", 
-        icon: DollarSign, 
+      {
+        title: "Offers",
+        href: "/zone-manager/offers",
+        icon: DollarSign,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-purple-600",
         iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Targets", 
-        href: "/zone-manager/targets", 
-        icon: BarChart2, 
+      {
+        title: "Spare Parts",
+        href: "/zone-manager/spare-parts",
+        icon: Activity,
         roles: [UserRole.ZONE_MANAGER],
-        iconColor: "text-emerald-600",
-        iconBgColor: "bg-emerald-50"
+        iconColor: "text-orange-600",
+        iconBgColor: "bg-orange-50"
       },
-      { 
-        title: "Forecast", 
-        href: "/zone-manager/forecast", 
-        icon: BarChart2, 
+      {
+        title: "Forecast",
+        href: "/zone-manager/forecast",
+        icon: BarChart2,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-cyan-600",
         iconBgColor: "bg-cyan-50"
-      }
+      },
     ]
   },
   {
@@ -256,34 +240,26 @@ export const zoneManagerNavigation: NavItem[] = [
     iconColor: "text-cyan-600",
     iconBgColor: "bg-cyan-50",
     children: [
-      { 
-        title: "Tickets", 
-        href: "/zone/tickets", 
-        icon: Ticket, 
+      {
+        title: "Tickets",
+        href: "/zone/tickets",
+        icon: Ticket,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-cyan-600",
         iconBgColor: "bg-cyan-50"
       },
-      { 
-       title: "Customers", 
-       href: "/zone/customers", 
-       icon: Users, 
-       roles: [UserRole.ZONE_MANAGER],
-       iconColor: "text-purple-600",
-       iconBgColor: "bg-purple-50"
-      },
-      { 
-        title: "Service Zones", 
-        href: "/zone/service-zones", 
-        icon: MapPin, 
+      {
+        title: "Customers",
+        href: "/zone/customers",
+        icon: Users,
         roles: [UserRole.ZONE_MANAGER],
-        iconColor: "text-rose-600",
-        iconBgColor: "bg-rose-50"
+        iconColor: "text-purple-600",
+        iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Service Persons", 
-        href: "/zone/service-persons", 
-        icon: Activity, 
+      {
+        title: "Service Persons",
+        href: "/zone/service-persons",
+        icon: Activity,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
@@ -298,28 +274,28 @@ export const zoneManagerNavigation: NavItem[] = [
     iconColor: "text-amber-600",
     iconBgColor: "bg-amber-50",
     children: [
-      { 
-        title: "Activity Scheduling", 
-        href: "/zone/activity-scheduling", 
-        icon: Clock, 
+      {
+        title: "Activity Scheduling",
+        href: "/zone/activity-scheduling",
+        icon: Clock,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-indigo-600",
         iconBgColor: "bg-indigo-50"
       },
-      { 
-        title: "Daily Activity", 
-        href: "/zone/attendence", 
-        icon: Calendar, 
+      {
+        title: "Daily Activity",
+        href: "/zone/attendence",
+        icon: Calendar,
         roles: [UserRole.ZONE_MANAGER],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"
       }
     ]
   },
-  { 
-    title: "Reports", 
-    href: "/zone/reports", 
-    icon: FileText, 
+  {
+    title: "Reports",
+    href: "/zone-manager/reports",
+    icon: FileText,
     roles: [UserRole.ZONE_MANAGER],
     iconColor: "text-violet-600",
     iconBgColor: "bg-violet-50"
@@ -328,10 +304,10 @@ export const zoneManagerNavigation: NavItem[] = [
 
 // Zone User navigation - loaded only for zone users
 export const zoneUserNavigation: NavItem[] = [
-  { 
-    title: "Dashboard", 
-    href: "/zone/dashboard", 
-    icon: LayoutDashboard, 
+  {
+    title: "Dashboard",
+    href: "/zone/dashboard",
+    icon: LayoutDashboard,
     roles: [UserRole.ZONE_USER],
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-50"
@@ -344,26 +320,26 @@ export const zoneUserNavigation: NavItem[] = [
     iconColor: "text-purple-600",
     iconBgColor: "bg-purple-50",
     children: [
-      { 
-        title: "Offer Dashboard", 
-        href: "/zone/offer-dashboard", 
-        icon: BarChart2, 
-        roles: [UserRole.ZONE_USER],
-        iconColor: "text-blue-600",
-        iconBgColor: "bg-blue-50"
-      },
-      { 
-        title: "Offers", 
-        href: "/zone/offers", 
-        icon: DollarSign, 
+      {
+        title: "Offers",
+        href: "/zone/offers",
+        icon: DollarSign,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-purple-600",
         iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Spare Parts", 
-        href: "/zone/spare-parts", 
-        icon: Activity, 
+      {
+        title: "My Forecast",
+        href: "/zone/forecast",
+        icon: BarChart2,
+        roles: [UserRole.ZONE_USER],
+        iconColor: "text-cyan-600",
+        iconBgColor: "bg-cyan-50"
+      },
+      {
+        title: "Spare Parts",
+        href: "/zone/spare-parts",
+        icon: Activity,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
@@ -378,34 +354,26 @@ export const zoneUserNavigation: NavItem[] = [
     iconColor: "text-cyan-600",
     iconBgColor: "bg-cyan-50",
     children: [
-      { 
-        title: "Tickets", 
-        href: "/zone/tickets", 
-        icon: Ticket, 
+      {
+        title: "Tickets",
+        href: "/zone/tickets",
+        icon: Ticket,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-cyan-600",
         iconBgColor: "bg-cyan-50"
       },
-      { 
-       title: "Customers", 
-       href: "/zone/customers", 
-       icon: Users, 
-       roles: [UserRole.ZONE_USER],
-       iconColor: "text-purple-600",
-       iconBgColor: "bg-purple-50"
-      },
-      { 
-        title: "Service Zones", 
-        href: "/zone/service-zones", 
-        icon: MapPin, 
+      {
+        title: "Customers",
+        href: "/zone/customers",
+        icon: Users,
         roles: [UserRole.ZONE_USER],
-        iconColor: "text-rose-600",
-        iconBgColor: "bg-rose-50"
+        iconColor: "text-purple-600",
+        iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Service Persons", 
-        href: "/zone/service-persons", 
-        icon: Activity, 
+      {
+        title: "Service Persons",
+        href: "/zone/service-persons",
+        icon: Activity,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
@@ -420,28 +388,28 @@ export const zoneUserNavigation: NavItem[] = [
     iconColor: "text-amber-600",
     iconBgColor: "bg-amber-50",
     children: [
-      { 
-        title: "Activity Scheduling", 
-        href: "/zone/activity-scheduling", 
-        icon: Clock, 
+      {
+        title: "Activity Scheduling",
+        href: "/zone/activity-scheduling",
+        icon: Clock,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-indigo-600",
         iconBgColor: "bg-indigo-50"
       },
-      { 
-        title: "Daily Activity", 
-        href: "/zone/attendence", 
-        icon: Calendar, 
+      {
+        title: "Daily Activity",
+        href: "/zone/attendence",
+        icon: Calendar,
         roles: [UserRole.ZONE_USER],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"
       }
     ]
   },
-  { 
-    title: "Reports", 
-    href: "/zone/reports", 
-    icon: FileText, 
+  {
+    title: "Reports",
+    href: "/zone/reports",
+    icon: FileText,
     roles: [UserRole.ZONE_USER],
     iconColor: "text-violet-600",
     iconBgColor: "bg-violet-50"
@@ -451,10 +419,10 @@ export const zoneUserNavigation: NavItem[] = [
 // Expert Helpdesk navigation - loaded only for expert helpdesk users
 // Same structure as admin but with expert-specific paths and role restrictions
 export const expertHelpdeskNavigation: NavItem[] = [
-  { 
-    title: "Dashboard", 
-    href: "/expert/dashboard", 
-    icon: LayoutDashboard, 
+  {
+    title: "Dashboard",
+    href: "/expert/dashboard",
+    icon: LayoutDashboard,
     roles: [UserRole.EXPERT_HELPDESK],
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-50"
@@ -467,45 +435,37 @@ export const expertHelpdeskNavigation: NavItem[] = [
     iconColor: "text-purple-600",
     iconBgColor: "bg-purple-50",
     children: [
-      { 
-        title: "Offer Dashboard", 
-        href: "/expert/offer-dashboard", 
-        icon: BarChart2, 
-        roles: [UserRole.EXPERT_HELPDESK],
-        iconColor: "text-blue-600",
-        iconBgColor: "bg-blue-50"
-      },
-      { 
-        title: "Offers", 
-        href: "/expert/offers", 
-        icon: DollarSign, 
+      {
+        title: "Offers",
+        href: "/expert/offers",
+        icon: DollarSign,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-purple-600",
         iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Targets", 
-        href: "/expert/targets", 
-        icon: BarChart2, 
+      {
+        title: "Targets",
+        href: "/expert/targets",
+        icon: BarChart2,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"
       },
-      { 
-        title: "Forecast", 
-        href: "/expert/forecast", 
-        icon: BarChart2, 
-        roles: [UserRole.EXPERT_HELPDESK],
-        iconColor: "text-cyan-600",
-        iconBgColor: "bg-cyan-50"
-      },
-      { 
-        title: "Spare Parts", 
-        href: "/expert/spare-parts", 
-        icon: Activity, 
+      {
+        title: "Spare Parts",
+        href: "/expert/spare-parts",
+        icon: Activity,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
+      },
+      {
+        title: "Forecast",
+        href: "/expert/forecast",
+        icon: BarChart2,
+        roles: [UserRole.EXPERT_HELPDESK],
+        iconColor: "text-cyan-600",
+        iconBgColor: "bg-cyan-50"
       }
     ]
   },
@@ -517,34 +477,34 @@ export const expertHelpdeskNavigation: NavItem[] = [
     iconColor: "text-cyan-600",
     iconBgColor: "bg-cyan-50",
     children: [
-      { 
-        title: "My Tickets", 
-        href: "/expert/tickets", 
-        icon: Ticket, 
+      {
+        title: "My Tickets",
+        href: "/expert/tickets",
+        icon: Ticket,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-cyan-600",
         iconBgColor: "bg-cyan-50"
       },
-      { 
-       title: "Customers", 
-       href: "/expert/customers", 
-       icon: Users, 
-       roles: [UserRole.EXPERT_HELPDESK],
-       iconColor: "text-purple-600",
-       iconBgColor: "bg-purple-50"
+      {
+        title: "Customers",
+        href: "/expert/customers",
+        icon: Users,
+        roles: [UserRole.EXPERT_HELPDESK],
+        iconColor: "text-purple-600",
+        iconBgColor: "bg-purple-50"
       },
-      { 
-        title: "Service Zones", 
-        href: "/expert/service-zones", 
-        icon: MapPin, 
+      {
+        title: "Service Zones",
+        href: "/expert/service-zones",
+        icon: MapPin,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-rose-600",
         iconBgColor: "bg-rose-50"
       },
-      { 
-        title: "Service Persons", 
-        href: "/expert/service-person", 
-        icon: Activity, 
+      {
+        title: "Service Persons",
+        href: "/expert/service-person",
+        icon: Activity,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-orange-600",
         iconBgColor: "bg-orange-50"
@@ -559,18 +519,18 @@ export const expertHelpdeskNavigation: NavItem[] = [
     iconColor: "text-amber-600",
     iconBgColor: "bg-amber-50",
     children: [
-      { 
-        title: "Activity Scheduling", 
-        href: "/expert/activity-scheduling", 
-        icon: Clock, 
+      {
+        title: "Activity Scheduling",
+        href: "/expert/activity-scheduling",
+        icon: Clock,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-indigo-600",
         iconBgColor: "bg-indigo-50"
       },
-      { 
-        title: "Daily Activity", 
-        href: "/expert/attendance", 
-        icon: Calendar, 
+      {
+        title: "Daily Activity",
+        href: "/expert/attendance",
+        icon: Calendar,
         roles: [UserRole.EXPERT_HELPDESK],
         iconColor: "text-emerald-600",
         iconBgColor: "bg-emerald-50"

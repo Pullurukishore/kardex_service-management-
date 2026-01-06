@@ -194,7 +194,8 @@ export default function CreateTicketPage() {
     };
 
     fetchZoneCustomers();
-  }, [zoneId, form, toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoneId]);
 
   // Watch additional required fields for validation
   const title = form.watch('title');
@@ -248,12 +249,9 @@ export default function CreateTicketPage() {
       }
     };
 
-    try {
-      updateCustomerData();
-    } catch (error) {
-      toast.error('Failed to update customer data. Please try again.');
-    }
-  }, [customerId, form, customers]);
+    updateCustomerData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customerId, customers]);
 
   // Handle asset creation
   const handleCreateAsset = async (values: AssetFormValues) => {
@@ -381,9 +379,6 @@ export default function CreateTicketPage() {
 
       const ticketData = response.data;
       
-      // Log the response for debugging
-      console.log('Ticket creation response:', ticketData);
-      
       // Get customer and zone names for better success message
       const selectedCustomer = customers.find(c => c.id === parseInt(values.customerId));
       let zoneName = 'selected zone';
@@ -395,32 +390,19 @@ export default function CreateTicketPage() {
         zoneName = selectedZone?.name || 'selected zone';
       }
       
-      // Extract ticket details from response
-      const ticketId = ticketData?.id;
-      const ticketTitle = ticketData?.title;
-      const customerName = ticketData?.customer?.companyName || selectedCustomer?.companyName || 'customer';
-      const ticketZone = ticketData?.zone?.name || zoneName;
-      
-      console.log('Showing success toast with:', { ticketId, ticketTitle, customerName, ticketZone });
-      
-      // Show success message
-      const successMessage = `✅ Ticket Created Successfully!\n\nTicket #${ticketId}: ${ticketTitle}\nCustomer: ${customerName}\nZone: ${ticketZone}\n\nRedirecting to tickets page...`;
-      console.log('Success message:', successMessage);
-      
-      // Show toast notification (like login)
-      toast.success('🎉 Ticket Created Successfully!\nWelcome! Redirecting to tickets page...');
+      // Show success toast
+      toast.success(`🎉 Ticket #${ticketData?.ticketNumber ?? ticketData?.id} created for ${selectedCustomer?.companyName || 'customer'} in ${zoneName}`);
       
       // Reset form to allow creating another ticket if needed
       form.reset({
         priority: 'MEDIUM',
       });
       
-      // Wait longer for user to see the success message, then redirect
+      // Redirect to tickets page
       setTimeout(() => {
-        console.log('Redirecting to /admin/tickets');
         router.push('/admin/tickets');
-        router.refresh(); // Ensure the page updates with the new data
-      }, 3000);
+        router.refresh();
+      }, 1500);
     } catch (error: any) {
       let errorMessage = 'Failed to create ticket. Please try again.';
       if (error.response?.data?.message) {
@@ -439,14 +421,31 @@ export default function CreateTicketPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-white" />
+      <div className="min-h-[70vh] flex items-center justify-center relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-red-50/30 to-orange-50/30"></div>
+        <div className="absolute top-20 right-20 w-72 h-72 bg-red-200/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-20 w-64 h-64 bg-orange-200/30 rounded-full blur-3xl animate-pulse delay-300"></div>
+        
+        <div className="relative z-10 flex flex-col items-center space-y-6">
+          {/* Loading icon with animation */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl blur-xl opacity-40 animate-pulse"></div>
+            <div className="relative h-20 w-20 rounded-2xl bg-gradient-to-br from-red-500 via-orange-500 to-rose-600 flex items-center justify-center shadow-2xl">
+              <Loader2 className="h-10 w-10 animate-spin text-white" />
+            </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Form Data</h3>
-            <p className="text-gray-500">Preparing ticket creation form...</p>
+          
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold text-gray-900">Loading Form Data</h3>
+            <p className="text-gray-500 max-w-md">Preparing the ticket creation form. Please wait...</p>
+          </div>
+          
+          {/* Loading skeleton preview */}
+          <div className="w-full max-w-md space-y-3 mt-4">
+            <div className="h-3 bg-gray-200/80 rounded-full w-3/4 mx-auto animate-pulse"></div>
+            <div className="h-3 bg-gray-200/80 rounded-full w-1/2 mx-auto animate-pulse delay-75"></div>
+            <div className="h-3 bg-gray-200/80 rounded-full w-2/3 mx-auto animate-pulse delay-150"></div>
           </div>
         </div>
       </div>
@@ -454,54 +453,56 @@ export default function CreateTicketPage() {
   }
 
   return (
-    <>
-      <TicketFormHeader 
-        onBack={() => router.back()}
-        isSubmitting={isSubmitting}
-      />
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <TicketBasicInfoForm 
-            control={form.control}
-            zones={zones}
-            isSubmitting={isSubmitting}
-          />
-          
-          <CustomerSelectionForm 
-            control={form.control}
-            customers={customers}
-            contacts={contacts}
-            assets={assets}
-            zoneId={zoneId === 'all' ? 'all' : (zoneId !== undefined ? Number(zoneId) : undefined)}
-            customerId={customerId}
-            isSubmitting={isSubmitting}
-            isLoadingCustomers={isLoadingCustomers}
-            onAddContactClick={() => setIsAddContactOpen(true)}
-            onAddAssetClick={() => setIsAddAssetOpen(true)}
-          />
-          
-          <TicketFormActions 
-            isSubmitting={isSubmitting}
-            onCancel={() => router.back()}
-            isFormValid={isFormValid}
-          />
-        </form>
-      </Form>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
+      <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <TicketFormHeader 
+          onBack={() => router.back()}
+          isSubmitting={isSubmitting}
+        />
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <TicketBasicInfoForm 
+              control={form.control}
+              zones={zones}
+              isSubmitting={isSubmitting}
+            />
+            
+            <CustomerSelectionForm 
+              control={form.control}
+              customers={customers}
+              contacts={contacts}
+              assets={assets}
+              zoneId={zoneId === 'all' ? 'all' : (zoneId !== undefined ? Number(zoneId) : undefined)}
+              customerId={customerId}
+              isSubmitting={isSubmitting}
+              isLoadingCustomers={isLoadingCustomers}
+              onAddContactClick={() => setIsAddContactOpen(true)}
+              onAddAssetClick={() => setIsAddAssetOpen(true)}
+            />
+            
+            <TicketFormActions 
+              isSubmitting={isSubmitting}
+              onCancel={() => router.back()}
+              isFormValid={isFormValid}
+            />
+          </form>
+        </Form>
 
-      <AddContactDialog 
-        open={isAddContactOpen}
-        onOpenChange={setIsAddContactOpen}
-        onSubmit={handleCreateContact}
-        isCreating={isCreatingContact}
-      />
+        <AddContactDialog 
+          open={isAddContactOpen}
+          onOpenChange={setIsAddContactOpen}
+          onSubmit={handleCreateContact}
+          isCreating={isCreatingContact}
+        />
 
-      <AddAssetDialog 
-        open={isAddAssetOpen}
-        onOpenChange={setIsAddAssetOpen}
-        onSubmit={handleCreateAsset}
-        isCreating={isCreatingAsset}
-      />
-    </>
+        <AddAssetDialog 
+          open={isAddAssetOpen}
+          onOpenChange={setIsAddAssetOpen}
+          onSubmit={handleCreateAsset}
+          isCreating={isCreatingAsset}
+        />
+      </div>
+    </div>
   );
 }

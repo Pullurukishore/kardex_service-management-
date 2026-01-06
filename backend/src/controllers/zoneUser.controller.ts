@@ -104,7 +104,7 @@ export const listZoneUsers = async (req: Request, res: Response) => {
 export const getZoneUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     const user = await prisma.user.findUnique({
       where: { id: Number(id) },
       include: {
@@ -143,11 +143,11 @@ export const assignUserToZones = async (req: ZoneUserRequest, res: Response) => 
     }
 
     // Check if user exists
-    const user = await prisma.user.findUnique({ 
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, email: true, role: true, isActive: true }
     });
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -155,7 +155,7 @@ export const assignUserToZones = async (req: ZoneUserRequest, res: Response) => 
     // Validate service zones if provided
     if (serviceZoneIds.length > 0) {
       const zones = await prisma.serviceZone.findMany({
-        where: { 
+        where: {
           id: { in: serviceZoneIds },
           isActive: true
         }
@@ -224,7 +224,7 @@ export const updateZoneUserAssignments = async (req: ZoneUserRequest, res: Respo
     // Validate service zones if provided
     if (serviceZoneIds.length > 0) {
       const zones = await prisma.serviceZone.findMany({
-        where: { 
+        where: {
           id: { in: serviceZoneIds },
           isActive: true
         }
@@ -326,25 +326,29 @@ export const deleteZoneUser = async (req: Request, res: Response) => {
       where: { id: userId }
     });
 
-    res.json({ 
-      success: true, 
-      message: 'Zone user deleted successfully' 
+    res.json({
+      success: true,
+      message: 'Zone user deleted successfully'
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to delete zone user' 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete zone user'
     });
   }
 };
 
 export const createZoneUserWithZones = async (req: Request, res: Response) => {
-  const { name, email, phone, password, serviceZoneIds, isActive = true } = req.body;
+  const { name, email, phone, password, serviceZoneIds, isActive = true, role = 'ZONE_USER' } = req.body;
 
   try {
+    // Validate role - only allow ZONE_USER or ZONE_MANAGER
+    const validRoles = ['ZONE_USER', 'ZONE_MANAGER'];
+    const userRole = validRoles.includes(role) ? role : 'ZONE_USER';
+
     // Hash the password before saving
     const hashedPassword = await hash(password, 10);
-    
+
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
       // 1. Create the user with all required fields
@@ -354,7 +358,7 @@ export const createZoneUserWithZones = async (req: Request, res: Response) => {
           email,
           phone: phone || null, // Add phone field
           password: hashedPassword,
-          role: 'ZONE_USER',
+          role: userRole,
           isActive,
           tokenVersion: Math.floor(Math.random() * 1000000).toString(),
           refreshToken: null,
@@ -392,7 +396,7 @@ export const createZoneUserWithZones = async (req: Request, res: Response) => {
 
     // Omit sensitive data from the response
     const { password: _, ...userWithoutPassword } = result;
-    
+
     res.status(201).json({
       success: true,
       data: userWithoutPassword,
@@ -405,14 +409,12 @@ export const createZoneUserWithZones = async (req: Request, res: Response) => {
         error: 'Email already exists',
       });
     }
-    
+
     res.status(500).json({
       success: false,
       error: 'Failed to create zone user',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
-  } finally {
-    await prisma.$disconnect();
   }
 };
 

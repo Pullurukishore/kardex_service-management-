@@ -1,0 +1,1939 @@
+import { Response } from 'express';
+import { prisma } from '../lib/prisma';
+import { ProductType } from '@prisma/client';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
+import { logger } from '../utils/logger';
+
+/**
+ * Helper function to properly convert Prisma Decimal to JavaScript number
+ * Avoids floating point precision issues by using string conversion
+ */
+function toNumber(value: any): number {
+    if (value === null || value === undefined) return 0;
+    // Convert to string first to avoid precision issues, then parse
+    const parsed = parseFloat(value.toString());
+    if (isNaN(parsed)) return 0;
+    // Round to 2 decimal places to avoid floating point errors
+    return Math.round(parsed * 100) / 100;
+}
+
+interface ZoneSummary {
+    zoneId: number;
+    zoneName: string;
+    noOfOffers: number;
+    offersValue: number;
+    ordersReceived: number;
+    openFunnel: number;
+    orderBooking: number;
+    uForBooking: number;
+    hitRatePercent: number;
+    balanceBU: number;
+    yearlyTarget: number;
+}
+
+interface MonthlyData {
+    month: string;
+    monthLabel: string;
+    offersValue: number;
+    orderReceived: number;
+    ordersBooked: number;
+    devORvsBooked: number;
+    ordersInHand: number;
+    buMonthly: number;
+    bookedVsBU: number | null;
+    percentDev: number | null;
+    offerBUMonth: number;
+    offerBUMonthDev: number | null;
+}
+
+interface ZoneMonthlyBreakdown {
+    zoneId: number;
+    zoneName: string;
+    hitRate: number;
+    yearlyTarget: number;
+    monthlyData: MonthlyData[];
+    productBreakdown?: {
+        productType: string;
+        productLabel: string;
+        monthlyData: {
+            month: string;
+            monthLabel: string;
+            offersValue: number;
+            orderReceived: number;
+            ordersInHand: number;
+        }[];
+        totals: {
+            offersValue: number;
+            orderReceived: number;
+            ordersInHand: number;
+        };
+    }[];
+    totals: {
+        offersValue: number;
+        orderReceived: number;
+        ordersBooked: number;
+        ordersInHand: number;
+        buMonthly: number;
+        offerBUMonth: number;
+    };
+}
+
+export class ForecastController {
+    // Wrapper methods
+    static async getZoneSummaryWrapper(req: any, res: Response) {
+        return ForecastController.getZoneSummary(req as AuthenticatedRequest, res);
+    }
+
+    static async getMonthlyBreakdownWrapper(req: any, res: Response) {
+        return ForecastController.getMonthlyBreakdown(req as AuthenticatedRequest, res);
+    }
+
+    static async getPOExpectedMonthWrapper(req: any, res: Response) {
+        return ForecastController.getPOExpectedMonthBreakdown(req as AuthenticatedRequest, res);
+    }
+
+    /**
+     * Get PO Expected Month Breakdown - Zone-wise and User-wise
+     * Returns monthly data for each zone with user breakdown
+     * Filters by probability percentage if specified
+     */
+    static async getPOExpectedMonthBreakdown(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, minProbability, maxProbability, zoneId, userId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const minProb = minProbability ? parseInt(minProbability as string) : 0;
+            const maxProb = maxProbability ? parseInt(maxProbability as string) : 100;
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+            const filterUserId = userId ? parseInt(userId as string) : null;
+
+            const monthNames = [
+                'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+            ];
+
+            // Get zones
+            const zones = await prisma.serviceZone.findMany({
+                where: {
+                    isActive: true,
+                    ...(filterZoneId && { id: filterZoneId }),
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            interface UserMonthlyData {
+                userId: number;
+                userName: string;
+                monthlyValues: { [month: string]: number };
+                total: number;
+            }
+
+            interface ZonePOData {
+                zoneId: number;
+                zoneName: string;
+                users: UserMonthlyData[];
+                monthlyTotals: { [month: string]: number };
+                grandTotal: number;
+            }
+
+            const zoneData: ZonePOData[] = [];
+
+            for (const zone of zones) {
+                // Get users for this zone:
+                // 1. ZONE_MANAGER and ZONE_USER linked via ServicePersonZone junction table
+                // 2. ADMINs only if they have offers in this zone
+                // Users without offers will still appear (initialized with zero values)
+                const usersInZone = await prisma.user.findMany({
+                    where: {
+                        isActive: true,
+                        OR: [
+                            // Zone Managers and Zone Users linked via serviceZones junction table
+                            {
+                                role: { in: ['ZONE_MANAGER', 'ZONE_USER'] },
+                                serviceZones: {
+                                    some: {
+                                        serviceZoneId: zone.id,
+                                    }
+                                }
+                            },
+                            // Admins only if they have created offers in this zone
+                            {
+                                role: 'ADMIN',
+                                createdOffers: {
+                                    some: {
+                                        zoneId: zone.id,
+                                    }
+                                }
+                            },
+                            // Admins only if they are assigned offers in this zone
+                            {
+                                role: 'ADMIN',
+                                assignedOffers: {
+                                    some: {
+                                        zoneId: zone.id,
+                                    }
+                                }
+                            },
+                        ],
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        shortForm: true,
+                        role: true,
+                    },
+                    orderBy: { name: 'asc' },
+                });
+
+                // Get all offers for this zone with poExpectedMonth in target year
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        zoneId: zone.id,
+                        poExpectedMonth: {
+                            startsWith: `${targetYear}-`,
+                        },
+                        stage: { notIn: ['LOST'] }, // Exclude lost offers
+                        openFunnel: true,
+                        // User filter - filter by assignedToId or createdById
+                        ...(filterUserId && {
+                            OR: [
+                                { assignedToId: filterUserId },
+                                { createdById: filterUserId }
+                            ]
+                        }),
+                        // Probability filter
+                        ...(minProb > 0 || maxProb < 100) && {
+                            probabilityPercentage: {
+                                gte: minProb,
+                                lte: maxProb,
+                            }
+                        },
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        poExpectedMonth: true,
+                        assignedToId: true,
+                        createdById: true,
+                        probabilityPercentage: true,
+                        stage: true,
+                    },
+                });
+
+                // Group by user
+                const userMap = new Map<number, UserMonthlyData>();
+                const monthlyTotals: { [month: string]: number } = {};
+
+                // Initialize monthly totals
+                for (let m = 1; m <= 12; m++) {
+                    const monthKey = monthNames[m - 1];
+                    monthlyTotals[monthKey] = 0;
+                }
+
+                // Initialize ALL users in the zone with zero values (so they appear even without offers)
+                for (const user of usersInZone) {
+                    const monthlyValues: { [month: string]: number } = {};
+                    for (let m = 1; m <= 12; m++) {
+                        monthlyValues[monthNames[m - 1]] = 0;
+                    }
+                    userMap.set(user.id, {
+                        userId: user.id,
+                        userName: user.name || user.shortForm || `User ${user.id}`,
+                        monthlyValues,
+                        total: 0,
+                    });
+                }
+
+                // Now add offer values to users
+                for (const offer of offers) {
+                    const userId = offer.assignedToId || offer.createdById;
+                    const value = toNumber(offer.offerValue);
+
+                    if (!offer.poExpectedMonth) continue;
+
+                    // Extract month from poExpectedMonth (format: "YYYY-MM")
+                    const monthNum = parseInt(offer.poExpectedMonth.split('-')[1]);
+                    const monthKey = monthNames[monthNum - 1];
+
+                    // If user not in zone but has offers (assigned from elsewhere), add them
+                    if (!userMap.has(userId)) {
+                        const monthlyValues: { [month: string]: number } = {};
+                        for (let m = 1; m <= 12; m++) {
+                            monthlyValues[monthNames[m - 1]] = 0;
+                        }
+                        userMap.set(userId, {
+                            userId,
+                            userName: `User ${userId}`,
+                            monthlyValues,
+                            total: 0,
+                        });
+                    }
+
+                    const userData = userMap.get(userId)!;
+                    userData.monthlyValues[monthKey] = (userData.monthlyValues[monthKey] || 0) + value;
+                    userData.total += value;
+
+                    // Add to monthly totals
+                    monthlyTotals[monthKey] += value;
+                }
+
+                // Calculate grand total
+                const grandTotal = Object.values(monthlyTotals).reduce((sum, val) => sum + val, 0);
+
+                // Sort users by name
+                const usersArray = Array.from(userMap.values()).sort((a, b) =>
+                    a.userName.localeCompare(b.userName)
+                );
+
+                zoneData.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    users: usersArray,
+                    monthlyTotals,
+                    grandTotal,
+                });
+            }
+
+            // Calculate overall totals
+            const overallMonthlyTotals: { [month: string]: number } = {};
+            for (let m = 1; m <= 12; m++) {
+                const monthKey = monthNames[m - 1];
+                overallMonthlyTotals[monthKey] = zoneData.reduce(
+                    (sum, z) => sum + (z.monthlyTotals[monthKey] || 0), 0
+                );
+            }
+            const overallGrandTotal = zoneData.reduce((sum, z) => sum + z.grandTotal, 0);
+
+            // Calculate quarterly BU from yearly ZoneTarget (yearly target / 3)
+            // Only use OVERALL targets (productType = null), NOT product-specific ones
+            const yearlyTargets = await prisma.zoneTarget.findMany({
+                where: {
+                    targetPeriod: String(targetYear),
+                    periodType: 'YEARLY',
+                    productType: null, // Only overall targets, not product-specific
+                },
+                select: {
+                    serviceZoneId: true,
+                    targetValue: true,
+                },
+            });
+
+            // Sum all overall yearly targets (no double counting with product targets)
+            const totalYearlyTarget = yearlyTargets.reduce(
+                (sum, t) => sum + Number(t.targetValue || 0), 0
+            );
+
+            // Quarterly BU = Yearly Target / 3
+            const quarterlyBU = totalYearlyTarget / 3;
+
+            // Calculate quarterly forecasts (sum of months in each quarter)
+            const quarterlyData = [
+                {
+                    name: 'Q1',
+                    label: 'Q1 Forecast',
+                    months: ['JAN', 'FEB', 'MAR'],
+                    forecast: (overallMonthlyTotals['JAN'] || 0) + (overallMonthlyTotals['FEB'] || 0) + (overallMonthlyTotals['MAR'] || 0),
+                    bu: quarterlyBU,
+                    deviation: 0,
+                },
+                {
+                    name: 'Q2',
+                    label: 'Q2 Forecast',
+                    months: ['APR', 'MAY', 'JUN'],
+                    forecast: (overallMonthlyTotals['APR'] || 0) + (overallMonthlyTotals['MAY'] || 0) + (overallMonthlyTotals['JUN'] || 0),
+                    bu: quarterlyBU,
+                    deviation: 0,
+                },
+                {
+                    name: 'Q3',
+                    label: 'Q3 Forecast',
+                    months: ['JUL', 'AUG', 'SEP'],
+                    forecast: (overallMonthlyTotals['JUL'] || 0) + (overallMonthlyTotals['AUG'] || 0) + (overallMonthlyTotals['SEP'] || 0),
+                    bu: quarterlyBU,
+                    deviation: 0,
+                },
+                {
+                    name: 'Q4',
+                    label: 'Q4 Forecast',
+                    months: ['OCT', 'NOV', 'DEC'],
+                    forecast: (overallMonthlyTotals['OCT'] || 0) + (overallMonthlyTotals['NOV'] || 0) + (overallMonthlyTotals['DEC'] || 0),
+                    bu: quarterlyBU,
+                    deviation: 0,
+                },
+            ];
+
+            // Calculate deviation for each quarter
+            quarterlyData.forEach(q => {
+                q.deviation = q.bu > 0 ? ((q.forecast - q.bu) / q.bu) * 100 : 0;
+            });
+
+            return res.json({
+                year: targetYear,
+                filters: {
+                    minProbability: minProb,
+                    maxProbability: maxProb,
+                    zoneId: filterZoneId,
+                },
+                zones: zoneData,
+                overallTotals: {
+                    monthlyTotals: overallMonthlyTotals,
+                    grandTotal: overallGrandTotal,
+                },
+                months: monthNames,
+                // Quarterly data with BU from yearly targets
+                quarterlyData,
+                yearlyTarget: totalYearlyTarget,
+                quarterlyBU,
+            });
+        } catch (error: any) {
+            logger.error('Get PO Expected Month breakdown error:', error);
+            return res.status(500).json({ error: 'Failed to fetch PO Expected Month data' });
+        }
+    }
+
+    /**
+     * Get Zone-wise Offers Summary (Offers Highlights section)
+     * Returns: Zone, No. of Offers, Offers Value, Orders Received, Open Funnel,
+     *          Order Booking, U for Booking, %, Balance BU
+     */
+    static async getZoneSummary(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, minProbability, zoneId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const minProb = minProbability ? parseInt(minProbability as string) : 0;
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+
+            // Date range for the year
+            const yearStart = new Date(targetYear, 0, 1);
+            const yearEnd = new Date(targetYear, 11, 31, 23, 59, 59);
+            const currentMonth = new Date().getMonth() + 1;
+            const currentMonthStr = `${targetYear}-${String(currentMonth).padStart(2, '0')}`;
+
+            // Get zones (filtered by zoneId if provided)
+            const zones = await prisma.serviceZone.findMany({
+                where: {
+                    isActive: true,
+                    ...(filterZoneId && { id: filterZoneId }),
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            const zoneSummaries: ZoneSummary[] = [];
+
+            for (const zone of zones) {
+                // Get all offers for this zone in the year
+                const [
+                    offerCount,
+                    offersValueAgg,
+                    wonValueAgg,
+                    openFunnelAgg,
+                    currentMonthBookingAgg,
+                    weightedForecastAgg,
+                    wonOffers,
+                    lostOffers,
+                    yearlyTarget,
+                ] = await Promise.all([
+                    // Count of offers
+                    prisma.offer.count({
+                        where: {
+                            zoneId: zone.id,
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                        },
+                    }),
+                    // Total offers value
+                    prisma.offer.aggregate({
+                        where: {
+                            zoneId: zone.id,
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                        },
+                        _sum: { offerValue: true },
+                    }),
+                    // Orders received (WON offers) - fetch all WON offers to apply fallback logic
+                    prisma.offer.findMany({
+                        where: {
+                            zoneId: zone.id,
+                            stage: 'WON',
+                        },
+                        select: {
+                            poValue: true,
+                            offerValue: true,
+                            poReceivedMonth: true,
+                            offerMonth: true,
+                        },
+                    }),
+                    // Open funnel value
+                    prisma.offer.aggregate({
+                        where: {
+                            zoneId: zone.id,
+                            openFunnel: true,
+                            stage: { notIn: ['WON', 'LOST'] },
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                        },
+                        _sum: { offerValue: true },
+                    }),
+                    // Current month order booking
+                    prisma.offer.aggregate({
+                        where: {
+                            zoneId: zone.id,
+                            stage: 'WON',
+                            poReceivedMonth: currentMonthStr,
+                        },
+                        _sum: { poValue: true },
+                    }),
+                    // Weighted forecast (Expected Revenue) - filtered by probability
+                    prisma.offer.findMany({
+                        where: {
+                            zoneId: zone.id,
+                            openFunnel: true,
+                            stage: { notIn: ['WON', 'LOST'] },
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                            ...(minProb > 0 && { probabilityPercentage: { gte: minProb } }),
+                        },
+                        select: {
+                            offerValue: true,
+                            probabilityPercentage: true,
+                        },
+                    }),
+                    // Won offers count
+                    prisma.offer.count({
+                        where: {
+                            zoneId: zone.id,
+                            stage: 'WON',
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                        },
+                    }),
+                    // Lost offers count
+                    prisma.offer.count({
+                        where: {
+                            zoneId: zone.id,
+                            stage: 'LOST',
+                            createdAt: { gte: yearStart, lte: yearEnd },
+                        },
+                    }),
+                    // Yearly targets - fetch ALL (overall and product-specific)
+                    prisma.zoneTarget.findMany({
+                        where: {
+                            serviceZoneId: zone.id,
+                            targetPeriod: String(targetYear),
+                            periodType: 'YEARLY',
+                        },
+                    }),
+                ]);
+
+                // Calculate yearly target: use overall if exists, else sum product-specific
+                const overallTarget = (yearlyTarget as any[]).find(t => t.productType === null || t.productType === undefined);
+                const productTargets = (yearlyTarget as any[]).filter(t => t.productType !== null && t.productType !== undefined);
+                let yearlyTargetValue: number;
+                if (overallTarget) {
+                    yearlyTargetValue = toNumber(overallTarget.targetValue);
+                } else {
+                    yearlyTargetValue = productTargets.reduce((sum, t) => sum + toNumber(t.targetValue), 0);
+                }
+
+                const offersValue = toNumber(offersValueAgg._sum.offerValue);
+
+                // Calculate ordersReceived with fallback logic:
+                // 1. Use poReceivedMonth if set, otherwise fall back to offerMonth for the year filter
+                // 2. Use poValue if available, otherwise fall back to offerValue
+                const targetYearStr = String(targetYear);
+                const ordersReceived = (wonValueAgg as any[]).reduce((sum, offer) => {
+                    const effectiveMonth = offer.poReceivedMonth || offer.offerMonth;
+                    // Check if the offer belongs to the target year
+                    if (effectiveMonth && effectiveMonth.startsWith(targetYearStr)) {
+                        const value = offer.poValue ? toNumber(offer.poValue) : toNumber(offer.offerValue);
+                        return sum + value;
+                    }
+                    return sum;
+                }, 0);
+
+                const openFunnel = toNumber(openFunnelAgg._sum.offerValue);
+                const orderBooking = toNumber(currentMonthBookingAgg._sum.poValue);
+
+                // Expected Revenue (U for Booking) - FULL value for offers meeting probability threshold
+                // If minProbability is set, only offers with probability >= minProbability are included
+                // The value shown is the FULL offer value, not weighted
+                const uForBooking = weightedForecastAgg.reduce((sum, offer) => {
+                    const value = toNumber(offer.offerValue);
+                    // Include full value if probability meets threshold (or no threshold set)
+                    return sum + value;
+                }, 0);
+
+                // Hit rate calculation
+                const closedOffers = wonOffers + lostOffers;
+                const hitRatePercent = offersValue > 0 ? (ordersReceived / offersValue) * 100 : 0;
+
+                // Balance BU = Yearly Target - Orders Received
+                const balanceBU = yearlyTargetValue - ordersReceived;
+
+                // Log for debugging if balance seems wrong
+                if (yearlyTargetValue > 0) {
+                    logger.debug(`Zone ${zone.name}: Target=${yearlyTargetValue}, OrdersReceived=${ordersReceived}, BalanceBU=${balanceBU}`);
+                }
+
+                zoneSummaries.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    noOfOffers: offerCount,
+                    offersValue,
+                    ordersReceived,
+                    openFunnel,
+                    orderBooking,
+                    uForBooking,
+                    hitRatePercent: Math.round(hitRatePercent),
+                    balanceBU,
+                    yearlyTarget: yearlyTargetValue,
+                });
+            }
+
+            // Calculate totals
+            const totals = {
+                noOfOffers: zoneSummaries.reduce((sum, z) => sum + z.noOfOffers, 0),
+                offersValue: zoneSummaries.reduce((sum, z) => sum + z.offersValue, 0),
+                ordersReceived: zoneSummaries.reduce((sum, z) => sum + z.ordersReceived, 0),
+                openFunnel: zoneSummaries.reduce((sum, z) => sum + z.openFunnel, 0),
+                orderBooking: zoneSummaries.reduce((sum, z) => sum + z.orderBooking, 0),
+                uForBooking: zoneSummaries.reduce((sum, z) => sum + z.uForBooking, 0),
+                yearlyTarget: zoneSummaries.reduce((sum, z) => sum + z.yearlyTarget, 0),
+                balanceBU: zoneSummaries.reduce((sum, z) => sum + z.balanceBU, 0),
+            };
+
+            const totalHitRate = totals.offersValue > 0
+                ? (totals.ordersReceived / totals.offersValue) * 100
+                : 0;
+
+            return res.json({
+                year: targetYear,
+                zones: zoneSummaries,
+                totals: {
+                    ...totals,
+                    hitRatePercent: Math.round(totalHitRate),
+                },
+            });
+        } catch (error: any) {
+            logger.error('Get forecast zone summary error:', error);
+            return res.status(500).json({ error: 'Failed to fetch forecast summary' });
+        }
+    }
+
+    /**
+     * Get Monthly Breakdown for all zones
+     * Returns monthly data with targets and deviations
+     */
+    static async getMonthlyBreakdown(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, productType, zoneId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const filterProductType = productType && productType !== 'ALL' ? productType as ProductType : null;
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+
+            const yearStart = new Date(targetYear, 0, 1);
+            const yearEnd = new Date(targetYear, 11, 31, 23, 59, 59);
+
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            // Get zones (filtered by zoneId if provided)
+            const zones = await prisma.serviceZone.findMany({
+                where: {
+                    isActive: true,
+                    ...(filterZoneId && { id: filterZoneId }),
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            const zoneBreakdowns: ZoneMonthlyBreakdown[] = [];
+
+            for (const zone of zones) {
+                // Get ALL yearly targets (overall and product-specific)
+                const yearlyTargets = await prisma.zoneTarget.findMany({
+                    where: {
+                        serviceZoneId: zone.id,
+                        targetPeriod: String(targetYear),
+                        periodType: 'YEARLY',
+                    },
+                });
+
+                // Calculate yearly target: use overall if exists, else sum product-specific
+                const overallTarget = yearlyTargets.find(t => t.productType === null);
+                const productTargets = yearlyTargets.filter(t => t.productType !== null);
+                let yearlyTargetValue: number;
+                if (overallTarget) {
+                    yearlyTargetValue = toNumber(overallTarget.targetValue);
+                } else {
+                    yearlyTargetValue = productTargets.reduce((sum, t) => sum + toNumber(t.targetValue), 0);
+                }
+                const monthlyBUTarget = yearlyTargetValue / 12;
+
+                // Get monthly targets
+                const monthlyTargets = await prisma.zoneTarget.findMany({
+                    where: {
+                        serviceZoneId: zone.id,
+                        targetPeriod: { startsWith: `${targetYear}-` },
+                        periodType: 'MONTHLY',
+                        productType: null,
+                    },
+                });
+
+                const monthlyTargetMap = new Map<string, number>();
+                monthlyTargets.forEach(t => {
+                    monthlyTargetMap.set(t.targetPeriod, Number(t.targetValue));
+                });
+
+                // Get all offers for this zone
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        zoneId: zone.id,
+                        createdAt: { gte: yearStart, lte: yearEnd },
+                        ...(filterProductType && { productType: filterProductType }),
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        poValue: true,
+                        stage: true,
+                        openFunnel: true,
+                        offerMonth: true,
+                        poReceivedMonth: true,
+                        probabilityPercentage: true,
+                        productType: true,
+                    },
+                });
+
+                // Calculate hit rate for this zone
+                const wonOffers = offers.filter(o => o.stage === 'WON').length;
+                const lostOffers = offers.filter(o => o.stage === 'LOST').length;
+                const closedOffers = wonOffers + lostOffers;
+                const totalWonValue = offers
+                    .filter(o => o.stage === 'WON')
+                    .reduce((sum, o) => sum + (o.poValue ? Number(o.poValue) : 0), 0);
+                const totalOffersValue = offers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                const hitRate = totalOffersValue > 0 ? Math.round((totalWonValue / totalOffersValue) * 100) : 0;
+
+                const monthlyData: MonthlyData[] = [];
+                let totalOffersValueSum = 0;
+                let totalOrderReceived = 0;
+                let totalOrdersBooked = 0;
+                let totalOrdersInHand = 0;
+                let totalBUMonthly = 0;
+                let totalOfferBUMonth = 0;
+
+                for (let month = 1; month <= 12; month++) {
+                    const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
+
+                    // Offers value for this month (by offerMonth)
+                    const monthOffers = offers.filter(o => o.offerMonth === monthStr);
+                    const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                    // Orders received (won offers in this month)
+                    // Use poReceivedMonth if set, otherwise fall back to offerMonth
+                    const wonThisMonth = offers.filter(o =>
+                        o.stage === 'WON' &&
+                        ((o.poReceivedMonth && o.poReceivedMonth === monthStr) ||
+                            (!o.poReceivedMonth && o.offerMonth === monthStr))
+                    );
+                    // Use poValue if available, otherwise fall back to offerValue
+                    const orderReceived = wonThisMonth.reduce((sum, o) => {
+                        const value = o.poValue ? Number(o.poValue) : (o.offerValue ? Number(o.offerValue) : 0);
+                        return sum + value;
+                    }, 0);
+
+                    // Orders booked same as order received for now
+                    const ordersBooked = orderReceived;
+
+                    // Deviation OR vs Booked
+                    const devORvsBooked = orderReceived - ordersBooked;
+
+                    // Orders in hand (open funnel for this month)
+                    const openFunnelOffers = monthOffers.filter(o => o.openFunnel && o.stage !== 'WON' && o.stage !== 'LOST');
+                    const ordersInHand = openFunnelOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                    // Monthly target
+                    const buMonthly = monthlyTargetMap.get(monthStr) || monthlyBUTarget;
+
+                    // Booked vs BU (achievement %)
+                    const bookedVsBU = buMonthly > 0 ? (ordersBooked / buMonthly) * 100 : null;
+
+                    // % Deviation: ((Actual - Target) / Target) × 100
+                    // Standard deviation formula - compares actual orders to monthly target
+                    let percentDev: number | null = null;
+                    if (buMonthly > 0 && orderReceived > 0) {
+                        percentDev = ((orderReceived - buMonthly) / buMonthly) * 100;
+                    }
+
+                    // Offer BU Month = BU/Monthly × 4
+                    const offerBUMonth = buMonthly * 4;
+
+                    // Offer BU Month deviation: (Offers Value - Offer BU Month) / Offer BU Month × 100
+                    // Positive = exceeded target, Negative = below target
+                    // Only show deviation if there are actual offers (otherwise show dash)
+                    const offerBUMonthDev = (offerBUMonth > 0 && offersValue > 0) ? ((offersValue - offerBUMonth) / offerBUMonth) * 100 : null;
+
+                    monthlyData.push({
+                        month: monthStr,
+                        monthLabel: monthNames[month - 1],
+                        offersValue,
+                        orderReceived,
+                        ordersBooked,
+                        devORvsBooked,
+                        ordersInHand,
+                        buMonthly,
+                        bookedVsBU: bookedVsBU !== null ? Math.round(bookedVsBU) : null,
+                        percentDev: percentDev !== null ? Math.round(percentDev) : null,
+                        offerBUMonth,
+                        offerBUMonthDev: offerBUMonthDev !== null ? Math.round(offerBUMonthDev) : null,
+                    });
+
+                    totalOffersValueSum += offersValue;
+                    totalOrderReceived += orderReceived;
+                    totalOrdersBooked += ordersBooked;
+                    totalOrdersInHand += ordersInHand;
+                    totalBUMonthly += buMonthly;
+                    totalOfferBUMonth += offerBUMonth;
+                }
+
+                // Calculate product type breakdown for this zone
+                // Using actual ProductType enum values from Prisma schema
+                const productTypes = [
+                    { key: 'CONTRACT', label: 'Contract' },
+                    { key: 'BD_SPARE', label: 'BD Spare' },
+                    { key: 'SPP', label: 'SPP' },
+                    { key: 'RELOCATION', label: 'Relocation' },
+                    { key: 'SOFTWARE', label: 'Software' },
+                    { key: 'BD_CHARGES', label: 'BD Charges' },
+                    { key: 'RETROFIT_KIT', label: 'Retrofit Kit' },
+                    { key: 'UPGRADE_KIT', label: 'Upgrade Kit' },
+                    { key: 'MIDLIFE_UPGRADE', label: 'Midlife Upgrade' },
+                ];
+
+                const productBreakdown = await Promise.all(productTypes.map(async (productType) => {
+                    const productOffers = offers.filter(o => o.productType === productType.key);
+
+                    // Get product-specific yearly target for this zone
+                    const productYearlyTarget = await prisma.zoneTarget.findFirst({
+                        where: {
+                            serviceZoneId: zone.id,
+                            targetPeriod: String(targetYear),
+                            periodType: 'YEARLY',
+                            productType: productType.key as ProductType,
+                        },
+                    });
+                    const productYearlyTargetValue = productYearlyTarget ? toNumber(productYearlyTarget.targetValue) : 0;
+                    const productMonthlyBU = productYearlyTargetValue / 12;
+                    const productOfferBU = productMonthlyBU * 4;
+
+                    const productMonthlyData = [];
+                    let totalOffersValue = 0;
+                    let totalOrderReceived = 0;
+                    let totalOrdersInHand = 0;
+                    let totalBUMonthly = 0;
+                    let totalOfferBUMonth = 0;
+
+                    for (let month = 1; month <= 12; month++) {
+                        const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
+
+                        // Offers value for this month (by offerMonth)
+                        const monthOffers = productOffers.filter(o => o.offerMonth === monthStr);
+                        const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                        // Orders received (won offers in this month)
+                        const wonThisMonth = productOffers.filter(o =>
+                            o.stage === 'WON' &&
+                            ((o.poReceivedMonth && o.poReceivedMonth === monthStr) ||
+                                (!o.poReceivedMonth && o.offerMonth === monthStr))
+                        );
+                        const orderReceived = wonThisMonth.reduce((sum, o) => {
+                            const value = o.poValue ? Number(o.poValue) : Number(o.offerValue);
+                            return sum + (isNaN(value) ? 0 : value);
+                        }, 0);
+
+                        // Open funnel for this month
+                        const funnelThisMonth = productOffers.filter(o =>
+                            o.openFunnel === true && o.offerMonth === monthStr
+                        );
+                        const ordersInHand = funnelThisMonth.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                        // Calculate deviations
+                        const percentDev = productMonthlyBU > 0 ? ((orderReceived - productMonthlyBU) / productMonthlyBU) * 100 : null;
+                        const offerBUMonthDev = productOfferBU > 0 ? ((offersValue - productOfferBU) / productOfferBU) * 100 : null;
+
+                        productMonthlyData.push({
+                            month: monthStr,
+                            monthLabel: monthNames[month - 1],
+                            offersValue,
+                            orderReceived,
+                            ordersInHand,
+                            buMonthly: productMonthlyBU,
+                            percentDev: percentDev !== null ? Math.round(percentDev) : null,
+                            offerBUMonth: productOfferBU,
+                            offerBUMonthDev: offerBUMonthDev !== null ? Math.round(offerBUMonthDev) : null,
+                        });
+
+                        totalOffersValue += offersValue;
+                        totalOrderReceived += orderReceived;
+                        totalOrdersInHand += ordersInHand;
+                        totalBUMonthly += productMonthlyBU;
+                        totalOfferBUMonth += productOfferBU;
+                    }
+
+                    // Calculate hit rate for this product type
+                    const totalProductOffersValue = productOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                    const totalProductWonValue = productOffers
+                        .filter(o => o.stage === 'WON')
+                        .reduce((sum, o) => sum + (o.poValue ? Number(o.poValue) : Number(o.offerValue)), 0);
+                    const productHitRate = totalProductOffersValue > 0 ? Math.round((totalProductWonValue / totalProductOffersValue) * 100) : 0;
+
+                    return {
+                        productType: productType.key,
+                        productLabel: productType.label,
+                        yearlyTarget: productYearlyTargetValue,
+                        hitRate: productHitRate,
+                        monthlyData: productMonthlyData,
+                        totals: {
+                            offersValue: totalOffersValue,
+                            orderReceived: totalOrderReceived,
+                            ordersInHand: totalOrdersInHand,
+                            buMonthly: totalBUMonthly,
+                            offerBUMonth: totalOfferBUMonth,
+                        },
+                    };
+                }));
+
+                // Filter to only show products with data
+                const filteredProductBreakdown = productBreakdown.filter(p =>
+                    p.totals.offersValue > 0 || p.totals.orderReceived > 0 || p.totals.ordersInHand > 0 || p.yearlyTarget > 0
+                );
+
+                zoneBreakdowns.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    hitRate,
+                    yearlyTarget: yearlyTargetValue,
+                    monthlyData,
+                    productBreakdown: filteredProductBreakdown,
+                    totals: {
+                        offersValue: totalOffersValueSum,
+                        orderReceived: totalOrderReceived,
+                        ordersBooked: totalOrdersBooked,
+                        ordersInHand: totalOrdersInHand,
+                        buMonthly: totalBUMonthly,
+                        offerBUMonth: totalOfferBUMonth,
+                    },
+                });
+            }
+
+            return res.json({
+                year: targetYear,
+                zones: zoneBreakdowns,
+            });
+        } catch (error: any) {
+            logger.error('Get forecast monthly breakdown error:', error);
+            return res.status(500).json({ error: 'Failed to fetch monthly breakdown' });
+        }
+    }
+
+    /**
+     * Wrapper for getUserMonthlyBreakdown
+     */
+    static async getUserMonthlyBreakdownWrapper(req: any, res: Response) {
+        return ForecastController.getUserMonthlyBreakdown(req as AuthenticatedRequest, res);
+    }
+
+    /**
+     * Get Monthly Breakdown for all users (similar to zone breakdown)
+     * Returns user-wise monthly data with targets and deviations
+     */
+    static async getUserMonthlyBreakdown(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, zoneId, productType, userId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+            const filterUserId = userId ? parseInt(userId as string) : null;
+            const filterProductType = productType && productType !== 'ALL' ? productType as ProductType : null;
+
+            const yearStart = new Date(targetYear, 0, 1);
+            const yearEnd = new Date(targetYear, 11, 31, 23, 59, 59);
+
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            // Get all active users with zone assignments (only ZONE_USER and ZONE_MANAGER)
+            const usersQuery: any = {
+                isActive: true,
+                role: { in: ['ZONE_MANAGER', 'ZONE_USER'] },
+            };
+
+            // If userId filter is provided, filter to specific user
+            if (filterUserId) {
+                usersQuery.id = filterUserId;
+            }
+
+            // If zoneId filter is provided, filter users by zone
+            if (filterZoneId) {
+                usersQuery.serviceZones = {
+                    some: {
+                        serviceZoneId: filterZoneId,
+                    }
+                };
+            }
+
+            const users = await prisma.user.findMany({
+                where: usersQuery,
+                select: {
+                    id: true,
+                    name: true,
+                    shortForm: true,
+                    role: true,
+                    serviceZones: {
+                        select: {
+                            serviceZone: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            interface UserMonthlyData {
+                month: string;
+                monthLabel: string;
+                offersValue: number;
+                orderReceived: number;
+                ordersInHand: number;
+                buMonthly: number;
+                percentDev: number | null;
+                offerBUMonth: number;
+                offerBUMonthDev: number | null;
+            }
+
+            interface UserMonthlyBreakdown {
+                userId: number;
+                userName: string;
+                userShortForm: string | null;
+                zoneName: string;
+                hitRate: number;
+                yearlyTarget: number;
+                monthlyData: UserMonthlyData[];
+                productBreakdown?: {
+                    productType: string;
+                    productLabel: string;
+                    yearlyTarget: number;
+                    monthlyData: {
+                        month: string;
+                        monthLabel: string;
+                        offersValue: number;
+                        orderReceived: number;
+                        ordersInHand: number;
+                        buMonthly: number;
+                        percentDev: number | null;
+                        offerBUMonth: number;
+                        offerBUMonthDev: number | null;
+                    }[];
+                    totals: {
+                        offersValue: number;
+                        orderReceived: number;
+                        ordersInHand: number;
+                        buMonthly: number;
+                        offerBUMonth: number;
+                    };
+                }[];
+                totals: {
+                    offersValue: number;
+                    orderReceived: number;
+                    ordersInHand: number;
+                    buMonthly: number;
+                    offerBUMonth: number;
+                };
+            }
+
+            const userBreakdowns: UserMonthlyBreakdown[] = [];
+
+            for (const user of users) {
+                // Get the user's primary zone name
+                const primaryZone = user.serviceZones[0]?.serviceZone;
+                const zoneName = primaryZone?.name || 'No Zone';
+
+                // Get yearly targets for this user
+                const yearlyTargets = await prisma.userTarget.findMany({
+                    where: {
+                        userId: user.id,
+                        targetPeriod: String(targetYear),
+                        periodType: 'YEARLY',
+                    },
+                });
+
+                // Calculate yearly target: use overall if exists, else sum product-specific
+                const overallTarget = yearlyTargets.find(t => t.productType === null);
+                const productTargets = yearlyTargets.filter(t => t.productType !== null);
+                let yearlyTargetValue: number;
+                if (overallTarget) {
+                    yearlyTargetValue = toNumber(overallTarget.targetValue);
+                } else {
+                    yearlyTargetValue = productTargets.reduce((sum, t) => sum + toNumber(t.targetValue), 0);
+                }
+                const monthlyBUTarget = yearlyTargetValue / 12;
+
+                // Get monthly targets
+                const monthlyTargets = await prisma.userTarget.findMany({
+                    where: {
+                        userId: user.id,
+                        targetPeriod: { startsWith: `${targetYear}-` },
+                        periodType: 'MONTHLY',
+                        productType: null,
+                    },
+                });
+
+                const monthlyTargetMap = new Map<string, number>();
+                monthlyTargets.forEach(t => {
+                    monthlyTargetMap.set(t.targetPeriod, Number(t.targetValue));
+                });
+
+                // Get all offers created by this user
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        createdById: user.id,
+                        createdAt: { gte: yearStart, lte: yearEnd },
+                        ...(filterProductType && { productType: filterProductType }),
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        poValue: true,
+                        stage: true,
+                        openFunnel: true,
+                        offerMonth: true,
+                        poReceivedMonth: true,
+                        probabilityPercentage: true,
+                        productType: true,
+                    },
+                });
+
+                // Calculate hit rate for this user
+                const wonOffers = offers.filter(o => o.stage === 'WON').length;
+                const lostOffers = offers.filter(o => o.stage === 'LOST').length;
+                const totalWonValue = offers
+                    .filter(o => o.stage === 'WON')
+                    .reduce((sum, o) => sum + (o.poValue ? Number(o.poValue) : 0), 0);
+                const totalOffersValue = offers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                const hitRate = totalOffersValue > 0 ? Math.round((totalWonValue / totalOffersValue) * 100) : 0;
+
+                const monthlyData: UserMonthlyData[] = [];
+                let totalOffersValueSum = 0;
+                let totalOrderReceived = 0;
+                let totalOrdersInHand = 0;
+                let totalBUMonthly = 0;
+                let totalOfferBUMonth = 0;
+
+                for (let month = 1; month <= 12; month++) {
+                    const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
+
+                    // Offers value for this month (by offerMonth)
+                    const monthOffers = offers.filter(o => o.offerMonth === monthStr);
+                    const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                    // Orders received (won offers in this month)
+                    const wonThisMonth = offers.filter(o =>
+                        o.stage === 'WON' &&
+                        ((o.poReceivedMonth && o.poReceivedMonth === monthStr) ||
+                            (!o.poReceivedMonth && o.offerMonth === monthStr))
+                    );
+                    const orderReceived = wonThisMonth.reduce((sum, o) => {
+                        const value = o.poValue ? Number(o.poValue) : (o.offerValue ? Number(o.offerValue) : 0);
+                        return sum + value;
+                    }, 0);
+
+                    // Orders in hand (open funnel for this month)
+                    const openFunnelOffers = monthOffers.filter(o => o.openFunnel && o.stage !== 'WON' && o.stage !== 'LOST');
+                    const ordersInHand = openFunnelOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                    // Monthly target
+                    const buMonthly = monthlyTargetMap.get(monthStr) || monthlyBUTarget;
+
+                    // % Deviation: ((Actual - Target) / Target) × 100
+                    // Standard deviation formula - compares actual orders to monthly target
+                    let percentDev: number | null = null;
+                    if (buMonthly > 0 && orderReceived > 0) {
+                        percentDev = ((orderReceived - buMonthly) / buMonthly) * 100;
+                    }
+
+                    // Offer BU Month = BU/Monthly × 4
+                    const offerBUMonth = buMonthly * 4;
+
+                    // Offer BU Month deviation - only show if there are actual offers
+                    const offerBUMonthDev = (offerBUMonth > 0 && offersValue > 0) ? ((offersValue - offerBUMonth) / offerBUMonth) * 100 : null;
+
+                    monthlyData.push({
+                        month: monthStr,
+                        monthLabel: monthNames[month - 1],
+                        offersValue,
+                        orderReceived,
+                        ordersInHand,
+                        buMonthly,
+                        percentDev: percentDev !== null ? Math.round(percentDev) : null,
+                        offerBUMonth,
+                        offerBUMonthDev: offerBUMonthDev !== null ? Math.round(offerBUMonthDev) : null,
+                    });
+
+                    totalOffersValueSum += offersValue;
+                    totalOrderReceived += orderReceived;
+                    totalOrdersInHand += ordersInHand;
+                    totalBUMonthly += buMonthly;
+                    totalOfferBUMonth += offerBUMonth;
+                }
+
+                // Calculate product type breakdown for this user
+                // Using actual ProductType enum values from Prisma schema
+                const productTypes = [
+                    { key: 'CONTRACT', label: 'Contract' },
+                    { key: 'BD_SPARE', label: 'BD Spare' },
+                    { key: 'SPP', label: 'SPP' },
+                    { key: 'RELOCATION', label: 'Relocation' },
+                    { key: 'SOFTWARE', label: 'Software' },
+                    { key: 'BD_CHARGES', label: 'BD Charges' },
+                    { key: 'RETROFIT_KIT', label: 'Retrofit Kit' },
+                    { key: 'UPGRADE_KIT', label: 'Upgrade Kit' },
+                    { key: 'MIDLIFE_UPGRADE', label: 'Midlife Upgrade' },
+                ];
+
+                const productBreakdown = await Promise.all(productTypes.map(async (productType) => {
+                    const productOffers = offers.filter(o => o.productType === productType.key);
+
+                    // Get product-specific yearly target for this user
+                    const productYearlyTarget = await prisma.userTarget.findFirst({
+                        where: {
+                            userId: user.id,
+                            targetPeriod: String(targetYear),
+                            periodType: 'YEARLY',
+                            productType: productType.key as ProductType,
+                        },
+                    });
+                    const productYearlyTargetValue = productYearlyTarget ? toNumber(productYearlyTarget.targetValue) : 0;
+                    const productMonthlyBU = productYearlyTargetValue / 12;
+                    const productOfferBU = productMonthlyBU * 4;
+
+                    const productMonthlyData = [];
+                    let pTotalOffersValue = 0;
+                    let pTotalOrderReceived = 0;
+                    let pTotalOrdersInHand = 0;
+                    let pTotalBUMonthly = 0;
+                    let pTotalOfferBUMonth = 0;
+
+                    for (let month = 1; month <= 12; month++) {
+                        const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
+
+                        // Offers value for this month (by offerMonth)
+                        const monthOffers = productOffers.filter(o => o.offerMonth === monthStr);
+                        const pOffersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                        // Orders received (won offers in this month)
+                        const wonThisMonth = productOffers.filter(o =>
+                            o.stage === 'WON' &&
+                            ((o.poReceivedMonth && o.poReceivedMonth === monthStr) ||
+                                (!o.poReceivedMonth && o.offerMonth === monthStr))
+                        );
+                        const pOrderReceived = wonThisMonth.reduce((sum, o) => {
+                            const value = o.poValue ? Number(o.poValue) : Number(o.offerValue);
+                            return sum + (isNaN(value) ? 0 : value);
+                        }, 0);
+
+                        // Open funnel for this month
+                        const funnelThisMonth = productOffers.filter(o =>
+                            o.openFunnel === true && o.offerMonth === monthStr
+                        );
+                        const pOrdersInHand = funnelThisMonth.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                        // Calculate deviations
+                        const pPercentDev = productMonthlyBU > 0 ? ((pOrderReceived - productMonthlyBU) / productMonthlyBU) * 100 : null;
+                        const pOfferBUMonthDev = productOfferBU > 0 ? ((pOffersValue - productOfferBU) / productOfferBU) * 100 : null;
+
+                        productMonthlyData.push({
+                            month: monthStr,
+                            monthLabel: monthNames[month - 1],
+                            offersValue: pOffersValue,
+                            orderReceived: pOrderReceived,
+                            ordersInHand: pOrdersInHand,
+                            buMonthly: productMonthlyBU,
+                            percentDev: pPercentDev !== null ? Math.round(pPercentDev) : null,
+                            offerBUMonth: productOfferBU,
+                            offerBUMonthDev: pOfferBUMonthDev !== null ? Math.round(pOfferBUMonthDev) : null,
+                        });
+
+                        pTotalOffersValue += pOffersValue;
+                        pTotalOrderReceived += pOrderReceived;
+                        pTotalOrdersInHand += pOrdersInHand;
+                        pTotalBUMonthly += productMonthlyBU;
+                        pTotalOfferBUMonth += productOfferBU;
+                    }
+
+                    // Calculate hit rate for this product type
+                    const totalProductOffersValue = productOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                    const totalProductWonValue = productOffers
+                        .filter(o => o.stage === 'WON')
+                        .reduce((sum, o) => sum + (o.poValue ? Number(o.poValue) : Number(o.offerValue)), 0);
+                    const productHitRate = totalProductOffersValue > 0 ? Math.round((totalProductWonValue / totalProductOffersValue) * 100) : 0;
+
+                    return {
+                        productType: productType.key,
+                        productLabel: productType.label,
+                        yearlyTarget: productYearlyTargetValue,
+                        hitRate: productHitRate,
+                        monthlyData: productMonthlyData,
+                        totals: {
+                            offersValue: pTotalOffersValue,
+                            orderReceived: pTotalOrderReceived,
+                            ordersInHand: pTotalOrdersInHand,
+                            buMonthly: pTotalBUMonthly,
+                            offerBUMonth: pTotalOfferBUMonth,
+                        },
+                    };
+                }));
+
+                // Filter to only show products with data
+                const filteredProductBreakdown = productBreakdown.filter(p =>
+                    p.totals.offersValue > 0 || p.totals.orderReceived > 0 || p.totals.ordersInHand > 0 || p.yearlyTarget > 0
+                );
+
+                userBreakdowns.push({
+                    userId: user.id,
+                    userName: user.name || `User ${user.id}`,
+                    userShortForm: user.shortForm,
+                    zoneName,
+                    hitRate,
+                    yearlyTarget: yearlyTargetValue,
+                    monthlyData,
+                    productBreakdown: filteredProductBreakdown,
+                    totals: {
+                        offersValue: totalOffersValueSum,
+                        orderReceived: totalOrderReceived,
+                        ordersInHand: totalOrdersInHand,
+                        buMonthly: totalBUMonthly,
+                        offerBUMonth: totalOfferBUMonth,
+                    },
+                });
+            }
+
+            // Sort users by total orders received (descending), then by name
+            userBreakdowns.sort((a, b) => {
+                if (b.totals.orderReceived !== a.totals.orderReceived) {
+                    return b.totals.orderReceived - a.totals.orderReceived;
+                }
+                return a.userName.localeCompare(b.userName);
+            });
+
+            return res.json({
+                year: targetYear,
+                zoneId: filterZoneId,
+                users: userBreakdowns,
+            });
+        } catch (error: any) {
+            logger.error('Get user monthly breakdown error:', error);
+            return res.status(500).json({ error: 'Failed to fetch user monthly breakdown' });
+        }
+    }
+
+    /**
+     * Get Product × User × Zone Breakdown
+     * Shows product types as rows, users as columns, grouped by zone
+     */
+    static async getProductUserZoneBreakdownWrapper(req: any, res: Response) {
+        return ForecastController.getProductUserZoneBreakdown(req as AuthenticatedRequest, res);
+    }
+
+    static async getProductWiseForecastWrapper(req: any, res: Response) {
+        return ForecastController.getProductWiseForecast(req as AuthenticatedRequest, res);
+    }
+
+    static async getProductUserZoneBreakdown(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, minProbability, zoneId, userId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const minProb = minProbability ? parseInt(minProbability as string) : 0;
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+            const filterUserId = userId ? parseInt(userId as string) : null;
+
+            // All product types
+            const productTypes = [
+                'CONTRACT', 'BD_SPARE', 'SPP', 'RELOCATION', 'SOFTWARE',
+                'BD_CHARGES', 'RETROFIT_KIT', 'UPGRADE_KIT', 'MIDLIFE_UPGRADE'
+            ];
+
+            // Get zones (filtered by zoneId if provided)
+            const zones = await prisma.serviceZone.findMany({
+                where: {
+                    isActive: true,
+                    ...(filterZoneId && { id: filterZoneId }),
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            const zoneBreakdowns: any[] = [];
+
+            for (const zone of zones) {
+                // Get users for this zone (Zone Users and Zone Managers)
+                const usersInZone = await prisma.user.findMany({
+                    where: {
+                        isActive: true,
+                        OR: [
+                            {
+                                role: { in: ['ZONE_MANAGER', 'ZONE_USER'] },
+                                serviceZones: {
+                                    some: { serviceZoneId: zone.id }
+                                }
+                            },
+                            // Admins with offers in this zone
+                            {
+                                role: 'ADMIN',
+                                createdOffers: {
+                                    some: { zoneId: zone.id }
+                                }
+                            },
+                        ],
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        shortForm: true,
+                    },
+                    orderBy: { name: 'asc' },
+                });
+
+                // Get all offers for this zone in the target year, filtered by probability
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        zoneId: zone.id,
+                        offerMonth: {
+                            startsWith: `${targetYear}-`,
+                        },
+                        stage: { notIn: ['LOST'] },
+                        ...(minProb > 0 && { probabilityPercentage: { gte: minProb } }),
+                        // User filter
+                        ...(filterUserId && {
+                            OR: [
+                                { assignedToId: filterUserId },
+                                { createdById: filterUserId }
+                            ]
+                        }),
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        productType: true,
+                        assignedToId: true,
+                        createdById: true,
+                        probabilityPercentage: true,
+                    },
+                });
+
+                // Build Product × User matrix
+                const productUserMatrix: any[] = [];
+                const userTotals: { [userId: number]: number } = {};
+                let zoneTotalValue = 0;
+
+                // Initialize user totals
+                usersInZone.forEach(u => {
+                    userTotals[u.id] = 0;
+                });
+
+                for (const productType of productTypes) {
+                    const row: any = {
+                        productType,
+                        productLabel: productType.replace(/_/g, ' '),
+                        userValues: {},
+                        total: 0,
+                    };
+
+                    // Calculate value for each user
+                    for (const user of usersInZone) {
+                        const userOffers = offers.filter(o =>
+                            o.productType === productType &&
+                            (o.assignedToId === user.id || o.createdById === user.id)
+                        );
+                        const value = userOffers.reduce((sum, o) => sum + toNumber(o.offerValue), 0);
+                        row.userValues[user.id] = value;
+                        row.total += value;
+                        userTotals[user.id] += value;
+                    }
+
+                    zoneTotalValue += row.total;
+                    productUserMatrix.push(row);
+                }
+
+                zoneBreakdowns.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    users: usersInZone.map(u => ({
+                        id: u.id,
+                        name: u.name || u.shortForm || `User ${u.id}`,
+                    })),
+                    productMatrix: productUserMatrix,
+                    userTotals,
+                    zoneTotalValue,
+                });
+            }
+
+            return res.json({
+                year: targetYear,
+                productTypes: productTypes.map(p => ({
+                    key: p,
+                    label: p.replace(/_/g, ' '),
+                })),
+                zones: zoneBreakdowns,
+            });
+        } catch (error: any) {
+            logger.error('Get Product × User × Zone breakdown error:', error);
+            return res.status(500).json({ error: 'Failed to fetch Product × User × Zone breakdown' });
+        }
+    }
+
+    /**
+     * Get Product-wise Forecast Breakdown
+     * Structure: Zone → User → Product Type × Months
+     * Matches Excel layout: User with total row, then each product type with monthly values
+     */
+    static async getProductWiseForecast(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year, minProbability, zoneId, userId } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+            const minProb = minProbability ? parseInt(minProbability as string) : 0;
+            const filterZoneId = zoneId ? parseInt(zoneId as string) : null;
+            const filterUserId = userId ? parseInt(userId as string) : null;
+
+            const monthNames = ['MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'];
+            const monthNumbers = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2]; // Financial year order
+
+            // All product types
+            const productTypes = [
+                { key: 'CONTRACT', label: 'Contract' },
+                { key: 'BD_SPARE', label: 'BD Spare' },
+                { key: 'SPP', label: 'SPP' },
+                { key: 'RELOCATION', label: 'Relocation' },
+                { key: 'SOFTWARE', label: 'Software' },
+                { key: 'BD_CHARGES', label: 'BD Charges' },
+                { key: 'RETROFIT_KIT', label: 'Retrofit kit' },
+                { key: 'UPGRADE_KIT', label: 'Upgrade kit' },
+                { key: 'TRAINING', label: 'Training' },
+                { key: 'MIDLIFE_UPGRADE', label: 'Midlife Upgrade' },
+            ];
+
+            // Get zones (filtered by zoneId if provided)
+            const zones = await prisma.serviceZone.findMany({
+                where: {
+                    isActive: true,
+                    ...(filterZoneId && { id: filterZoneId }),
+                },
+                orderBy: { name: 'asc' },
+            });
+
+            const zoneBreakdowns: any[] = [];
+
+            for (const zone of zones) {
+                // Get users for this zone (Zone Users and Zone Managers)
+                const usersInZone = await prisma.user.findMany({
+                    where: {
+                        isActive: true,
+                        OR: [
+                            {
+                                role: { in: ['ZONE_MANAGER', 'ZONE_USER'] },
+                                serviceZones: {
+                                    some: { serviceZoneId: zone.id }
+                                }
+                            },
+                            // Admins with offers in this zone
+                            {
+                                role: 'ADMIN',
+                                createdOffers: {
+                                    some: { zoneId: zone.id }
+                                }
+                            },
+                        ],
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        shortForm: true,
+                    },
+                    orderBy: { name: 'asc' },
+                });
+
+                // Get all offers for this zone in the target year, filtered by probability
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        zoneId: zone.id,
+                        offerMonth: {
+                            startsWith: `${targetYear}-`,
+                        },
+                        stage: { notIn: ['LOST'] },
+                        ...(minProb > 0 && { probabilityPercentage: { gte: minProb } }),
+                        // User filter
+                        ...(filterUserId && {
+                            OR: [
+                                { assignedToId: filterUserId },
+                                { createdById: filterUserId }
+                            ]
+                        }),
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        productType: true,
+                        offerMonth: true,
+                        assignedToId: true,
+                        createdById: true,
+                        probabilityPercentage: true,
+                    },
+                });
+
+                // Build User → Product × Months structure
+                const userBreakdowns: any[] = [];
+
+                for (const user of usersInZone) {
+                    // Get user's offers
+                    const userOffers = offers.filter(o =>
+                        o.assignedToId === user.id || o.createdById === user.id
+                    );
+
+                    // Calculate monthly totals for user
+                    const monthlyTotals: { [month: string]: number } = {};
+                    monthNames.forEach(m => { monthlyTotals[m] = 0; });
+
+                    // Calculate product-wise monthly values
+                    const productData: any[] = [];
+
+                    for (const product of productTypes) {
+                        const monthlyValues: { [month: string]: number } = {};
+                        monthNames.forEach(m => { monthlyValues[m] = 0; });
+
+                        const productOffers = userOffers.filter(o => o.productType === product.key);
+
+                        for (const offer of productOffers) {
+                            if (!offer.offerMonth) continue;
+                            const monthNum = parseInt(offer.offerMonth.split('-')[1]);
+                            const monthIdx = monthNumbers.indexOf(monthNum);
+                            if (monthIdx >= 0) {
+                                const monthKey = monthNames[monthIdx];
+                                const value = toNumber(offer.offerValue);
+                                monthlyValues[monthKey] += value;
+                                monthlyTotals[monthKey] += value;
+                            }
+                        }
+
+                        const rowTotal = Object.values(monthlyValues).reduce((sum, v) => sum + v, 0);
+                        productData.push({
+                            productType: product.key,
+                            productLabel: product.label,
+                            monthlyValues,
+                            total: rowTotal,
+                        });
+                    }
+
+                    const userTotal = Object.values(monthlyTotals).reduce((sum, v) => sum + v, 0);
+
+                    userBreakdowns.push({
+                        userId: user.id,
+                        userName: user.name || user.shortForm || `User ${user.id}`,
+                        monthlyTotals,
+                        grandTotal: userTotal,
+                        products: productData,
+                    });
+                }
+
+                // Calculate zone totals
+                const zoneMonthlyTotals: { [month: string]: number } = {};
+                monthNames.forEach(m => { zoneMonthlyTotals[m] = 0; });
+
+                userBreakdowns.forEach(user => {
+                    monthNames.forEach(m => {
+                        zoneMonthlyTotals[m] += user.monthlyTotals[m] || 0;
+                    });
+                });
+
+                const zoneGrandTotal = Object.values(zoneMonthlyTotals).reduce((sum, v) => sum + v, 0);
+
+                zoneBreakdowns.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    users: userBreakdowns,
+                    monthlyTotals: zoneMonthlyTotals,
+                    grandTotal: zoneGrandTotal,
+                });
+            }
+
+            return res.json({
+                year: targetYear,
+                months: monthNames,
+                productTypes,
+                zones: zoneBreakdowns,
+            });
+        } catch (error: any) {
+            logger.error('Get Product-wise Forecast error:', error);
+            return res.status(500).json({ error: 'Failed to fetch Product-wise Forecast' });
+        }
+    }
+
+    /**
+     * Get Comprehensive Forecast Analytics
+     * Returns detailed analytics data for the analytics dashboard tab
+     */
+    static async getForecastAnalyticsWrapper(req: any, res: Response) {
+        return ForecastController.getForecastAnalytics(req as AuthenticatedRequest, res);
+    }
+
+    static async getForecastAnalytics(req: AuthenticatedRequest, res: Response) {
+        try {
+            const { year } = req.query;
+            const targetYear = year ? parseInt(year as string) : new Date().getFullYear();
+
+            const yearStart = new Date(targetYear, 0, 1);
+            const yearEnd = new Date(targetYear, 11, 31, 23, 59, 59);
+
+            const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+            // Get all zones
+            const zones = await prisma.serviceZone.findMany({
+                where: { isActive: true },
+                orderBy: { name: 'asc' },
+            });
+
+            // Basic zone metrics
+            const zoneAnalytics: any[] = [];
+            let totalOffers = 0;
+            let totalValue = 0;
+            let totalWon = 0;
+            let totalLost = 0;
+            let totalOpen = 0;
+            let totalTarget = 0;
+
+            // Monthly trends
+            const monthlyTrends: { [month: string]: { offers: number; value: number; won: number; lost: number } } = {};
+            monthNames.forEach(m => {
+                monthlyTrends[m] = { offers: 0, value: 0, won: 0, lost: 0 };
+            });
+
+            // Product distribution
+            const productDistribution: { [productType: string]: { count: number; value: number; won: number } } = {};
+
+            // User performance
+            const userPerformance: Map<number, { id: number; name: string; offers: number; value: number; won: number; conversion: number }> = new Map();
+
+            for (const zone of zones) {
+                // Get all offers for this zone
+                const offers = await prisma.offer.findMany({
+                    where: {
+                        zoneId: zone.id,
+                        createdAt: { gte: yearStart, lte: yearEnd },
+                    },
+                    select: {
+                        id: true,
+                        offerValue: true,
+                        poValue: true,
+                        stage: true,
+                        openFunnel: true,
+                        offerMonth: true,
+                        poReceivedMonth: true,
+                        productType: true,
+                        assignedToId: true,
+                        createdById: true,
+                        probabilityPercentage: true,
+                        assignedTo: {
+                            select: { id: true, name: true, shortForm: true },
+                        },
+                    },
+                });
+
+                // Get yearly target
+                const yearlyTargets = await prisma.zoneTarget.findMany({
+                    where: {
+                        serviceZoneId: zone.id,
+                        targetPeriod: String(targetYear),
+                        periodType: 'YEARLY',
+                    },
+                });
+
+                const overallTarget = yearlyTargets.find(t => t.productType === null);
+                const productTargets = yearlyTargets.filter(t => t.productType !== null);
+                let zoneTarget: number;
+                if (overallTarget) {
+                    zoneTarget = toNumber(overallTarget.targetValue);
+                } else {
+                    zoneTarget = productTargets.reduce((sum, t) => sum + toNumber(t.targetValue), 0);
+                }
+
+                // Calculate zone metrics
+                const zoneOfferCount = offers.length;
+                const zoneOffersValue = offers.reduce((sum, o) => sum + toNumber(o.offerValue), 0);
+
+                // Won offers with year filter
+                const targetYearStr = String(targetYear);
+                const wonOffers = offers.filter(o => {
+                    if (o.stage !== 'WON') return false;
+                    const effectiveMonth = o.poReceivedMonth || o.offerMonth;
+                    return effectiveMonth && effectiveMonth.startsWith(targetYearStr);
+                });
+                const zoneWonValue = wonOffers.reduce((sum, o) => {
+                    const value = o.poValue ? toNumber(o.poValue) : toNumber(o.offerValue);
+                    return sum + value;
+                }, 0);
+
+                const lostOffers = offers.filter(o => o.stage === 'LOST');
+                const zoneLostValue = lostOffers.reduce((sum, o) => sum + toNumber(o.offerValue), 0);
+
+                const openOffers = offers.filter(o => o.openFunnel && o.stage !== 'WON' && o.stage !== 'LOST');
+                const zoneOpenValue = openOffers.reduce((sum, o) => sum + toNumber(o.offerValue), 0);
+
+                const zoneHitRate = zoneOffersValue > 0 ? (zoneWonValue / zoneOffersValue) * 100 : 0;
+                const zoneAchievement = zoneTarget > 0 ? (zoneWonValue / zoneTarget) * 100 : 0;
+                const zoneConversion = zoneOfferCount > 0 ? (wonOffers.length / zoneOfferCount) * 100 : 0;
+
+                zoneAnalytics.push({
+                    zoneId: zone.id,
+                    zoneName: zone.name,
+                    metrics: {
+                        offers: zoneOfferCount,
+                        offersValue: zoneOffersValue,
+                        wonValue: zoneWonValue,
+                        wonCount: wonOffers.length,
+                        lostValue: zoneLostValue,
+                        lostCount: lostOffers.length,
+                        openValue: zoneOpenValue,
+                        openCount: openOffers.length,
+                        target: zoneTarget,
+                        balance: zoneTarget - zoneWonValue,
+                        hitRate: Math.round(zoneHitRate * 10) / 10,
+                        achievement: Math.round(zoneAchievement * 10) / 10,
+                        conversion: Math.round(zoneConversion * 10) / 10,
+                    },
+                });
+
+                // Aggregate totals
+                totalOffers += zoneOfferCount;
+                totalValue += zoneOffersValue;
+                totalWon += zoneWonValue;
+                totalLost += zoneLostValue;
+                totalOpen += zoneOpenValue;
+                totalTarget += zoneTarget;
+
+                // Monthly trends aggregation
+                offers.forEach(o => {
+                    if (!o.offerMonth) return;
+                    const monthNum = parseInt(o.offerMonth.split('-')[1]);
+                    const monthKey = monthNames[monthNum - 1];
+                    if (monthKey) {
+                        monthlyTrends[monthKey].offers += 1;
+                        monthlyTrends[monthKey].value += toNumber(o.offerValue);
+                        if (o.stage === 'WON') monthlyTrends[monthKey].won += toNumber(o.poValue || o.offerValue);
+                        if (o.stage === 'LOST') monthlyTrends[monthKey].lost += toNumber(o.offerValue);
+                    }
+                });
+
+                // Product distribution
+                offers.forEach(o => {
+                    const pt = o.productType || 'OTHER';
+                    if (!productDistribution[pt]) {
+                        productDistribution[pt] = { count: 0, value: 0, won: 0 };
+                    }
+                    productDistribution[pt].count += 1;
+                    productDistribution[pt].value += toNumber(o.offerValue);
+                    if (o.stage === 'WON') {
+                        productDistribution[pt].won += toNumber(o.poValue || o.offerValue);
+                    }
+                });
+
+                // User performance aggregation
+                offers.forEach(o => {
+                    const userId = o.assignedToId || o.createdById;
+                    const userName = o.assignedTo?.name || o.assignedTo?.shortForm || `User ${userId}`;
+
+                    if (!userPerformance.has(userId)) {
+                        userPerformance.set(userId, { id: userId, name: userName, offers: 0, value: 0, won: 0, conversion: 0 });
+                    }
+                    const user = userPerformance.get(userId)!;
+                    user.offers += 1;
+                    user.value += toNumber(o.offerValue);
+                    if (o.stage === 'WON') {
+                        user.won += toNumber(o.poValue || o.offerValue);
+                    }
+                });
+            }
+
+            // Calculate user conversions and get top performers
+            userPerformance.forEach(user => {
+                user.conversion = user.offers > 0 ? Math.round((user.won / user.value) * 100) : 0;
+            });
+            const topPerformers = Array.from(userPerformance.values())
+                .sort((a, b) => b.won - a.won)
+                .slice(0, 10);
+
+            // Quarterly summary
+            const quarterlySummary = [
+                { name: 'Q1', months: ['JAN', 'FEB', 'MAR'], value: 0, won: 0 },
+                { name: 'Q2', months: ['APR', 'MAY', 'JUN'], value: 0, won: 0 },
+                { name: 'Q3', months: ['JUL', 'AUG', 'SEP'], value: 0, won: 0 },
+                { name: 'Q4', months: ['OCT', 'NOV', 'DEC'], value: 0, won: 0 },
+            ];
+            quarterlySummary.forEach(q => {
+                q.months.forEach(m => {
+                    q.value += monthlyTrends[m]?.value || 0;
+                    q.won += monthlyTrends[m]?.won || 0;
+                });
+            });
+
+            // Format product distribution for response
+            const productStats = Object.entries(productDistribution)
+                .map(([type, stats]) => ({
+                    productType: type,
+                    label: type.replace(/_/g, ' '),
+                    ...stats,
+                    hitRate: stats.value > 0 ? Math.round((stats.won / stats.value) * 100) : 0,
+                }))
+                .sort((a, b) => b.value - a.value);
+
+            // Best and worst zones
+            const sortedZones = [...zoneAnalytics].sort((a, b) => b.metrics.achievement - a.metrics.achievement);
+            const bestZone = sortedZones[0];
+            const worstZone = sortedZones[sortedZones.length - 1];
+
+            // Overall metrics
+            const overallMetrics = {
+                totalOffers,
+                totalValue,
+                totalWon,
+                totalLost,
+                totalOpen,
+                totalTarget,
+                balance: totalTarget - totalWon,
+                hitRate: totalValue > 0 ? Math.round((totalWon / totalValue) * 1000) / 10 : 0,
+                achievement: totalTarget > 0 ? Math.round((totalWon / totalTarget) * 1000) / 10 : 0,
+                avgOfferValue: totalOffers > 0 ? Math.round(totalValue / totalOffers) : 0,
+            };
+
+            return res.json({
+                year: targetYear,
+                overall: overallMetrics,
+                zones: zoneAnalytics,
+                monthlyTrends: monthNames.map(m => ({
+                    month: m,
+                    ...monthlyTrends[m],
+                })),
+                quarterly: quarterlySummary,
+                products: productStats,
+                topPerformers,
+                highlights: {
+                    bestZone: bestZone ? { name: bestZone.zoneName, achievement: bestZone.metrics.achievement } : null,
+                    worstZone: worstZone ? { name: worstZone.zoneName, achievement: worstZone.metrics.achievement } : null,
+                    highestValueProduct: productStats[0] || null,
+                    totalUsers: userPerformance.size,
+                },
+            });
+        } catch (error: any) {
+            logger.error('Get Forecast Analytics error:', error);
+            return res.status(500).json({ error: 'Failed to fetch Forecast Analytics' });
+        }
+    }
+}
+

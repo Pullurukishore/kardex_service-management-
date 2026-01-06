@@ -825,8 +825,8 @@ export default function OfferDetailPage() {
                               <Wrench className="h-5 w-5 text-white" />
                             </div>
                             <div>
-                              <h4 className="font-bold text-gray-900">{asset?.machineId || 'Unknown Machine'}</h4>
-                              <p className="text-xs text-gray-500">Machine ID</p>
+                              <h4 className="font-bold text-gray-900">{asset?.serialNo || 'Unknown Serial'}</h4>
+                              <p className="text-xs text-gray-500">Serial No</p>
                             </div>
                           </div>
                           {asset?.status && (
@@ -843,12 +843,6 @@ export default function OfferDetailPage() {
                         </div>
                         
                         <div className="grid grid-cols-2 gap-3 mt-4">
-                          {asset?.serialNo && (
-                            <div className="bg-gray-50 rounded-lg p-3">
-                              <p className="text-xs text-gray-500 font-medium mb-1">Serial Number</p>
-                              <p className="text-sm font-semibold text-gray-900">{asset.serialNo}</p>
-                            </div>
-                          )}
                           {asset?.model && (
                             <div className="bg-gray-50 rounded-lg p-3">
                               <p className="text-xs text-gray-500 font-medium mb-1">Model</p>
@@ -856,7 +850,7 @@ export default function OfferDetailPage() {
                             </div>
                           )}
                           {asset?.location && (
-                            <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+                            <div className={`bg-gray-50 rounded-lg p-3 ${!asset?.model ? 'col-span-2' : ''}`}>
                               <p className="text-xs text-gray-500 font-medium mb-1">Location</p>
                               <p className="text-sm font-semibold text-gray-900">{asset.location}</p>
                             </div>
@@ -1446,15 +1440,19 @@ export default function OfferDetailPage() {
                 <Label className={updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields ? 'text-red-600' : ''}>
                   Win Probability (%) {updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields && '*'}
                 </Label>
-                <Input 
-                  type="number"
-                  min="1"
-                  max="100"
+                <Select
                   value={updateData.probabilityPercentage}
-                  onChange={(e) => setUpdateData(prev => ({ ...prev, probabilityPercentage: e.target.value }))}
-                  placeholder="1-100"
-                  className={updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields && !updateData.probabilityPercentage ? 'border-red-300' : ''}
-                />
+                  onValueChange={(value) => setUpdateData(prev => ({ ...prev, probabilityPercentage: value }))}
+                >
+                  <SelectTrigger className={updateData.stage && STAGE_INFO[updateData.stage]?.requiresAllFields && !updateData.probabilityPercentage ? 'border-red-300' : ''}>
+                    <SelectValue placeholder="Select probability" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) => (
+                      <SelectItem key={value} value={value.toString()}>{value}%</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

@@ -68,6 +68,7 @@ interface FSAData {
   recentActivity: {
     tickets: Array<{
       id: number;
+      ticketNumber?: number;
       title: string;
       status: string;
       priority: string;
@@ -480,7 +481,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="text-sm font-mono text-gray-500">#{ticket.id}</div>
+                            <div className="text-sm font-mono text-gray-500">#{ticket.ticketNumber ?? ticket.id}</div>
                             <div>
                               <p className="font-semibold text-gray-900">{ticket.title}</p>
                               <p className="text-sm text-gray-600">

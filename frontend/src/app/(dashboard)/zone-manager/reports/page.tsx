@@ -1,5 +1,6 @@
 import ReportsClient from '@/components/reports/ReportsClient';
 import type { ReportFilters } from '@/types/reports';
+import { ZONE_MANAGER_REPORT_TYPES } from '@/types/reports';
 import { subDays } from 'date-fns';
 
 // Force dynamic rendering
@@ -22,8 +23,8 @@ export default function ZoneManagerReportsPage() {
         zones={[]}
         customers={[]}
         isZoneUser={true}
+        reportTypes={ZONE_MANAGER_REPORT_TYPES}
       />
     </div>
   );
 }
-

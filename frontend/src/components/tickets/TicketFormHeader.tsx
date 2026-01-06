@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Ticket } from 'lucide-react';
+import { ArrowLeft, Ticket, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
 
 interface TicketFormHeaderProps {
   onBack: () => void;
@@ -10,26 +10,43 @@ interface TicketFormHeaderProps {
 
 export function TicketFormHeader({ onBack, isSubmitting = false }: TicketFormHeaderProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-800 p-6 text-white">
-      <div className="absolute inset-0 bg-black/20"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20"></div>
-      <div className="relative flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Ticket className="h-6 w-6 text-white" />
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-600 via-orange-600 to-rose-700 p-6 sm:p-8 text-white shadow-2xl">
+      {/* Animated background orbs */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-56 h-56 bg-orange-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+      <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-rose-400/15 rounded-full blur-2xl"></div>
+      
+      {/* Content */}
+      <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-5">
+          {/* Icon container with glassmorphism */}
+          <div className="relative">
+            <div className="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center ring-2 ring-white/30 shadow-xl">
+              <Ticket className="h-8 w-8 text-white" />
+            </div>
+            <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg">
+              <Sparkles className="h-3 w-3 text-white" />
+            </div>
           </div>
+          
           <div>
-            <h1 className="text-3xl font-bold mb-2">Create New Ticket</h1>
-            <p className="text-indigo-100">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 text-xs font-bold bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
+                NEW TICKET
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create Support Ticket</h1>
+            <p className="text-red-100 mt-1 max-w-md">
               Submit a new support request with detailed information for faster resolution
             </p>
           </div>
         </div>
+        
         <Button 
           variant="outline"
           onClick={onBack}
           disabled={isSubmitting}
-          className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+          className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-105"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back

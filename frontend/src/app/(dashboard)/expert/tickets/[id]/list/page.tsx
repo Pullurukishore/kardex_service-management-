@@ -245,7 +245,7 @@ export default function TicketDetailPage() {
                   </div>
                   <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                      Ticket #{ticket.id}
+                      Ticket #{ticket.ticketNumber ?? ticket.id}
                     </h1>
                     <p className="text-purple-100 mt-1 text-sm md:text-base flex items-center gap-2">
                       <Clock className="h-4 w-4" />

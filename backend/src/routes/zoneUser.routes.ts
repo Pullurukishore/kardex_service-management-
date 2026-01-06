@@ -31,6 +31,9 @@ router.post(
     body('email').isEmail().withMessage('Please provide a valid email'),
     body('phone').optional().isMobilePhone('any').withMessage('Please provide a valid phone number'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('role')
+      .isIn(['ZONE_USER', 'ZONE_MANAGER'])
+      .withMessage('Role must be either ZONE_USER or ZONE_MANAGER'),
     body('serviceZoneIds')
       .isArray({ min: 1 })
       .withMessage('At least one service zone is required'),

@@ -83,6 +83,7 @@ export interface Comment {
 
 export interface Ticket {
   id: number;
+  ticketNumber?: number; // User-facing ticket number starting from 1001
   title: string;
   description: string;
   status: TicketStatus;

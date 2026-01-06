@@ -316,7 +316,8 @@ const getAvailableStatuses = (currentStatus: TicketStatusType, userRole?: UserRo
   }
   
   const availableTransitions = validTransitions[mappedStatus] || [];
-  // Statuses restricted for service person and zone users
+  
+  // Statuses restricted for field users (service person, zone users, zone managers)
   const restrictedStatusesForFieldUsers: TicketStatusType[] = [
     'CANCELLED',
     'REOPENED',
@@ -328,8 +329,10 @@ const getAvailableStatuses = (currentStatus: TicketStatusType, userRole?: UserRo
   
   // Filter based on user role permissions
   return availableTransitions.filter(status => {
-    // Service person and zone users cannot set these statuses
-    if ((userRole === UserRole.SERVICE_PERSON || userRole === UserRole.ZONE_USER) && 
+    // Service person, zone users, and zone managers cannot set these statuses
+    if ((userRole === UserRole.SERVICE_PERSON || 
+         userRole === UserRole.ZONE_USER || 
+         userRole === UserRole.ZONE_MANAGER) && 
         restrictedStatusesForFieldUsers.includes(status)) {
       return false;
     }
@@ -499,41 +502,31 @@ export function StatusChangeDialog({
     }
   }, [selectedStatus]);
 
-  // Add custom CSS for better scrolling support
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      .status-dropdown-scroll {
-        scrollbar-width: thin;
-        scrollbar-color: rgb(203 213 225) transparent;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        scroll-behavior: smooth;
-      }
-      
-      .status-dropdown-scroll::-webkit-scrollbar {
-        width: 8px;
-      }
-      
-      .status-dropdown-scroll::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      
-      .status-dropdown-scroll::-webkit-scrollbar-thumb {
-        background-color: rgb(203 213 225);
-        border-radius: 4px;
-      }
-      
-      .status-dropdown-scroll::-webkit-scrollbar-thumb:hover {
-        background-color: rgb(148 163 184);
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+  // Category icons for visual distinction
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Basic': return '▶';
+      case 'Onsite': return '📍';
+      case 'Purchase': return '🛒';
+      case 'Parts': return '🔧';
+      case 'Completion': return '✅';
+      case 'Special': return '⚠';
+      default: return '📋';
+    }
+  };
+
+  // Get category color for styling
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'Basic': return 'border-blue-200 bg-blue-50';
+      case 'Onsite': return 'border-amber-200 bg-amber-50';
+      case 'Purchase': return 'border-purple-200 bg-purple-50';
+      case 'Parts': return 'border-emerald-200 bg-emerald-50';
+      case 'Completion': return 'border-green-200 bg-green-50';
+      case 'Special': return 'border-red-200 bg-red-50';
+      default: return 'border-gray-200 bg-gray-50';
+    }
+  };
 
   // Status display mapping for shorter, cleaner names
   const getStatusDisplayInfo = (status: TicketStatusType) => {
@@ -630,8 +623,8 @@ export function StatusChangeDialog({
           }
         : undefined;
 
-      // Prepare photo data if required
-      const photoData: PhotoData | undefined = requiresPhoto(selectedStatus) && capturedPhotos.length > 0
+      // Prepare photo data if required (for onsite visit statuses OR CLOSED_PENDING)
+      const photoData: PhotoData | undefined = (requiresPhoto(selectedStatus) || selectedStatus === TicketStatus.CLOSED_PENDING) && capturedPhotos.length > 0
         ? {
             photos: capturedPhotos,
             timestamp: new Date().toISOString()
@@ -747,120 +740,115 @@ export function StatusChangeDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[95vh] overflow-y-auto">
-        <DialogHeader className="space-y-3">
-          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            Update Ticket Status
-          </DialogTitle>
-          <DialogDescription>
-            Change the current status of this ticket. Some status changes may require additional information.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          {/* Current Status Card */}
-          <Card className="border-2 border-muted">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium text-muted-foreground">Current Status</Label>
-                  <div className="flex items-center gap-2">
-                    <div className={`${getStatusColor(currentStatus)}`}>
-                      {getStatusIcon(currentStatus)}
-                    </div>
-                    <StatusBadge status={currentStatus} />
-                  </div>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0">
+        {/* Premium Header */}
+        <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 px-6 py-5 rounded-t-lg">
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="text-xl font-bold flex items-center gap-3 text-white">
+              <div className="p-2 bg-white/10 rounded-lg">
+                <Zap className="h-5 w-5 text-amber-400" />
               </div>
-            </CardContent>
-          </Card>
+              Update Ticket Status
+            </DialogTitle>
+            <DialogDescription className="text-slate-300 text-sm">
+              Select a new status for this ticket
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-          {/* New Status Selection */}
+        <div className="space-y-5 p-6">
+          {/* Current Status - Compact */}
+          <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="flex-1">
+              <p className="text-xs font-medium text-slate-500 mb-1.5">Current Status</p>
+              <div className="flex items-center gap-2">
+                <div className={`${getStatusColor(currentStatus)}`}>
+                  {getStatusIcon(currentStatus)}
+                </div>
+                <StatusBadge status={currentStatus} />
+              </div>
+            </div>
+            <div className="p-2 bg-slate-200 rounded-full">
+              <ArrowRight className="h-4 w-4 text-slate-600" />
+            </div>
+          </div>
+
+          {/* New Status Selection - Simple Scrollable List */}
           <div className="space-y-3">
-            <Label htmlFor="status" className="text-sm font-medium flex items-center gap-2">
-              <FileText className="h-4 w-4" />
+            <Label className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+              <FileText className="h-4 w-4 text-blue-600" />
               Select New Status
             </Label>
-            <Select 
-              value={selectedStatus}
-              onValueChange={(value: string) => setSelectedStatus(value as TicketStatusType)}
-              disabled={isSubmitting}
+            
+            {/* Simple scrollable status list */}
+            <div 
+              className="border-2 border-slate-200 rounded-xl overflow-hidden"
+              style={{ maxHeight: '300px', overflowY: 'auto' }}
             >
-              <SelectTrigger className="w-full h-12 text-left">
-                <SelectValue placeholder="Choose a new status..." />
-              </SelectTrigger>
-              <SelectContent 
-                className="max-h-[60vh] min-w-[400px] overflow-y-scroll overscroll-contain"
-                position="popper"
-                sideOffset={4}
-                onWheel={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <div 
-                  className="max-h-[55vh] status-dropdown-scroll"
-                  style={{ 
-                    touchAction: 'pan-y',
-                    overflowY: 'scroll'
-                  }}
-                  onWheel={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onTouchStart={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onTouchMove={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  {/* Group options by category */}
-                  {['Basic', 'Onsite', 'Purchase', 'Parts', 'Completion', 'Special'].map(category => {
-                    const categoryOptions = statusOptions.filter(option => option.category === category);
-                    if (categoryOptions.length === 0) return null;
+              {['Basic', 'Onsite', 'Purchase', 'Parts', 'Completion', 'Special'].map(category => {
+                const categoryOptions = statusOptions.filter(option => option.category === category);
+                if (categoryOptions.length === 0) return null;
+                
+                return (
+                  <div key={category}>
+                    {/* Category Header - Sticky */}
+                    <div 
+                      className="px-4 py-2 text-xs font-bold uppercase tracking-wide bg-slate-100 border-b border-slate-200 sticky top-0 z-10"
+                      style={{ backgroundColor: '#f1f5f9' }}
+                    >
+                      {getCategoryIcon(category)} {category} Status
+                    </div>
                     
-                    return (
-                      <div key={category} className="mb-2">
-                        {/* Category Header */}
-                        <div className="px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/30 border-b sticky top-0 z-10">
-                          📋 {category} Status
+                    {/* Status Options */}
+                    {categoryOptions.map((option) => (
+                      <div
+                        key={option.value}
+                        onClick={() => !isSubmitting && setSelectedStatus(option.value)}
+                        className={`
+                          flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0
+                          transition-all duration-150
+                          ${selectedStatus === option.value 
+                            ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                            : 'hover:bg-slate-50 border-l-4 border-l-transparent'
+                          }
+                          ${option.isDestructive ? 'hover:bg-red-50' : ''}
+                          ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                      >
+                        {/* Radio indicator */}
+                        <div className={`
+                          w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                          ${selectedStatus === option.value 
+                            ? 'border-blue-500 bg-blue-500' 
+                            : 'border-slate-300 bg-white'
+                          }
+                        `}>
+                          {selectedStatus === option.value && (
+                            <div className="w-2 h-2 rounded-full bg-white" />
+                          )}
                         </div>
                         
-                        {/* Category Options */}
-                        <div className="py-1">
-                          {categoryOptions.map((option) => (
-                            <SelectItem 
-                              key={option.value} 
-                              value={option.value}
-                              className={`py-3 px-3 mx-1 my-0.5 rounded-md cursor-pointer hover:bg-accent/80 focus:bg-accent ${option.isDestructive ? 'text-destructive hover:text-destructive' : ''}`}
-                            >
-                              <div className="flex items-center gap-3 w-full min-w-0">
-                                <div className={`${getStatusColor(option.value)} flex-shrink-0`}>
-                                  {getStatusIcon(option.value)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-0.5">
-                                    <span className="font-medium text-sm">{option.shortLabel}</span>
-                                    {option.isDestructive && (
-                                      <Badge variant="destructive" className="text-xs px-1.5 py-0 h-4 flex-shrink-0">!</Badge>
-                                    )}
-                                    {option.requiresComment && (
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0 h-4 flex-shrink-0">Note</Badge>
-                                    )}
-                                  </div>
-                                  <span className="text-xs text-muted-foreground block leading-tight">{option.description}</span>
-                                </div>
-                              </div>
-                            </SelectItem>
-                          ))}
+                        {/* Status info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium text-sm ${option.isDestructive ? 'text-red-700' : 'text-slate-800'}`}>
+                              {option.shortLabel}
+                            </span>
+                            {option.isDestructive && (
+                              <span className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded font-bold">!</span>
+                            )}
+                            {option.requiresComment && (
+                              <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded">Note</span>
+                            )}
+                          </div>
+                          <span className="text-xs text-slate-500">{option.description}</span>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </SelectContent>
-            </Select>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Preview of selected status */}
@@ -1094,12 +1082,13 @@ export function StatusChangeDialog({
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        {/* Action Buttons - Sticky Footer */}
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
           <Button 
             variant="outline" 
             onClick={handleClose}
             disabled={isSubmitting}
-            className="px-6"
+            className="px-6 h-11 font-medium border-slate-300 hover:bg-slate-100"
           >
             Cancel
           </Button>
@@ -1111,7 +1100,11 @@ export function StatusChangeDialog({
               (requiresPhoto(selectedStatus) && capturedPhotos.length === 0) ||
               (selectedStatus === TicketStatus.CLOSED_PENDING && capturedPhotos.length === 0)}
             variant={selectedOption?.isDestructive ? 'destructive' : 'default'}
-            className="px-6 font-medium"
+            className={`px-6 h-11 font-semibold shadow-md transition-all ${
+              selectedOption?.isDestructive 
+                ? 'bg-red-600 hover:bg-red-700' 
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+            }`}
           >
             {isSubmitting ? (
               <>

@@ -109,7 +109,7 @@ export function ReportFilters({
           <SelectContent>
             {!isZoneUser && <SelectItem value="">All zones</SelectItem>}
             {zones.map((zone) => (
-              <SelectItem key={zone.id} value={zone.id}>
+              <SelectItem key={zone.id} value={String(zone.id)}>
                 {zone.name}
               </SelectItem>
             ))}
@@ -123,7 +123,7 @@ export function ReportFilters({
             <label className="text-sm font-medium text-foreground">Customer</label>
             <SearchableSelect
               options={customers.map((customer) => ({
-                id: customer.id,
+                id: String(customer.id),
                 label: customer.companyName,
                 searchText: customer.companyName
               }))}

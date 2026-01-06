@@ -361,10 +361,18 @@ export const createTicket = async (req: TicketRequest, res: Response) => {
       });
     }
 
+    // Generate the next ticket number (starting from 1001)
+    const lastTicket = await prisma.ticket.findFirst({
+      orderBy: { ticketNumber: 'desc' },
+      select: { ticketNumber: true }
+    });
+    const nextTicketNumber = lastTicket?.ticketNumber ? lastTicket.ticketNumber + 1 : 1001;
+
     // Use TicketUncheckedCreateInput to pass assetId directly
     const ticketData = {
       title,
       description,
+      ticketNumber: nextTicketNumber,
       priority: priority as Priority,
       callType: callType || null,
       // Auto-assign and set appropriate status for service person created tickets
@@ -575,6 +583,7 @@ export const getTickets = async (req: TicketRequest, res: Response) => {
         include: {
           customer: {
             select: {
+              id: true,
               companyName: true,
               address: true
             }

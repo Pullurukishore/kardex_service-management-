@@ -164,6 +164,8 @@ export default async function DashboardPage() {
         totalCustomers: 0,
         totalServicePersons: 0,
         totalServiceZones: 0,
+        totalZoneUsers: 0,
+        totalZoneManagers: 0,
         ticketStatusDistribution: {},
         ticketTrends: [],
         zoneWiseTickets: []

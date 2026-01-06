@@ -1,13 +1,53 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/user.types';
 import { apiService } from '@/services/api';
 import { 
   ArrowLeft, Target, TrendingUp, Package, Building2, Users, 
   Award, BarChart3, Sparkles, Zap, ArrowUpRight, ArrowDownRight,
-  CheckCircle, AlertCircle, Crown
+  CheckCircle, AlertCircle, Crown, Activity, RefreshCw
 } from 'lucide-react';
+
+// Custom hook for animated counter
+function useAnimatedCounter(end: number, duration: number = 1000, enabled: boolean = true) {
+  const [count, setCount] = useState(0);
+  const prevEnd = useRef(end);
+  
+  useEffect(() => {
+    if (!enabled) {
+      setCount(end);
+      return;
+    }
+    
+    if (Math.abs(end - prevEnd.current) > end * 0.5) {
+      setCount(0);
+    }
+    prevEnd.current = end;
+    
+    let startTime: number | null = null;
+    let animationFrame: number;
+    const startValue = count;
+    
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(startValue + (end - startValue) * easeOutQuart));
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step);
+      }
+    };
+    
+    animationFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration, enabled]);
+  
+  return count;
+}
 
 interface TargetDetail {
   id: number;
@@ -33,6 +73,7 @@ const PRODUCT_TYPE_CONFIG: { [key: string]: { label: string; icon: string; gradi
 export default function TargetViewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   
   const type = (searchParams.get('type') || 'ZONE') as 'ZONE' | 'USER';
   const entityId = searchParams.get('id') || '';
@@ -46,11 +87,26 @@ export default function TargetViewPage() {
   // Product types from backend enum
   const productTypes = ['RELOCATION', 'CONTRACT', 'SPP', 'UPGRADE_KIT', 'SOFTWARE', 'BD_CHARGES', 'BD_SPARE', 'MIDLIFE_UPGRADE', 'RETROFIT_KIT'];
 
+  // Protect this page - only ADMIN can access
   useEffect(() => {
-    if (entityId && period) {
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        router.push('/auth/login?callbackUrl=' + encodeURIComponent('/admin/targets'))
+        return
+      }
+      if (user?.role !== UserRole.ADMIN) {
+        router.push('/admin/dashboard')
+        return
+      }
+    }
+  }, [authLoading, isAuthenticated, user?.role, router])
+
+  useEffect(() => {
+    if (entityId && period && !authLoading && isAuthenticated && user?.role === UserRole.ADMIN) {
       fetchTargets();
     }
-  }, [entityId, period, periodType, type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId, period, periodType, type, authLoading, isAuthenticated, user?.role]);
 
   const fetchTargets = async () => {
     setLoading(true);
@@ -118,6 +174,32 @@ export default function TargetViewPage() {
   const overallAchievement = totalTarget > 0 ? (totalActual / totalTarget) * 100 : 0;
   const variance = totalActual - totalTarget;
 
+  // Show loading state while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+        <div className="text-center">
+          <div className="relative">
+            <div className="w-24 h-24 border-4 border-blue-400/20 rounded-full"></div>
+            <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-blue-400 border-r-blue-400/50 rounded-full animate-spin"></div>
+            <div className="absolute inset-2 w-20 h-20 border-4 border-transparent border-b-purple-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+          </div>
+          <p className="text-blue-200 font-medium mt-6 text-lg animate-pulse">Loading...</p>
+          <div className="flex justify-center gap-1 mt-3">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated or not ADMIN
+  if (!isAuthenticated || user?.role !== UserRole.ADMIN) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       <div className="p-6 max-w-6xl mx-auto">
@@ -126,21 +208,23 @@ export default function TargetViewPage() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-all group"
         >
-          <div className="p-2 rounded-lg bg-white shadow-sm group-hover:shadow-md transition-all">
+          <div className="p-2 rounded-lg bg-white shadow-sm group-hover:shadow-md group-hover:-translate-x-1 transition-all">
             <ArrowLeft className="w-5 h-5" />
           </div>
           <span className="font-medium">Back to Targets</span>
         </button>
         
         {/* Hero Header */}
-        <div className={`relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl mb-8 bg-gradient-to-r ${
+        <div className={`relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl mb-8 bg-gradient-to-r group ${
           type === 'ZONE' 
             ? 'from-blue-600 via-indigo-600 to-purple-700' 
             : 'from-purple-600 via-pink-600 to-rose-600'
         }`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOGM5Ljk0MSAwIDE4LTguMDU5IDE4LTE4cy04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+          {/* Animated gradient orbs */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" style={{ animation: 'pulse 3s ease-in-out infinite alternate' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-cyan-400/10 rounded-full blur-2xl" style={{ animation: 'pulse 4s ease-in-out infinite alternate-reverse' }}></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-5 mb-6">

@@ -10,8 +10,6 @@ import {
   Loader2,
   Timer,
   Cpu,
-  TrendingUp,
-  TrendingDown,
   Award,
   Users,
   Building2,
@@ -21,7 +19,7 @@ import {
   Navigation,
   Target
 } from "lucide-react";
-import { formatNumber, formatDuration, formatChange } from "./utils";
+import { formatNumber, formatDuration } from "./utils";
 import type { DashboardData } from "./types";
 
 interface ExecutiveSummaryCardsProps {
@@ -105,8 +103,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
     },
     {
       title: 'Resolution Time',
+      // Business days are 8 hours each (not 24), so multiply days by 8
       value: formatDuration(
-        (dashboardData?.stats?.avgResolutionTime?.days || 0) * 24 + (dashboardData?.stats?.avgResolutionTime?.hours || 0),
+        (dashboardData?.stats?.avgResolutionTime?.days || 0) * 8 + (dashboardData?.stats?.avgResolutionTime?.hours || 0),
         dashboardData?.stats?.avgResolutionTime?.minutes || 0
       ),
       description: 'Avg time to resolve',
@@ -264,7 +263,7 @@ const MetricCard = ({ metric, index }: { metric: any; index: number }) => (
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 min-w-0 flex-1">
           {/* Title */}
-          <p className="text-xs sm:text-sm font-semibold text-slate-600 truncate">
+          <p className="text-xs sm:text-sm font-semibold text-slate-600 leading-tight">
             {metric.title}
           </p>
           
@@ -279,25 +278,11 @@ const MetricCard = ({ metric, index }: { metric: any; index: number }) => (
           </div>
           
           {/* Description or Subtitle */}
-          <p className="text-xs text-slate-500 line-clamp-1">
+          <p className="text-xs text-slate-500 leading-tight">
             {metric.subtitle || metric.description}
           </p>
           
-          {/* Change Indicator - only show when there's an actual change */}
-          {metric.change !== undefined && metric.change !== 0 && !metric.critical && (
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-              metric.isPositive 
-                ? 'bg-emerald-100/80 text-emerald-700' 
-                : 'bg-rose-100/80 text-rose-700'
-            }`}>
-              {metric.isPositive ? (
-                <TrendingUp className="w-3 h-3" />
-              ) : (
-                <TrendingDown className="w-3 h-3" />
-              )}
-              {formatChange(metric.change, metric.isPositive)}
-            </div>
-          )}
+
 
           {/* Critical Badge for Unassigned */}
           {metric.critical && (

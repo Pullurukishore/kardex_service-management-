@@ -9,7 +9,7 @@ interface DashboardStats {
   unassignedTickets: { count: number; critical: boolean };
   inProgressTickets: { count: number; change: number };
   avgResponseTime: { hours: number; minutes: number; change: number; isPositive: boolean };
-  avgResolutionTime: { days: number; hours: number; change: number; isPositive: boolean };
+  avgResolutionTime: { days: number; hours: number; minutes: number; change: number; isPositive: boolean };
   avgDowntime: { hours: number; minutes: number; change: number; isPositive: boolean };
   avgTravelTime: { hours: number; minutes: number; change: number; isPositive: boolean };
   avgOnsiteResolutionTime: { hours: number; minutes: number; change: number; isPositive: boolean };
@@ -36,6 +36,8 @@ interface DashboardData {
     totalCustomers: number;
     totalServicePersons: number;
     totalServiceZones: number;
+    totalZoneUsers: number;
+    totalZoneManagers: number;
     ticketStatusDistribution: Record<string, number>;
     ticketTrends: Array<{ date: string; count: number; status: string }>;
     zoneWiseTickets: Array<{
@@ -166,6 +168,8 @@ export const getDashboardData = async (req: Request, res: Response) => {
       totalCustomers,
       totalServicePersons,
       totalServiceZones,
+      totalZoneUsers,
+      totalZoneManagers,
       zoneWiseData,
 
       // Recent tickets
@@ -408,6 +412,22 @@ export const getDashboardData = async (req: Request, res: Response) => {
         where: { isActive: true }
       }),
 
+      // Zone users count (ZONE_USER role only)
+      prisma.user.count({
+        where: {
+          role: 'ZONE_USER',
+          isActive: true
+        }
+      }),
+
+      // Zone managers count (ZONE_MANAGER role only)
+      prisma.user.count({
+        where: {
+          role: 'ZONE_MANAGER',
+          isActive: true
+        }
+      }),
+
       // Zone-wise data
       getZoneWiseTicketData(),
 
@@ -602,6 +622,8 @@ export const getDashboardData = async (req: Request, res: Response) => {
         totalCustomers,
         totalServicePersons,
         totalServiceZones,
+        totalZoneUsers,
+        totalZoneManagers,
         ticketStatusDistribution: statusDistributionFormatted.reduce((acc: any, item: any) => {
           acc[item.name] = item.value;
           return acc;
@@ -1144,8 +1166,14 @@ async function getTicketTrends(days: number = 30) {
 // Travel time: ONSITE_VISIT_STARTED to ONSITE_VISIT_REACHED + ONSITE_VISIT_RESOLVED to ONSITE_VISIT_COMPLETED
 async function calculateAverageTravelTime(startDate: Date, endDate: Date) {
   try {
-    // Get all tickets (no date filter on createdAt - match service person report logic)
+    // Get tickets within the date range for consistent period-based metrics
     const tickets = await prisma.ticket.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate
+        }
+      },
       include: {
         statusHistory: {
           orderBy: {
@@ -1217,8 +1245,14 @@ async function calculateAverageTravelTime(startDate: Date, endDate: Date) {
 // Onsite work time: ONSITE_VISIT_IN_PROGRESS to ONSITE_VISIT_RESOLVED
 async function calculateAverageOnsiteResolutionTime(startDate: Date, endDate: Date) {
   try {
-    // Get all tickets (no date filter on createdAt - match service person report logic)
+    // Get tickets within the date range for consistent period-based metrics
     const tickets = await prisma.ticket.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate
+        }
+      },
       include: {
         statusHistory: {
           orderBy: {
@@ -1505,5 +1539,184 @@ export const getTicketTrendsData = async (req: Request, res: Response) => {
     res.json({ trends });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch ticket trends' });
+  }
+};
+
+// Endpoint to fetch team members (zone users and service technicians)
+export const getTeamMembers = async (req: Request, res: Response) => {
+  try {
+    // Fetch zone users (ZONE_USER and ZONE_MANAGER roles)
+    const zoneUsers = await prisma.user.findMany({
+      where: {
+        role: {
+          in: ['ZONE_USER', 'ZONE_MANAGER']
+        },
+        isActive: true
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        isActive: true,
+        lastLoginAt: true,
+        lastActiveAt: true,
+        createdAt: true,
+        serviceZones: {
+          include: {
+            serviceZone: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        },
+        // Get count of assigned offers for zone users
+        assignedOffers: {
+          where: {
+            status: {
+              notIn: ['WON', 'LOST', 'CANCELLED']
+            }
+          },
+          select: {
+            id: true
+          }
+        },
+        createdOffers: {
+          where: {
+            status: {
+              notIn: ['WON', 'LOST', 'CANCELLED']
+            }
+          },
+          select: {
+            id: true
+          }
+        }
+      },
+      orderBy: [
+        { role: 'asc' },
+        { name: 'asc' }
+      ]
+    });
+
+    // Fetch service technicians (SERVICE_PERSON role)
+    const serviceTechnicians = await prisma.user.findMany({
+      where: {
+        role: 'SERVICE_PERSON',
+        isActive: true
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        isActive: true,
+        lastLoginAt: true,
+        lastActiveAt: true,
+        createdAt: true,
+        serviceZones: {
+          include: {
+            serviceZone: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        },
+        // Get count of active tickets assigned to this technician
+        assignedTickets: {
+          where: {
+            status: {
+              in: [
+                'ASSIGNED',
+                'IN_PROGRESS',
+                'ONSITE_VISIT',
+                'ONSITE_VISIT_PLANNED',
+                'ONSITE_VISIT_STARTED',
+                'ONSITE_VISIT_REACHED',
+                'ONSITE_VISIT_IN_PROGRESS',
+                'SPARE_PARTS_NEEDED',
+                'SPARE_PARTS_BOOKED',
+                'SPARE_PARTS_DELIVERED',
+                'WAITING_CUSTOMER',
+                'ON_HOLD',
+                'PENDING'
+              ]
+            }
+          },
+          select: {
+            id: true,
+            status: true,
+            priority: true
+          }
+        }
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+
+    // Transform zone users data
+    const transformedZoneUsers = zoneUsers.map((user: any) => ({
+      id: user.id,
+      name: user.name || 'Unknown',
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      roleLabel: user.role === 'ZONE_MANAGER' ? 'Zone Manager' : 'Zone User',
+      isActive: user.isActive,
+      lastLoginAt: user.lastLoginAt,
+      lastActiveAt: user.lastActiveAt,
+      createdAt: user.createdAt,
+      zones: user.serviceZones.map((sz: any) => ({
+        id: sz.serviceZone.id,
+        name: sz.serviceZone.name
+      })),
+      activeOffers: user.assignedOffers.length + user.createdOffers.length
+    }));
+
+    // Transform service technicians data
+    const transformedTechnicians = serviceTechnicians.map((user: any) => ({
+      id: user.id,
+      name: user.name || 'Unknown',
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      roleLabel: 'Service Technician',
+      isActive: user.isActive,
+      lastLoginAt: user.lastLoginAt,
+      lastActiveAt: user.lastActiveAt,
+      createdAt: user.createdAt,
+      zones: user.serviceZones.map((sz: any) => ({
+        id: sz.serviceZone.id,
+        name: sz.serviceZone.name
+      })),
+      activeTickets: user.assignedTickets.length,
+      ticketsByPriority: {
+        critical: user.assignedTickets.filter((t: any) => t.priority === 'CRITICAL').length,
+        high: user.assignedTickets.filter((t: any) => t.priority === 'HIGH').length,
+        medium: user.assignedTickets.filter((t: any) => t.priority === 'MEDIUM').length,
+        low: user.assignedTickets.filter((t: any) => t.priority === 'LOW').length
+      }
+    }));
+
+    res.json({
+      zoneUsers: transformedZoneUsers,
+      serviceTechnicians: transformedTechnicians,
+      summary: {
+        totalZoneUsers: transformedZoneUsers.length,
+        totalZoneManagers: transformedZoneUsers.filter((u: any) => u.role === 'ZONE_MANAGER').length,
+        totalZoneUserOnly: transformedZoneUsers.filter((u: any) => u.role === 'ZONE_USER').length,
+        totalServiceTechnicians: transformedTechnicians.length,
+        techniciansWithActiveTickets: transformedTechnicians.filter((t: any) => t.activeTickets > 0).length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({ error: 'Failed to fetch team members' });
   }
 };

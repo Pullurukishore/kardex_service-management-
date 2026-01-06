@@ -99,7 +99,7 @@ export class OfferController {
           const [zone, user] = await Promise.all([
             tx.serviceZone.findUnique({
               where: { id: zoneId },
-              select: { shortForm: true }
+              select: { shortForm: true, name: true }
             }),
             tx.user.findUnique({
               where: { id: userId },
@@ -133,7 +133,8 @@ export class OfferController {
           }
 
           const companyPrefix = 'KRIND';
-          const zoneAbbr = (zone.shortForm || 'X').toString().trim().toUpperCase();
+          // Use shortForm if set, otherwise use first letter of zone name
+          const zoneAbbr = (zone.shortForm || (zone.name ? zone.name.charAt(0) : 'X')).toString().trim().toUpperCase();
           // Derive a clean 3-letter product abbreviation (letters only)
           const deriveAbbr = (val: string) => (val || '').replace(/[^A-Za-z]/g, '').toUpperCase();
           const productAbbrRaw = productTypeMap[productType] || deriveAbbr(productType).substring(0, 3);
@@ -503,13 +504,17 @@ export class OfferController {
         });
       }
 
-      // Zone users and zone managers can only create offers in their assigned zone
+      // Zone users and zone managers can only create offers in their assigned zones
       if ((req.user?.role === 'ZONE_USER' || req.user?.role === 'ZONE_MANAGER')) {
-        if (!req.user.zoneId) {
-          return res.status(400).json({ error: 'Zone ID is required for zone users' });
+        const userZoneIds = req.user.zoneIds || (req.user.zoneId ? [Number(req.user.zoneId)] : []);
+
+        if (userZoneIds.length === 0) {
+          return res.status(400).json({ error: 'No zones assigned to your account. Please contact an administrator.' });
         }
-        if (parseInt(zoneId) !== parseInt(req.user.zoneId)) {
-          return res.status(403).json({ error: 'Access denied: cannot create offer for a different zone' });
+
+        const requestedZoneId = parseInt(zoneId);
+        if (!userZoneIds.includes(requestedZoneId)) {
+          return res.status(403).json({ error: 'Access denied: cannot create offer for a zone you are not assigned to' });
         }
       }
 

@@ -1,9 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db';
 // import AWS from 'aws-sdk'; // Commented out - install with: npm install aws-sdk @types/aws-sdk
-import crypto from 'crypto';
-
-const prisma = new PrismaClient();
-
+import * as crypto from 'crypto';
 // Configure AWS S3 (or use Azure Blob Storage, Google Cloud Storage)
 // Uncomment when AWS SDK is installed: npm install aws-sdk @types/aws-sdk
 /*
@@ -42,7 +39,7 @@ export interface StoredPhoto {
 export class CloudPhotoStorageService {
   private static readonly BUCKET_NAME = process.env.AWS_S3_BUCKET || 'kardex-photos';
   private static readonly CDN_URL = process.env.CDN_URL; // Optional CloudFront URL
-  
+
   /**
    * BEST PRACTICE: Store photos in cloud storage + metadata in database
    */
@@ -53,7 +50,7 @@ export class CloudPhotoStorageService {
     context: 'ticket' | 'activity' = 'ticket'
   ): Promise<StoredPhoto[]> {
     const storedPhotos: StoredPhoto[] = [];
-    
+
     for (const photo of photos) {
       try {
         // Extract base64 data and mime type
@@ -61,16 +58,16 @@ export class CloudPhotoStorageService {
         if (!matches) {
           throw new Error('Invalid data URL format');
         }
-        
+
         const mimeType = matches[1];
         const base64Data = matches[2];
         const buffer = Buffer.from(base64Data, 'base64');
-        
+
         // Generate unique S3 key
         const hash = crypto.createHash('md5').update(buffer).digest('hex');
         const extension = mimeType.split('/')[1] || 'jpg';
         const s3Key = `${context}/${ticketId}/${hash}_${Date.now()}.${extension}`;
-        
+
         // Upload to S3
         const uploadResult = await s3.upload({
           Bucket: this.BUCKET_NAME,
@@ -84,10 +81,10 @@ export class CloudPhotoStorageService {
             capturedAt: photo.timestamp
           }
         }).promise();
-        
+
         // Generate thumbnail (optional)
         const thumbnailUrl = await this.generateThumbnail(s3Key, buffer, mimeType);
-        
+
         // Store metadata in database
         const attachment = await prisma.attachment.create({
           data: {
@@ -99,7 +96,7 @@ export class CloudPhotoStorageService {
             uploadedById: userId,
           }
         });
-        
+
         storedPhotos.push({
           id: attachment.id,
           filename: attachment.filename,
@@ -108,20 +105,20 @@ export class CloudPhotoStorageService {
           size: attachment.size,
           mimeType: attachment.mimeType,
         });
-        
+
       } catch (error) {
-        }
+      }
     }
-    
+
     return storedPhotos;
   }
-  
+
   /**
    * Generate thumbnail for faster loading
    */
   private static async generateThumbnail(
-    originalKey: string, 
-    buffer: Buffer, 
+    originalKey: string,
+    buffer: Buffer,
     mimeType: string
   ): Promise<string | undefined> {
     try {
@@ -131,23 +128,23 @@ export class CloudPhotoStorageService {
         .resize(200, 200, { fit: 'cover' })
         .jpeg({ quality: 80 })
         .toBuffer();
-      
+
       const thumbnailKey = originalKey.replace(/\.[^.]+$/, '_thumb.jpg');
-      
+
       const uploadResult = await s3.upload({
         Bucket: this.BUCKET_NAME,
         Key: thumbnailKey,
         Body: thumbnailBuffer,
         ContentType: 'image/jpeg'
       }).promise();
-      
+
       return this.getCDNUrl(uploadResult.Location);
-      
+
     } catch (error) {
       return undefined;
     }
   }
-  
+
   /**
    * Get CDN URL if available, otherwise S3 URL
    */
@@ -158,7 +155,7 @@ export class CloudPhotoStorageService {
     }
     return s3Url;
   }
-  
+
   /**
    * Delete photo from S3 and database
    */
@@ -167,18 +164,18 @@ export class CloudPhotoStorageService {
       const attachment = await prisma.attachment.findUnique({
         where: { id: attachmentId }
       });
-      
+
       if (!attachment) return false;
-      
+
       // Extract S3 key from URL
       const s3Key = attachment.path.split('/').slice(3).join('/');
-      
+
       // Delete from S3
       await s3.deleteObject({
         Bucket: this.BUCKET_NAME,
         Key: s3Key
       }).promise();
-      
+
       // Delete thumbnail if exists
       const thumbnailKey = s3Key.replace(/\.[^.]+$/, '_thumb.jpg');
       try {
@@ -189,19 +186,19 @@ export class CloudPhotoStorageService {
       } catch (error) {
         // Thumbnail might not exist
       }
-      
+
       // Delete from database
       await prisma.attachment.delete({
         where: { id: attachmentId }
       });
-      
+
       return true;
-      
+
     } catch (error) {
       return false;
     }
   }
-  
+
   /**
    * Get signed URL for secure access (optional)
    */
@@ -210,17 +207,17 @@ export class CloudPhotoStorageService {
       const attachment = await prisma.attachment.findUnique({
         where: { id: attachmentId }
       });
-      
+
       if (!attachment) return null;
-      
+
       const s3Key = attachment.path.split('/').slice(3).join('/');
-      
+
       return s3.getSignedUrl('getObject', {
         Bucket: this.BUCKET_NAME,
         Key: s3Key,
         Expires: expiresIn
       });
-      
+
     } catch (error) {
       return null;
     }

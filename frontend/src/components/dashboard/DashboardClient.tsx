@@ -207,6 +207,8 @@ export default function DashboardClient({
             totalCustomers: dashboardData?.adminStats?.totalCustomers,
             totalServicePersons: dashboardData?.adminStats?.totalServicePersons,
             totalServiceZones: dashboardData?.adminStats?.totalServiceZones,
+            totalZoneUsers: dashboardData?.adminStats?.totalZoneUsers,
+            totalZoneManagers: dashboardData?.adminStats?.totalZoneManagers,
           }}
         />
 

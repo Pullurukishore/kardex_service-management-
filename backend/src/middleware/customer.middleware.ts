@@ -30,7 +30,7 @@ export const canManageCustomers = (req: Request, res: Response, next: NextFuncti
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
       error: 'Internal server error during authorization',
       code: 'INTERNAL_SERVER_ERROR'
@@ -66,6 +66,11 @@ export const canManageContacts = (req: Request, res: Response, next: NextFunctio
       return next();
     }
 
+    // ZONE_MANAGER and ZONE_USER can manage contacts for customers in their zones
+    if (role === 'ZONE_MANAGER' || role === 'ZONE_USER') {
+      return next();
+    }
+
     // CUSTOMER_OWNER can only manage contacts for their own customer
     if (role === 'CUSTOMER_OWNER') {
       if (!userCustomerId || userCustomerId !== customerId) {
@@ -85,7 +90,7 @@ export const canManageContacts = (req: Request, res: Response, next: NextFunctio
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
       error: 'Internal server error during authorization',
       code: 'INTERNAL_SERVER_ERROR'
@@ -133,7 +138,7 @@ export const canViewCustomers = (req: Request, res: Response, next: NextFunction
       code: 'FORBIDDEN'
     });
   } catch (error) {
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
       error: 'Internal server error during authorization',
       code: 'INTERNAL_SERVER_ERROR'

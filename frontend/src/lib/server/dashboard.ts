@@ -10,6 +10,8 @@ export interface ZoneDashboardData {
     description: string;
     totalCustomers?: number;
     totalTechnicians?: number;
+    totalZoneUsers?: number;
+    totalZoneManagers?: number;
     totalAssets?: number;
   };
   stats: {
@@ -70,10 +72,10 @@ async function makeServerRequest(endpoint: string) {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   if (!authToken) {
     throw new Error('No access token found');
   }

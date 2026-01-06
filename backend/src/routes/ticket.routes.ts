@@ -107,7 +107,7 @@ router.get(
     param('id').isInt().toInt().withMessage('Invalid ticket ID'),
     validateRequest
   ],
-  requireRole(['ADMIN', 'SERVICE_PERSON', 'ZONE_USER', 'EXPERT_HELPDESK']),
+  requireRole(['ADMIN', 'SERVICE_PERSON', 'ZONE_USER', 'ZONE_MANAGER', 'EXPERT_HELPDESK']),
   getTicketActivity
 );
 
@@ -140,7 +140,7 @@ router.patch(
     body('internalNotes').optional().trim(),
     validateRequest
   ],
-  requireRole(['ADMIN', 'SERVICE_PERSON', 'ZONE_USER', 'EXPERT_HELPDESK']),
+  requireRole(['ADMIN', 'SERVICE_PERSON', 'ZONE_USER', 'ZONE_MANAGER', 'EXPERT_HELPDESK']),
   updateStatus
 );
 

@@ -46,8 +46,8 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
       <ReportsClient 
         initialFilters={filters}
         initialReportData={reportData}
-        zones={zones.map(z => ({ id: parseInt(z.id), name: z.name }))}
-        customers={customers.map(c => ({ id: parseInt(c.id), companyName: c.companyName }))}
+        zones={zones.map(z => ({ id: z.id, name: z.name }))}
+        customers={customers.map(c => ({ id: c.id, companyName: c.companyName }))}
         isZoneUser={false}
       />
     </div>

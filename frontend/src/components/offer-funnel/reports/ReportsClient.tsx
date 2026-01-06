@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { RefreshCw, FileText, Download, FileDown, BarChart3, Info, Trophy, CheckCircle2, DollarSign, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiService } from '@/services/api';
@@ -112,8 +112,17 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
   const [isLoadingZones, setIsLoadingZones] = useState(false);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
 
+  // Refs to prevent duplicate API calls (React StrictMode protection)
+  const hasInitialCustomersFetched = useRef(false);
+  const isCustomersFetching = useRef(false);
+
   // Fetch zones and customers on mount
   useEffect(() => {
+    // Skip if already fetched (React Strict Mode protection)
+    if (hasInitialCustomersFetched.current) {
+      return;
+    }
+
     const fetchInitialData = async () => {
       // Fetch zones
       if (!zones || zones.length === 0) {
@@ -130,8 +139,9 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
         }
       }
 
-      // Fetch customers
-      if (!customers || customers.length === 0) {
+      // Fetch customers (only if not already fetching)
+      if ((!customers || customers.length === 0) && !isCustomersFetching.current) {
+        isCustomersFetching.current = true;
         setIsLoadingCustomers(true);
         try {
           const response = await apiService.getCustomers({ isActive: 'true', limit: 1000 });
@@ -142,7 +152,11 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           setCustomers([]);
         } finally {
           setIsLoadingCustomers(false);
+          isCustomersFetching.current = false;
+          hasInitialCustomersFetched.current = true;
         }
+      } else {
+        hasInitialCustomersFetched.current = true;
       }
     };
 

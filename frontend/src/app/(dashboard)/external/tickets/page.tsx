@@ -19,7 +19,7 @@ type Props = {
 
 export default async function ExternalTicketsPage({ searchParams }: Props) {
   const currentPage = parseInt(searchParams.page || '1');
-  const currentLimit = parseInt(searchParams.limit || '30');
+  const currentLimit = parseInt(searchParams.limit || '100');
   
   // Filter out empty parameters to avoid validation errors
   const filters: any = {
@@ -46,7 +46,7 @@ export default async function ExternalTicketsPage({ searchParams }: Props) {
     ticketsData = await getTickets(filters);
   } catch (err) {
     error = 'Failed to load tickets. Please try again.';
-    ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 30, totalPages: 1 } };
+    ticketsData = { data: [], pagination: { total: 0, page: 1, limit: 100, totalPages: 1 } };
   }
   
   const { data: tickets, pagination } = ticketsData;

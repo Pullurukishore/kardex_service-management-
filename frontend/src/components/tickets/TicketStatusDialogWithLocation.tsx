@@ -24,6 +24,7 @@ import PhotoCapture, { CapturedPhoto } from '@/components/photo/PhotoCapture';
 
 interface Ticket {
   id: number;
+  ticketNumber?: number;
   title: string;
   status: string;
   priority: string;
@@ -297,6 +298,9 @@ export function TicketStatusDialogWithLocation({
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
+                <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg">
+                  #{ticket.ticketNumber ?? ticket.id}
+                </div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   Location Required for {selectedOption?.label}
                 </h2>
@@ -328,7 +332,7 @@ export function TicketStatusDialogWithLocation({
             <DialogTitle className="flex items-center space-x-2">
               <span>Update Ticket Status</span>
               <Badge variant="outline" className="ml-2">
-                #{ticket.id}
+                #{ticket.ticketNumber ?? ticket.id}
               </Badge>
             </DialogTitle>
           </DialogHeader>

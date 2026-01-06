@@ -1,0 +1,355 @@
+'use client'
+
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Loader2, Package, Users, BarChart3, TrendingUp } from 'lucide-react'
+import { apiService } from '@/services/api'
+
+interface ProductUserZoneResponse {
+  year: number
+  productTypes: { key: string; label: string }[]
+  zones: {
+    zoneId: number
+    zoneName: string
+    users: { id: number; name: string }[]
+    productMatrix: {
+      productType: string
+      productLabel: string
+      userValues: { [userId: number]: number }
+      total: number
+    }[]
+    userTotals: { [userId: number]: number }
+    zoneTotalValue: number
+  }[]
+}
+
+// Zone colors
+const zoneColors: Record<string, { bg: string; text: string; light: string; border: string }> = {
+  WEST: { bg: 'bg-blue-600', text: 'text-blue-600', light: 'bg-blue-50', border: 'border-blue-200' },
+  SOUTH: { bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-emerald-50', border: 'border-emerald-200' },
+  NORTH: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200' },
+  EAST: { bg: 'bg-purple-600', text: 'text-purple-600', light: 'bg-purple-50', border: 'border-purple-200' },
+}
+
+const getZoneColor = (name: string) => zoneColors[name.toUpperCase()] || { bg: 'bg-slate-600', text: 'text-slate-600', light: 'bg-slate-50', border: 'border-slate-200' }
+
+interface Props {
+  year: number
+  minProbability?: number
+  zoneId?: number
+  userId?: number
+}
+
+export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, userId }: Props) {
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<ProductUserZoneResponse | null>(null)
+  const [selectedZone, setSelectedZone] = useState<number | null>(null)
+  const [viewMode, setViewMode] = useState<'product' | 'user'>('product')
+
+  // Refs to prevent duplicate API calls (React StrictMode protection)
+  const hasFetchedInitialData = useRef(false)
+  const isFetching = useRef(false)
+
+  const fetchData = useCallback(async () => {
+    // Prevent concurrent fetches
+    if (isFetching.current) return
+    isFetching.current = true
+
+    try {
+      setLoading(true)
+      const response = await apiService.getProductUserZoneBreakdown({ year, minProbability, zoneId, userId })
+      setData(response)
+      if (response.zones?.length > 0) {
+        setSelectedZone(zoneId || response.zones[0].zoneId)
+      }
+    } catch (error) {
+      console.error('Failed to fetch Product × User × Zone data:', error)
+    } finally {
+      setLoading(false)
+      isFetching.current = false
+    }
+  }, [year, minProbability, zoneId, userId])
+
+  useEffect(() => {
+    // Skip if already fetched (React Strict Mode protection)
+    if (hasFetchedInitialData.current) return
+    hasFetchedInitialData.current = true
+    fetchData()
+  }, [fetchData])
+
+  const formatValue = (value: number) => {
+    if (value === 0) return '-'
+    return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)
+  }
+
+  const formatCrore = (value: number) => {
+    if (value === 0) return '₹0'
+    if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`
+    if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`
+    return `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)}`
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <p className="text-sm text-slate-600">Loading data...</p>
+      </div>
+    )
+  }
+
+  if (!data) return null
+
+  const activeZone = data.zones.find(z => z.zoneId === selectedZone) || data.zones[0]
+
+  return (
+    <div className="space-y-4">
+      {/* Header Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+            <Package className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-800 dark:text-white">Product × User × Zone</h2>
+            <p className="text-xs text-slate-500">{year} • {data.productTypes.length} Products</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          {/* View Mode Toggle */}
+          <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+            <button
+              onClick={() => setViewMode('product')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'product' 
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              By Product
+            </button>
+            <button
+              onClick={() => setViewMode('user')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'user' 
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              By User
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Zone Totals Summary */}
+      {!zoneId && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {data.zones.map(zone => {
+            const color = getZoneColor(zone.zoneName)
+            const isActive = zone.zoneId === selectedZone
+            return (
+              <button
+                key={zone.zoneId}
+                onClick={() => setSelectedZone(zone.zoneId)}
+                className={`p-3 rounded-xl border-2 transition-all text-left ${
+                  isActive 
+                    ? `${color.light} ${color.border} ring-2 ring-offset-1 ring-${zone.zoneName.toLowerCase()}-400`
+                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={`w-2 h-2 rounded-full ${color.bg}`}></div>
+                  <span className={`text-xs font-bold uppercase ${isActive ? color.text : 'text-slate-600'}`}>
+                    {zone.zoneName}
+                  </span>
+                </div>
+                <p className={`text-lg font-bold ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>
+                  {formatCrore(zone.zoneTotalValue)}
+                </p>
+                <p className="text-[10px] text-slate-500">{zone.users.length} Users</p>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Active Zone Detail */}
+      {activeZone && (
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardHeader className={`py-2 px-4 ${getZoneColor(activeZone.zoneName).bg}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-white" />
+                <CardTitle className="text-sm font-bold text-white">{activeZone.zoneName} Zone Breakdown</CardTitle>
+              </div>
+              <span className="text-sm font-bold text-white">{formatCrore(activeZone.zoneTotalValue)}</span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {viewMode === 'product' ? (
+              /* Product-wise View - Simple Table */
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-800">
+                      <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-300 sticky left-0 bg-slate-50 dark:bg-slate-800 z-10">Product</th>
+                      {activeZone.users.map(user => (
+                        <th key={user.id} className="px-2 py-2 text-right font-medium text-slate-600 dark:text-slate-400 min-w-[70px]">
+                          {user.name.split(' ')[0]}
+                        </th>
+                      ))}
+                      <th className="px-3 py-2 text-right font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {activeZone.productMatrix.map((product, idx) => (
+                      <tr key={product.productType} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30'}>
+                        <td className="px-3 py-2 font-medium text-slate-700 dark:text-slate-300 sticky left-0 bg-inherit z-10">
+                          {product.productLabel}
+                        </td>
+                        {activeZone.users.map(user => {
+                          const value = product.userValues[user.id] || 0
+                          return (
+                            <td key={user.id} className={`px-2 py-2 text-right font-mono ${value > 0 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'}`}>
+                              {formatValue(value)}
+                            </td>
+                          )
+                        })}
+                        <td className="px-3 py-2 text-right font-mono font-bold text-slate-800 dark:text-white bg-slate-100/50 dark:bg-slate-700/50">
+                          {formatValue(product.total)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-slate-200 dark:bg-slate-700 font-bold">
+                      <td className="px-3 py-2 text-slate-800 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-700 z-10">Total</td>
+                      {activeZone.users.map(user => (
+                        <td key={user.id} className="px-2 py-2 text-right font-mono text-slate-800 dark:text-white">
+                          {formatValue(activeZone.userTotals[user.id] || 0)}
+                        </td>
+                      ))}
+                      <td className={`px-3 py-2 text-right font-mono text-white ${getZoneColor(activeZone.zoneName).bg}`}>
+                        {formatValue(activeZone.zoneTotalValue)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            ) : (
+              /* User-wise View - Cards */
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {activeZone.users.map(user => {
+                  const userTotal = activeZone.userTotals[user.id] || 0
+                  const userProducts = activeZone.productMatrix
+                    .map(p => ({ label: p.productLabel, value: p.userValues[user.id] || 0 }))
+                    .filter(p => p.value > 0)
+                    .sort((a, b) => b.value - a.value)
+                  
+                  return (
+                    <div key={user.id} className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-7 h-7 rounded-full ${getZoneColor(activeZone.zoneName).bg} flex items-center justify-center`}>
+                            <span className="text-xs font-bold text-white">{user.name.charAt(0)}</span>
+                          </div>
+                          <span className="font-semibold text-sm text-slate-800 dark:text-white">{user.name}</span>
+                        </div>
+                        <span className="text-sm font-bold text-slate-800 dark:text-white">{formatCrore(userTotal)}</span>
+                      </div>
+                      {userProducts.length > 0 ? (
+                        <div className="space-y-1">
+                          {userProducts.slice(0, 4).map(p => (
+                            <div key={p.label} className="flex justify-between text-xs">
+                              <span className="text-slate-600 dark:text-slate-400 truncate max-w-[60%]">{p.label}</span>
+                              <span className="font-mono text-slate-700 dark:text-slate-300">{formatValue(p.value)}</span>
+                            </div>
+                          ))}
+                          {userProducts.length > 4 && (
+                            <p className="text-[10px] text-slate-500">+{userProducts.length - 4} more</p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400 italic">No products</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Product Summary - All Zones */}
+      {!zoneId && (
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardHeader className="py-2 px-4 bg-gradient-to-r from-yellow-400 to-amber-500">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-slate-800" />
+              <CardTitle className="text-sm font-bold text-slate-800">All Zones Summary</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800">
+                    <th className="px-3 py-2 text-left font-bold text-slate-700">Product</th>
+                    {data.zones.map(zone => (
+                      <th key={zone.zoneId} className={`px-3 py-2 text-right font-bold ${getZoneColor(zone.zoneName).text}`}>
+                        {zone.zoneName}
+                      </th>
+                    ))}
+                    <th className="px-3 py-2 text-right font-bold text-slate-800 bg-yellow-100">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {data.productTypes.map((product, idx) => {
+                    const productTotal = data.zones.reduce((sum, zone) => {
+                      const row = zone.productMatrix.find(p => p.productType === product.key)
+                      return sum + (row?.total || 0)
+                    }, 0)
+                    
+                    return (
+                      <tr key={product.key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                        <td className="px-3 py-2 font-medium text-slate-700">{product.label}</td>
+                        {data.zones.map(zone => {
+                          const row = zone.productMatrix.find(p => p.productType === product.key)
+                          const value = row?.total || 0
+                          return (
+                            <td key={zone.zoneId} className={`px-3 py-2 text-right font-mono ${value > 0 ? 'text-slate-700' : 'text-slate-300'}`}>
+                              {formatValue(value)}
+                            </td>
+                          )
+                        })}
+                        <td className="px-3 py-2 text-right font-mono font-bold text-slate-800 bg-yellow-50">
+                          {formatValue(productTotal)}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-slate-800 text-white font-bold">
+                    <td className="px-3 py-2">Grand Total</td>
+                    {data.zones.map(zone => (
+                      <td key={zone.zoneId} className="px-3 py-2 text-right font-mono">
+                        {formatValue(zone.zoneTotalValue)}
+                      </td>
+                    ))}
+                    <td className="px-3 py-2 text-right font-mono bg-yellow-500 text-slate-900">
+                      {formatValue(data.zones.reduce((sum, z) => sum + z.zoneTotalValue, 0))}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}

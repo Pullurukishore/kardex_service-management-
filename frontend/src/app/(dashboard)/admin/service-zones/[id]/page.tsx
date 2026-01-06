@@ -42,6 +42,7 @@ interface ServiceZoneStats {
   };
   recentTickets: Array<{
     id: number;
+    ticketNumber?: number;
     title: string;
     status: string;
     priority: string;
@@ -496,7 +497,7 @@ export default function ServiceZoneDetailPage() {
                               #{ticket.id.toString().slice(-2)}
                             </div>
                             <div>
-                              <p className="font-semibold text-gray-900">Ticket #{ticket.id}</p>
+                              <p className="font-semibold text-gray-900">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
                               <p className="text-sm text-gray-500 max-w-xs truncate">
                                 {ticket.title}
                               </p>
@@ -561,7 +562,7 @@ export default function ServiceZoneDetailPage() {
                           #{ticket.id.toString().slice(-2)}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">Ticket #{ticket.id}</p>
+                          <p className="font-semibold text-gray-900">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
                           <p className="text-xs text-gray-500">
                             {new Date(ticket.createdAt).toLocaleDateString()}
                           </p>

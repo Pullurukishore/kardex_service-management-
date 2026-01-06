@@ -5,7 +5,7 @@ import { AdvancedTicketSummaryReport } from './AdvancedTicketSummaryReport';
 import { AdvancedMachineAnalyticsReport } from './AdvancedMachineAnalyticsReport';
 import { AdvancedZonePerformanceReport } from './AdvancedZonePerformanceReport';
 import { TicketSummaryReport } from './TicketSummaryReport';
-import { CustomerSatisfactionReport } from './CustomerSatisfactionReport';
+
 import { ZonePerformanceReport } from './ZonePerformanceReport';
 import { AgentProductivityReport } from './AgentProductivityReport';
 import { IndustrialDataReport } from './IndustrialDataReport';
@@ -22,8 +22,7 @@ export function ReportRenderer({ reportType, reportData }: ReportRendererProps) 
   switch (reportType) {
     case 'ticket-summary':
       return <AdvancedTicketSummaryReport reportData={reportData} />;
-    case 'customer-satisfaction':
-      return <CustomerSatisfactionReport reportData={reportData} />;
+
     case 'zone-performance':
       // Use advanced zone performance report for comprehensive zone analytics
       return <AdvancedZonePerformanceReport reportData={reportData} />;
@@ -39,6 +38,11 @@ export function ReportRenderer({ reportType, reportData }: ReportRendererProps) 
     case 'service-person-reports':
       return <ServicePersonPerformanceReport reportData={reportData} />;
     default:
-      return null;
+      return (
+        <div className="p-8 text-center text-gray-500">
+          <p className="text-lg font-medium mb-2">Report type not recognized</p>
+          <p className="text-sm">Please select a valid report type from the dropdown.</p>
+        </div>
+      );
   }
 }

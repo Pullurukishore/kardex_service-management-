@@ -272,6 +272,76 @@ export const generatePdf = async (
         }
 
         // ==================================================
+        // SUMMARY STATISTICS SECTION (if summaryData provided)
+        // ==================================================
+        if (summaryData && Object.keys(summaryData).length > 0) {
+            // Summary section title
+            doc.save()
+                .rect(leftMargin, currentY, contentWidth, 20)
+                .fill(COLORS.titleBg)
+                .restore();
+
+            doc.fillColor(COLORS.titleText)
+                .fontSize(10)
+                .font('Helvetica-Bold')
+                .text('Summary Statistics', leftMargin + 10, currentY + 5);
+            currentY += 25;
+
+            // Build summary metrics
+            const summaryMetrics: Array<{ label: string; value: string; color: string }> = [];
+
+            if (summaryData.totalTickets !== undefined) {
+                summaryMetrics.push({ label: 'Total Tickets', value: String(summaryData.totalTickets), color: COLORS.brandPrimary });
+            }
+            if (summaryData.resolvedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Resolved', value: String(summaryData.resolvedTickets), color: COLORS.success });
+            }
+            if (summaryData.openTickets !== undefined) {
+                summaryMetrics.push({ label: 'Open', value: String(summaryData.openTickets), color: COLORS.warning });
+            }
+            if (summaryData.closedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Closed', value: String(summaryData.closedTickets), color: COLORS.textMedium });
+            }
+            if (summaryData.escalatedTickets !== undefined) {
+                summaryMetrics.push({ label: 'Escalated', value: String(summaryData.escalatedTickets), color: COLORS.danger });
+            }
+            if (summaryData.averageResolutionTime !== undefined) {
+                const hours = Math.floor(summaryData.averageResolutionTime / 60);
+                const mins = Math.round(summaryData.averageResolutionTime % 60);
+                const timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+                summaryMetrics.push({ label: 'Avg Resolution', value: timeStr, color: COLORS.info });
+            }
+
+            // Draw metrics boxes (up to 6 per row)
+            const boxWidth = (contentWidth - 40) / Math.min(summaryMetrics.length, 6);
+            const boxHeight = 40;
+            let metricX = leftMargin;
+
+            summaryMetrics.slice(0, 6).forEach((metric, index) => {
+                // Metric box background
+                doc.save()
+                    .roundedRect(metricX, currentY, boxWidth - 5, boxHeight, 4)
+                    .fill('#F8FAFC')
+                    .restore();
+
+                // Metric label
+                doc.fillColor(COLORS.textMedium)
+                    .fontSize(8)
+                    .font('Helvetica')
+                    .text(metric.label, metricX + 5, currentY + 5, { width: boxWidth - 10, align: 'center' });
+
+                // Metric value
+                doc.fillColor(metric.color)
+                    .fontSize(14)
+                    .font('Helvetica-Bold')
+                    .text(metric.value, metricX + 5, currentY + 18, { width: boxWidth - 10, align: 'center' });
+
+                metricX += boxWidth;
+            });
+            currentY += boxHeight + 15;
+        }
+
+        // ==================================================
         // DATA TABLE SECTION
         // ==================================================
 
@@ -475,21 +545,20 @@ export const getPdfColumns = (reportType: string): ColumnDefinition[] => {
             { key: 'createdAt', header: 'Created', width: 55, dataType: 'date', align: 'center' },
         ],
         'ticket-summary': [
-            { key: 'customer.companyName', header: 'Company', width: 70, align: 'left' },
-            { key: 'asset.location', header: 'Place', width: 45, align: 'left' },
-            { key: 'id', header: 'ID', width: 25, align: 'center' },
+            { key: 'ticketNumber', header: 'Ticket', width: 40, align: 'center' },
+            { key: 'customer.companyName', header: 'Company', width: 75, align: 'left' },
+            { key: 'asset.serialNo', header: 'Serial No', width: 55, align: 'left' },
             { key: 'createdAt', header: 'Date', width: 45, dataType: 'date', align: 'center' },
-            { key: 'asset.serialNo', header: 'Machine S/N', width: 50, align: 'left' },
-            { key: 'callType', header: 'Call Type', width: 45, align: 'center' },
-            { key: 'description', header: 'Error/Issue', width: 65, align: 'left' },
-            { key: 'assignedTo.name', header: 'Responsible', width: 50, align: 'left' },
-            { key: 'zone.name', header: 'Zone', width: 35, align: 'center' },
-            { key: 'visitPlannedDate', header: 'Scheduled', width: 45, dataType: 'date', align: 'center' },
+            { key: 'callType', header: 'Call Type', width: 55, align: 'center' },
+            { key: 'priority', header: 'Priority', width: 45, align: 'center' },
+            { key: 'description', header: 'Issue', width: 90, align: 'left' },
+            { key: 'assignedTo.name', header: 'Assigned', width: 60, align: 'left' },
+            { key: 'zone.name', header: 'Zone', width: 45, align: 'center' },
             { key: 'visitCompletedDate', header: 'Closed', width: 45, dataType: 'date', align: 'center' },
-            { key: 'travelTime', header: 'Travel', width: 35, dataType: 'duration', align: 'center' },
-            { key: 'onsiteWorkingTime', header: 'Onsite', width: 35, dataType: 'duration', align: 'center' },
-            { key: 'actualResolutionTime', header: 'Res Time', width: 40, dataType: 'duration', align: 'center' },
-            { key: 'status', header: 'Status', width: 40, align: 'center' },
+            { key: 'travelTime', header: 'Travel', width: 40, dataType: 'duration', align: 'center' },
+            { key: 'onsiteWorkingTime', header: 'Onsite', width: 40, dataType: 'duration', align: 'center' },
+            { key: 'totalResolutionTime', header: 'Res Time', width: 50, dataType: 'duration', align: 'center' },
+            { key: 'status', header: 'Status', width: 55, align: 'center' },
         ],
         'target-report': [
             { key: 'zone.name', header: 'Zone', width: 100, align: 'left' },

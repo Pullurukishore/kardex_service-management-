@@ -495,7 +495,12 @@ export default function QuoteGenerationPage() {
   }, [offerId])
 
   // ==================== Effects ====================
+  // Ref to prevent duplicate API calls (React StrictMode protection)
+  const hasFetchedOffer = useRef(false)
+
   useEffect(() => {
+    if (hasFetchedOffer.current) return
+    hasFetchedOffer.current = true
     fetchOffer()
   }, [fetchOffer])
 

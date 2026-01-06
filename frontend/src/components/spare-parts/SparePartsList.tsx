@@ -12,6 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Search,
@@ -25,6 +32,11 @@ import {
   RefreshCw,
   Sparkles,
   TrendingUp,
+  Eye,
+  Calendar,
+  Hash,
+  Info,
+  X,
 } from 'lucide-react'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
@@ -41,15 +53,20 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
   const [spareParts, setSpareParts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(defaultView)
-  const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, pages: 0 })
-  const [pageSize, setPageSize] = useState(100)
+  const [pagination, setPagination] = useState({ page: 1, limit: 1000, total: 0, pages: 0 })
+  const [pageSize, setPageSize] = useState(1000)
   const [showAll, setShowAll] = useState(false)
+  
+  // View modal state
+  const [selectedPart, setSelectedPart] = useState<any>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [selectedCategory, setSelectedCategory] = useState('All Categories')
+
 
   // Debounce search term
   useEffect(() => {
@@ -160,6 +177,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
   const totalCategories = useMemo(() => new Set(spareParts.map(p => p.category).filter(Boolean)).size, [spareParts])
 
   return (
+    <>
     <div className="space-y-8 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 min-h-screen">
       {/* Premium Hero Header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 p-8 shadow-2xl">
@@ -345,6 +363,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
                     <SelectItem value="200">200</SelectItem>
+                    <SelectItem value="1000">1000</SelectItem>
                     <SelectItem value="9999">✨ Show All</SelectItem>
                   </SelectContent>
                 </Select>
@@ -471,10 +490,24 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
-                      <span className="flex items-center gap-1">
-                        <div className="w-1 h-1 rounded-full bg-gray-400" />
-                        Added {new Date(part.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
+                      {!readOnly && (
+                        <span className="flex items-center gap-1">
+                          <div className="w-1 h-1 rounded-full bg-gray-400" />
+                          Added {new Date(part.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedPart(part);
+                          setIsViewModalOpen(true);
+                        }}
+                        className="h-7 px-2 text-xs border-blue-200 text-blue-600 hover:bg-blue-50"
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        View
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -527,7 +560,8 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Category</th>
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Base Price</th>
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Created</th>
+                    {!readOnly && <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Created</th>}
+                    <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 bg-white">
@@ -574,8 +608,24 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                           {part.status}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {new Date(part.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {!readOnly && (
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {new Date(part.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </td>
+                      )}
+                      <td className="px-6 py-4 text-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedPart(part);
+                            setIsViewModalOpen(true);
+                          }}
+                          className="h-8 px-3 border-blue-200 text-blue-600 hover:bg-blue-50"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -616,5 +666,119 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
         </Card>
       )}
     </div>
+
+      {/* View Spare Part Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Package className="h-5 w-5 text-blue-600" />
+              </div>
+              Spare Part Details
+            </DialogTitle>
+            <DialogDescription>
+              View detailed information about this spare part
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedPart && (
+            <div className="space-y-6 mt-4">
+              {/* Image and Basic Info */}
+              <div className="flex gap-6">
+                <div className="flex-shrink-0">
+                  {selectedPart.imageUrl ? (
+                    <img 
+                      src={selectedPart.imageUrl} 
+                      alt={selectedPart.name}
+                      className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow-lg">
+                      <Package className="h-12 w-12 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{selectedPart.name}</h3>
+                    <p className="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded inline-block mt-1">
+                      #{selectedPart.partNumber}
+                    </p>
+                  </div>
+                  {selectedPart.description && (
+                    <p className="text-gray-600 text-sm">{selectedPart.description}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Category */}
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                    <Tag className="h-4 w-4" />
+                    Category
+                  </div>
+                  <p className="font-semibold text-gray-900">{selectedPart.category || 'N/A'}</p>
+                </div>
+
+                {/* Status */}
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                    <Info className="h-4 w-4" />
+                    Status
+                  </div>
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-semibold ${getStatusColor(selectedPart.status)}`}>
+                    <div className={`w-2 h-2 rounded-full ${
+                      selectedPart.status === 'ACTIVE' ? 'bg-green-600' :
+                      selectedPart.status === 'INACTIVE' ? 'bg-gray-600' :
+                      'bg-red-600'
+                    }`} />
+                    {selectedPart.status}
+                  </div>
+                </div>
+
+                {/* Base Price */}
+                <div className={`p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 ${readOnly ? 'col-span-2' : ''}`}>
+                  <div className="flex items-center gap-2 text-green-600 text-sm mb-1">
+                    <DollarSign className="h-4 w-4" />
+                    Base Price
+                  </div>
+                  <p className="font-bold text-2xl text-green-700">{formatCurrency(Number(selectedPart.basePrice))}</p>
+                </div>
+
+                {/* Created Date - Only for non-readOnly users */}
+                {!readOnly && (
+                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                      <Calendar className="h-4 w-4" />
+                      Added On
+                    </div>
+                    <p className="font-semibold text-gray-900">
+                      {new Date(selectedPart.createdAt).toLocaleDateString('en-IN', { 
+                        day: '2-digit', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Close Button */}
+              <div className="flex justify-end pt-4 border-t">
+                <Button 
+                  onClick={() => setIsViewModalOpen(false)}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

@@ -18,6 +18,7 @@ import { apiClient } from '@/lib/api/api-client';
 
 interface Ticket {
   id: number;
+  ticketNumber?: number;
   title: string;
   status: string;
   priority: string;
@@ -186,7 +187,7 @@ export default function TicketWorkDashboard({
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-2">
             <TicketIcon className="w-5 h-5 text-gray-600" />
-            <span className="font-semibold text-gray-900">#{ticket.id}</span>
+            <span className="font-semibold text-gray-900">#{ticket.ticketNumber ?? ticket.id}</span>
             {isOverdue(ticket.slaDueAt) && (
               <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
                 Overdue

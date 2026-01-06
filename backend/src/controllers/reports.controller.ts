@@ -142,13 +142,15 @@ interface ReportFilters {
   reportType: string;
   customerId?: string;
   assetId?: string;
+  productType?: string;
+  stage?: string;
   page?: string;
   limit?: string;
 }
 
 export const generateReport = async (req: Request, res: Response) => {
   try {
-    const { from, to, zoneId, reportType, customerId, assetId, page, limit } = req.query as unknown as ReportFilters;
+    const { from, to, zoneId, reportType, customerId, assetId, productType, stage, page, limit } = req.query as unknown as ReportFilters;
 
     // Parse pagination params with defaults
     const pageNum = page ? parseInt(page) : 1;
@@ -205,14 +207,21 @@ export const generateReport = async (req: Request, res: Response) => {
     if (assetId) {
       whereClause.assetId = parseInt(assetId as string);
     }
+    // Add productType filter for offer reports
+    if (productType) {
+      whereClause.productType = productType;
+    }
+    // Add stage filter for offer reports
+    if (stage) {
+      whereClause.stage = stage;
+    }
 
     switch (reportType) {
       case 'ticket-summary':
         return await generateTicketSummaryReport(res, whereClause, startDate, endDate);
       case 'sla-performance':
         return await generateSlaPerformanceReport(res, whereClause, startDate, endDate);
-      case 'customer-satisfaction':
-        return await generateCustomerSatisfactionReport(res, whereClause, startDate, endDate);
+
       case 'zone-performance':
         return await generateZonePerformanceReport(res, whereClause, startDate, endDate);
       case 'agent-productivity':
@@ -1444,7 +1453,7 @@ export const exportReport = async (req: Request, res: Response) => {
     const titleMap: { [key: string]: string } = {
       'industrial-data': 'Machine Report',
       'ticket-summary': 'Ticket Summary Report',
-      'customer-satisfaction': 'Customer Satisfaction Report',
+
       'zone-performance': 'Zone Performance Report',
       'agent-productivity': 'Performance Report of All Service Persons and Zone Users',
       'sla-performance': 'SLA Performance Report',
@@ -1487,33 +1496,6 @@ export const exportReport = async (req: Request, res: Response) => {
         data = executiveData.trends || [];
         summaryData = executiveData.summary;
         columns = getPdfColumns('executive-summary');
-        break;
-
-      case 'customer-satisfaction':
-        const satisfactionData = await getCustomerSatisfactionData(whereClause, startDate, endDate);
-        data = satisfactionData.recentFeedbacks || [];
-
-        // Calculate average rating
-        const totalRatings = Object.entries(satisfactionData.ratingDistribution || {})
-          .reduce((sum, [rating, count]) => sum + (parseInt(rating) * (count as number)), 0);
-        const totalResponses = Object.values(satisfactionData.ratingDistribution || {})
-          .reduce((sum, count) => sum + (count as number), 0);
-        const averageRating = totalResponses > 0 ? (totalRatings / totalResponses).toFixed(1) : 0;
-
-        summaryData = {
-          'Average Rating': averageRating,
-          'Total Feedbacks': totalResponses,
-          'Rating Distribution': JSON.stringify(satisfactionData.ratingDistribution || {})
-        };
-
-        columns = [
-          { key: 'id', header: 'ID', width: 10 },
-          { key: 'rating', header: 'Rating', width: 15 },
-          { key: 'comment', header: 'Comment', width: 50 },
-          { key: 'createdAt', header: 'Date', width: 20, format: (date: string) => new Date(date).toLocaleString() },
-          { key: 'ticketId', header: 'Ticket ID', width: 15 },
-          { key: 'customerName', header: 'Customer', width: 30 }
-        ];
         break;
 
       case 'industrial-data':
@@ -1706,6 +1688,52 @@ const getNestedValue = (obj: any, path: string) => {
   }, obj);
 };
 
+// Business hours configuration
+const BUSINESS_START_HOUR = 9;    // 9:00 AM
+const BUSINESS_END_HOUR = 17;     // 5:30 PM
+const BUSINESS_END_MINUTE = 30;
+const WORKING_DAYS = [1, 2, 3, 4, 5, 6]; // Monday to Saturday (0 = Sunday)
+
+// Helper function to calculate business hours between two dates
+function calculateBusinessHoursMinutes(startDate: Date, endDate: Date): number {
+  if (!startDate || !endDate || startDate >= endDate) return 0;
+
+  let businessMinutes = 0;
+  const current = new Date(startDate);
+
+  // Daily business hours in minutes (9:00 AM to 5:30 PM = 8.5 hours = 510 minutes)
+  const dailyBusinessMinutes = (BUSINESS_END_HOUR - BUSINESS_START_HOUR) * 60 + BUSINESS_END_MINUTE;
+
+  while (current < endDate) {
+    const dayOfWeek = current.getDay();
+
+    // Skip Sundays (day 0)
+    if (WORKING_DAYS.includes(dayOfWeek)) {
+      // Get business hours start and end for this day
+      const dayStart = new Date(current);
+      dayStart.setHours(BUSINESS_START_HOUR, 0, 0, 0);
+
+      const dayEnd = new Date(current);
+      dayEnd.setHours(BUSINESS_END_HOUR, BUSINESS_END_MINUTE, 0, 0);
+
+      // Calculate overlap between [current, endDate] and [dayStart, dayEnd]
+      const periodStart = new Date(Math.max(current.getTime(), dayStart.getTime()));
+      const periodEnd = new Date(Math.min(endDate.getTime(), dayEnd.getTime()));
+
+      if (periodStart < periodEnd) {
+        const minutesThisDay = Math.round((periodEnd.getTime() - periodStart.getTime()) / (1000 * 60));
+        businessMinutes += minutesThisDay;
+      }
+    }
+
+    // Move to next day at midnight
+    current.setDate(current.getDate() + 1);
+    current.setHours(0, 0, 0, 0);
+  }
+
+  return businessMinutes;
+}
+
 // Helper functions to get report data without sending response
 async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: Date): Promise<TicketSummaryData> {
   // Debug: Log the where clause to see what's being filtered
@@ -1723,6 +1751,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
     where: whereClause,
     include: {
       customer: true,
+      contact: true,
       assignedTo: true,
       zone: true,
       asset: true,
@@ -1791,7 +1820,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
     })
   );
 
-  // Calculate average resolution time
+  // Calculate average resolution time (BUSINESS HOURS ONLY)
   const resolvedTickets = tickets.filter((t: { status: string }) =>
     t.status === 'RESOLVED' || t.status === 'CLOSED'
   );
@@ -1800,7 +1829,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
   if (resolvedTickets.length > 0) {
     const totalTime = resolvedTickets.reduce((sum: number, ticket: { updatedAt: Date; createdAt: Date }) => {
       if (ticket.createdAt && ticket.updatedAt) {
-        return sum + differenceInMinutes(ticket.updatedAt, ticket.createdAt);
+        return sum + calculateBusinessHoursMinutes(new Date(ticket.createdAt), new Date(ticket.updatedAt));
       }
       return sum;
     }, 0);
@@ -1874,7 +1903,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
       }
     }
 
-    // Calculate total resolution time
+    // Calculate total resolution time (BUSINESS HOURS ONLY)
     let totalResolutionTime = 0;
     if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
       if (ticket.statusHistory && ticket.statusHistory.length > 0) {
@@ -1882,17 +1911,14 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
           h.status === 'RESOLVED' || h.status === 'CLOSED'
         );
         if (resolutionHistory) {
-          totalResolutionTime = differenceInMinutes(new Date(resolutionHistory.changedAt), new Date(ticket.createdAt));
+          totalResolutionTime = calculateBusinessHoursMinutes(new Date(ticket.createdAt), new Date(resolutionHistory.changedAt));
         }
       } else if (ticket.updatedAt && ticket.createdAt) {
-        const timeDiff = differenceInMinutes(ticket.updatedAt, ticket.createdAt);
-        if (timeDiff > 1) {
-          totalResolutionTime = timeDiff;
-        }
+        totalResolutionTime = calculateBusinessHoursMinutes(new Date(ticket.createdAt), new Date(ticket.updatedAt));
       }
     }
 
-    // Calculate machine downtime (same as total resolution time for now)
+    // Calculate machine downtime (BUSINESS HOURS ONLY - same as total resolution time)
     const machineDowntime = totalResolutionTime;
 
     // Calculate total response hours (from open to closed)
@@ -2886,18 +2912,18 @@ async function generateHerAnalysisReport(res: Response, whereClause: any, startD
 
 export const generateZoneReport = async (req: Request, res: Response) => {
   try {
-    const { from, to, reportType, customerId, assetId, zoneId, page, limit } = req.query as unknown as ReportFilters;
+    const { from, to, reportType, customerId, assetId, productType, stage, zoneId, page, limit, myOffers } = req.query as unknown as ReportFilters & { myOffers?: string };
     const user = (req as any).user;
 
     // Parse pagination params with defaults
     const pageNum = page ? parseInt(page) : 1;
     const limitNum = limit ? parseInt(limit) : 500;
 
-    // Get user's zones - different logic for ZONE_USER vs SERVICE_PERSON
+    // Get user's zones - different logic for ZONE_USER/ZONE_MANAGER vs SERVICE_PERSON
     let userZoneIds: number[] = [];
 
-    if (user.role === 'ZONE_USER') {
-      // For ZONE_USER, prefer explicit user.zoneId; fallback to user's customer's serviceZoneId
+    if (user.role === 'ZONE_USER' || user.role === 'ZONE_MANAGER') {
+      // For ZONE_USER and ZONE_MANAGER, prefer explicit user.zoneId; fallback to user's customer's serviceZoneId
       const userRecord = await prisma.user.findUnique({
         where: { id: user.id },
         select: { zoneId: true, customerId: true }
@@ -2962,13 +2988,30 @@ export const generateZoneReport = async (req: Request, res: Response) => {
       whereClause.zoneId = { in: userZoneIds };
     }
 
+    // Add productType filter for offer reports
+    if (productType) {
+      whereClause.productType = productType;
+    }
+    // Add stage filter for offer reports
+    if (stage) {
+      whereClause.stage = stage;
+    }
+
+    // If myOffers is true, filter offers by current user (created by or assigned to)
+    // This is used for the Zone User Offer Summary report
+    if (myOffers === 'true' && (reportType === 'offer-summary')) {
+      whereClause.OR = [
+        { createdById: user.id },
+        { assignedToId: user.id }
+      ];
+    }
+
     switch (reportType) {
       case 'ticket-summary':
         return await generateTicketSummaryReport(res, whereClause, startDate, endDate);
       case 'sla-performance':
         return await generateSlaPerformanceReport(res, whereClause, startDate, endDate);
-      case 'customer-satisfaction':
-        return await generateCustomerSatisfactionReport(res, whereClause, startDate, endDate);
+
       case 'industrial-data':
         return await generateIndustrialDataReport(res, whereClause, startDate, endDate, { customerId, assetId });
       case 'zone-performance':
@@ -3007,16 +3050,16 @@ export const exportZoneReport = async (req: Request, res: Response) => {
     }
 
     // Validate report type
-    const validReportTypes = ['ticket-summary', 'sla-performance', 'executive-summary', 'customer-satisfaction', 'industrial-data', 'agent-productivity', 'zone-performance', 'her-analysis'];
+    const validReportTypes = ['ticket-summary', 'sla-performance', 'executive-summary', 'industrial-data', 'agent-productivity', 'zone-performance', 'her-analysis'];
     if (!validReportTypes.includes(reportType)) {
       return res.status(400).json({ error: 'Invalid report type or report type does not support export' });
     }
 
-    // Get user's zones - different logic for ZONE_USER vs SERVICE_PERSON
+    // Get user's zones - different logic for ZONE_USER/ZONE_MANAGER vs SERVICE_PERSON
     let userZoneIds: number[] = [];
 
-    if (user.role === 'ZONE_USER') {
-      // For ZONE_USER, prefer explicit user.zoneId; fallback to user's customer's serviceZoneId
+    if (user.role === 'ZONE_USER' || user.role === 'ZONE_MANAGER') {
+      // For ZONE_USER and ZONE_MANAGER, prefer explicit user.zoneId; fallback to user's customer's serviceZoneId
       const userRecord = await prisma.user.findUnique({
         where: { id: user.id },
         select: { zoneId: true, customerId: true }
@@ -3089,7 +3132,7 @@ export const exportZoneReport = async (req: Request, res: Response) => {
     const titleMap: { [key: string]: string } = {
       'industrial-data': 'Machine Report',
       'ticket-summary': 'Ticket Summary Report',
-      'customer-satisfaction': 'Customer Satisfaction Report',
+
       'zone-performance': 'Zone Performance Report',
       'agent-productivity': 'Performance Report of All Service Persons and Zone Users',
       'sla-performance': 'SLA Performance Report',
@@ -3134,31 +3177,7 @@ export const exportZoneReport = async (req: Request, res: Response) => {
         columns = getPdfColumns('executive-summary');
         break;
 
-      case 'customer-satisfaction':
-        const satisfactionData = await getCustomerSatisfactionData(whereClause, startDate, endDate);
-        data = satisfactionData.recentFeedbacks || [];
 
-        const totalRatings = Object.entries(satisfactionData.ratingDistribution || {})
-          .reduce((sum, [rating, count]) => sum + (parseInt(rating) * (count as number)), 0);
-        const totalResponses = Object.values(satisfactionData.ratingDistribution || {})
-          .reduce((sum, count) => sum + (count as number), 0);
-        const averageRating = totalResponses > 0 ? (totalRatings / totalResponses).toFixed(1) : 0;
-
-        summaryData = {
-          'Average Rating': averageRating,
-          'Total Feedbacks': totalResponses,
-          'Rating Distribution': JSON.stringify(satisfactionData.ratingDistribution || {})
-        };
-
-        columns = [
-          { key: 'id', header: 'ID', width: 10 },
-          { key: 'rating', header: 'Rating', width: 15 },
-          { key: 'comment', header: 'Comment', width: 50 },
-          { key: 'createdAt', header: 'Date', width: 20, format: (date: string) => new Date(date).toLocaleString() },
-          { key: 'ticketId', header: 'Ticket ID', width: 15 },
-          { key: 'customerName', header: 'Customer', width: 30 }
-        ];
-        break;
 
       case 'industrial-data':
         const industrialData = await getIndustrialDataData(whereClause, startDate, endDate, otherFilters);

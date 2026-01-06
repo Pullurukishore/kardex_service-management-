@@ -13,6 +13,8 @@ interface ZoneExecutiveHeaderProps {
     description: string;
     totalCustomers?: number;
     totalTechnicians?: number;
+    totalZoneUsers?: number;
+    totalZoneManagers?: number;
     totalAssets?: number;
   };
   onRefresh: () => void;
@@ -58,13 +60,29 @@ export default function ZoneExecutiveHeader({
           </div>
 
           {/* Zone Stats */}
-          {(zoneData.totalCustomers || zoneData.totalTechnicians || zoneData.totalAssets) && (
+          {(zoneData.totalCustomers || zoneData.totalTechnicians || zoneData.totalAssets || zoneData.totalZoneUsers || zoneData.totalZoneManagers) && (
             <div className="flex flex-wrap items-center gap-3 mt-4">
               {zoneData.totalCustomers && (
                 <div className="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 rounded-xl shadow-sm">
                   <Users className="h-4 w-4 text-blue-600" />
                   <span className="font-semibold text-blue-800">
                     {zoneData.totalCustomers} Customers
+                  </span>
+                </div>
+              )}
+              {zoneData.totalZoneManagers !== undefined && zoneData.totalZoneManagers > 0 && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-amber-100 to-amber-200 px-4 py-2 rounded-xl shadow-sm">
+                  <Users className="h-4 w-4 text-amber-600" />
+                  <span className="font-semibold text-amber-800">
+                    {zoneData.totalZoneManagers} Zone Managers
+                  </span>
+                </div>
+              )}
+              {zoneData.totalZoneUsers !== undefined && zoneData.totalZoneUsers > 0 && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-indigo-200 px-4 py-2 rounded-xl shadow-sm">
+                  <Users className="h-4 w-4 text-indigo-600" />
+                  <span className="font-semibold text-indigo-800">
+                    {zoneData.totalZoneUsers} Zone Users
                   </span>
                 </div>
               )}

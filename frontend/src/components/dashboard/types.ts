@@ -28,6 +28,8 @@ export interface DashboardData {
     totalCustomers: number;
     totalServicePersons: number;
     totalServiceZones: number;
+    totalZoneUsers: number;
+    totalZoneManagers: number;
     ticketStatusDistribution: Record<string, number>;
     ticketTrends: Array<{ date: string; count: number; status: string }>;
     zoneWiseTickets: Array<{

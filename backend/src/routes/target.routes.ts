@@ -4,6 +4,9 @@ import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
+// Apply authenticate middleware to all routes
+router.use(authenticate);
+
 // Zone Targets - Admin only for write operations, Zone users can view their zone
 router.post('/zones', TargetController.setZoneTargetWrapper);
 router.put('/zones/:targetId', TargetController.updateZoneTargetWrapper);

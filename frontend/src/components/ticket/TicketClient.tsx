@@ -427,7 +427,7 @@ const TicketClient = memo(function TicketClient({
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3 flex-1">
                         <Link href={`${basePath}/${ticket.id}/list`} className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs hover:from-blue-600 hover:to-purple-700 transition-colors duration-200">
-                          #{ticket.id}
+                          #{ticket.ticketNumber ?? ticket.id}
                         </Link>
                         <div className="flex-1 min-w-0">
                           <Link href={`${basePath}/${ticket.id}/list`} className="font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 text-sm block truncate">
@@ -492,7 +492,7 @@ const TicketClient = memo(function TicketClient({
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <Link href={`${basePath}/${ticket.id}/list`} className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold hover:from-blue-600 hover:to-purple-700 transition-colors duration-200">
-                            #{ticket.id}
+                            #{ticket.ticketNumber ?? ticket.id}
                           </Link>
                           <div>
                             <Link href={`${basePath}/${ticket.id}/list`} className="font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200">
