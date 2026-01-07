@@ -798,6 +798,63 @@ export default function OfferDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Linked Machines - Show if assets exist */}
+          {offer.offerAssets && offer.offerAssets.length > 0 && (
+            <Card className="shadow-xl overflow-hidden border-0">
+              <CardHeader className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white border-b-0">
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Wrench className="h-6 w-6" />
+                  Linked Machines
+                  <Badge className="bg-white/20 text-white border-0 ml-2">
+                    {offer.offerAssets.length} {offer.offerAssets.length === 1 ? 'Machine' : 'Machines'}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 bg-gradient-to-br from-gray-50 to-white">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {offer.offerAssets.map((oa: any, index: number) => (
+                    <div 
+                      key={oa.id || index} 
+                      className="bg-white rounded-xl p-5 shadow-md border border-cyan-100 hover:shadow-lg transition-all hover:scale-[1.02]"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-cyan-100 rounded-lg flex-shrink-0">
+                          <Wrench className="h-5 w-5 text-cyan-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-gray-900 text-base truncate">
+                            {oa.asset?.machineId || oa.asset?.serialNo || 'Unknown'}
+                          </h4>
+                          {oa.asset?.serialNo && oa.asset?.serialNo !== oa.asset?.machineId && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="text-gray-500">Serial:</span> {oa.asset.serialNo}
+                            </p>
+                          )}
+                          {oa.asset?.model && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              <span className="text-gray-500">Model:</span> {oa.asset.model}
+                            </p>
+                          )}
+                          {oa.asset?.location && (
+                            <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-gray-400" />
+                              {oa.asset.location}
+                            </p>
+                          )}
+                          {oa.asset?.customer?.companyName && (
+                            <p className="text-xs text-gray-500 mt-2 truncate">
+                              <Building2 className="h-3 w-3 inline mr-1" />
+                              {oa.asset.customer.companyName}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
           {/* Spare Parts - Show for SPP or if parts exist */}
           {(offer.productType === 'SPP' || (offer.offerSpareParts && offer.offerSpareParts.length > 0)) && (
             <Card className={`shadow-lg ${offer.productType === 'SPP' ? 'ring-2 ring-amber-200' : ''}`}>

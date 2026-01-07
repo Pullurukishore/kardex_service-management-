@@ -20,7 +20,7 @@ import {
   FormDescription,
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Building2, Users, Package, Plus, Loader2, Search, X, UserCircle, Wrench, Phone, Mail, Hash, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Building2, Users, Package, Plus, Loader2, Search, X, CircleUser, Wrench, Phone, Mail, Hash, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface Customer {
   id: number;
@@ -257,7 +257,7 @@ export function CustomerSelectionForm({
                 <div className="flex items-center justify-between mb-1">
                   <FormLabel className="flex items-center gap-2 text-base font-semibold text-gray-700">
                     <div className="h-7 w-7 rounded-lg bg-purple-100 flex items-center justify-center">
-                      <UserCircle className="h-4 w-4 text-purple-600" />
+                      <CircleUser className="h-4 w-4 text-purple-600" />
                     </div>
                     Contact Person
                     <span className="text-red-500 ml-1">*</span>

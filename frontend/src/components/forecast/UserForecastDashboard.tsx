@@ -172,6 +172,13 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
     fetchData()
   }, [fetchData])
 
+  // Refetch data when year or probability filter changes
+  useEffect(() => {
+    // Skip the initial fetch (handled by the effect above)
+    if (!hasFetchedInitialData.current) return
+    fetchData()
+  }, [selectedYear, selectedProbability])
+
   const handleRefresh = () => {
     fetchData(true)
   }

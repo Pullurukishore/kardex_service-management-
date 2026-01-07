@@ -68,6 +68,18 @@ export default function ExpertTicketsPage() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   
+  // All hooks must be declared before any conditional returns
+  const [tickets, setTickets] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, totalPages: 0 })
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const [selectedPriority, setSelectedPriority] = useState('All Priority')
+  const [sortField, setSortField] = useState<string>('')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  
   // Protect this page - only EXPERT_HELPDESK can access
   useEffect(() => {
     if (!authLoading) {
@@ -81,6 +93,16 @@ export default function ExpertTicketsPage() {
       }
     }
   }, [authLoading, isAuthenticated, user?.role, router])
+
+  // Debounce search to prevent excessive API calls
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || user?.role !== UserRole.EXPERT_HELPDESK) return
+    const timeoutId = setTimeout(() => {
+      fetchTickets()
+    }, searchTerm ? 500 : 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, selectedStatus, selectedPriority, pagination.page, authLoading, isAuthenticated, user?.role])
 
   // Show loading state while auth is being checked
   if (authLoading) {
@@ -105,26 +127,6 @@ export default function ExpertTicketsPage() {
   if (!isAuthenticated || user?.role !== UserRole.EXPERT_HELPDESK) {
     return null
   }
-  
-  const [tickets, setTickets] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, totalPages: 0 })
-
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
-  const [selectedPriority, setSelectedPriority] = useState('All Priority')
-  const [sortField, setSortField] = useState<string>('')
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
-
-  // Debounce search to prevent excessive API calls
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchTickets()
-    }, searchTerm ? 500 : 0)
-
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedStatus, selectedPriority, pagination.page])
 
   const fetchTickets = async () => {
     setLoading(true)

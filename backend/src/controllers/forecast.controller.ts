@@ -447,11 +447,11 @@ export class ForecastController {
                         },
                         _sum: { offerValue: true },
                     }),
-                    // Orders received (WON offers) - fetch all WON offers to apply fallback logic
+                    // Orders received (WON and PO_RECEIVED offers) - fetch all to apply fallback logic
                     prisma.offer.findMany({
                         where: {
                             zoneId: zone.id,
-                            stage: 'WON',
+                            stage: { in: ['WON', 'PO_RECEIVED'] },
                         },
                         select: {
                             poValue: true,

@@ -286,11 +286,8 @@ export default function ForecastDashboard() {
   }, [selectedYear, activeZoneTab])
 
   useEffect(() => {
-    // Skip if already fetched (React Strict Mode protection)
-    if (hasFetchedInitialData.current) return
-    hasFetchedInitialData.current = true
     fetchData()
-  }, [fetchData])
+  }, [selectedYear, selectedProbability])
 
   // Refetch user data when zone changes
   useEffect(() => {

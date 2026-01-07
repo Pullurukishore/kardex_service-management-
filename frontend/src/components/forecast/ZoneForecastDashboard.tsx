@@ -290,6 +290,14 @@ export default function ZoneForecastDashboard({ zoneId, zoneName }: Props) {
     fetchData()
   }, [fetchData])
 
+  // Refetch data when year or probability filter changes
+  useEffect(() => {
+    // Skip the initial fetch (handled by the effect above)
+    if (!hasFetchedInitialData.current) return
+    fetchData()
+    fetchUserData()
+  }, [selectedYear, selectedProbability])
+
   useEffect(() => {
     // Skip duplicate initial fetch
     if (!hasFetchedUserData.current) {

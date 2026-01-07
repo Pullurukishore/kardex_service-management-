@@ -15,7 +15,7 @@ if (-not $isAdmin) {
     exit 1
 }
 
-$projectRoot = "c:\KardexCare"
+$projectRoot = "c:\Kardexremstar"
 $nssmPath = Join-Path $projectRoot "nssm.exe"
 
 if (-not (Test-Path $nssmPath)) {

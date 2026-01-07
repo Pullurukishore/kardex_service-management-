@@ -83,43 +83,11 @@ export default function AdminTicketsPage() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   
-  // Protect this page - only ADMIN can access
-  useEffect(() => {
-    if (!authLoading) {
-      if (!isAuthenticated) {
-        router.push('/auth/login?callbackUrl=' + encodeURIComponent('/admin/tickets'))
-        return
-      }
-      if (user?.role !== UserRole.ADMIN) {
-        router.push('/admin/dashboard')
-        return
-      }
-    }
-  }, [authLoading, isAuthenticated, user?.role, router])
-
-  // Show loading state while auth is being checked
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Don't render if not authenticated or not ADMIN
-  if (!isAuthenticated || user?.role !== UserRole.ADMIN) {
-    return null
-  }
-  
+  // All state hooks at the top
   const [tickets, setTickets] = useState<any[]>([])
   const [zones, setZones] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, totalPages: 0 })
-
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedZone, setSelectedZone] = useState('All Zones')
   const [selectedStatus, setSelectedStatus] = useState('All Status')
@@ -127,19 +95,30 @@ export default function AdminTicketsPage() {
   const [selectedView, setSelectedView] = useState('All')
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  
+  // Memoized values
+  const hasActiveFilters = useMemo(() => 
+    searchTerm || 
+    selectedZone !== 'All Zones' || 
+    selectedStatus !== 'All Status' || 
+    selectedPriority !== 'All Priority' || 
+    selectedView !== 'All',
+    [searchTerm, selectedZone, selectedStatus, selectedPriority, selectedView]
+  )
 
-  // Debounce search to prevent excessive API calls
+  // Authentication check effect
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchTickets()
-    }, searchTerm ? 500 : 0) // 500ms delay for search, immediate for other filters
-
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedZone, selectedStatus, selectedPriority, selectedView, pagination.page])
-
-  useEffect(() => {
-    fetchZones()
-  }, [])
+    if (authLoading) return
+    
+    if (!isAuthenticated) {
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent('/admin/tickets'))
+      return
+    }
+    
+    if (user?.role !== UserRole.ADMIN) {
+      router.push('/admin/dashboard')
+    }
+  }, [authLoading, isAuthenticated, user?.role, router])
 
   const fetchZones = async () => {
     try {
@@ -186,6 +165,57 @@ export default function AdminTicketsPage() {
     }
   }
 
+  // Data fetching effects
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || user?.role !== UserRole.ADMIN) {
+      return
+    }
+    
+    const timeoutId = setTimeout(() => {
+      fetchTickets()
+    }, searchTerm ? 500 : 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, selectedZone, selectedStatus, selectedPriority, selectedView, pagination.page, authLoading, isAuthenticated, user?.role])
+
+  // Fetch zones on mount and when auth changes
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || user?.role !== UserRole.ADMIN) {
+      return
+    }
+    
+    const loadZones = async () => {
+      try {
+        const response = await apiService.getZones()
+        const zonesData = response?.data?.zones || response?.zones || response?.data || response || []
+        setZones(Array.isArray(zonesData) ? zonesData : [])
+      } catch (error: any) {
+        console.error('Failed to fetch zones:', error)
+        toast.error(error.response?.data?.message || 'Failed to fetch zones')
+        setZones([])
+      }
+    }
+    
+    loadZones()
+  }, [authLoading, isAuthenticated, user?.role])
+
+  // Show loading state while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated or not ADMIN
+  if (!isAuthenticated || user?.role !== UserRole.ADMIN) {
+    return null
+  }
+
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedZone('All Zones')
@@ -195,7 +225,6 @@ export default function AdminTicketsPage() {
     setPagination(prev => ({ ...prev, page: 1 }))
   }
 
-  const hasActiveFilters = searchTerm || selectedZone !== 'All Zones' || selectedStatus !== 'All Status' || selectedPriority !== 'All Priority' || selectedView !== 'All'
 
   // Sort tickets
   const sortedTickets = useMemo(() => {

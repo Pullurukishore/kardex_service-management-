@@ -112,10 +112,9 @@ interface FullOfferDetails {
     id: number;
     asset: {
       id: number;
-      assetName: string;
-      machineSerialNumber: string | null;
+      machineId: string;
+      serialNo: string | null;
       model: string | null;
-      manufacturer: string | null;
       location: string | null;
       customer: {
         id: number;
@@ -476,20 +475,25 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   </div>
                 )}
 
-                {/* Assets */}
+                {/* Linked Machines */}
                 {offer.offerAssets && offer.offerAssets.length > 0 && (
                   <div className="border-t pt-4">
                     <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                       <Settings className="h-5 w-5" />
-                      Assets ({offer.offerAssets.length})
+                      Linked Machines ({offer.offerAssets.length})
                     </h3>
                     <div className="space-y-3">
                       {offer.offerAssets.map((asset) => (
                         <div key={asset.id} className="border rounded-lg p-4">
-                          <div className="font-medium">{asset.asset.assetName}</div>
-                          {asset.asset.machineSerialNumber && (
+                          <div className="font-medium">Machine ID: {asset.asset.machineId || asset.asset.serialNo || 'N/A'}</div>
+                          {asset.asset.serialNo && (
                             <div className="text-sm text-gray-500 mt-1">
-                              Serial: {asset.asset.machineSerialNumber}
+                              Serial No: {asset.asset.serialNo}
+                            </div>
+                          )}
+                          {asset.asset.model && (
+                            <div className="text-sm text-gray-500 mt-1">
+                              Model: {asset.asset.model}
                             </div>
                           )}
                           {asset.asset.customer && (
