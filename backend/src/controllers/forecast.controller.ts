@@ -425,7 +425,6 @@ export class ForecastController {
                     offerCount,
                     offersValueAgg,
                     wonValueAgg,
-                    openFunnelAgg,
                     currentMonthBookingAgg,
                     weightedForecastAgg,
                     wonOffers,
@@ -460,16 +459,7 @@ export class ForecastController {
                             offerMonth: true,
                         },
                     }),
-                    // Open funnel value
-                    prisma.offer.aggregate({
-                        where: {
-                            zoneId: zone.id,
-                            openFunnel: true,
-                            stage: { notIn: ['WON', 'LOST'] },
-                            createdAt: { gte: yearStart, lte: yearEnd },
-                        },
-                        _sum: { offerValue: true },
-                    }),
+                    // Note: Open Funnel is calculated as (Offers Value - Orders Received) directly
                     // Current month order booking
                     prisma.offer.aggregate({
                         where: {
@@ -545,7 +535,8 @@ export class ForecastController {
                     return sum;
                 }, 0);
 
-                const openFunnel = toNumber(openFunnelAgg._sum.offerValue);
+                // Open Funnel = Offers Value - Orders Received (simple subtraction)
+                const openFunnel = offersValue - ordersReceived;
                 const orderBooking = toNumber(currentMonthBookingAgg._sum.poValue);
 
                 // Expected Revenue (U for Booking) - FULL value for offers meeting probability threshold

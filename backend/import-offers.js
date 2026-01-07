@@ -69,8 +69,10 @@ function excelDateToJS(excelDate) {
 }
 
 // Convert month name to YYYY-MM format
-function monthToYYYYMM(monthName, year = 2025) {
+// Year must be provided by caller based on offer data (e.g., from regDate)
+function monthToYYYYMM(monthName, year) {
     if (!monthName) return null;
+    if (!year) return null; // Year is required
     const monthStr = String(monthName).trim();
     const monthNum = monthMap[monthStr];
     if (monthNum) return `${year}-${monthNum}`;
@@ -284,6 +286,10 @@ async function main() {
                     stage = 'PROPOSAL_SENT';
                 }
 
+                // Extract year from registration date for month conversions
+                const registrationDateJS = excelDateToJS(regDate);
+                const offerYear = registrationDateJS ? registrationDateJS.getFullYear() : new Date().getFullYear();
+
                 // Create Offer
                 const offer = await prisma.offer.create({
                     data: {
@@ -292,7 +298,7 @@ async function main() {
                         title: `Offer for ${companyName}`,
                         productType: productTypeMap[productTypeVal] || null,
                         lead: leadStatusMap[leadVal] || null,
-                        registrationDate: excelDateToJS(regDate),
+                        registrationDate: registrationDateJS,
                         company: companyName,
                         location: locationVal,
                         department: department,
@@ -309,17 +315,17 @@ async function main() {
                         createdById: userData.userId,
                         updatedById: userData.userId,
                         offerValue: offerValueVal ? parseFloat(offerValueVal) : null,
-                        offerMonth: monthToYYYYMM(offerMonthVal),
-                        poExpectedMonth: monthToYYYYMM(poExpectedVal),
+                        offerMonth: monthToYYYYMM(offerMonthVal, offerYear),
+                        poExpectedMonth: monthToYYYYMM(poExpectedVal, offerYear),
                         probabilityPercentage: probabilityToPercentage(probabilityVal),
                         poNumber: poNumberVal ? String(poNumberVal) : null,
                         poDate: excelDateToJS(poDateVal),
                         poValue: poValueVal ? parseFloat(poValueVal) : null,
-                        poReceivedMonth: monthToYYYYMM(poReceivedMonthVal),
+                        poReceivedMonth: monthToYYYYMM(poReceivedMonthVal, offerYear),
                         openFunnel: openFunnelVal ? openFunnelVal > 0 : true,
                         remarks: remarksVal ? String(remarksVal) : null,
-                        createdAt: excelDateToJS(regDate) || new Date('2025-01-01'),
-                        updatedAt: excelDateToJS(regDate) || new Date('2025-01-01')
+                        createdAt: registrationDateJS || new Date(),
+                        updatedAt: registrationDateJS || new Date()
                     }
                 });
 
