@@ -735,9 +735,8 @@ export class ForecastController {
                     // Deviation OR vs Booked
                     const devORvsBooked = orderReceived - ordersBooked;
 
-                    // Orders in hand (open funnel for this month)
-                    const openFunnelOffers = monthOffers.filter(o => o.openFunnel && o.stage !== 'WON' && o.stage !== 'LOST');
-                    const ordersInHand = openFunnelOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                    // Orders in hand (open funnel for this month) = Offers Value - Orders Received
+                    const ordersInHand = offersValue - orderReceived;
 
                     // Monthly target
                     const buMonthly = monthlyTargetMap.get(monthStr) || monthlyBUTarget;
@@ -1139,9 +1138,8 @@ export class ForecastController {
                         return sum + value;
                     }, 0);
 
-                    // Orders in hand (open funnel for this month)
-                    const openFunnelOffers = monthOffers.filter(o => o.openFunnel && o.stage !== 'WON' && o.stage !== 'LOST');
-                    const ordersInHand = openFunnelOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+                    // Orders in hand (open funnel for this month) = Offers Value - Orders Received
+                    const ordersInHand = offersValue - orderReceived;
 
                     // Monthly target
                     const buMonthly = monthlyTargetMap.get(monthStr) || monthlyBUTarget;
