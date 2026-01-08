@@ -226,6 +226,10 @@ app.use('/api/spare-parts', sparePartRoutes);
 app.use('/api/image-management', imageManagementRoutes);
 app.use('/api/forecast', forecastRoutes);
 
+// AR (Accounts Receivable) Routes - Finance Module
+import arRoutes from './routes/ar';
+app.use('/api/ar', arRoutes);
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });

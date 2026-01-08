@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, CheckCircle2, Mail, Lock, Shield, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, CheckCircle2, Mail, Lock, Shield, Eye, EyeOff, ArrowRight, Sparkles, ArrowLeft } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 const loginSchema = z.object({
@@ -31,11 +31,19 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const { login, isLoading, isAuthenticated, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
+
+  // Get module from URL params
+  const moduleParam = searchParams.get('module');
+  const moduleLabels: Record<string, string> = {
+    fsm: 'Field Service Management',
+    finance: 'Finance'
+  };
 
   // Pre-generate particles for background
   const floatingParticles = useMemo(() => 
@@ -49,23 +57,24 @@ export default function LoginPage() {
     })), []
   );
 
+  // Get module-based redirect
+  const getModuleBasedRedirect = (): string => {
+    const selectedModule = moduleParam || localStorage.getItem('selectedModule');
+    if (selectedModule === 'finance') {
+      return '/finance/select';
+    } else if (selectedModule === 'fsm') {
+      return '/fsm/select';
+    }
+    // Default fallback - check user role
+    return '/fsm/select';
+  };
+
   // Redirect authenticated users
   useEffect(() => {
     if (isAuthenticated && user && !isLoading) {
-      const getRoleBasedRedirect = (role: string): string => {
-        switch (role) {
-          case 'ADMIN': return '/admin/dashboard';
-          case 'EXPERT_HELPDESK': return '/expert/dashboard';
-          case 'ZONE_MANAGER': return '/zone/dashboard';
-          case 'ZONE_USER': return '/zone/dashboard';
-          case 'SERVICE_PERSON': return '/service-person/dashboard';
-          case 'EXTERNAL_USER': return '/external/tickets';
-          default: return '/auth/login';
-        }
-      };
-      router.replace(getRoleBasedRedirect(user.role));
+      router.replace(getModuleBasedRedirect());
     }
-  }, [isAuthenticated, user, isLoading, router]);
+  }, [isAuthenticated, user, isLoading, router, moduleParam]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -200,6 +209,17 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full max-w-md relative z-10">
+        {/* Back Button */}
+        {moduleParam && (
+          <button
+            onClick={() => router.push('/module-select')}
+            className="flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">Back to Modules</span>
+          </button>
+        )}
+
         {/* Main Card */}
         <div className={`bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden transition-transform duration-500 ${shake ? 'animate-shake' : ''}`}>
           {/* Header */}
@@ -207,11 +227,29 @@ export default function LoginPage() {
             <div className="mb-6">
               <Image src="/kardex.png" alt="Kardex" width={160} height={64} className="mx-auto brightness-0 invert drop-shadow-lg" priority />
             </div>
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+            {/* Module Badge */}
+            {moduleParam && moduleLabels[moduleParam] && (
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 ${
+                moduleParam === 'finance' 
+                  ? 'bg-purple-500/20 border border-purple-500/30' 
+                  : 'bg-blue-500/20 border border-blue-500/30'
+              }`}>
+                <span className={`text-sm font-medium ${
+                  moduleParam === 'finance' ? 'text-purple-300' : 'text-blue-300'
+                }`}>
+                  {moduleLabels[moduleParam]}
+                </span>
+              </div>
+            )}
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg ${
+              moduleParam === 'finance'
+                ? 'bg-gradient-to-br from-purple-500 to-pink-500 shadow-purple-500/30'
+                : 'bg-gradient-to-br from-blue-500 to-emerald-500 shadow-blue-500/30'
+            }`}>
               <Shield className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">Welcome Back</h1>
-            <p className="text-blue-200/60 text-sm">Sign in to access your dashboard</p>
+            <p className="text-blue-200/60 text-sm">Sign in to continue</p>
           </div>
 
           {/* Form Section */}

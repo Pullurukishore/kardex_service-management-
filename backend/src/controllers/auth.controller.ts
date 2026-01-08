@@ -201,6 +201,12 @@ export const login = async (req: Request, res: Response) => {
       }
     });
 
+    // Get financeRole separately since include doesn't return all scalar fields
+    const financeRoleUser = await prisma.user.findUnique({
+      where: { email },
+      select: { financeRole: true }
+    });
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -356,6 +362,7 @@ export const login = async (req: Request, res: Response) => {
       success: true,
       user: {
         ...userData,
+        financeRole: financeRoleUser?.financeRole || null,
         customer: user.customer
       },
       token, // For backward compatibility
@@ -405,6 +412,7 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
         email: true,
         name: true,
         role: true,
+        financeRole: true,
         phone: true,
         customerId: true,
         zoneId: true,

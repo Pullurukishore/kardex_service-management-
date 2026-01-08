@@ -2,6 +2,10 @@ import { subDays, parse, format } from 'date-fns';
 import { getZones, getCustomers, getAssets, generateReport } from '@/lib/server/reports';
 import ReportsClient from '@/components/reports/ReportsClient';
 import type { ReportFilters as ReportFiltersType } from '@/types/reports';
+import { REPORT_TYPES, SALES_REPORT_TYPES } from '@/types/reports';
+
+// Ticket-only report types (exclude offer-summary)
+const TICKET_ONLY_REPORT_TYPES = REPORT_TYPES.filter(r => r.value !== 'offer-summary');
 
 interface ReportsPageProps {
   searchParams: {
@@ -15,6 +19,10 @@ interface ReportsPageProps {
 }
 
 export default async function ReportsPage({ searchParams }: ReportsPageProps) {
+  // Determine module based on reportType
+  const module = searchParams.reportType === 'offer-summary' ? 'offers' : 'tickets';
+  const reportTypes = module === 'offers' ? SALES_REPORT_TYPES : TICKET_ONLY_REPORT_TYPES;
+
   // Parse search params to create filters
   const filters: ReportFiltersType = {
     dateRange: {
@@ -25,7 +33,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
         ? parse(searchParams.to, 'yyyy-MM-dd', new Date())
         : new Date(),
     },
-    reportType: searchParams.reportType || 'ticket-summary',
+    reportType: searchParams.reportType || (module === 'offers' ? 'offer-summary' : 'ticket-summary'),
     zoneId: searchParams.zoneId,
     customerId: searchParams.customerId,
   };
@@ -49,7 +57,9 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
         zones={zones.map(z => ({ id: z.id, name: z.name }))}
         customers={customers.map(c => ({ id: c.id, companyName: c.companyName }))}
         isZoneUser={false}
+        reportTypes={reportTypes}
       />
     </div>
   );
 }
+

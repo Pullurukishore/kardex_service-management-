@@ -28,7 +28,8 @@ model User {
   id                             Int                      @id @default(autoincrement())
   email                          String                   @unique
   password                       String
-  role                           UserRole                 @default(ZONE_USER)
+  role                           UserRole?                // Optional: only for FSM users
+  financeRole                    FinanceRole?             // Finance module role (optional)
   name                           String?
   phone                          String?
   shortForm                      String?                  @db.VarChar(5) // User short form for offer IDs
@@ -884,6 +885,13 @@ enum UserRole {
   EXPERT_HELPDESK
 }
 
+// Finance Module Roles
+enum FinanceRole {
+  FINANCE_ADMIN
+  FINANCE_USER
+  FINANCE_VIEWER
+}
+
 enum ContactRole {
   ACCOUNT_OWNER
   CONTACT
@@ -1082,4 +1090,140 @@ enum SparePartStatus {
   ACTIVE
   INACTIVE
   DISCONTINUED
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AR (ACCOUNTS RECEIVABLE) MODULE - Finance
+// Simplified schema matching Excel structure exactly
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum ARRiskClass {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ARInvoiceStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ARDeliveryStatus {
+  PENDING
+  SENT
+  DELIVERED
+  ACKNOWLEDGED
+}
+
+// AR Payment Terms Master
+model ARPaymentTerms {
+  id          String   @id @default(uuid())
+  termCode    String   @unique
+  termName    String
+  dueDays     Int
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ar_payment_terms_master")
+}
+
+// AR Invoice - Simplified table with SAP mandatory fields + manual tracking
+model ARInvoice {
+  id                  String            @id @default(uuid())
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SAP FIELDS (Mandatory - Green columns from SAP Excel)
+  // ═══════════════════════════════════════════════════════════════════════════
+  invoiceNumber       String    @unique // Doc. No. (A)
+  bpCode              String            // Customer Code (C)
+  customerName        String            // Customer Name (D)
+  poNo                String?           // Customer Ref. No. (F)
+  totalAmount         Decimal   @db.Decimal(15, 2) // Amount (H)
+  netAmount           Decimal   @db.Decimal(15, 2) // Net / Invoice Amount (I)
+  taxAmount           Decimal?  @db.Decimal(15, 2) // Tax (J)
+  invoiceDate         DateTime          // Document Date (M)
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PAYMENT TERMS & CALCULATIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+  dueDate             DateTime          // Due Date (from Payment Terms)
+  actualPaymentTerms  String?           // Actual Payment Terms
+  balance             Decimal?  @db.Decimal(15, 2) // Balance = TotalAmount - TotalReceipts
+  riskClass           ARRiskClass @default(LOW)   // Risk Class (Calculated)
+  dueByDays           Int?              // Due by Days (Calculated)
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CUSTOMER MASTER FIELDS (Mandatory: Email ID)
+  // ═══════════════════════════════════════════════════════════════════════════
+  emailId             String?           // Email ID (Mandatory - Cust. Master)
+  contactNo           String?           // Contact No. (Cust. Master)
+  region              String?           // Region (Cust. Master)
+  department          String?           // Department (Cust. Master)
+  personInCharge      String?           // Person In-charge (Cust. Master)
+  pocName             String?           // POC Name (Cust. Master)
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MANUAL TRACKING FIELDS
+  // ═══════════════════════════════════════════════════════════════════════════
+  receipts            Decimal?  @db.Decimal(15, 2) // Receipts (Manual)
+  adjustments         Decimal?  @db.Decimal(15, 2) // Adjustments (Manual)
+  totalReceipts       Decimal?  @db.Decimal(15, 2) // Total Receipts = Receipts + Adjustments
+  type                String?           // Type (TBC)
+  modeOfDelivery      String?           // Mode of Delivery with Details
+  sentHandoverDate    DateTime?         // Sent/Handover date
+  deliveryStatus      ARDeliveryStatus @default(PENDING) // Delivered/Acknowledgement Status (Mandatory)
+  impactDate          DateTime?         // Acceptance/GRN/Delivered/Acknowledgement date
+  comments            String?           // Comments/Remarks
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SYSTEM FIELDS
+  // ═══════════════════════════════════════════════════════════════════════════
+  status              ARInvoiceStatus @default(PENDING)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([bpCode])
+  @@index([status])
+  @@index([dueDate])
+  @@index([invoiceDate])
+  @@index([riskClass])
+  @@map("ar_invoices")
+}
+
+// AR Import History
+model ARImportHistory {
+  id            String   @id @default(uuid())
+  fileName      String
+  recordsCount  Int
+  successCount  Int
+  failedCount   Int
+  importedBy    String?
+  importedAt    DateTime @default(now())
+  status        String   @default("COMPLETED")
+  errorLog      String?
+
+  @@map("ar_import_history")
+}
+
+// AR Payment History
+model ARPaymentHistory {
+  id              String    @id @default(uuid())
+  invoiceId       String
+  amount          Decimal   @db.Decimal(15, 2)
+  paymentDate     DateTime
+  paymentMode     String    // NEFT, RTGS, CHEQUE, CASH, ADJUSTMENT
+  referenceNo     String?   // Cheque No, UTR No
+  notes           String?
+  recordedBy      String?
+  createdAt       DateTime  @default(now())
+  
+  // Relation to Invoice (using loose relation since ARInvoice is denormalized)
+  @@index([invoiceId])
+  @@map("ar_payment_history")
 }

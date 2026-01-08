@@ -585,6 +585,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: response.user.email || email,
         name: userName,
         role: response.user.role || 'customer',
+        financeRole: response.user.financeRole || undefined,
         isActive: response.user.isActive ?? true,
         tokenVersion: response.user.tokenVersion || '0',
         lastPasswordChange: response.user.lastPasswordChange || new Date().toISOString(),
@@ -672,14 +673,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Cache user in session storage for faster restoration
       safeSessionStorage.setItem('currentUser', JSON.stringify(safeUser));
       // Show success toast
+      const displayRole = safeUser.financeRole || safeUser.role;
       toast.success(`Welcome back, ${safeUser.name}!`, {
-        description: `You are logged in as ${safeUser.role.toLowerCase().replace('_', ' ')}`,
+        description: `You are logged in as ${displayRole.toLowerCase().replace('_', ' ')}`,
         duration: 3000,
       });
 
-      // Redirect immediately without delay to prevent race conditions
-      const redirectPath = getRoleBasedRedirect(safeUser.role);
-      router.replace(redirectPath);
+      // Redirect to module-select which will determine the correct module based on role/financeRole
+      router.replace('/module-select');
 
       return { success: true, user: safeUser };
     } catch (error: any) {

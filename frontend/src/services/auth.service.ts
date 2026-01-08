@@ -1,4 +1,4 @@
-import { UserRole } from '@/types/user.types';
+import { UserRole, FinanceRole } from '@/types/user.types';
 import api from '@/lib/api/axios';
 
 export interface LoginCredentials {
@@ -18,6 +18,7 @@ export interface AuthResponseUser {
   email: string;
   name: string | null;
   role: UserRole;
+  financeRole?: FinanceRole;
   phone?: string | null;
   zoneId?: string | null;
   customerId?: string | null;

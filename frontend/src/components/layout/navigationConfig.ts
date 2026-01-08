@@ -547,7 +547,494 @@ export const expertHelpdeskNavigation: NavItem[] = [
   },
 ];
 
-// Get navigation for specific role
+// Sub-module type for FSM
+export type SubModule = 'tickets' | 'offers' | null;
+
+// ============================================
+// TICKETS-FOCUSED NAVIGATION (Service & Activity)
+// ============================================
+
+// Admin Tickets Navigation (flattened - no submenus)
+export const adminTicketsNavigation: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/admin/dashboard",
+    icon: LayoutDashboard,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-blue-600",
+    iconBgColor: "bg-blue-50"
+  },
+  {
+    title: "Tickets",
+    href: "/admin/tickets",
+    icon: Ticket,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Customers",
+    href: "/admin/customers",
+    icon: Users,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Zones",
+    href: "/admin/service-zones",
+    icon: MapPin,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-rose-600",
+    iconBgColor: "bg-rose-50"
+  },
+  {
+    title: "Service Persons",
+    href: "/admin/service-person",
+    icon: Activity,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Zone Users",
+    href: "/admin/zone-users",
+    icon: Users,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Activity Scheduling",
+    href: "/admin/activity-scheduling",
+    icon: Clock,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Daily Activity",
+    href: "/admin/attendance",
+    icon: Calendar,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Reports",
+    href: "/admin/reports?reportType=ticket-summary",
+    icon: FileText,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50",
+  },
+];
+
+// Admin Offers Navigation (flattened - no submenus)
+export const adminOffersNavigation: NavItem[] = [
+  {
+    title: "Offers",
+    href: "/admin/offers",
+    icon: DollarSign,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Customers",
+    href: "/admin/customers",
+    icon: Users,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Zones",
+    href: "/admin/service-zones",
+    icon: MapPin,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-rose-600",
+    iconBgColor: "bg-rose-50"
+  },
+  {
+    title: "Zone Users",
+    href: "/admin/zone-users",
+    icon: Users,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Targets",
+    href: "/admin/targets",
+    icon: BarChart2,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Spare Parts",
+    href: "/admin/spare-parts",
+    icon: Activity,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Forecast",
+    href: "/admin/forecast",
+    icon: BarChart2,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Offer Summary Report",
+    href: "/admin/reports?reportType=offer-summary",
+    icon: FileText,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Zone Manager Tickets Navigation (flattened)
+export const zoneManagerTicketsNavigation: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/zone/dashboard",
+    icon: LayoutDashboard,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-blue-600",
+    iconBgColor: "bg-blue-50"
+  },
+  {
+    title: "Tickets",
+    href: "/zone/tickets",
+    icon: Ticket,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Customers",
+    href: "/zone/customers",
+    icon: Users,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Persons",
+    href: "/zone/service-persons",
+    icon: Activity,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Activity Scheduling",
+    href: "/zone/activity-scheduling",
+    icon: Clock,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Daily Activity",
+    href: "/zone/attendence",
+    icon: Calendar,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Reports",
+    href: "/zone-manager/reports?reportType=ticket-summary",
+    icon: FileText,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Zone Manager Offers Navigation (flattened)
+export const zoneManagerOffersNavigation: NavItem[] = [
+  {
+    title: "Offers",
+    href: "/zone-manager/offers",
+    icon: DollarSign,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Customers",
+    href: "/zone/customers",
+    icon: Users,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Spare Parts",
+    href: "/zone-manager/spare-parts",
+    icon: Activity,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Forecast",
+    href: "/zone-manager/forecast",
+    icon: BarChart2,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Offer Summary Report",
+    href: "/zone-manager/reports?reportType=offer-summary",
+    icon: FileText,
+    roles: [UserRole.ZONE_MANAGER],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Zone User Tickets Navigation (flattened)
+export const zoneUserTicketsNavigation: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/zone/dashboard",
+    icon: LayoutDashboard,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-blue-600",
+    iconBgColor: "bg-blue-50"
+  },
+  {
+    title: "Tickets",
+    href: "/zone/tickets",
+    icon: Ticket,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Customers",
+    href: "/zone/customers",
+    icon: Users,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Persons",
+    href: "/zone/service-persons",
+    icon: Activity,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Activity Scheduling",
+    href: "/zone/activity-scheduling",
+    icon: Clock,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Daily Activity",
+    href: "/zone/attendence",
+    icon: Calendar,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Reports",
+    href: "/zone/reports?reportType=ticket-summary",
+    icon: FileText,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Zone User Offers Navigation (flattened)
+export const zoneUserOffersNavigation: NavItem[] = [
+  {
+    title: "Offers",
+    href: "/zone/offers",
+    icon: DollarSign,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Customers",
+    href: "/zone/customers",
+    icon: Users,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "My Forecast",
+    href: "/zone/forecast",
+    icon: BarChart2,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Spare Parts",
+    href: "/zone/spare-parts",
+    icon: Activity,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Offer Summary Report",
+    href: "/zone/reports?reportType=offer-summary",
+    icon: FileText,
+    roles: [UserRole.ZONE_USER],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Expert Helpdesk Tickets Navigation (flattened)
+export const expertHelpdeskTicketsNavigation: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/expert/dashboard",
+    icon: LayoutDashboard,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-blue-600",
+    iconBgColor: "bg-blue-50"
+  },
+  {
+    title: "My Tickets",
+    href: "/expert/tickets",
+    icon: Ticket,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Customers",
+    href: "/expert/customers",
+    icon: Users,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Zones",
+    href: "/expert/service-zones",
+    icon: MapPin,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-rose-600",
+    iconBgColor: "bg-rose-50"
+  },
+  {
+    title: "Service Persons",
+    href: "/expert/service-person",
+    icon: Activity,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Activity Scheduling",
+    href: "/expert/activity-scheduling",
+    icon: Clock,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-indigo-600",
+    iconBgColor: "bg-indigo-50"
+  },
+  {
+    title: "Daily Activity",
+    href: "/expert/attendance",
+    icon: Calendar,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Reports",
+    href: "/expert/reports?reportType=ticket-summary",
+    icon: FileText,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50",
+  },
+];
+
+// Expert Helpdesk Offers Navigation (flattened)
+export const expertHelpdeskOffersNavigation: NavItem[] = [
+  {
+    title: "Offers",
+    href: "/expert/offers",
+    icon: DollarSign,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Customers",
+    href: "/expert/customers",
+    icon: Users,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-purple-600",
+    iconBgColor: "bg-purple-50"
+  },
+  {
+    title: "Service Zones",
+    href: "/expert/service-zones",
+    icon: MapPin,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-rose-600",
+    iconBgColor: "bg-rose-50"
+  },
+  {
+    title: "Targets",
+    href: "/expert/targets",
+    icon: BarChart2,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-emerald-600",
+    iconBgColor: "bg-emerald-50"
+  },
+  {
+    title: "Spare Parts",
+    href: "/expert/spare-parts",
+    icon: Activity,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-orange-600",
+    iconBgColor: "bg-orange-50"
+  },
+  {
+    title: "Forecast",
+    href: "/expert/forecast",
+    icon: BarChart2,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-cyan-600",
+    iconBgColor: "bg-cyan-50"
+  },
+  {
+    title: "Offer Summary Report",
+    href: "/expert/reports?reportType=offer-summary",
+    icon: FileText,
+    roles: [UserRole.EXPERT_HELPDESK],
+    iconColor: "text-violet-600",
+    iconBgColor: "bg-violet-50"
+  },
+];
+
+// Get navigation for specific role (original - returns full navigation)
 export const getNavigationForRole = (role: UserRole): NavItem[] => {
   switch (role) {
     case UserRole.ADMIN:
@@ -560,6 +1047,33 @@ export const getNavigationForRole = (role: UserRole): NavItem[] => {
       return zoneUserNavigation;
     case UserRole.EXPERT_HELPDESK:
       return expertHelpdeskNavigation;
+    default:
+      return [];
+  }
+};
+
+// Get navigation for specific role AND sub-module (filtered navigation)
+export const getNavigationForRoleAndSubModule = (
+  role: UserRole,
+  subModule: SubModule
+): NavItem[] => {
+  // If no sub-module selected, return full navigation
+  if (!subModule) {
+    return getNavigationForRole(role);
+  }
+
+  switch (role) {
+    case UserRole.ADMIN:
+      return subModule === 'tickets' ? adminTicketsNavigation : adminOffersNavigation;
+    case UserRole.SERVICE_PERSON:
+      // Service person only deals with tickets
+      return servicePersonNavigation;
+    case UserRole.ZONE_MANAGER:
+      return subModule === 'tickets' ? zoneManagerTicketsNavigation : zoneManagerOffersNavigation;
+    case UserRole.ZONE_USER:
+      return subModule === 'tickets' ? zoneUserTicketsNavigation : zoneUserOffersNavigation;
+    case UserRole.EXPERT_HELPDESK:
+      return subModule === 'tickets' ? expertHelpdeskTicketsNavigation : expertHelpdeskOffersNavigation;
     default:
       return [];
   }

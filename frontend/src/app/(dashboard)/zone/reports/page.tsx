@@ -1,13 +1,26 @@
 import ReportsClient from '@/components/reports/ReportsClient';
 import type { ReportFilters } from '@/types/reports';
-import { ZONE_USER_REPORT_TYPES } from '@/types/reports';
-import { subDays } from 'date-fns';
+import { ZONE_USER_REPORT_TYPES, SALES_REPORT_TYPES } from '@/types/reports';
+import { subDays, parse } from 'date-fns';
 import { getZones, getCustomers, getUserZone } from '@/lib/server/reports';
+
+// Ticket-only report types for zone user (exclude offer-related)
+const ZONE_USER_TICKET_REPORT_TYPES = ZONE_USER_REPORT_TYPES.filter(r => 
+  r.value !== 'offer-summary' && r.value !== 'zone-user-offer-summary'
+);
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-export default async function ReportsPage() {
+interface PageProps {
+  searchParams: {
+    reportType?: string;
+    from?: string;
+    to?: string;
+  };
+}
+
+export default async function ReportsPage({ searchParams }: PageProps) {
   // Fetch zone user's zone and customers for that zone
   let userZone: { id: number; name: string } | null = null;
   let zones: { id: number; name: string }[] = [];
@@ -30,12 +43,20 @@ export default async function ReportsPage() {
     companyName: c.companyName
   }));
 
+  // Determine module based on reportType
+  const module = searchParams.reportType === 'offer-summary' ? 'offers' : 'tickets';
+  const reportTypes = module === 'offers' ? SALES_REPORT_TYPES : ZONE_USER_TICKET_REPORT_TYPES;
+
   const initialFilters: ReportFilters = {
     dateRange: {
-      from: subDays(new Date(), 90),
-      to: new Date(),
+      from: searchParams.from 
+        ? parse(searchParams.from, 'yyyy-MM-dd', new Date())
+        : subDays(new Date(), 90),
+      to: searchParams.to
+        ? parse(searchParams.to, 'yyyy-MM-dd', new Date())
+        : new Date(),
     },
-    reportType: 'ticket-summary', // Default to ticket summary, zone-user-offer-summary available for their own offers
+    reportType: searchParams.reportType || (module === 'offers' ? 'offer-summary' : 'ticket-summary'),
     zoneId: userZone?.id.toString(),
   };
 
@@ -47,8 +68,9 @@ export default async function ReportsPage() {
         zones={zones}
         customers={customersData}
         isZoneUser={true}
-        reportTypes={ZONE_USER_REPORT_TYPES}
+        reportTypes={reportTypes}
       />
     </div>
   );
 }
+

@@ -1,3 +1,4 @@
+// FSM Roles (Field Service Management)
 export enum UserRole {
   ADMIN = 'ADMIN',
   ZONE_MANAGER = 'ZONE_MANAGER',
@@ -6,6 +7,16 @@ export enum UserRole {
   EXTERNAL_USER = 'EXTERNAL_USER',
   EXPERT_HELPDESK = 'EXPERT_HELPDESK',
 }
+
+// Finance Module Roles
+export enum FinanceRole {
+  FINANCE_ADMIN = 'FINANCE_ADMIN',
+  FINANCE_USER = 'FINANCE_USER',
+  FINANCE_VIEWER = 'FINANCE_VIEWER',
+}
+
+// Module types
+export type ModuleType = 'fsm' | 'finance';
 
 export interface ServiceZone {
   serviceZoneId: number;
@@ -18,7 +29,9 @@ export interface ServiceZone {
 export type User = {
   id: string | number;  // Handle both string and number IDs
   email: string;
-  role: UserRole;
+  role: UserRole;  // Primary FSM role
+  financeRole?: FinanceRole;  // Finance module role (optional)
+  allowedModules?: ModuleType[];  // Which modules user can access
   name: string | null;  // Allow null for name
   isActive?: boolean;
   tokenVersion?: string | number;  // Handle both string and number token versions
@@ -39,4 +52,30 @@ export function isUser(value: any): value is User {
     Object.values(UserRole).includes(value.role) &&
     typeof value.name === 'string'
   );
+}
+
+// Helper to check if user has access to a module
+export function hasModuleAccess(user: User | null, module: ModuleType): boolean {
+  if (!user) return false;
+
+  // Check allowedModules array if present (explicit override)
+  if (user.allowedModules && Array.isArray(user.allowedModules)) {
+    return user.allowedModules.includes(module);
+  }
+
+  // If user has financeRole, they are a FINANCE user (not FSM)
+  const isFinanceUser = user.financeRole !== undefined && user.financeRole !== null;
+
+  // If user doesn't have financeRole, they are an FSM user
+  const isFSMUser = !isFinanceUser;
+
+  if (module === 'fsm') {
+    return isFSMUser;
+  }
+
+  if (module === 'finance') {
+    return isFinanceUser;
+  }
+
+  return false;
 }

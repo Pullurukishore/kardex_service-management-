@@ -19,8 +19,9 @@ import {
   X,
   User,
   Circle,
+  RefreshCw,
 } from "lucide-react";
-import { getNavigationForRole, type NavItem } from "./navigationConfig";
+import { getNavigationForRoleAndSubModule, type NavItem, type SubModule } from "./navigationConfig";
 
 // Constants
 const MOBILE_BREAKPOINT = 1024;
@@ -216,6 +217,7 @@ export function Sidebar({
   const { user, logout } = useAuth();
   const [isMobile, setIsMobile] = React.useState(false);
   const [isInitialLoad, setIsInitialLoad] = React.useState(true);
+  const [subModule, setSubModule] = React.useState<SubModule>(null);
 
   React.useEffect(() => {
     const checkMobile = () => {
@@ -234,10 +236,38 @@ export function Sidebar({
     return () => clearTimeout(timer);
   }, []);
 
+  // Read sub-module selection from localStorage (with storage event listener)
+  React.useEffect(() => {
+    const updateSubModule = () => {
+      const stored = localStorage.getItem('selectedSubModule');
+      if (stored === 'tickets' || stored === 'offers') {
+        setSubModule(stored);
+      } else {
+        setSubModule(null);
+      }
+    };
+    
+    // Initial read
+    updateSubModule();
+    
+    // Listen for storage changes (from other tabs or FSM select page)
+    window.addEventListener('storage', updateSubModule);
+    
+    return () => window.removeEventListener('storage', updateSubModule);
+  }, []);
+
+  // Also re-check localStorage when pathname changes (for same-tab navigation)
+  React.useEffect(() => {
+    const stored = localStorage.getItem('selectedSubModule');
+    if (stored === 'tickets' || stored === 'offers') {
+      setSubModule(stored);
+    }
+  }, [pathname]);
+
   const filteredNavItems = React.useMemo(() => {
     if (!userRole) return [];
-    return getNavigationForRole(userRole);
-  }, [userRole]);
+    return getNavigationForRoleAndSubModule(userRole, subModule);
+  }, [userRole, subModule]);
 
   const handleItemClick = React.useCallback((e: React.MouseEvent, item: NavItem) => {
     if (item.disabled) {
@@ -499,6 +529,56 @@ export function Sidebar({
           )}
         </div>
       </ScrollArea>
+
+      {/* Switch Module Button */}
+      {subModule && (
+        <div className={cn(
+          "relative border-t border-[#507295]/10",
+          "bg-white/80 backdrop-blur-xl",
+          isMobile ? "px-4 py-2" : "px-3 py-2"
+        )}>
+          <motion.button
+            onClick={() => router.push('/fsm/select')}
+            whileHover={{ x: collapsed ? 0 : 4 }}
+            whileTap={{ scale: 0.98 }}
+            aria-label="Switch Module"
+            className={cn(
+              "group w-full flex items-center rounded-xl transition-all duration-300",
+              "focus:outline-none focus:ring-2 focus:ring-[#507295]/50 focus:ring-offset-2",
+              "hover:bg-gradient-to-r hover:from-[#507295]/10 hover:to-[#6889ab]/10 hover:shadow-md hover:shadow-[#507295]/10 text-slate-600 hover:text-[#507295]",
+              isMobile ? "px-3 py-3 text-base" : collapsed ? "justify-center py-2.5" : "px-2.5 py-2.5 text-sm"
+            )}
+          >
+            <div className={cn(
+              "flex-shrink-0 rounded-xl transition-all duration-300 flex items-center justify-center",
+              "bg-[#507295]/10 group-hover:bg-[#507295]/20 group-hover:shadow-lg group-hover:scale-110",
+              isMobile ? "h-10 w-10" : "h-9 w-9"
+            )}>
+              <RefreshCw className={cn(
+                "transition-all duration-300 text-[#507295] group-hover:text-[#3d5a78]",
+                isMobile ? "h-5 w-5" : "h-4 w-4"
+              )} />
+            </div>
+            {(!collapsed || isMobile) && (
+              <span className={cn(
+                "font-semibold tracking-tight",
+                isMobile ? "ml-3" : "ml-2.5"
+              )}>Switch Module</span>
+            )}
+            
+            {/* Tooltip when collapsed */}
+            {collapsed && !isMobile && (
+              <div className={cn(
+                "pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-xl bg-[#3d5a78] px-3 py-2.5 text-xs font-semibold text-white shadow-2xl z-[100]",
+                "opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+              )}>
+                Switch Module
+                <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#3d5a78] rotate-45" />
+              </div>
+            )}
+          </motion.button>
+        </div>
+      )}
 
       {/* Logout */}
       <div className={cn(

@@ -224,7 +224,7 @@ export default function PinAccessPage() {
         }
         
         if (hasValidSession) {
-          router.push('/auth/login');
+          router.push('/module-select');
           return;
         }
         setChecking(false);
@@ -302,7 +302,7 @@ export default function PinAccessPage() {
               apiClient.setPinSession(response.sessionId);
             }
           } catch {}
-          router.push('/auth/login');
+          router.push('/module-select');
         }, 1500);
       } else {
         triggerError(response?.error || response?.message || 'Invalid PIN');
