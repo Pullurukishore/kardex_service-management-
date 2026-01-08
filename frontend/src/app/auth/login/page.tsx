@@ -248,7 +248,7 @@ export default function LoginPage() {
             }`}>
               <Shield className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-1">Welcome Back</h1>
+
             <p className="text-blue-200/60 text-sm">Sign in to continue</p>
           </div>
 
