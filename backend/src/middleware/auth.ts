@@ -29,21 +29,21 @@ export const authMiddleware = (roles: UserRole[] = []) => async (
 
     // Verify and decode the token
     const decoded = verifyToken(token);
-    
+
     // Validate token payload structure
     if (!decoded || typeof decoded !== 'object' || !('id' in decoded) || !('role' in decoded)) {
       return res.status(401).json({ error: 'Invalid token payload' });
     }
-    
+
     // Ensure the role from token is valid
     const userRole = String(decoded.role).toUpperCase();
     if (!isValidUserRole(userRole)) {
       return res.status(403).json({ error: 'Invalid user role in token' });
     }
-    
+
     // Check if user has required role
     if (roles.length > 0 && !roles.includes(userRole)) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: 'Insufficient permissions',
         requiredRoles: roles,
         userRole: userRole
@@ -63,12 +63,17 @@ export const authMiddleware = (roles: UserRole[] = []) => async (
       return res.status(401).json({ error: 'User not found' });
     }
 
+    // Check if user has a role assigned
+    if (!userRecord.role) {
+      return res.status(403).json({ error: 'User has no role assigned' });
+    }
+
     // Get the user's role and ensure it's in the correct case
     const dbRole = userRecord.role.toUpperCase() as UserRole;
-    
+
     // Ensure database role matches token role
     if (dbRole !== userRole) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: 'Role mismatch',
         tokenRole: userRole,
         dbRole: dbRole
@@ -85,25 +90,25 @@ export const authMiddleware = (roles: UserRole[] = []) => async (
       role: userRole,
       customerId
     };
-    
+
     next();
   } catch (error: unknown) {
     // Handle specific JWT errors
     if (error && typeof error === 'object' && 'name' in error) {
       const err = error as { name: string; message?: string };
-      
+
       if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({ error: 'Invalid token' });
       }
-      
+
       if (err.name === 'TokenExpiredError') {
         return res.status(401).json({ error: 'Token expired' });
       }
     }
-    
+
     // Default error response
     const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Authentication failed',
       details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
     });

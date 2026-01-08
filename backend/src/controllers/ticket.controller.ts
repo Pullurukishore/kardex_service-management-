@@ -1254,7 +1254,7 @@ export const assignTicket = async (req: TicketRequest, res: Response) => {
 
     // Validate that the user is a valid assignee role
     const validAssigneeRoles = ['SERVICE_PERSON', 'EXPERT_HELPDESK', 'ZONE_USER', 'ZONE_MANAGER'];
-    if (!validAssigneeRoles.includes(assignedUser.role)) {
+    if (!assignedUser.role || !validAssigneeRoles.includes(assignedUser.role)) {
       return res.status(400).json({ error: `Can only assign to: ${validAssigneeRoles.join(', ')}` });
     }
 
@@ -1975,7 +1975,7 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
       type: 'STATUS_CHANGE' | 'NOTE' | 'SCHEDULED';
       description: string;
       data: Record<string, any>;
-      user: { id: number; email: string; name: string | null; role: string };
+      user: { id: number; email: string; name: string | null; role: string | null };
       createdAt: Date;
       updatedAt: Date;
     };
@@ -2004,7 +2004,7 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
         createdAt: history.changedAt,
         updatedAt: history.changedAt
       })),
-      ...notes.map((note: { id: number; content: string; author: { id: number; email: string; name: string | null; role: string }; createdAt: Date; updatedAt: Date }) => ({
+      ...notes.map((note: { id: number; content: string; author: { id: number; email: string; name: string | null; role: string | null }; createdAt: Date; updatedAt: Date }) => ({
         id: `note_${note.id}`,
         type: 'NOTE' as const,
         description: 'Note added',

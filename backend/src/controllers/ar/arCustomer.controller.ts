@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/db';
 
-// Get all customers with pagination
+// Note: The AR module uses a denormalized structure - customer data is embedded in ARInvoice.
+// These functions provide customer-related queries from the ARInvoice table.
+
+// Get all unique customers from AR invoices with pagination
 export const getAllCustomers = async (req: Request, res: Response) => {
     try {
         const { search, riskClass, page = 1, limit = 50 } = req.query;
 
+        // Build the where clause for ARInvoice
         const where: any = {};
 
         if (search) {
@@ -21,21 +25,56 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 
         const skip = (Number(page) - 1) * Number(limit);
 
-        const [customers, total] = await Promise.all([
-            prisma.aRCustomer.findMany({
-                where,
-                skip,
-                take: Number(limit),
-                orderBy: { customerName: 'asc' },
-                include: {
-                    _count: { select: { invoices: true } }
-                }
-            }),
-            prisma.aRCustomer.count({ where })
-        ]);
+        // Get distinct customers from ARInvoice
+        const invoices = await prisma.aRInvoice.findMany({
+            where,
+            select: {
+                bpCode: true,
+                customerName: true,
+                riskClass: true,
+                emailId: true,
+                contactNo: true,
+                region: true,
+                department: true,
+                personInCharge: true,
+            },
+            distinct: ['bpCode'],
+            skip,
+            take: Number(limit),
+            orderBy: { customerName: 'asc' },
+        });
+
+        // Get total count of unique customers
+        const allCustomers = await prisma.aRInvoice.findMany({
+            where,
+            select: { bpCode: true },
+            distinct: ['bpCode'],
+        });
+        const total = allCustomers.length;
+
+        // Get invoice counts for each customer
+        const customersWithCounts = await Promise.all(
+            invoices.map(async (customer) => {
+                const invoiceCount = await prisma.aRInvoice.count({
+                    where: { bpCode: customer.bpCode }
+                });
+                return {
+                    id: customer.bpCode,
+                    bpCode: customer.bpCode,
+                    customerName: customer.customerName,
+                    riskClass: customer.riskClass,
+                    emailId: customer.emailId,
+                    contactNo: customer.contactNo,
+                    region: customer.region,
+                    department: customer.department,
+                    personInCharge: customer.personInCharge,
+                    _count: { invoices: invoiceCount }
+                };
+            })
+        );
 
         res.json({
-            data: customers,
+            data: customersWithCounts,
             pagination: {
                 page: Number(page),
                 limit: Number(limit),
@@ -49,27 +88,49 @@ export const getAllCustomers = async (req: Request, res: Response) => {
     }
 };
 
-// Get customer by ID
+// Get customer by BP Code (id in the route is bpCode)
 export const getCustomerById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const customer = await prisma.aRCustomer.findUnique({
-            where: { id },
-            include: {
-                invoices: {
-                    orderBy: { invoiceDate: 'desc' },
-                    take: 10,
-                    include: {
-                        paymentTerms: true
-                    }
-                }
+        // Get customer info from the first invoice with this bpCode
+        const customerInvoice = await prisma.aRInvoice.findFirst({
+            where: { bpCode: id },
+            select: {
+                bpCode: true,
+                customerName: true,
+                riskClass: true,
+                emailId: true,
+                contactNo: true,
+                region: true,
+                department: true,
+                personInCharge: true,
             }
         });
 
-        if (!customer) {
+        if (!customerInvoice) {
             return res.status(404).json({ error: 'Customer not found' });
         }
+
+        // Get all invoices for this customer
+        const invoices = await prisma.aRInvoice.findMany({
+            where: { bpCode: id },
+            orderBy: { invoiceDate: 'desc' },
+            take: 10,
+        });
+
+        const customer = {
+            id: customerInvoice.bpCode,
+            bpCode: customerInvoice.bpCode,
+            customerName: customerInvoice.customerName,
+            riskClass: customerInvoice.riskClass,
+            emailId: customerInvoice.emailId,
+            contactNo: customerInvoice.contactNo,
+            region: customerInvoice.region,
+            department: customerInvoice.department,
+            personInCharge: customerInvoice.personInCharge,
+            invoices,
+        };
 
         res.json(customer);
     } catch (error: any) {
@@ -78,98 +139,66 @@ export const getCustomerById = async (req: Request, res: Response) => {
     }
 };
 
-// Create customer
+// Create customer - Not applicable in denormalized schema
+// Customer info is created with invoices
 export const createCustomer = async (req: Request, res: Response) => {
-    try {
-        const {
-            bpCode,
-            customerName,
-            region,
-            department,
-            personInCharge,
-            contactNo,
-            emailId,
-            riskClass,
-            creditLimit
-        } = req.body;
-
-        if (!bpCode || !customerName) {
-            return res.status(400).json({ error: 'BP Code and Customer Name are required' });
-        }
-
-        const customer = await prisma.aRCustomer.create({
-            data: {
-                bpCode,
-                customerName,
-                region,
-                department,
-                personInCharge,
-                contactNo,
-                emailId,
-                riskClass: riskClass || 'LOW',
-                creditLimit: creditLimit ? parseFloat(creditLimit) : null
-            }
-        });
-
-        res.status(201).json(customer);
-    } catch (error: any) {
-        console.error('Error creating AR customer:', error);
-        if (error.code === 'P2002') {
-            return res.status(400).json({ error: 'Customer with this BP Code already exists' });
-        }
-        res.status(500).json({ error: 'Failed to create customer', message: error.message });
-    }
+    res.status(400).json({
+        error: 'Customer creation is not supported. Customer data is managed through invoice imports.'
+    });
 };
 
-// Update customer
+// Update customer - Updates customer info on all invoices with this bpCode
 export const updateCustomer = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        const { emailId, contactNo, region, department, personInCharge, riskClass } = req.body;
 
-        if (updateData.creditLimit) {
-            updateData.creditLimit = parseFloat(updateData.creditLimit);
-        }
-
-        const customer = await prisma.aRCustomer.update({
-            where: { id },
-            data: updateData
+        // Update customer info on all invoices with this bpCode
+        const updateResult = await prisma.aRInvoice.updateMany({
+            where: { bpCode: id },
+            data: {
+                ...(emailId !== undefined && { emailId }),
+                ...(contactNo !== undefined && { contactNo }),
+                ...(region !== undefined && { region }),
+                ...(department !== undefined && { department }),
+                ...(personInCharge !== undefined && { personInCharge }),
+                ...(riskClass !== undefined && { riskClass }),
+            }
         });
 
-        res.json(customer);
-    } catch (error: any) {
-        console.error('Error updating AR customer:', error);
-        if (error.code === 'P2025') {
+        if (updateResult.count === 0) {
             return res.status(404).json({ error: 'Customer not found' });
         }
+
+        // Return updated customer info
+        const updatedCustomer = await prisma.aRInvoice.findFirst({
+            where: { bpCode: id },
+            select: {
+                bpCode: true,
+                customerName: true,
+                riskClass: true,
+                emailId: true,
+                contactNo: true,
+                region: true,
+                department: true,
+                personInCharge: true,
+            }
+        });
+
+        res.json({
+            id: id,
+            ...updatedCustomer,
+            message: `Updated ${updateResult.count} invoice(s)`
+        });
+    } catch (error: any) {
+        console.error('Error updating AR customer:', error);
         res.status(500).json({ error: 'Failed to update customer', message: error.message });
     }
 };
 
-// Delete customer
+// Delete customer - Not supported in denormalized schema
 export const deleteCustomer = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-
-        // Check if customer has invoices
-        const invoiceCount = await prisma.aRInvoice.count({ where: { customerId: id } });
-        if (invoiceCount > 0) {
-            return res.status(400).json({
-                error: 'Cannot delete customer with existing invoices',
-                invoiceCount
-            });
-        }
-
-        await prisma.aRCustomer.delete({
-            where: { id }
-        });
-
-        res.json({ message: 'Customer deleted successfully' });
-    } catch (error: any) {
-        console.error('Error deleting AR customer:', error);
-        if (error.code === 'P2025') {
-            return res.status(404).json({ error: 'Customer not found' });
-        }
-        res.status(500).json({ error: 'Failed to delete customer', message: error.message });
-    }
+    res.status(400).json({
+        error: 'Customer deletion is not supported. Delete individual invoices instead.'
+    });
 };

@@ -185,7 +185,7 @@ export const authenticate = async (
       const userPayload: AuthUser = {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role || 'EXTERNAL_USER' as UserRole,
         customerId: user.customerId ?? undefined,
         isActive: user.isActive,
         zoneIds: zoneIds.length > 0 ? zoneIds : undefined,
