@@ -758,8 +758,8 @@ export default function ForecastDashboard() {
                       <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Zone</th>
                       <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">No of offers</th>
                       <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offers value</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offers received</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offer funnel</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Orders received</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Open offer funnel</th>
                       <th className="px-2 py-2 text-right font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wide bg-sky-50/50 dark:bg-sky-900/20">Target</th>
                       <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">%Dev</th>
                       <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Balance</th>
@@ -969,8 +969,8 @@ export default function ForecastDashboard() {
                           <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
                           <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created in this month">No of offers</th>
                           <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created in this month (based on offerMonth)">Offers value</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Offers received</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Offer funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Orders received</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
                           <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: Yearly Zone Target ÷ 12 = Monthly booking target">BU/Mo</th>
                           <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
                           <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Pipeline coverage target (4x for healthy funnel)">OfferBU</th>
@@ -1104,8 +1104,8 @@ export default function ForecastDashboard() {
                                         <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
                                         <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
                                         <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Offers received</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Offer funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Open offer funnel</th>
                                         <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
                                         <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
                                         <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
@@ -1251,8 +1251,8 @@ export default function ForecastDashboard() {
                           <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
                           <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created by this user in this month">No of offers</th>
                           <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created by this user in this month">Offers value</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Offers received</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Offer funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Orders received</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
                           <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: User's Yearly Target ÷ 12 = Monthly booking target">BU/Mo</th>
                           <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
                           <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Monthly offer target (4x pipeline coverage)">OfferBU</th>
@@ -1386,8 +1386,8 @@ export default function ForecastDashboard() {
                                         <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
                                         <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
                                         <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Offers received</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Offer funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Open offer funnel</th>
                                         <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
                                         <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
                                         <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
