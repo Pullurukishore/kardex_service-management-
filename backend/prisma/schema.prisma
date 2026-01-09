@@ -1217,10 +1217,11 @@ model ARPaymentHistory {
   invoiceId       String
   amount          Decimal   @db.Decimal(15, 2)
   paymentDate     DateTime
+  paymentTime     String?   // Time of payment (HH:mm format)
   paymentMode     String    // NEFT, RTGS, CHEQUE, CASH, ADJUSTMENT
   referenceNo     String?   // Cheque No, UTR No
   notes           String?
-  recordedBy      String?
+  recordedBy      String?   // User who recorded this payment
   createdAt       DateTime  @default(now())
   
   // Relation to Invoice (using loose relation since ARInvoice is denormalized)

@@ -6,15 +6,15 @@ import { logger } from '../utils/logger';
 
 /**
  * Helper function to properly convert Prisma Decimal to JavaScript number
- * Avoids floating point precision issues by using string conversion
+ * Preserves full precision for accurate calculations
  */
 function toNumber(value: any): number {
     if (value === null || value === undefined) return 0;
     // Convert to string first to avoid precision issues, then parse
     const parsed = parseFloat(value.toString());
     if (isNaN(parsed)) return 0;
-    // Round to 2 decimal places to avoid floating point errors
-    return Math.round(parsed * 100) / 100;
+    // Return full precision - no rounding
+    return parsed;
 }
 
 interface ZoneSummary {
@@ -34,6 +34,7 @@ interface ZoneSummary {
 interface MonthlyData {
     month: string;
     monthLabel: string;
+    noOfOffers: number;
     offersValue: number;
     orderReceived: number;
     ordersBooked: number;
@@ -702,6 +703,7 @@ export class ForecastController {
                 const hitRate = totalOffersValue > 0 ? Math.round((totalWonValue / totalOffersValue) * 100) : 0;
 
                 const monthlyData: MonthlyData[] = [];
+                let totalNoOfOffers = 0;
                 let totalOffersValueSum = 0;
                 let totalOrderReceived = 0;
                 let totalOrdersBooked = 0;
@@ -709,11 +711,29 @@ export class ForecastController {
                 let totalBUMonthly = 0;
                 let totalOfferBUMonth = 0;
 
+                // Calculate TOTAL offers value from ALL offers in zone (matching Zone Summary logic)
+                // This ensures consistency between Zone Summary and Monthly Breakdown totals
+                const allOffersValue = offers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
+
+                // Calculate total orders received for the zone
+                // Use poReceivedMonth if set, otherwise fall back to offerMonth for year filter
+                const targetYearStr = String(targetYear);
+                const allOrdersReceived = offers
+                    .filter(o => o.stage === 'WON')
+                    .reduce((sum, o) => {
+                        const effectiveMonth = o.poReceivedMonth || o.offerMonth;
+                        if (effectiveMonth && effectiveMonth.startsWith(targetYearStr)) {
+                            return sum + (o.poValue ? Number(o.poValue) : (o.offerValue ? Number(o.offerValue) : 0));
+                        }
+                        return sum;
+                    }, 0);
+
                 for (let month = 1; month <= 12; month++) {
                     const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
 
-                    // Offers value for this month (by offerMonth)
+                    // Offers for this month (by offerMonth)
                     const monthOffers = offers.filter(o => o.offerMonth === monthStr);
+                    const noOfOffers = monthOffers.length;
                     const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
 
                     // Orders received (won offers in this month)
@@ -762,6 +782,7 @@ export class ForecastController {
                     monthlyData.push({
                         month: monthStr,
                         monthLabel: monthNames[month - 1],
+                        noOfOffers,
                         offersValue,
                         orderReceived,
                         ordersBooked,
@@ -774,6 +795,7 @@ export class ForecastController {
                         offerBUMonthDev: offerBUMonthDev !== null ? Math.round(offerBUMonthDev) : null,
                     });
 
+                    totalNoOfOffers += noOfOffers;
                     totalOffersValueSum += offersValue;
                     totalOrderReceived += orderReceived;
                     totalOrdersBooked += ordersBooked;
@@ -822,8 +844,9 @@ export class ForecastController {
                     for (let month = 1; month <= 12; month++) {
                         const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
 
-                        // Offers value for this month (by offerMonth)
+                        // Offers for this month (by offerMonth)
                         const monthOffers = productOffers.filter(o => o.offerMonth === monthStr);
+                        const noOfOffers = monthOffers.length;
                         const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
 
                         // Orders received (won offers in this month)
@@ -850,6 +873,7 @@ export class ForecastController {
                         productMonthlyData.push({
                             month: monthStr,
                             monthLabel: monthNames[month - 1],
+                            noOfOffers,
                             offersValue,
                             orderReceived,
                             ordersInHand,
@@ -902,10 +926,12 @@ export class ForecastController {
                     monthlyData,
                     productBreakdown: filteredProductBreakdown,
                     totals: {
-                        offersValue: totalOffersValueSum,
-                        orderReceived: totalOrderReceived,
-                        ordersBooked: totalOrdersBooked,
-                        ordersInHand: totalOrdersInHand,
+                        // Use allOffersValue and allOrdersReceived to match Zone Summary
+                        // This includes offers without offerMonth set
+                        offersValue: allOffersValue,
+                        orderReceived: allOrdersReceived,
+                        ordersBooked: allOrdersReceived, // Same as orderReceived
+                        ordersInHand: allOffersValue - allOrdersReceived, // Recalculate based on all offers
                         buMonthly: totalBUMonthly,
                         offerBUMonth: totalOfferBUMonth,
                     },
@@ -993,6 +1019,7 @@ export class ForecastController {
             interface UserMonthlyData {
                 month: string;
                 monthLabel: string;
+                noOfOffers: number;
                 offersValue: number;
                 orderReceived: number;
                 ordersInHand: number;
@@ -1017,6 +1044,7 @@ export class ForecastController {
                     monthlyData: {
                         month: string;
                         monthLabel: string;
+                        noOfOffers: number;
                         offersValue: number;
                         orderReceived: number;
                         ordersInHand: number;
@@ -1114,6 +1142,7 @@ export class ForecastController {
                 const hitRate = totalOffersValue > 0 ? Math.round((totalWonValue / totalOffersValue) * 100) : 0;
 
                 const monthlyData: UserMonthlyData[] = [];
+                let totalNoOfOffers = 0;
                 let totalOffersValueSum = 0;
                 let totalOrderReceived = 0;
                 let totalOrdersInHand = 0;
@@ -1123,8 +1152,9 @@ export class ForecastController {
                 for (let month = 1; month <= 12; month++) {
                     const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
 
-                    // Offers value for this month (by offerMonth)
+                    // Offers for this month (by offerMonth)
                     const monthOffers = offers.filter(o => o.offerMonth === monthStr);
+                    const noOfOffers = monthOffers.length;
                     const offersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
 
                     // Orders received (won offers in this month)
@@ -1160,6 +1190,7 @@ export class ForecastController {
                     monthlyData.push({
                         month: monthStr,
                         monthLabel: monthNames[month - 1],
+                        noOfOffers,
                         offersValue,
                         orderReceived,
                         ordersInHand,
@@ -1169,6 +1200,7 @@ export class ForecastController {
                         offerBUMonthDev: offerBUMonthDev !== null ? Math.round(offerBUMonthDev) : null,
                     });
 
+                    totalNoOfOffers += noOfOffers;
                     totalOffersValueSum += offersValue;
                     totalOrderReceived += orderReceived;
                     totalOrdersInHand += ordersInHand;
@@ -1216,8 +1248,9 @@ export class ForecastController {
                     for (let month = 1; month <= 12; month++) {
                         const monthStr = `${targetYear}-${String(month).padStart(2, '0')}`;
 
-                        // Offers value for this month (by offerMonth)
+                        // Offers for this month (by offerMonth)
                         const monthOffers = productOffers.filter(o => o.offerMonth === monthStr);
+                        const pNoOfOffers = monthOffers.length;
                         const pOffersValue = monthOffers.reduce((sum, o) => sum + (o.offerValue ? Number(o.offerValue) : 0), 0);
 
                         // Orders received (won offers in this month)
@@ -1244,6 +1277,7 @@ export class ForecastController {
                         productMonthlyData.push({
                             month: monthStr,
                             monthLabel: monthNames[month - 1],
+                            noOfOffers: pNoOfOffers,
                             offersValue: pOffersValue,
                             orderReceived: pOrderReceived,
                             ordersInHand: pOrdersInHand,

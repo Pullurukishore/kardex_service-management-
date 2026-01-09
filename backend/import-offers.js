@@ -17,16 +17,35 @@ const userMappingPath = path.join(__dirname, 'data', 'user-mapping.json');
 const userMapping = JSON.parse(fs.readFileSync(userMappingPath, 'utf8'));
 
 // Product type mapping from Excel to Prisma enum
+// Includes typos, case variations, and abbreviations found in Excel
 const productTypeMap = {
+    // Contract variations
     'Contract': 'CONTRACT',
+    'CONTRACT': 'CONTRACT',
+    'Contarct': 'CONTRACT',
+    'Ccontarct': 'CONTRACT',
+    // SPP variations
     'SPP': 'SPP',
+    'spp': 'SPP',
+    // Relocation variations
     'Relocation': 'RELOCATION',
+    'RELOCATION': 'RELOCATION',
+    // Upgrade kit variations
     'Upgrade kit': 'UPGRADE_KIT',
+    'Upgrade': 'UPGRADE_KIT',
+    // Software
     'Software': 'SOFTWARE',
+    // BD Charges & Spare
     'BD Charges': 'BD_CHARGES',
     'BD Spare': 'BD_SPARE',
+    // Midlife Upgrade variations
     'Midlife Upgrade': 'MIDLIFE_UPGRADE',
-    'Retrofit kit': 'RETROFIT_KIT'
+    'MLU': 'MIDLIFE_UPGRADE',
+    // Retrofit kit variations
+    'Retrofit kit': 'RETROFIT_KIT',
+    'RETROFIT': 'RETROFIT_KIT',
+    // MC (Maintenance Contract - map to CONTRACT)
+    'MC': 'CONTRACT'
 };
 
 // Lead status mapping
@@ -52,17 +71,27 @@ const monthMap = {
 };
 
 // Convert Excel date serial to JS Date
+// ALL offers are 2025 - force year to 2025 for all dates
 function excelDateToJS(excelDate) {
     if (!excelDate) return null;
+    let date = null;
+
     if (typeof excelDate === 'string') {
         // Try parsing date string
-        const date = new Date(excelDate);
-        if (!isNaN(date.getTime())) return date;
-        return null;
-    }
-    if (typeof excelDate === 'number') {
+        date = new Date(excelDate);
+    } else if (typeof excelDate === 'number') {
         // Excel date serial number
-        const date = new Date((excelDate - 25569) * 86400 * 1000);
+        date = new Date((excelDate - 25569) * 86400 * 1000);
+    }
+
+    // Validate the date and force year to 2025
+    if (date && !isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        // Force ALL years to 2025 (all offers are 2025 offers)
+        if (year !== 2025) {
+            console.warn(`  ⚠ Year ${year} detected, normalizing to 2025`);
+        }
+        date.setFullYear(2025);
         return date;
     }
     return null;
@@ -99,17 +128,24 @@ const personSheets = [
     { name: 'Pankaj', zone: 'EAST' }
 ];
 
+// Check for dry-run mode
+const isDryRun = process.argv.includes('--dry-run');
+
 async function main() {
     console.log('========================================');
-    console.log('Importing Offers from Excel');
+    console.log(isDryRun ? 'DRY RUN - Analyzing Offers from Excel' : 'Importing Offers from Excel');
     console.log('========================================\n');
 
     const workbookPath = path.join(__dirname, 'data', 'Repaired_2025_Zonewise_Open_Closed_Offer funnel_ on 04032025.xlsx');
     const workbook = XLSX.readFile(workbookPath);
 
+    let totalReadFromExcel = 0;
+    let totalUniqueOffers = 0;
     let totalImported = 0;
     let totalSkipped = 0;
     let totalErrors = 0;
+    const userStats = [];
+    const globalOfferRefs = new Set(); // Track unique offers globally
 
     // Get admin user for createdBy/updatedBy (use first user or create system user)
     let adminUser = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
@@ -167,32 +203,97 @@ async function main() {
         console.log(`\nProcessing ${sheetName} (${zone})...`);
 
         let sheetImported = 0;
+        let sheetRead = 0;
+        const sheetOfferRefs = new Set(); // Track unique offers per sheet
 
-        // Read offers
+        // PASS 1: Collect all data per offer reference (sum values, collect machine serials)
+        const offerDataMap = new Map(); // Map of offerRef -> aggregated data
+
         for (let i = headerRowIndex + 1; i < data.length; i++) {
             const row = data[i];
             if (!row || row.length === 0) continue;
 
             const slValue = row[0];
             const regDate = regDateIndex >= 0 ? row[regDateIndex] : null;
+            const offerValueVal = offerValueIndex >= 0 ? row[offerValueIndex] : null;
 
-            // Only process rows with Reg Date (unique offers)
-            if (!regDate) continue;
-            if (typeof slValue !== 'number' || slValue <= 0) continue;
+            // Count ALL rows with offer values (match Excel - don't require RegDate)
+            if (!offerValueVal || typeof offerValueVal !== 'number' || offerValueVal <= 0) continue;
 
-            const offerRef = offerRefIndex >= 0 ? row[offerRefIndex] : null;
-            if (!offerRef) continue;
+            totalReadFromExcel++;
+            sheetRead++;
+
+            let offerRef = offerRefIndex >= 0 ? row[offerRefIndex] : null;
+
+            // Auto-generate offer reference if missing
+            if (!offerRef) {
+                offerRef = `AUTO-${sheetName.toUpperCase()}-${slValue}`;
+            }
 
             const offerRefStr = String(offerRef).trim();
 
-            // Check if offer already exists
-            const existingOffer = await prisma.offer.findUnique({
-                where: { offerReferenceNumber: offerRefStr }
-            });
+            // Get row data (offerValueVal already declared above)
+            const poValueVal = poValueIndex >= 0 ? row[poValueIndex] : null;
+            const machineSerial = machineSerialIndex >= 0 ? row[machineSerialIndex] : null;
 
-            if (existingOffer) {
-                totalSkipped++;
-                continue;
+            // Group by offer reference, SUM values from all rows (match Excel)
+            if (!offerDataMap.has(offerRefStr)) {
+                // First occurrence - create new entry
+                offerDataMap.set(offerRefStr, {
+                    firstRow: row,
+                    firstRegDate: regDate,
+                    slValue: slValue,
+                    offerValue: (offerValueVal && typeof offerValueVal === 'number') ? offerValueVal : 0,
+                    poValue: (poValueVal && typeof poValueVal === 'number') ? poValueVal : 0,
+                    machineSerials: new Set()
+                });
+            } else {
+                // Duplicate row - SUM the values
+                const existing = offerDataMap.get(offerRefStr);
+                if (offerValueVal && typeof offerValueVal === 'number') {
+                    existing.offerValue += offerValueVal;
+                }
+                if (poValueVal && typeof poValueVal === 'number') {
+                    existing.poValue += poValueVal;
+                }
+            }
+
+            // Collect machine serial
+            if (machineSerial) {
+                offerDataMap.get(offerRefStr).machineSerials.add(String(machineSerial).trim());
+            }
+        }
+
+        console.log(`  Found ${offerDataMap.size} unique offers from ${sheetRead} rows`);
+
+        // In dry-run mode, just count
+        if (isDryRun) {
+            for (const offerRefStr of offerDataMap.keys()) {
+                if (!globalOfferRefs.has(offerRefStr)) {
+                    globalOfferRefs.add(offerRefStr);
+                    sheetOfferRefs.add(offerRefStr);
+                    totalUniqueOffers++;
+                    sheetImported++;
+                    totalImported++;
+                }
+            }
+            userStats.push({ name: sheetName, zone, read: sheetRead, imported: sheetImported, unique: offerDataMap.size });
+            console.log(`  ✓ Would import ${sheetImported} unique offers`);
+            continue;
+        }
+
+        // PASS 2: Import each unique offer with summed values
+        for (const [offerRefStr, offerData] of offerDataMap) {
+            const row = offerData.firstRow;
+            const regDate = offerData.firstRegDate;
+            const machineSerials = Array.from(offerData.machineSerials);
+
+            // Track unique offers globally
+            const isNewUniqueOffer = !globalOfferRefs.has(offerRefStr);
+            if (isNewUniqueOffer) {
+                globalOfferRefs.add(offerRefStr);
+                sheetOfferRefs.add(offerRefStr);
+                totalUniqueOffers++;
             }
 
             try {
@@ -204,29 +305,13 @@ async function main() {
                     continue;
                 }
 
-                // Extract data
+                // Extract data from first row
                 const companyName = companyIndex >= 0 ? String(row[companyIndex] || '').trim() : 'Unknown Company';
                 const locationVal = locationIndex >= 0 ? String(row[locationIndex] || '').trim() : null;
                 const department = departmentIndex >= 0 ? String(row[departmentIndex] || '').trim() : null;
                 const contactName = contactNameIndex >= 0 ? String(row[contactNameIndex] || '').trim() : 'Unknown Contact';
                 const contactNumber = contactNumberIndex >= 0 ? String(row[contactNumberIndex] || '').trim() : '0000000000';
                 const emailVal = emailIndex >= 0 ? String(row[emailIndex] || '').trim() : null;
-
-                // Collect all UNIQUE machine serials for this offer (use Set to deduplicate)
-                const machineSerialSet = new Set();
-                let j = i;
-                while (j < data.length) {
-                    const currentRow = data[j];
-                    if (!currentRow || currentRow.length === 0) break;
-
-                    const currentRegDate = regDateIndex >= 0 ? currentRow[regDateIndex] : null;
-                    if (j > i && currentRegDate) break;
-
-                    const machineSerial = machineSerialIndex >= 0 ? currentRow[machineSerialIndex] : null;
-                    if (machineSerial) machineSerialSet.add(String(machineSerial).trim());
-                    j++;
-                }
-                const machineSerials = Array.from(machineSerialSet);
 
                 // Find or create Customer
                 let customer = await prisma.customer.findFirst({
@@ -263,71 +348,85 @@ async function main() {
                     });
                 }
 
-                // Get other offer data
+                // Get other offer data (use SUMMED values from offerData)
                 const productTypeVal = productTypeIndex >= 0 ? row[productTypeIndex] : null;
                 const leadVal = leadIndex >= 0 ? row[leadIndex] : null;
                 const offerDateVal = offerDateIndex >= 0 ? row[offerDateIndex] : null;
-                const offerValueVal = offerValueIndex >= 0 ? row[offerValueIndex] : null;
                 const offerMonthVal = offerMonthIndex >= 0 ? row[offerMonthIndex] : null;
                 const poExpectedVal = poExpectedMonthIndex >= 0 ? row[poExpectedMonthIndex] : null;
                 const probabilityVal = probabilityIndex >= 0 ? row[probabilityIndex] : null;
                 const poNumberVal = poNumberIndex >= 0 ? row[poNumberIndex] : null;
                 const poDateVal = poDateIndex >= 0 ? row[poDateIndex] : null;
-                const poValueVal = poValueIndex >= 0 ? row[poValueIndex] : null;
                 const poReceivedMonthVal = poReceivedMonthIndex >= 0 ? row[poReceivedMonthIndex] : null;
                 const openFunnelVal = openFunnelIndex >= 0 ? row[openFunnelIndex] : null;
                 const remarksVal = remarksIndex >= 0 ? row[remarksIndex] : null;
 
                 // Determine stage based on data
                 let stage = 'INITIAL';
-                if (poNumberVal && poValueVal && poValueVal > 0) {
+                if (poNumberVal && offerData.poValue > 0) {
                     stage = 'WON';
                 } else if (probabilityVal && typeof probabilityVal === 'number' && probabilityVal > 0) {
                     stage = 'PROPOSAL_SENT';
                 }
 
                 // Extract year from registration date for month conversions
-                const registrationDateJS = excelDateToJS(regDate);
-                const offerYear = registrationDateJS ? registrationDateJS.getFullYear() : new Date().getFullYear();
+                let registrationDateJS = excelDateToJS(regDate);
 
-                // Create Offer
-                const offer = await prisma.offer.create({
-                    data: {
-                        offerReferenceNumber: offerRefStr,
-                        offerReferenceDate: excelDateToJS(offerDateVal),
-                        title: `Offer for ${companyName}`,
-                        productType: productTypeMap[productTypeVal] || null,
-                        lead: leadStatusMap[leadVal] || null,
-                        registrationDate: registrationDateJS,
-                        company: companyName,
-                        location: locationVal,
-                        department: department,
-                        contactPersonName: contactName,
-                        contactNumber: contactNumber,
-                        email: emailVal,
-                        machineSerialNumber: machineSerials[0] || null,
-                        status: 'OPEN',
-                        stage: stage,
-                        customerId: customer.id,
-                        contactId: contact.id,
-                        zoneId: userData.zoneId,
-                        assignedToId: userData.userId,
-                        createdById: userData.userId,
-                        updatedById: userData.userId,
-                        offerValue: offerValueVal ? parseFloat(offerValueVal) : null,
-                        offerMonth: monthToYYYYMM(offerMonthVal, offerYear),
-                        poExpectedMonth: monthToYYYYMM(poExpectedVal, offerYear),
-                        probabilityPercentage: probabilityToPercentage(probabilityVal),
-                        poNumber: poNumberVal ? String(poNumberVal) : null,
-                        poDate: excelDateToJS(poDateVal),
-                        poValue: poValueVal ? parseFloat(poValueVal) : null,
-                        poReceivedMonth: monthToYYYYMM(poReceivedMonthVal, offerYear),
-                        openFunnel: openFunnelVal ? openFunnelVal > 0 : true,
-                        remarks: remarksVal ? String(remarksVal) : null,
-                        createdAt: registrationDateJS || new Date(),
-                        updatedAt: registrationDateJS || new Date()
+                // If registrationDate is null (invalid parsing), create a default date in 2025
+                if (!registrationDateJS) {
+                    // Try to get month/day from the raw value, default to Jan 1, 2025
+                    registrationDateJS = new Date(2025, 0, 1); // Jan 1, 2025
+                }
+
+                const offerYear = 2025; // Hardcoded to 2025 for all offers
+
+                // Create or Update Offer (upsert) - using SUMMED values
+                const offerDataForDb = {
+                    offerReferenceNumber: offerRefStr,
+                    offerReferenceDate: excelDateToJS(offerDateVal),
+                    title: `Offer for ${companyName}`,
+                    productType: productTypeMap[productTypeVal] || null,
+                    lead: leadStatusMap[leadVal] || null,
+                    registrationDate: registrationDateJS,
+                    company: companyName,
+                    location: locationVal,
+                    department: department,
+                    contactPersonName: contactName,
+                    contactNumber: contactNumber,
+                    email: emailVal,
+                    machineSerialNumber: machineSerials[0] || null,
+                    status: 'OPEN',
+                    stage: stage,
+                    customerId: customer.id,
+                    contactId: contact.id,
+                    zoneId: userData.zoneId,
+                    assignedToId: userData.userId,
+                    createdById: userData.userId,
+                    updatedById: userData.userId,
+                    offerValue: offerData.offerValue > 0 ? offerData.offerValue : null, // SUMMED value
+                    // Use offerMonth from Excel, or derive from registrationDate if missing
+                    offerMonth: monthToYYYYMM(offerMonthVal, offerYear) ||
+                        (registrationDateJS ? `${offerYear}-${String(registrationDateJS.getMonth() + 1).padStart(2, '0')}` : null),
+                    poExpectedMonth: monthToYYYYMM(poExpectedVal, offerYear),
+                    probabilityPercentage: probabilityToPercentage(probabilityVal),
+                    poNumber: poNumberVal ? String(poNumberVal) : null,
+                    poDate: excelDateToJS(poDateVal),
+                    poValue: offerData.poValue > 0 ? offerData.poValue : null, // SUMMED value
+                    poReceivedMonth: monthToYYYYMM(poReceivedMonthVal, offerYear),
+                    openFunnel: openFunnelVal ? openFunnelVal > 0 : true,
+                    remarks: remarksVal ? String(remarksVal) : null,
+                    updatedAt: new Date()
+                };
+
+                const offer = await prisma.offer.upsert({
+                    where: { offerReferenceNumber: offerRefStr },
+                    update: offerDataForDb,
+                    create: {
+                        ...offerDataForDb,
+                        createdAt: registrationDateJS || new Date()
                     }
                 });
+                console.log(`  ✓ Imported offer: ${offerRefStr}`);
 
                 // Create OfferAsset entries for each machine serial
                 for (const serial of machineSerials) {
@@ -362,24 +461,50 @@ async function main() {
                     });
                 }
 
-                sheetImported++;
-                totalImported++;
+                if (isNewUniqueOffer) {
+                    sheetImported++;
+                    totalImported++;
+                }
             } catch (error) {
                 console.error(`  ✗ Error importing offer ${offerRefStr}:`, error.message);
                 totalErrors++;
             }
         }
 
-        console.log(`  ✓ Imported ${sheetImported} offers`);
+        userStats.push({ name: sheetName, zone, read: sheetRead, imported: sheetImported, unique: sheetOfferRefs.size });
+        console.log(`  ✓ Rows: ${sheetRead} | Unique Offers: ${sheetOfferRefs.size} | Imported: ${sheetImported}`);
     }
 
     console.log('\n========================================');
-    console.log('IMPORT SUMMARY');
+    console.log(isDryRun ? 'DRY RUN SUMMARY' : 'IMPORT SUMMARY');
     console.log('========================================');
-    console.log(`  Total Imported: ${totalImported}`);
-    console.log(`  Total Skipped (already exists): ${totalSkipped}`);
-    console.log(`  Total Errors: ${totalErrors}`);
+    console.log('');
+    console.log('USER-WISE BREAKDOWN:');
+    console.log('┌──────────┬────────┬────────┬──────────┬──────────┐');
+    console.log('│   User   │  Zone  │  Rows  │  Unique  │ Imported │');
+    console.log('├──────────┼────────┼────────┼──────────┼──────────┤');
+    for (const stat of userStats) {
+        const name = stat.name.padEnd(8);
+        const zone = stat.zone.padEnd(6);
+        const read = String(stat.read).padStart(4);
+        const unique = String(stat.unique).padStart(6);
+        const imported = String(stat.imported).padStart(6);
+        console.log(`│ ${name} │ ${zone} │ ${read}   │ ${unique}   │ ${imported}   │`);
+    }
+    console.log('└──────────┴────────┴────────┴──────────┴──────────┘');
+    console.log('');
+    console.log('TOTALS:');
+    console.log(`  Total Rows in Excel:    ${totalReadFromExcel}`);
+    console.log(`  Total Unique Offers:    ${totalUniqueOffers}`);
+    console.log(`  ${isDryRun ? 'Would Import' : 'Imported'}:              ${totalImported}`);
+    console.log(`  Errors:                 ${totalErrors}`);
+    console.log('');
+    console.log(`  Note: ${totalReadFromExcel - totalUniqueOffers} rows are duplicates (same offer ref = same offer)`);
     console.log('========================================');
+    if (isDryRun) {
+        console.log('\n💡 This was a DRY RUN. No changes were made.');
+        console.log('   Run without --dry-run to actually import.');
+    }
 }
 
 main()

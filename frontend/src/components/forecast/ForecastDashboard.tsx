@@ -46,6 +46,7 @@ interface SummaryTotals {
 interface MonthlyData {
   month: string
   monthLabel: string
+  noOfOffers: number
   offersValue: number
   orderReceived: number
   ordersBooked: number
@@ -101,6 +102,7 @@ interface ZoneMonthlyBreakdown {
 interface UserMonthlyData {
   month: string
   monthLabel: string
+  noOfOffers: number
   offersValue: number
   orderReceived: number
   ordersInHand: number
@@ -754,10 +756,10 @@ export default function ForecastDashboard() {
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
                       <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Zone</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">#Offers</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Value</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Orders</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Funnel</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">No of offers</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offers value</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offers received</th>
+                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offer funnel</th>
                       <th className="px-2 py-2 text-right font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wide bg-sky-50/50 dark:bg-sky-900/20">Target</th>
                       <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">%Dev</th>
                       <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Balance</th>
@@ -965,9 +967,10 @@ export default function ForecastDashboard() {
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-100/95 dark:bg-slate-800/95 shadow-sm">
                           <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created in this month (based on offerMonth)">Offers</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Orders</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created in this month">No of offers</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created in this month (based on offerMonth)">Offers value</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Offers received</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Offer funnel</th>
                           <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: Yearly Zone Target ÷ 12 = Monthly booking target">BU/Mo</th>
                           <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
                           <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Pipeline coverage target (4x for healthy funnel)">OfferBU</th>
@@ -984,6 +987,9 @@ export default function ForecastDashboard() {
                           >
                             <td className="px-2 py-1.5 sticky left-0 bg-inherit">
                               <span className="font-semibold text-slate-800 dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
+                            </td>
+                            <td className="px-2 py-1.5 text-right">
+                              <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{month.noOfOffers || 0}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
                               <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{formatCurrencyCompact(month.offersValue)}</span>
@@ -1025,6 +1031,7 @@ export default function ForecastDashboard() {
                               Total
                             </span>
                           </td>
+                          <td className="px-2 py-2 text-right font-mono text-slate-900 dark:text-white">{activeZone.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
                           <td className="px-2 py-2 text-right font-mono text-blue-700 dark:text-blue-300">{formatCurrencyCompact(activeZone.totals.offersValue)}</td>
                           <td className="px-2 py-2 text-right font-mono text-emerald-700 dark:text-emerald-300">{formatCurrencyCompact(activeZone.totals.orderReceived)}</td>
                           <td className="px-2 py-2 text-right font-mono text-amber-700 dark:text-amber-300">{formatCurrencyCompact(activeZone.totals.ordersInHand)}</td>
@@ -1095,9 +1102,10 @@ export default function ForecastDashboard() {
                                     <thead>
                                       <tr className="bg-slate-100/95 dark:bg-slate-800/95">
                                         <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
-                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
+                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
+                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Offers received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Offer funnel</th>
                                         <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
                                         <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
                                         <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
@@ -1108,6 +1116,7 @@ export default function ForecastDashboard() {
                                       {product.monthlyData.map((month: any, idx: number) => (
                                         <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'}>
                                           <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-slate-800">{month.monthLabel.slice(0, 3)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-slate-700">{month.noOfOffers || 0}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-blue-600">{formatCurrencyCompact(month.offersValue)}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-emerald-600">{formatCurrencyCompact(month.orderReceived)}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-amber-600">{formatCurrencyCompact(month.ordersInHand)}</td>
@@ -1129,6 +1138,7 @@ export default function ForecastDashboard() {
                                     <tfoot>
                                       <tr className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 font-bold">
                                         <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-orange-100 dark:bg-orange-900/30">Total</td>
+                                        <td className="px-2 py-2 text-right font-mono text-slate-900">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-blue-700">{formatCurrencyCompact(product.totals.offersValue)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-emerald-700">{formatCurrencyCompact(product.totals.orderReceived)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-amber-700">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
@@ -1239,9 +1249,10 @@ export default function ForecastDashboard() {
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-100/95 dark:bg-slate-800/95 shadow-sm">
                           <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created by this user in this month">Offers</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Orders</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created by this user in this month">No of offers</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created by this user in this month">Offers value</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Offers received</th>
+                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Offer funnel</th>
                           <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: User's Yearly Target ÷ 12 = Monthly booking target">BU/Mo</th>
                           <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
                           <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Monthly offer target (4x pipeline coverage)">OfferBU</th>
@@ -1258,6 +1269,9 @@ export default function ForecastDashboard() {
                           >
                             <td className="px-2 py-1.5 sticky left-0 bg-inherit">
                               <span className="font-semibold text-slate-800 dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
+                            </td>
+                            <td className="px-2 py-1.5 text-right">
+                              <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{month.noOfOffers || 0}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
                               <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{formatCurrencyCompact(month.offersValue)}</span>
@@ -1299,6 +1313,7 @@ export default function ForecastDashboard() {
                               Total
                             </span>
                           </td>
+                          <td className="px-2 py-2 text-right font-mono text-slate-900 dark:text-white">{activeUser.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
                           <td className="px-2 py-2 text-right font-mono text-blue-700 dark:text-blue-300">{formatCurrencyCompact(activeUser.totals.offersValue)}</td>
                           <td className="px-2 py-2 text-right font-mono text-emerald-700 dark:text-emerald-300">{formatCurrencyCompact(activeUser.totals.orderReceived)}</td>
                           <td className="px-2 py-2 text-right font-mono text-amber-700 dark:text-amber-300">{formatCurrencyCompact(activeUser.totals.ordersInHand)}</td>
@@ -1369,9 +1384,10 @@ export default function ForecastDashboard() {
                                     <thead>
                                       <tr className="bg-slate-100/95 dark:bg-slate-800/95">
                                         <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
-                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
+                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
+                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Offers received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Offer funnel</th>
                                         <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
                                         <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
                                         <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
@@ -1382,6 +1398,7 @@ export default function ForecastDashboard() {
                                       {product.monthlyData.map((month: any, idx: number) => (
                                         <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'}>
                                           <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-slate-800">{month.monthLabel.slice(0, 3)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-slate-700">{month.noOfOffers || 0}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-blue-600">{formatCurrencyCompact(month.offersValue)}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-emerald-600">{formatCurrencyCompact(month.orderReceived)}</td>
                                           <td className="px-2 py-1.5 text-right font-mono text-amber-600">{formatCurrencyCompact(month.ordersInHand)}</td>
@@ -1403,6 +1420,7 @@ export default function ForecastDashboard() {
                                     <tfoot>
                                       <tr className="bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30 font-bold">
                                         <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-cyan-100 dark:bg-cyan-900/30">Total</td>
+                                        <td className="px-2 py-2 text-right font-mono text-slate-900">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-blue-700">{formatCurrencyCompact(product.totals.offersValue)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-emerald-700">{formatCurrencyCompact(product.totals.orderReceived)}</td>
                                         <td className="px-2 py-2 text-right font-mono text-amber-700">{formatCurrencyCompact(product.totals.ordersInHand)}</td>

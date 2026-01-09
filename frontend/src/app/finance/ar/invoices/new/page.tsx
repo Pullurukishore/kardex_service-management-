@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { arApi, ARPaymentTerm } from '@/lib/ar-api';
-import { ArrowLeft, Save, Loader2, FileText, Sparkles, Upload, AlertCircle } from 'lucide-react';
+import { arApi } from '@/lib/ar-api';
+import { ArrowLeft, Save, Loader2, FileText, Sparkles, Upload, AlertCircle, IndianRupee, Calendar, Info } from 'lucide-react';
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -19,35 +19,22 @@ export default function NewInvoicePage() {
     totalAmount: '',
     netAmount: '',
     taxAmount: '',
-    invoiceDate: new Date().toISOString().split('T')[0],
-    dueDate: '',
-    actualPaymentTerms: '',
-    emailId: '',
-    contactNo: '',
-    region: '',
-    department: '',
-    personInCharge: '',
-    pocName: '',
+    invoiceDate: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
-    // Auto-calculate due date based on payment terms
-    if (name === 'actualPaymentTerms' && value && formData.invoiceDate) {
-      const days = parseInt(value.replace(/\D/g, '')) || 30;
-      const invoiceDate = new Date(formData.invoiceDate);
-      invoiceDate.setDate(invoiceDate.getDate() + days);
-      setFormData(prev => ({ ...prev, dueDate: invoiceDate.toISOString().split('T')[0] }));
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!formData.invoiceNumber || !formData.bpCode || !formData.customerName || !formData.totalAmount) {
+    // Validate all mandatory fields
+    if (!formData.invoiceNumber || !formData.bpCode || !formData.customerName || 
+        !formData.poNo || !formData.totalAmount || !formData.netAmount || 
+        !formData.taxAmount || !formData.invoiceDate) {
       setError('Please fill in all required fields');
       return;
     }
@@ -58,19 +45,12 @@ export default function NewInvoicePage() {
         invoiceNumber: formData.invoiceNumber,
         bpCode: formData.bpCode,
         customerName: formData.customerName,
-        poNo: formData.poNo || undefined,
+        poNo: formData.poNo,
         totalAmount: parseFloat(formData.totalAmount),
-        netAmount: parseFloat(formData.netAmount) || parseFloat(formData.totalAmount),
-        taxAmount: formData.taxAmount ? parseFloat(formData.taxAmount) : undefined,
+        netAmount: parseFloat(formData.netAmount),
+        taxAmount: parseFloat(formData.taxAmount),
         invoiceDate: formData.invoiceDate,
-        dueDate: formData.dueDate || formData.invoiceDate,
-        actualPaymentTerms: formData.actualPaymentTerms || undefined,
-        emailId: formData.emailId || undefined,
-        contactNo: formData.contactNo || undefined,
-        region: formData.region || undefined,
-        department: formData.department || undefined,
-        personInCharge: formData.personInCharge || undefined,
-        pocName: formData.pocName || undefined,
+        // Due date auto-calculated by backend (invoice date + 30 days)
       });
       router.push('/finance/ar/invoices');
     } catch (err: any) {
@@ -87,21 +67,21 @@ export default function NewInvoicePage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/finance/ar/invoices"
-            className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
+            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent flex items-center gap-2">
               New Invoice
               <Sparkles className="w-5 h-5 text-purple-400" />
             </h1>
-            <p className="text-white/40 text-sm mt-1">Create a new AR invoice manually or import from Excel</p>
+            <p className="text-white/40 text-sm mt-1">Create a new AR invoice manually</p>
           </div>
         </div>
         <Link 
           href="/finance/ar/import"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 text-emerald-400 hover:from-emerald-500/20 hover:to-teal-500/20 transition-all font-medium"
         >
           <Upload className="w-4 h-4" />
           Import from Excel
@@ -117,16 +97,26 @@ export default function NewInvoicePage() {
           </div>
         )}
 
-        {/* SAP Fields - Invoice Details */}
+        {/* Info Banner */}
+        <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+          <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-blue-400 font-medium text-sm">All fields are mandatory</p>
+            <p className="text-blue-400/60 text-xs mt-1">Due date will be auto-calculated as 30 days from the document date</p>
+          </div>
+        </div>
+
+        {/* Invoice Details */}
         <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-purple-500/20 transition-all">
           <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
             <FileText className="w-5 h-5 text-purple-400" />
-            Invoice Details (SAP Fields)
+            Invoice Details
           </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 gap-5">
+            {/* Doc. No. */}
             <div>
               <label className="block text-white/60 text-sm font-medium mb-2">
-                Doc. No. / Invoice Number <span className="text-purple-400">*</span>
+                Doc. No. <span className="text-purple-400">*</span>
               </label>
               <input
                 type="text"
@@ -138,9 +128,11 @@ export default function NewInvoicePage() {
                 required
               />
             </div>
+
+            {/* Customer Code */}
             <div>
               <label className="block text-white/60 text-sm font-medium mb-2">
-                Customer Code (BP Code) <span className="text-purple-400">*</span>
+                Customer Code <span className="text-purple-400">*</span>
               </label>
               <input
                 type="text"
@@ -152,6 +144,8 @@ export default function NewInvoicePage() {
                 required
               />
             </div>
+
+            {/* Customer Name */}
             <div className="col-span-2">
               <label className="block text-white/60 text-sm font-medium mb-2">
                 Customer Name <span className="text-purple-400">*</span>
@@ -166,8 +160,12 @@ export default function NewInvoicePage() {
                 required
               />
             </div>
+
+            {/* Customer Ref. No. */}
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Customer Ref. No. (PO)</label>
+              <label className="block text-white/60 text-sm font-medium mb-2">
+                Customer Ref. No. <span className="text-purple-400">*</span>
+              </label>
               <input
                 type="text"
                 name="poNo"
@@ -175,181 +173,115 @@ export default function NewInvoicePage() {
                 onChange={handleChange}
                 className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
                 placeholder="PO-12345"
+                required
               />
             </div>
+
+            {/* Document Date */}
             <div>
               <label className="block text-white/60 text-sm font-medium mb-2">
                 Document Date <span className="text-purple-400">*</span>
               </label>
-              <input
-                type="date"
-                name="invoiceDate"
-                value={formData.invoiceDate}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Due Date</label>
-              <input
-                type="date"
-                name="dueDate"
-                value={formData.dueDate}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Payment Terms</label>
-              <input
-                type="text"
-                name="actualPaymentTerms"
-                value={formData.actualPaymentTerms}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="Net 30"
-              />
+              <div className="relative">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <input
+                  type="date"
+                  name="invoiceDate"
+                  value={formData.invoiceDate}
+                  onChange={handleChange}
+                  className="w-full h-11 pl-11 pr-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  required
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Amount Fields */}
+        {/* Amount Details */}
         <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-emerald-500/20 transition-all">
-          <h3 className="text-lg font-semibold text-white mb-5">Amount Details</h3>
+          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
+            <IndianRupee className="w-5 h-5 text-emerald-400" />
+            Amount Details
+          </h3>
           <div className="grid grid-cols-3 gap-5">
+            {/* Amount */}
             <div>
               <label className="block text-white/60 text-sm font-medium mb-2">
-                Total Amount (₹) <span className="text-purple-400">*</span>
+                Amount (₹) <span className="text-purple-400">*</span>
               </label>
-              <input
-                type="number"
-                name="totalAmount"
-                value={formData.totalAmount}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="100000"
-                min="0"
-                step="0.01"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">₹</span>
+                <input
+                  type="number"
+                  name="totalAmount"
+                  value={formData.totalAmount}
+                  onChange={handleChange}
+                  className="w-full h-11 pl-8 pr-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  placeholder="100000"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">
-                Net Amount (₹) <span className="text-purple-400">*</span>
-              </label>
-              <input
-                type="number"
-                name="netAmount"
-                value={formData.netAmount}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="84746"
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Tax Amount (₹)</label>
-              <input
-                type="number"
-                name="taxAmount"
-                value={formData.taxAmount}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="15254"
-                min="0"
-                step="0.01"
-              />
-            </div>
-          </div>
-        </div>
 
-        {/* Customer Master Fields */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-cyan-500/20 transition-all">
-          <h3 className="text-lg font-semibold text-white mb-5">Customer Contact Details (Optional)</h3>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
+            {/* Net */}
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Email ID</label>
-              <input
-                type="email"
-                name="emailId"
-                value={formData.emailId}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="accounts@company.com"
-              />
+              <label className="block text-white/60 text-sm font-medium mb-2">
+                Net (₹) <span className="text-purple-400">*</span>
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">₹</span>
+                <input
+                  type="number"
+                  name="netAmount"
+                  value={formData.netAmount}
+                  onChange={handleChange}
+                  className="w-full h-11 pl-8 pr-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  placeholder="84746"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
             </div>
+
+            {/* Tax */}
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Contact No.</label>
-              <input
-                type="text"
-                name="contactNo"
-                value={formData.contactNo}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="+91 9876543210"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Region</label>
-              <input
-                type="text"
-                name="region"
-                value={formData.region}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="North"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Department</label>
-              <input
-                type="text"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="Finance"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Person In-charge</label>
-              <input
-                type="text"
-                name="personInCharge"
-                value={formData.personInCharge}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">POC Name</label>
-              <input
-                type="text"
-                name="pocName"
-                value={formData.pocName}
-                onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                placeholder="Jane Smith"
-              />
+              <label className="block text-white/60 text-sm font-medium mb-2">
+                Tax (%) <span className="text-purple-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  name="taxAmount"
+                  value={formData.taxAmount}
+                  onChange={handleChange}
+                  className="w-full h-11 pl-4 pr-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  placeholder="18"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  required
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30">%</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-4 pt-2">
           <Link
             href="/finance/ar/invoices"
-            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all"
+            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all font-medium"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
             {saving ? 'Saving...' : 'Create Invoice'}

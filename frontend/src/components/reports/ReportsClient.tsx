@@ -723,7 +723,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
         const params: any = {
           reportType: 'offer-summary', // Use the same backend report type
           page: currentPage,
-          limit: 500,
+          limit: 1000,
         };
 
         // For zone-user-offer-summary, add myOffers=true to filter only user's offers
@@ -985,17 +985,23 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       link.href = exportUrl;
       link.download = `offer-report-${exportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
       
-      // Add authorization header via fetch - properly parse cookies that may contain = in value
-      const getCookieValue = (name: string): string | null => {
-        const cookie = document.cookie
-          .split('; ')
-          .find(row => row.startsWith(`${name}=`));
-        if (!cookie) return null;
-        // Only split on first = to handle values with = in them
-        const eqIndex = cookie.indexOf('=');
-        return eqIndex > -1 ? cookie.substring(eqIndex + 1) : null;
-      };
-      const token = getCookieValue('accessToken') || getCookieValue('token') || localStorage.getItem('dev_accessToken') || '';
+      // Get token - check localStorage first (matching axios.ts logic), then cookies
+      let token = localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token') || 
+                  localStorage.getItem('dev_accessToken') || '';
+      
+      // Fallback to cookies if not in localStorage
+      if (!token) {
+        const getCookieValue = (name: string): string | null => {
+          const cookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(`${name}=`));
+          if (!cookie) return null;
+          const eqIndex = cookie.indexOf('=');
+          return eqIndex > -1 ? cookie.substring(eqIndex + 1) : null;
+        };
+        token = getCookieValue('accessToken') || getCookieValue('token') || '';
+      }
 
       // Use fetch to download with auth
       const response = await fetch(exportUrl, {

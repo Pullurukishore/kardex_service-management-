@@ -552,11 +552,18 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       link.href = exportUrl;
       link.download = `offer-report-${exportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
       
-      // Add authorization header via fetch
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('accessToken') || row.startsWith('token'))
-        ?.split('=')[1] || localStorage.getItem('dev_accessToken') || '';
+      // Get token - check localStorage first (matching axios.ts logic), then cookies
+      let token = localStorage.getItem('accessToken') || 
+                  localStorage.getItem('token') || 
+                  localStorage.getItem('dev_accessToken') || '';
+      
+      // Fallback to cookies if not in localStorage
+      if (!token) {
+        token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('accessToken=') || row.startsWith('token='))
+          ?.split('=')[1] || '';
+      }
 
       // Use fetch to download with auth
       const response = await fetch(exportUrl, {

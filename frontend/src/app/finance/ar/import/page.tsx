@@ -685,12 +685,11 @@ export default function ARImportPage() {
               { name: 'Doc. No.', required: true, desc: 'Invoice Number' },
               { name: 'Customer Code', required: true, desc: 'BP Code' },
               { name: 'Customer Name', required: true, desc: 'Customer Name' },
+              { name: 'Customer Ref. No.', required: true, desc: 'PO Number' },
               { name: 'Amount', required: true, desc: 'Total Amount' },
               { name: 'Net', required: true, desc: 'Net Amount' },
-              { name: 'Tax', required: false, desc: 'Tax Amount' },
+              { name: 'Tax', required: true, desc: 'Tax Amount' },
               { name: 'Document Date', required: true, desc: 'Invoice Date' },
-              { name: 'Customer Ref. No.', required: false, desc: 'PO Number' },
-              { name: 'Due Date', required: false, desc: 'Payment Due Date' },
             ].map((col, i) => (
               <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
                 <div className={`w-2 h-2 rounded-full ${col.required ? 'bg-purple-400' : 'bg-white/20'}`} />

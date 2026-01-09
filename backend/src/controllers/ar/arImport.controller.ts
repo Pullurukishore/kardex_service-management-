@@ -347,7 +347,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
                 const netAmount = parseDecimal(getValue(row, 'Net', 'Net Amount', 'NetAmount'));
                 const taxAmount = parseDecimal(getValue(row, 'Tax', 'Tax Amount', 'TaxAmount'));
                 const invoiceDate = parseExcelDate(getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate'));
-                const dueDate = parseExcelDate(getValue(row, 'Due Date', 'DueDate'));
+                // Due date is calculated automatically (30 days from invoice date)
 
                 // Validate mandatory fields
                 if (!invoiceNumber) {
@@ -374,8 +374,8 @@ export const importFromExcel = async (req: Request, res: Response) => {
                     continue;
                 }
 
-                // Calculate due date if not provided (default: 30 days from invoice date)
-                const finalDueDate = dueDate || new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+                // Calculate due date (30 days from invoice date)
+                const finalDueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
                 // Calculate due by days and risk class
                 const dueByDays = calculateDueByDays(finalDueDate);
@@ -505,8 +505,7 @@ export const downloadTemplate = async (req: Request, res: Response) => {
             'Amount',
             'Net',
             'Tax',
-            'Document Date',
-            'Due Date'
+            'Document Date'
         ];
 
         // Create workbook with empty data but headers
@@ -522,8 +521,7 @@ export const downloadTemplate = async (req: Request, res: Response) => {
             { wch: 15 }, // Amount
             { wch: 15 }, // Net
             { wch: 12 }, // Tax
-            { wch: 15 }, // Document Date
-            { wch: 15 }  // Due Date
+            { wch: 15 }  // Document Date
         ];
 
         XLSX.utils.book_append_sheet(workbook, worksheet, 'AR Import Template');

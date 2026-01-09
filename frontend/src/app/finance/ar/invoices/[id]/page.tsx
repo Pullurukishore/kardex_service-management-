@@ -26,6 +26,7 @@ export default function InvoiceViewPage() {
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
     paymentDate: new Date().toISOString().split('T')[0],
+    paymentTime: new Date().toTimeString().slice(0, 5),
     paymentMode: '',
     referenceNo: '',
     notes: ''
@@ -73,6 +74,7 @@ export default function InvoiceViewPage() {
       await arApi.addPayment(invoice.id, {
         amount: parseFloat(paymentForm.amount),
         paymentDate: paymentForm.paymentDate,
+        paymentTime: paymentForm.paymentTime,
         paymentMode: paymentForm.paymentMode,
         referenceNo: paymentForm.referenceNo,
         notes: paymentForm.notes
@@ -82,6 +84,7 @@ export default function InvoiceViewPage() {
       setPaymentForm({
         amount: '',
         paymentDate: new Date().toISOString().split('T')[0],
+        paymentTime: new Date().toTimeString().slice(0, 5),
         paymentMode: '',
         referenceNo: '',
         notes: ''
@@ -363,8 +366,36 @@ export default function InvoiceViewPage() {
                 </p>
               )}
             </div>
-            <div>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Due By Days</p>
+            <div className="relative group">
+              <div className="flex items-center gap-1.5 mb-1">
+                <p className="text-white/40 text-xs uppercase tracking-wider">Due By Days</p>
+                <div className="relative">
+                  <Shield className="w-3.5 h-3.5 text-white/30 cursor-help" />
+                  {/* Risk Class Tooltip */}
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-4 py-3 bg-[#1a1d2e] border border-white/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 w-64">
+                    <p className="text-white font-semibold text-xs mb-2">Risk Class Criteria</p>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">≤ 0 days</span>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">LOW</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">1 - 30 days</span>
+                        <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">MEDIUM</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">31 - 90 days</span>
+                        <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">HIGH</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">&gt; 90 days</span>
+                        <span className="px-2 py-0.5 rounded bg-red-600/30 text-red-300 font-medium">CRITICAL</span>
+                      </div>
+                    </div>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white/20"></div>
+                  </div>
+                </div>
+              </div>
               <p className="text-white font-medium">{invoice.dueByDays ?? '-'}</p>
             </div>
           </div>
@@ -454,22 +485,31 @@ export default function InvoiceViewPage() {
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Date</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Time</th>
                   <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Mode</th>
                   <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Ref No</th>
                   <th className="text-right text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Amount</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Added By</th>
                   <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {invoice.paymentHistory.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-white/5 transition-colors">
-                    <td className="py-3 px-4 text-white/80">{formatARDate(payment.paymentDate)}</td>
-                    <td className="py-3 px-4 text-cyan-300 font-mono text-sm">{payment.paymentMode}</td>
-                    <td className="py-3 px-4 text-white/60">{payment.referenceNo || '-'}</td>
-                    <td className="py-3 px-4 text-right text-emerald-400 font-medium">{formatARCurrency(payment.amount)}</td>
-                    <td className="py-3 px-4 text-white/60 text-sm max-w-xs truncate">{payment.notes || '-'}</td>
-                  </tr>
-                ))}
+                {invoice.paymentHistory.map((payment) => {
+                  // Use paymentTime from backend if available
+                  const timeStr = (payment as any).paymentTime || '-';
+                  const addedBy = (payment as any).recordedBy || '-';
+                  return (
+                    <tr key={payment.id} className="hover:bg-white/5 transition-colors">
+                      <td className="py-3 px-4 text-white/80">{formatARDate(payment.paymentDate)}</td>
+                      <td className="py-3 px-4 text-purple-300 font-mono text-sm">{timeStr}</td>
+                      <td className="py-3 px-4 text-cyan-300 font-mono text-sm">{payment.paymentMode || '-'}</td>
+                      <td className="py-3 px-4 text-white/60">{payment.referenceNo || '-'}</td>
+                      <td className="py-3 px-4 text-right text-emerald-400 font-medium">{formatARCurrency(payment.amount)}</td>
+                      <td className="py-3 px-4 text-amber-300 text-sm">{addedBy}</td>
+                      <td className="py-3 px-4 text-white/60 text-sm max-w-xs truncate">{payment.notes || '-'}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -523,7 +563,7 @@ export default function InvoiceViewPage() {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-white/60 text-sm font-medium mb-2">Date</label>
                   <input 
@@ -535,13 +575,23 @@ export default function InvoiceViewPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-white/60 text-sm font-medium mb-2">Time</label>
+                  <input 
+                    type="time" 
+                    required
+                    value={paymentForm.paymentTime}
+                    onChange={e => setPaymentForm({...paymentForm, paymentTime: e.target.value})}
+                    className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  />
+                </div>
+                <div>
                   <label className="block text-white/60 text-sm font-medium mb-2">Mode</label>
                   <input 
                     type="text"
                     value={paymentForm.paymentMode}
                     onChange={e => setPaymentForm({...paymentForm, paymentMode: e.target.value})}
                     className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm font-medium"
-                    placeholder="e.g. NEFT, Cheque"
+                    placeholder="e.g. NEFT"
                   />
                 </div>
               </div>

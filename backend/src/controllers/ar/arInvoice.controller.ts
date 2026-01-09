@@ -134,12 +134,15 @@ export const getInvoiceById = async (req: Request, res: Response) => {
 export const addPaymentRecord = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { amount, paymentDate, paymentMode, referenceNo, notes } = req.body;
+        const { amount, paymentDate, paymentTime, paymentMode, referenceNo, notes } = req.body;
 
         const invoice = await prisma.aRInvoice.findUnique({ where: { id } });
         if (!invoice) {
             return res.status(404).json({ error: 'Invoice not found' });
         }
+
+        // Get current user name from request
+        const recordedBy = (req as any).user?.name || (req as any).user?.email || 'System';
 
         // Create payment record
         const payment = await prisma.aRPaymentHistory.create({
@@ -147,9 +150,11 @@ export const addPaymentRecord = async (req: Request, res: Response) => {
                 invoiceId: id,
                 amount: parseFloat(amount),
                 paymentDate: new Date(paymentDate),
+                paymentTime: paymentTime || null,
                 paymentMode,
                 referenceNo,
-                notes
+                notes,
+                recordedBy
             }
         });
 
