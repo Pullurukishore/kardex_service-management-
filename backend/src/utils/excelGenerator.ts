@@ -303,9 +303,47 @@ export const generateExcel = async (
                 summaryMetrics.push({ label: 'Avg Resolution Time', value: timeStr, color: COLORS.brandSecondary });
             }
 
+            // Add offer-specific summary metrics with proper currency formatting
+            if (summaryData.totalOffers !== undefined) {
+                summaryMetrics.push({ label: 'Total Offers', value: summaryData.totalOffers, color: COLORS.brandPrimary });
+            }
+            if (summaryData.totalOfferValue !== undefined) {
+                // Format as Indian currency (Cr/Lakh)
+                const value = summaryData.totalOfferValue;
+                let formattedValue: string;
+                if (value >= 10000000) {
+                    formattedValue = `₹${(value / 10000000).toFixed(2)} Cr`;
+                } else if (value >= 100000) {
+                    formattedValue = `₹${(value / 100000).toFixed(2)} Lakh`;
+                } else {
+                    formattedValue = `₹${value.toLocaleString('en-IN')}`;
+                }
+                summaryMetrics.push({ label: 'Total Offer Value', value: formattedValue, color: COLORS.warning });
+            }
+            if (summaryData.totalPoValue !== undefined) {
+                // Format as Indian currency (Cr/Lakh)
+                const value = summaryData.totalPoValue;
+                let formattedValue: string;
+                if (value >= 10000000) {
+                    formattedValue = `₹${(value / 10000000).toFixed(2)} Cr`;
+                } else if (value >= 100000) {
+                    formattedValue = `₹${(value / 100000).toFixed(2)} Lakh`;
+                } else {
+                    formattedValue = `₹${value.toLocaleString('en-IN')}`;
+                }
+                summaryMetrics.push({ label: 'Total PO Value', value: formattedValue, color: COLORS.success });
+            }
+            if (summaryData.wonOffers !== undefined) {
+                summaryMetrics.push({ label: 'Won Offers', value: summaryData.wonOffers, color: COLORS.success });
+            }
+            if (summaryData.lostOffers !== undefined) {
+                summaryMetrics.push({ label: 'Lost Offers', value: summaryData.lostOffers, color: COLORS.danger });
+            }
+
             // Add generic summary metrics (for any type of report)
             Object.entries(summaryData).forEach(([key, value]) => {
-                if (!['totalTickets', 'resolvedTickets', 'openTickets', 'closedTickets', 'inProgressTickets', 'escalatedTickets', 'averageResolutionTime'].includes(key)) {
+                // Skip already processed keys
+                if (!['totalTickets', 'resolvedTickets', 'openTickets', 'closedTickets', 'inProgressTickets', 'escalatedTickets', 'averageResolutionTime', 'totalOffers', 'totalOfferValue', 'totalPoValue', 'wonOffers', 'lostOffers'].includes(key)) {
                     const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                     if (typeof value === 'number' || typeof value === 'string') {
                         summaryMetrics.push({ label, value: value as string | number });
@@ -469,15 +507,26 @@ export const generateExcel = async (
         // EXCEL FEATURES
         // ==================================================
 
-        // Freeze panes - freeze row AFTER the column headers (headerRowNum is the header, freeze at headerRowNum + 1)
-        // This keeps the column headers visible when scrolling
-        worksheet.views = [{
-            state: 'frozen',
-            ySplit: headerRowNum,  // Freeze after this row
-            xSplit: 0,             // Don't freeze any columns horizontally
-            topLeftCell: 'A' + (headerRowNum + 1),
-            activeCell: 'A' + (headerRowNum + 1)
-        }];
+        // Set worksheet views with proper zoom and freeze panes
+        // Only freeze the header row if there's data, otherwise use normal view
+        if (data.length > 0) {
+            worksheet.views = [{
+                state: 'frozen',
+                ySplit: headerRowNum,  // Freeze after this row (the column headers)
+                xSplit: 0,             // Don't freeze any columns horizontally
+                topLeftCell: 'A' + (headerRowNum + 1),
+                activeCell: 'A' + (headerRowNum + 1),
+                zoomScale: 85,         // Set zoom to 85% for better overview
+                zoomScaleNormal: 85
+            }];
+        } else {
+            // No data - use normal view without freeze
+            worksheet.views = [{
+                state: 'normal',
+                zoomScale: 100,
+                zoomScaleNormal: 100
+            }];
+        }
 
         // Auto-filter on the column header row only
         if (data.length > 0) {

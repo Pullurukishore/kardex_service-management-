@@ -1648,8 +1648,8 @@ export const exportReport = async (req: Request, res: Response) => {
         data = offers;
         summaryData = {
           totalOffers: offers.length,
-          totalOfferValue: offers.reduce((sum: number, o: any) => sum + (o.offerValue || 0), 0),
-          totalPoValue: offers.reduce((sum: number, o: any) => sum + (o.poValue || 0), 0),
+          totalOfferValue: offers.reduce((sum: number, o: any) => sum + (parseFloat(String(o.offerValue || 0)) || 0), 0),
+          totalPoValue: offers.reduce((sum: number, o: any) => sum + (parseFloat(String(o.poValue || 0)) || 0), 0),
           wonOffers: offers.filter((o: any) => o.stage === 'WON').length,
           lostOffers: offers.filter((o: any) => o.stage === 'LOST').length,
         };
