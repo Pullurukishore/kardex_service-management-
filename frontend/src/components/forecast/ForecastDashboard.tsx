@@ -170,30 +170,30 @@ interface MonthlyResponse {
   zones: ZoneMonthlyBreakdown[]
 }
 
-// Zone colors for visual distinction with enhanced gradients
+// Zone colors for visual distinction with Kardex company colors
 const zoneColors: Record<string, { gradient: string; badge: string; ring: string; light: string; glow: string }> = {
-  WEST: { gradient: 'from-blue-500 via-blue-600 to-indigo-700', badge: 'bg-blue-500', ring: 'ring-blue-500/30', light: 'bg-blue-50 dark:bg-blue-950/30', glow: 'shadow-blue-500/30' },
-  SOUTH: { gradient: 'from-emerald-500 via-emerald-600 to-teal-700', badge: 'bg-emerald-500', ring: 'ring-emerald-500/30', light: 'bg-emerald-50 dark:bg-emerald-950/30', glow: 'shadow-emerald-500/30' },
-  NORTH: { gradient: 'from-amber-500 via-orange-500 to-orange-700', badge: 'bg-amber-500', ring: 'ring-amber-500/30', light: 'bg-amber-50 dark:bg-amber-950/30', glow: 'shadow-amber-500/30' },
-  EAST: { gradient: 'from-purple-500 via-purple-600 to-pink-700', badge: 'bg-purple-500', ring: 'ring-purple-500/30', light: 'bg-purple-50 dark:bg-purple-950/30', glow: 'shadow-purple-500/30' },
+  WEST: { gradient: 'from-[#96AEC2] via-[#6F8A9D] to-[#546A7A]', badge: 'bg-[#96AEC2]', ring: 'ring-[#96AEC2]/30', light: 'bg-[#96AEC2]/10', glow: 'shadow-[#96AEC2]/30' },
+  SOUTH: { gradient: 'from-[#A2B9AF] via-[#82A094] to-[#4F6A64]', badge: 'bg-[#A2B9AF]', ring: 'ring-[#A2B9AF]/30', light: 'bg-[#A2B9AF]/10', glow: 'shadow-[#A2B9AF]/30' },
+  NORTH: { gradient: 'from-[#EEC18F] via-[#CE9F6B] to-[#976E44]', badge: 'bg-[#EEC18F]', ring: 'ring-[#EEC18F]/30', light: 'bg-[#EEC18F]/10', glow: 'shadow-[#EEC18F]/30' },
+  EAST: { gradient: 'from-[#6F8A9D] via-[#546A7A] to-[#5D6E73]', badge: 'bg-[#6F8A9D]', ring: 'ring-[#6F8A9D]/30', light: 'bg-[#6F8A9D]/10', glow: 'shadow-[#6F8A9D]/30' },
 }
 
 const getZoneColor = (zoneName: string) => {
   const upperName = zoneName.toUpperCase()
-  return zoneColors[upperName] || { gradient: 'from-gray-500 to-gray-600', badge: 'bg-gray-500', ring: 'ring-gray-500/30', light: 'bg-gray-50 dark:bg-gray-950/30', glow: 'shadow-gray-500/30' }
+  return zoneColors[upperName] || { gradient: 'from-[#92A2A5] to-[#5D6E73]', badge: 'bg-[#AEBFC3]/100', ring: 'ring-[#92A2A5]/30', light: 'bg-[#AEBFC3]/10 dark:bg-[#5D6E73]/30', glow: 'shadow-[#92A2A5]/30' }
 }
 
-// Progress bar component
+// Progress bar component - Kardex colors
 const ProgressBar = ({ value, max, color = 'blue' }: { value: number; max: number; color?: string }) => {
   const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0
   const colorClasses: Record<string, string> = {
-    blue: 'bg-gradient-to-r from-blue-500 to-indigo-600',
-    emerald: 'bg-gradient-to-r from-emerald-500 to-teal-600',
-    amber: 'bg-gradient-to-r from-amber-500 to-orange-600',
-    purple: 'bg-gradient-to-r from-purple-500 to-pink-600',
+    blue: 'bg-gradient-to-r from-[#96AEC2] to-[#6F8A9D]',
+    emerald: 'bg-gradient-to-r from-[#A2B9AF] to-[#82A094]',
+    amber: 'bg-gradient-to-r from-[#EEC18F] to-[#CE9F6B]',
+    purple: 'bg-gradient-to-r from-[#6F8A9D] to-[#546A7A]',
   }
   return (
-    <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+    <div className="w-full h-2 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-full overflow-hidden">
       <div 
         className={`h-full ${colorClasses[color] || colorClasses.blue} rounded-full transition-all duration-700 ease-out`}
         style={{ width: `${percentage}%` }}
@@ -370,29 +370,29 @@ export default function ForecastDashboard() {
   }
 
   const getDeviationColor = (value: number | null) => {
-    if (value === null) return 'text-slate-400'
-    if (value >= 0) return 'text-emerald-600 dark:text-emerald-400'
-    if (value >= -25) return 'text-amber-600 dark:text-amber-400'
-    return 'text-rose-600 dark:text-rose-400'
+    if (value === null) return 'text-[#979796]'
+    if (value >= 0) return 'text-[#4F6A64] dark:text-[#82A094]'
+    if (value >= -25) return 'text-[#976E44] dark:text-[#CE9F6B]'
+    return 'text-[#9E3B47] dark:text-[#E17F70]'
   }
 
   const getDeviationBg = (value: number | null) => {
-    if (value === null) return 'bg-slate-100/80 dark:bg-slate-800/80'
-    if (value >= 0) return 'bg-emerald-100/80 dark:bg-emerald-900/40'
-    if (value >= -25) return 'bg-amber-100/80 dark:bg-amber-900/40'
-    return 'bg-rose-100/80 dark:bg-rose-900/40'
+    if (value === null) return 'bg-[#AEBFC3]/20/80 dark:bg-[#546A7A]/80'
+    if (value >= 0) return 'bg-[#82A094]/20/80 dark:bg-[#4F6A64]/40'
+    if (value >= -25) return 'bg-[#CE9F6B]/20/80 dark:bg-[#976E44]/40'
+    return 'bg-[#EEC1BF]/20/80 dark:bg-[#9E3B47]/40'
   }
 
   const getHitRateBadge = (rate: number) => {
-    if (rate >= 50) return 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
-    if (rate >= 30) return 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30'
-    return 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-lg shadow-rose-500/30'
+    if (rate >= 50) return 'bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white shadow-lg shadow-[#82A094]/30'
+    if (rate >= 30) return 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white shadow-lg shadow-[#CE9F6B]/30'
+    return 'bg-gradient-to-r from-[#E17F70] to-red-600 text-white shadow-lg shadow-rose-500/30'
   }
 
   const getStatusIcon = (percentage: number) => {
-    if (percentage >= 100) return <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-    if (percentage >= 75) return <AlertTriangle className="h-5 w-5 text-amber-500" />
-    return <XCircle className="h-5 w-5 text-rose-500" />
+    if (percentage >= 100) return <CheckCircle2 className="h-5 w-5 text-[#82A094]" />
+    if (percentage >= 75) return <AlertTriangle className="h-5 w-5 text-[#CE9F6B]" />
+    return <XCircle className="h-5 w-5 text-[#E17F70]" />
   }
 
   if (loading) {
@@ -400,18 +400,18 @@ export default function ForecastDashboard() {
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="flex flex-col items-center gap-8">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 animate-pulse" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#6F8A9D]/20 to-[#6F8A9D]/20 animate-pulse" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 animate-spin flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6F8A9D] to-[#546A7A] animate-spin flex items-center justify-center shadow-lg shadow-[#96AEC2]/30">
                 <Loader2 className="h-8 w-8 text-white animate-spin" style={{ animationDirection: 'reverse' }} />
               </div>
             </div>
           </div>
           <div className="text-center space-y-3">
-            <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <p className="text-2xl font-bold bg-gradient-to-r from-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
               Loading Forecast Dashboard
             </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
+            <p className="text-sm text-[#757777] dark:text-[#979796] max-w-xs">
               Analyzing offer data and calculating performance metrics...
             </p>
           </div>
@@ -423,19 +423,19 @@ export default function ForecastDashboard() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[80vh] p-4">
-        <Card className="max-w-md border-rose-200 dark:border-rose-800 shadow-2xl shadow-rose-500/10">
+        <Card className="max-w-md border-[#EEC1BF]/50 dark:border-rose-800 shadow-2xl shadow-rose-500/10">
           <CardContent className="pt-10 pb-8 px-8">
             <div className="text-center space-y-6">
               <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 dark:from-rose-900/40 dark:to-rose-800/40 flex items-center justify-center shadow-lg">
-                <Zap className="h-10 w-10 text-rose-500" />
+                <Zap className="h-10 w-10 text-[#E17F70]" />
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-bold text-rose-600 dark:text-rose-400">Error Loading Data</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{error}</p>
+                <p className="text-xl font-bold text-[#9E3B47] dark:text-[#E17F70]">Error Loading Data</p>
+                <p className="text-sm text-[#5D6E73] dark:text-[#979796] leading-relaxed">{error}</p>
               </div>
               <Button 
                 onClick={() => fetchData()} 
-                className="mt-4 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white shadow-lg shadow-rose-500/25"
+                className="mt-4 bg-gradient-to-r from-[#E17F70] to-red-600 hover:from-[#9E3B47] hover:to-red-700 text-white shadow-lg shadow-rose-500/25"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
@@ -454,17 +454,17 @@ export default function ForecastDashboard() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10/30 to-[#6F8A9D]/10/50 dark:from-[#5D6E73] dark:via-slate-900 dark:to-[#5D6E73]">
       <div className="max-w-[1900px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
         
         {/* Premium Header with Stats */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6 md:p-8 shadow-2xl shadow-blue-900/40 border border-white/5">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5D6E73] via-[#546A7A] to-[#546A7A] p-6 md:p-8 shadow-2xl shadow-blue-900/40 border border-white/5">
           {/* Animated background pattern */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.15),transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(147,51,234,0.15),transparent_50%)]" />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-purple-500/20 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#6F8A9D]/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-[#6F8A9D]/20 to-transparent rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
           </div>
           
           <div className="relative">
@@ -478,7 +478,7 @@ export default function ForecastDashboard() {
                     <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
                       Offer Funnel Forecast
                     </h1>
-                    <p className="text-blue-100/80 text-sm md:text-base mt-1">
+                    <p className="text-[#96AEC2]/80 text-sm md:text-base mt-1">
                       Real-time Performance Analytics & Deviations for {selectedYear}
                     </p>
                   </div>
@@ -524,7 +524,7 @@ export default function ForecastDashboard() {
                   size="default"
                   onClick={handleExportExcel}
                   disabled={exporting || loading}
-                  className="bg-gradient-to-r from-emerald-500/20 to-green-500/20 hover:from-emerald-500/30 hover:to-green-500/30 text-white border border-emerald-400/30 backdrop-blur-sm font-semibold rounded-xl px-5 transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-500/10"
+                  className="bg-gradient-to-r from-[#82A094]/20 to-[#82A094]/20 hover:from-[#82A094]/30 hover:to-[#82A094]/30 text-white border border-emerald-400/30 backdrop-blur-sm font-semibold rounded-xl px-5 transition-all duration-300 hover:scale-105 shadow-lg shadow-emerald-500/10"
                 >
                   {exporting ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -558,7 +558,7 @@ export default function ForecastDashboard() {
                   <div className="flex-1 min-w-[200px] max-w-md">
                     <div className="relative h-3 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
                       <div 
-                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out"
+                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#82A094] via-green-400 to-[#82A094] rounded-full transition-all duration-1000 ease-out"
                         style={{ width: `${Math.min(totalAchievement, 100)}%` }}
                       />
                       {totalAchievement > 100 && (
@@ -577,13 +577,13 @@ export default function ForecastDashboard() {
         </div>
 
         {/* Main Tab Navigation */}
-        <div className="flex gap-2 flex-wrap p-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50">
+        <div className="flex gap-2 flex-wrap p-1.5 bg-white/80 dark:bg-[#546A7A]/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#92A2A5]/50 dark:border-[#5D6E73]/50">
           <button
             onClick={() => setActiveMainTab('overview')}
             className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
               activeMainTab === 'overview'
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                ? 'bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white shadow-lg shadow-[#96AEC2]/30 scale-[1.02]'
+                : 'text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/20 dark:hover:bg-[#5D6E73]/50'
             }`}
           >
             <span className="text-lg">📊</span>
@@ -594,8 +594,8 @@ export default function ForecastDashboard() {
             onClick={() => setActiveMainTab('po-expected')}
             className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
               activeMainTab === 'po-expected'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-[1.02]'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                ? 'bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] text-white shadow-lg shadow-[#82A094]/30 scale-[1.02]'
+                : 'text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/20 dark:hover:bg-[#5D6E73]/50'
             }`}
           >
             <span className="text-lg">📅</span>
@@ -606,8 +606,8 @@ export default function ForecastDashboard() {
             onClick={() => setActiveMainTab('product-user-zone')}
             className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
               activeMainTab === 'product-user-zone'
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 scale-[1.02]'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                ? 'bg-gradient-to-r from-[#546A7A] to-[#9E3B47] text-white shadow-lg shadow-[#6F8A9D]/30 scale-[1.02]'
+                : 'text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/20 dark:hover:bg-[#5D6E73]/50'
             }`}
           >
             <span className="text-lg">📦</span>
@@ -618,8 +618,8 @@ export default function ForecastDashboard() {
             onClick={() => setActiveMainTab('product-wise')}
             className={`px-5 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
               activeMainTab === 'product-wise'
-                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 scale-[1.02]'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                ? 'bg-gradient-to-r from-[#CE9F6B] to-[#E17F70] text-white shadow-lg shadow-[#CE9F6B]/30 scale-[1.02]'
+                : 'text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/20 dark:hover:bg-[#5D6E73]/50'
             }`}
           >
             <span className="text-lg">📋</span>
@@ -641,19 +641,19 @@ export default function ForecastDashboard() {
         {summaryData && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Total Offers */}
-            <Card className="group relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="group relative overflow-hidden bg-white dark:bg-[#546A7A] border border-[#92A2A5]/60 dark:border-[#5D6E73]/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardContent className="p-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-semibold text-[#757777] dark:text-[#979796] uppercase tracking-wider">
                       Total Offers
                     </p>
-                    <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <p className="text-2xl font-black text-[#546A7A] dark:text-white tracking-tight">
                       {formatNumber(summaryData.totals.noOfOffers)}
                     </p>
                   </div>
-                  <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md group-hover:scale-110 transition-transform">
+                  <div className="p-2.5 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl shadow-md group-hover:scale-110 transition-transform">
                     <Target className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -661,19 +661,19 @@ export default function ForecastDashboard() {
             </Card>
 
             {/* Offers Value */}
-            <Card className="group relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="group relative overflow-hidden bg-white dark:bg-[#546A7A] border border-[#92A2A5]/60 dark:border-[#5D6E73]/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#82A094]/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardContent className="p-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-semibold text-[#757777] dark:text-[#979796] uppercase tracking-wider">
                       Offers Value
                     </p>
-                    <p className="text-xl font-black text-blue-600 dark:text-blue-400 tracking-tight">
+                    <p className="text-xl font-black text-[#546A7A] dark:text-[#6F8A9D] tracking-tight">
                       {formatCurrencyCompact(summaryData.totals.offersValue)}
                     </p>
                   </div>
-                  <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-md group-hover:scale-110 transition-transform">
+                  <div className="p-2.5 bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-xl shadow-md group-hover:scale-110 transition-transform">
                     <IndianRupee className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -681,28 +681,28 @@ export default function ForecastDashboard() {
             </Card>
 
             {/* Orders Won */}
-            <Card className="group relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="group relative overflow-hidden bg-white dark:bg-[#546A7A] border border-[#92A2A5]/60 dark:border-[#5D6E73]/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardContent className="p-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-semibold text-[#757777] dark:text-[#979796] uppercase tracking-wider">
                       Orders Won
                     </p>
-                    <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                    <p className="text-xl font-black text-[#4F6A64] dark:text-[#82A094] tracking-tight">
                       {formatCurrencyCompact(summaryData.totals.ordersReceived)}
                     </p>
                     <div className="flex items-center gap-1.5">
-                      <div className="flex-1 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden max-w-[50px]">
+                      <div className="flex-1 h-1.5 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-full overflow-hidden max-w-[50px]">
                         <div 
-                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#82A094] to-teal-400 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(totalAchievement, 100)}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-600">{totalAchievement.toFixed(0)}%</span>
+                      <span className="text-[10px] font-bold text-[#4F6A64]">{totalAchievement.toFixed(0)}%</span>
                     </div>
                   </div>
-                  <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-md group-hover:scale-110 transition-transform">
+                  <div className="p-2.5 bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] rounded-xl shadow-md group-hover:scale-110 transition-transform">
                     <Award className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -710,19 +710,19 @@ export default function ForecastDashboard() {
             </Card>
 
             {/* Open Funnel */}
-            <Card className="group relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="group relative overflow-hidden bg-white dark:bg-[#546A7A] border border-[#92A2A5]/60 dark:border-[#5D6E73]/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#CE9F6B]/10 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardContent className="p-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-semibold text-[#757777] dark:text-[#979796] uppercase tracking-wider">
                       Open Funnel
                     </p>
-                    <p className="text-xl font-black text-amber-600 dark:text-amber-400 tracking-tight">
+                    <p className="text-xl font-black text-[#976E44] dark:text-[#CE9F6B] tracking-tight">
                       {formatCurrencyCompact(summaryData.totals.openFunnel)}
                     </p>
                   </div>
-                  <div className="p-2.5 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-md group-hover:scale-110 transition-transform">
+                  <div className="p-2.5 bg-gradient-to-br from-[#CE9F6B] to-[#976E44] rounded-xl shadow-md group-hover:scale-110 transition-transform">
                     <Sparkles className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -733,19 +733,19 @@ export default function ForecastDashboard() {
 
         {/* Zone Summary Table - Compact Premium Design */}
         {summaryData && (
-          <Card className="overflow-hidden border border-slate-200/60 dark:border-slate-700/60 shadow-lg bg-white dark:bg-slate-900 rounded-xl">
-            <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-900 py-3 px-4 border-b border-slate-700/50">
+          <Card className="overflow-hidden border border-[#92A2A5]/60 dark:border-[#5D6E73]/60 shadow-lg bg-white dark:bg-[#546A7A] rounded-xl">
+            <CardHeader className="bg-gradient-to-r from-slate-800 to-[#5D6E73] py-3 px-4 border-b border-[#5D6E73]/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/20 rounded-lg">
-                    <Building2 className="h-4 w-4 text-blue-300" />
+                  <div className="p-2 bg-[#96AEC2]/100/20 rounded-lg">
+                    <Building2 className="h-4 w-4 text-[#96AEC2]" />
                   </div>
                   <div>
                     <CardTitle className="text-sm font-bold text-white">Zone Performance Summary</CardTitle>
-                    <p className="text-slate-400 text-xs">Breakdown by region for {selectedYear}</p>
+                    <p className="text-[#979796] text-xs">Breakdown by region for {selectedYear}</p>
                   </div>
                 </div>
-                <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold px-2 py-0.5 text-[10px]">
+                <Badge className="bg-[#96AEC2]/100/20 text-[#96AEC2] border-[#6F8A9D]/30 font-bold px-2 py-0.5 text-[10px]">
                   {summaryData.zones.length} Zones
                 </Badge>
               </div>
@@ -754,16 +754,16 @@ export default function ForecastDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
-                      <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">Zone</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">No of offers</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Offers value</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Orders received</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Open offer funnel</th>
+                    <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]/80 border-b border-[#92A2A5] dark:border-[#5D6E73]">
+                      <th className="px-3 py-2 text-left font-bold text-[#5D6E73] dark:text-slate-200 uppercase tracking-wide">Zone</th>
+                      <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">No of offers</th>
+                      <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">Offers value</th>
+                      <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">Orders received</th>
+                      <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">Open offer funnel</th>
                       <th className="px-2 py-2 text-right font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wide bg-sky-50/50 dark:bg-sky-900/20">Target</th>
-                      <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">%Dev</th>
-                      <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Balance</th>
-                      <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Progress</th>
+                      <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">%Dev</th>
+                      <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">Balance</th>
+                      <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide">Progress</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -778,27 +778,27 @@ export default function ForecastDashboard() {
                       return (
                         <tr 
                           key={zone.zoneId} 
-                          className={`group hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/30 dark:bg-slate-800/20'}`}
+                          className={`group hover:bg-[#AEBFC3]/10/80 dark:hover:bg-[#546A7A]/50 transition-colors ${idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]/50' : 'bg-[#AEBFC3]/10/30 dark:bg-[#546A7A]/20'}`}
                         >
                           <td className="px-3 py-2">
                             <div className="flex items-center gap-2">
                               <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${colors.gradient} flex items-center justify-center shadow-sm`}>
                                 <span className="text-white font-bold text-xs">{zone.zoneName.charAt(0)}</span>
                               </div>
-                              <span className="font-bold text-slate-900 dark:text-white text-xs">{zone.zoneName}</span>
+                              <span className="font-bold text-[#546A7A] dark:text-white text-xs">{zone.zoneName}</span>
                             </div>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{zone.noOfOffers}</span>
+                            <span className="font-mono font-bold text-[#5D6E73] dark:text-[#92A2A5]">{zone.noOfOffers}</span>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{formatCurrencyCompact(zone.offersValue)}</span>
+                            <span className="font-mono font-medium text-[#546A7A] dark:text-[#6F8A9D]">{formatCurrencyCompact(zone.offersValue)}</span>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">{formatCurrencyCompact(zone.ordersReceived)}</span>
+                            <span className="font-mono font-medium text-[#4F6A64] dark:text-[#82A094]">{formatCurrencyCompact(zone.ordersReceived)}</span>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            <span className="font-mono font-medium text-amber-600 dark:text-amber-400">{formatCurrencyCompact(zone.openFunnel)}</span>
+                            <span className="font-mono font-medium text-[#976E44] dark:text-[#CE9F6B]">{formatCurrencyCompact(zone.openFunnel)}</span>
                           </td>
                           <td className="px-2 py-2 text-right bg-sky-50/30 dark:bg-sky-900/10">
                             <span className="font-mono font-medium text-sky-700 dark:text-sky-400">{formatCurrencyCompact(zone.yearlyTarget)}</span>
@@ -806,15 +806,15 @@ export default function ForecastDashboard() {
                           <td className="px-1 py-2 text-center">
                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${
                               parseFloat(deviationPercent) >= 0 
-                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' 
-                                : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400'
+                                ? 'bg-[#82A094]/20 text-[#4F6A64] dark:bg-[#4F6A64]/40 dark:text-[#82A094]' 
+                                : 'bg-[#EEC1BF]/20 text-[#9E3B47] dark:bg-[#9E3B47]/40 dark:text-[#E17F70]'
                             }`}>
                               {parseFloat(deviationPercent) >= 0 ? '+' : ''}{deviationPercent}%
                             </span>
                           </td>
                           <td className="px-2 py-2 text-right">
                             <span className={`font-mono font-medium ${
-                              zone.yearlyTarget - zone.ordersReceived <= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                              zone.yearlyTarget - zone.ordersReceived <= 0 ? 'text-[#4F6A64] dark:text-[#82A094]' : 'text-[#9E3B47] dark:text-[#E17F70]'
                             }`}>
                               {formatCurrencyCompact(zone.yearlyTarget - zone.ordersReceived)}
                             </span>
@@ -822,18 +822,18 @@ export default function ForecastDashboard() {
                           <td className="px-2 py-2">
                             <div className="flex items-center gap-1.5">
                               <div className="flex-1 min-w-[40px]">
-                                <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div className="h-1.5 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full rounded-full transition-all duration-500 ${
-                                      achievementPercent >= 100 ? 'bg-emerald-500' :
-                                      achievementPercent >= 75 ? 'bg-amber-500' :
-                                      'bg-rose-500'
+                                      achievementPercent >= 100 ? 'bg-[#82A094]/100' :
+                                      achievementPercent >= 75 ? 'bg-[#CE9F6B]/100' :
+                                      'bg-[#EEC1BF]/100'
                                     }`}
                                     style={{ width: `${Math.min(achievementPercent, 100)}%` }}
                                   />
                                 </div>
                               </div>
-                              <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 w-7">
+                              <span className="text-[10px] font-bold text-[#5D6E73] dark:text-[#979796] w-7">
                                 {achievementPercent.toFixed(0)}%
                               </span>
                             </div>
@@ -843,7 +843,7 @@ export default function ForecastDashboard() {
                     })}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+                    <tr className="bg-gradient-to-r from-slate-800 to-[#5D6E73] text-white">
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-2">
                           <PieChart className="h-4 w-4" />
@@ -851,9 +851,9 @@ export default function ForecastDashboard() {
                         </div>
                       </td>
                       <td className="px-2 py-2 text-right font-mono font-bold">{summaryData.totals.noOfOffers}</td>
-                      <td className="px-2 py-2 text-right font-mono font-bold text-blue-300">{formatCurrencyCompact(summaryData.totals.offersValue)}</td>
-                      <td className="px-2 py-2 text-right font-mono font-bold text-emerald-300">{formatCurrencyCompact(summaryData.totals.ordersReceived)}</td>
-                      <td className="px-2 py-2 text-right font-mono font-bold text-amber-300">{formatCurrencyCompact(summaryData.totals.openFunnel)}</td>
+                      <td className="px-2 py-2 text-right font-mono font-bold text-[#96AEC2]">{formatCurrencyCompact(summaryData.totals.offersValue)}</td>
+                      <td className="px-2 py-2 text-right font-mono font-bold text-[#82A094]">{formatCurrencyCompact(summaryData.totals.ordersReceived)}</td>
+                      <td className="px-2 py-2 text-right font-mono font-bold text-[#EEC1BF]">{formatCurrencyCompact(summaryData.totals.openFunnel)}</td>
                       <td className="px-2 py-2 text-right font-mono font-bold text-sky-300">{formatCurrencyCompact(summaryData.totals.yearlyTarget)}</td>
                       <td className="px-1 py-2 text-center">
                         {(() => {
@@ -863,21 +863,21 @@ export default function ForecastDashboard() {
                           return (
                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${
                               parseFloat(totalDeviation) >= 0 
-                                ? 'bg-emerald-500/30 text-emerald-300' 
-                                : 'bg-rose-500/30 text-rose-300'
+                                ? 'bg-[#82A094]/100/30 text-[#82A094]' 
+                                : 'bg-[#EEC1BF]/100/30 text-rose-300'
                             }`}>
                               {parseFloat(totalDeviation) >= 0 ? '+' : ''}{totalDeviation}%
                             </span>
                           )
                         })()}
                       </td>
-                      <td className="px-2 py-2 text-right font-mono font-bold text-green-300">{formatCurrencyCompact(summaryData.totals.yearlyTarget - summaryData.totals.ordersReceived)}</td>
+                      <td className="px-2 py-2 text-right font-mono font-bold text-[#82A094]">{formatCurrencyCompact(summaryData.totals.yearlyTarget - summaryData.totals.ordersReceived)}</td>
                       <td className="px-2 py-2">
                         <div className="flex items-center gap-1.5">
                           <div className="flex-1 min-w-[40px]">
                             <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
                               <div 
-                                className="h-full bg-gradient-to-r from-emerald-400 to-green-400 rounded-full"
+                                className="h-full bg-gradient-to-r from-[#82A094] to-green-400 rounded-full"
                                 style={{ width: `${Math.min(totalAchievement, 100)}%` }}
                               />
                             </div>
@@ -910,7 +910,7 @@ export default function ForecastDashboard() {
                     className={`group flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
                       isActive 
                         ? `bg-gradient-to-r ${colors.gradient} text-white shadow-lg scale-102` 
-                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow border border-slate-200/50 dark:border-slate-700/50'
+                        : 'bg-white dark:bg-[#546A7A] text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/10 dark:hover:bg-[#5D6E73] shadow border border-[#92A2A5]/50 dark:border-[#5D6E73]/50'
                     }`}
                   >
                     <span>{zone.zoneName}</span>
@@ -925,7 +925,7 @@ export default function ForecastDashboard() {
 
             {/* Active Zone Card - Compact */}
             {activeZone && (
-              <Card className="overflow-hidden border-0 shadow-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-xl">
+              <Card className="overflow-hidden border-0 shadow-lg bg-white/90 dark:bg-[#546A7A]/90 backdrop-blur-sm rounded-xl">
                 <CardHeader className={`bg-gradient-to-r ${getZoneColor(activeZone.zoneName).gradient} py-3 px-4`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -942,7 +942,7 @@ export default function ForecastDashboard() {
                         onClick={() => setShowProductBreakdown(!showProductBreakdown)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                           showProductBreakdown 
-                            ? 'bg-white text-slate-800 shadow' 
+                            ? 'bg-white text-[#546A7A] shadow' 
                             : 'bg-white/20 text-white hover:bg-white/30'
                         }`}
                       >
@@ -965,59 +965,59 @@ export default function ForecastDashboard() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-100/95 dark:bg-slate-800/95 shadow-sm">
-                          <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created in this month">No of offers</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created in this month (based on offerMonth)">Offers value</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Orders received</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
-                          <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: Yearly Zone Target ÷ 12 = Monthly booking target">BU/Mo</th>
-                          <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
-                          <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Pipeline coverage target (4x for healthy funnel)">OfferBU</th>
-                          <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Offers): ((Offers - OfferBU) / OfferBU) × 100. Negative = below target, Positive = above target">%Dev</th>
+                        <tr className="bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95 shadow-sm">
+                          <th className="px-2 py-2 text-left font-bold text-[#5D6E73] dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95 z-20">Month</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created in this month">No of offers</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created in this month (based on offerMonth)">Offers value</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers where PO received in this month (poReceivedMonth)">Orders received</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#546A7A] dark:text-[#6F8A9D] uppercase tracking-wide bg-[#6F8A9D]/10/50 dark:bg-[#546A7A]/20 cursor-help" title="BU/MONTHLY: Yearly Zone Target ÷ 12 = Monthly booking target">BU/Mo</th>
+                          <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#546A7A] dark:text-[#6F8A9D] uppercase tracking-wide bg-[#546A7A]/10/50 dark:bg-[#546A7A]/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Pipeline coverage target (4x for healthy funnel)">OfferBU</th>
+                          <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="% DEV (Offers): ((Offers - OfferBU) / OfferBU) × 100. Negative = below target, Positive = above target">%Dev</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                         {activeZone.monthlyData.map((month, idx) => (
                           <tr 
                             key={month.month} 
-                            className={`hover:bg-blue-50/50 dark:hover:bg-slate-800/40 transition-colors ${
-                              idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'
+                            className={`hover:bg-[#96AEC2]/10/50 dark:hover:bg-[#546A7A]/40 transition-colors ${
+                              idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]/50' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/20'
                             }`}
                           >
                             <td className="px-2 py-1.5 sticky left-0 bg-inherit">
-                              <span className="font-semibold text-slate-800 dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
+                              <span className="font-semibold text-[#546A7A] dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{month.noOfOffers || 0}</span>
+                              <span className="font-mono font-bold text-[#5D6E73] dark:text-[#92A2A5]">{month.noOfOffers || 0}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{formatCurrencyCompact(month.offersValue)}</span>
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#6F8A9D]">{formatCurrencyCompact(month.offersValue)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">{formatCurrencyCompact(month.orderReceived)}</span>
+                              <span className="font-mono font-medium text-[#4F6A64] dark:text-[#82A094]">{formatCurrencyCompact(month.orderReceived)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-amber-600 dark:text-amber-400">{formatCurrencyCompact(month.ordersInHand)}</span>
+                              <span className="font-mono font-medium text-[#976E44] dark:text-[#CE9F6B]">{formatCurrencyCompact(month.ordersInHand)}</span>
                             </td>
-                            <td className="px-2 py-1.5 text-right bg-purple-50/30 dark:bg-purple-900/10">
-                              <span className="font-mono font-medium text-purple-600 dark:text-purple-400">{formatCurrencyCompact(month.buMonthly)}</span>
+                            <td className="px-2 py-1.5 text-right bg-[#6F8A9D]/10/30 dark:bg-[#546A7A]/10">
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#6F8A9D]">{formatCurrencyCompact(month.buMonthly)}</span>
                             </td>
                             <td className="px-1 py-1.5 text-center">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.percentDev)} ${getDeviationColor(month.percentDev)}`}>
                                 {month.percentDev !== null ? (
                                   <>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>
-                                ) : <span className="text-slate-400">-</span>}
+                                ) : <span className="text-[#979796]">-</span>}
                               </span>
                             </td>
-                            <td className="px-2 py-1.5 text-right bg-indigo-50/30 dark:bg-indigo-900/10">
-                              <span className="font-mono font-medium text-indigo-600 dark:text-indigo-400">{formatCurrencyCompact(month.offerBUMonth)}</span>
+                            <td className="px-2 py-1.5 text-right bg-[#546A7A]/10/30 dark:bg-[#546A7A]/10">
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#96AEC2]">{formatCurrencyCompact(month.offerBUMonth)}</span>
                             </td>
                             <td className="px-1 py-1.5 text-center">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.offerBUMonthDev)} ${getDeviationColor(month.offerBUMonthDev)}`}>
                                 {month.offerBUMonthDev !== null ? (
                                   <>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>
-                                ) : <span className="text-slate-400">-</span>}
+                                ) : <span className="text-[#979796]">-</span>}
                               </span>
                             </td>
                           </tr>
@@ -1025,20 +1025,20 @@ export default function ForecastDashboard() {
                       </tbody>
                       <tfoot>
                         <tr className="bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 font-bold">
-                          <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-800">
+                          <td className="px-2 py-2 text-[#546A7A] dark:text-white sticky left-0 bg-[#92A2A5]/30 dark:bg-[#546A7A]">
                             <span className="flex items-center gap-1">
                               <TrendingUp className="h-3 w-3" />
                               Total
                             </span>
                           </td>
-                          <td className="px-2 py-2 text-right font-mono text-slate-900 dark:text-white">{activeZone.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-blue-700 dark:text-blue-300">{formatCurrencyCompact(activeZone.totals.offersValue)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-emerald-700 dark:text-emerald-300">{formatCurrencyCompact(activeZone.totals.orderReceived)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-amber-700 dark:text-amber-300">{formatCurrencyCompact(activeZone.totals.ordersInHand)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-purple-700 dark:text-purple-300 bg-purple-100/50 dark:bg-purple-900/30">{formatCurrencyCompact(activeZone.totals.buMonthly)}</td>
-                          <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
-                          <td className="px-2 py-2 text-right font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-100/50 dark:bg-indigo-900/30">{formatCurrencyCompact(activeZone.totals.offerBUMonth)}</td>
-                          <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-white">{activeZone.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#96AEC2]">{formatCurrencyCompact(activeZone.totals.offersValue)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#4F6A64] dark:text-[#82A094]">{formatCurrencyCompact(activeZone.totals.orderReceived)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#976E44] dark:text-[#CE9F6B]">{formatCurrencyCompact(activeZone.totals.ordersInHand)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#6F8A9D] bg-[#6F8A9D]/20/50 dark:bg-[#546A7A]/30">{formatCurrencyCompact(activeZone.totals.buMonthly)}</td>
+                          <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#6F8A9D] bg-[#546A7A]/20/50 dark:bg-[#546A7A]/30">{formatCurrencyCompact(activeZone.totals.offerBUMonth)}</td>
+                          <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
                         </tr>
                       </tfoot>
                     </table>
@@ -1046,9 +1046,9 @@ export default function ForecastDashboard() {
 
                   {/* Product Breakdown Section - Expandable */}
                   {showProductBreakdown && activeZone.productBreakdown && activeZone.productBreakdown.length > 0 && (
-                    <div className="border-t border-slate-200 dark:border-slate-700 mt-2">
-                      <div className="px-4 py-2 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20">
-                        <h4 className="text-xs font-bold text-orange-700 dark:text-orange-300 uppercase tracking-wider flex items-center gap-2">
+                    <div className="border-t border-[#92A2A5] dark:border-[#5D6E73] mt-2">
+                      <div className="px-4 py-2 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 dark:from-orange-900/20 dark:to-amber-900/20">
+                        <h4 className="text-xs font-bold text-[#976E44] dark:text-orange-300 uppercase tracking-wider flex items-center gap-2">
                           <Package className="h-3.5 w-3.5" />
                           Product Type Breakdown ({activeZone.productBreakdown.length} types)
                         </h4>
@@ -1057,7 +1057,7 @@ export default function ForecastDashboard() {
                         {activeZone.productBreakdown.map((product: any) => {
                           const isExpanded = expandedProducts.has(product.productType)
                           return (
-                            <div key={product.productType} className="border border-orange-200 dark:border-orange-800 rounded-lg overflow-hidden">
+                            <div key={product.productType} className="border border-[#CE9F6B] dark:border-orange-800 rounded-lg overflow-hidden">
                               {/* Product Header - Clickable */}
                               <button
                                 onClick={() => {
@@ -1069,29 +1069,29 @@ export default function ForecastDashboard() {
                                   }
                                   setExpandedProducts(newSet)
                                 }}
-                                className="w-full flex items-center justify-between px-3 py-2 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors"
+                                className="w-full flex items-center justify-between px-3 py-2 bg-[#CE9F6B]/10 dark:bg-[#976E44]/30 hover:bg-[#CE9F6B]/20 dark:hover:bg-[#976E44]/50 transition-colors"
                               >
                                 <div className="flex items-center gap-2">
-                                  {isExpanded ? <ChevronDown className="h-4 w-4 text-orange-600" /> : <ChevronRight className="h-4 w-4 text-orange-600" />}
-                                  <Package className="h-4 w-4 text-orange-600" />
-                                  <span className="font-semibold text-slate-800 dark:text-white">{product.productLabel}</span>
+                                  {isExpanded ? <ChevronDown className="h-4 w-4 text-[#976E44]" /> : <ChevronRight className="h-4 w-4 text-[#976E44]" />}
+                                  <Package className="h-4 w-4 text-[#976E44]" />
+                                  <span className="font-semibold text-[#546A7A] dark:text-white">{product.productLabel}</span>
                                   {product.yearlyTarget > 0 && (
-                                    <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full">
+                                    <span className="text-xs px-2 py-0.5 bg-[#6F8A9D]/20 dark:bg-[#546A7A] text-[#546A7A] dark:text-[#6F8A9D] rounded-full">
                                       Target: {formatCurrencyCompact(product.yearlyTarget)}
                                     </span>
                                   )}
                                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                    product.hitRate >= 50 ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300' : 
-                                    product.hitRate >= 25 ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300' : 
-                                    'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                    product.hitRate >= 50 ? 'bg-[#82A094]/20 dark:bg-[#4F6A64] text-[#4F6A64] dark:text-[#82A094]' : 
+                                    product.hitRate >= 25 ? 'bg-[#CE9F6B]/20 dark:bg-[#976E44] text-[#976E44] dark:text-[#CE9F6B]' : 
+                                    'bg-[#AEBFC3]/20 dark:bg-[#5D6E73] text-[#5D6E73] dark:text-[#92A2A5]'
                                   }`}>
                                     Hit: {product.hitRate}%
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs">
-                                  <span className="text-blue-600">Offers: {formatCurrencyCompact(product.totals.offersValue)}</span>
-                                  <span className="text-emerald-600">Orders: {formatCurrencyCompact(product.totals.orderReceived)}</span>
-                                  <span className="text-amber-600">Funnel: {formatCurrencyCompact(product.totals.ordersInHand)}</span>
+                                  <span className="text-[#546A7A]">Offers: {formatCurrencyCompact(product.totals.offersValue)}</span>
+                                  <span className="text-[#4F6A64]">Orders: {formatCurrencyCompact(product.totals.orderReceived)}</span>
+                                  <span className="text-[#976E44]">Funnel: {formatCurrencyCompact(product.totals.ordersInHand)}</span>
                                 </div>
                               </button>
                               
@@ -1100,52 +1100,52 @@ export default function ForecastDashboard() {
                                 <div className="overflow-x-auto">
                                   <table className="w-full text-xs">
                                     <thead>
-                                      <tr className="bg-slate-100/95 dark:bg-slate-800/95">
-                                        <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
-                                        <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
-                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders received</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Open offer funnel</th>
-                                        <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
-                                        <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
-                                        <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
-                                        <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
+                                      <tr className="bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95">
+                                        <th className="px-2 py-2 text-left font-bold text-[#5D6E73] uppercase tracking-wide sticky left-0 bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95">Month</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#5D6E73]">No of offers</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A]">Offers value</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#4F6A64]">Orders received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#976E44]">Open offer funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A] bg-[#6F8A9D]/10/50 dark:bg-[#546A7A]/20">BU/Mo</th>
+                                        <th className="px-2 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A] bg-[#546A7A]/10/50 dark:bg-[#546A7A]/20">OfferBU</th>
+                                        <th className="px-2 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                                       {product.monthlyData.map((month: any, idx: number) => (
-                                        <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'}>
-                                          <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-slate-800">{month.monthLabel.slice(0, 3)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-slate-700">{month.noOfOffers || 0}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-blue-600">{formatCurrencyCompact(month.offersValue)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-emerald-600">{formatCurrencyCompact(month.orderReceived)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-amber-600">{formatCurrencyCompact(month.ordersInHand)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-purple-600 bg-purple-50/30 dark:bg-purple-900/10">{formatCurrencyCompact(month.buMonthly)}</td>
+                                        <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]/50' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/20'}>
+                                          <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-[#546A7A]">{month.monthLabel.slice(0, 3)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-[#5D6E73]">{month.noOfOffers || 0}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(month.offersValue)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(month.orderReceived)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#976E44]">{formatCurrencyCompact(month.ordersInHand)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A] bg-[#6F8A9D]/10/30 dark:bg-[#546A7A]/10">{formatCurrencyCompact(month.buMonthly)}</td>
                                           <td className="px-1 py-1.5 text-center">
                                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.percentDev)} ${getDeviationColor(month.percentDev)}`}>
-                                              {month.percentDev !== null ? (<>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>) : <span className="text-slate-400">-</span>}
+                                              {month.percentDev !== null ? (<>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>) : <span className="text-[#979796]">-</span>}
                                             </span>
                                           </td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-indigo-600 bg-indigo-50/30 dark:bg-indigo-900/10">{formatCurrencyCompact(month.offerBUMonth)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A] bg-[#546A7A]/10/30 dark:bg-[#546A7A]/10">{formatCurrencyCompact(month.offerBUMonth)}</td>
                                           <td className="px-1 py-1.5 text-center">
                                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.offerBUMonthDev)} ${getDeviationColor(month.offerBUMonthDev)}`}>
-                                              {month.offerBUMonthDev !== null ? (<>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>) : <span className="text-slate-400">-</span>}
+                                              {month.offerBUMonthDev !== null ? (<>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>) : <span className="text-[#979796]">-</span>}
                                             </span>
                                           </td>
                                         </tr>
                                       ))}
                                     </tbody>
                                     <tfoot>
-                                      <tr className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 font-bold">
-                                        <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-orange-100 dark:bg-orange-900/30">Total</td>
-                                        <td className="px-2 py-2 text-right font-mono text-slate-900">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-blue-700">{formatCurrencyCompact(product.totals.offersValue)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-emerald-700">{formatCurrencyCompact(product.totals.orderReceived)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-amber-700">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-purple-700 bg-purple-100/50">{formatCurrencyCompact(product.totals.buMonthly)}</td>
-                                        <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
-                                        <td className="px-2 py-2 text-right font-mono text-indigo-700 bg-indigo-100/50">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
-                                        <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
+                                      <tr className="bg-gradient-to-r from-orange-100 to-[#EEC1BF]/20 dark:from-orange-900/30 dark:to-amber-900/30 font-bold">
+                                        <td className="px-2 py-2 text-[#546A7A] dark:text-white sticky left-0 bg-[#CE9F6B]/20 dark:bg-[#976E44]/30">Total</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A]">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(product.totals.offersValue)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(product.totals.orderReceived)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#976E44]">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A] bg-[#6F8A9D]/20/50">{formatCurrencyCompact(product.totals.buMonthly)}</td>
+                                        <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A] bg-[#546A7A]/20/50">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
+                                        <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
                                       </tr>
                                     </tfoot>
                                   </table>
@@ -1168,12 +1168,12 @@ export default function ForecastDashboard() {
           <div className="space-y-3">
             {/* User Section Header - Compact */}
             <div className="flex items-center gap-2 pt-2">
-              <div className="p-1.5 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg">
-                <Users className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+              <div className="p-1.5 bg-gradient-to-br from-[#6F8A9D]/20 to-[#6F8A9D]/20 rounded-lg">
+                <Users className="h-4 w-4 text-[#546A7A] dark:text-cyan-400" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white">User Performance</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{userMonthlyData.users.length} users</p>
+                <h3 className="text-sm font-bold text-[#546A7A] dark:text-white">User Performance</h3>
+                <p className="text-xs text-[#757777] dark:text-[#979796]">{userMonthlyData.users.length} users</p>
               </div>
             </div>
 
@@ -1187,14 +1187,14 @@ export default function ForecastDashboard() {
                     onClick={() => setActiveUserTab(user.userId)}
                     className={`group flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all duration-200 ${
                       isActive 
-                        ? 'bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white shadow-lg scale-102' 
-                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow border border-slate-200/50 dark:border-slate-700/50'
+                        ? 'bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A] text-white shadow-lg scale-102' 
+                        : 'bg-white dark:bg-[#546A7A] text-[#5D6E73] dark:text-[#92A2A5] hover:bg-[#AEBFC3]/10 dark:hover:bg-[#5D6E73] shadow border border-[#92A2A5]/50 dark:border-[#5D6E73]/50'
                     }`}
                   >
                     <div className={`w-6 h-6 rounded flex items-center justify-center ${
-                      isActive ? 'bg-white/20' : 'bg-cyan-100 dark:bg-cyan-900/30'
+                      isActive ? 'bg-white/20' : 'bg-[#96AEC2]/20 dark:bg-[#546A7A]/30'
                     }`}>
-                      <User className={`h-3 w-3 ${isActive ? 'text-white' : 'text-cyan-600 dark:text-cyan-400'}`} />
+                      <User className={`h-3 w-3 ${isActive ? 'text-white' : 'text-[#546A7A] dark:text-cyan-400'}`} />
                     </div>
                     <span className="text-xs">{user.userName}</span>
                     {isActive && <ChevronRight className="h-4 w-4" />}
@@ -1205,8 +1205,8 @@ export default function ForecastDashboard() {
 
             {/* Active User Card - Compact */}
             {activeUser && (
-              <Card className="overflow-hidden border-0 shadow-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-xl">
-                <CardHeader className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 py-3 px-4">
+              <Card className="overflow-hidden border-0 shadow-lg bg-white/90 dark:bg-[#546A7A]/90 backdrop-blur-sm rounded-xl">
+                <CardHeader className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A] py-3 px-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-white/15 rounded-lg">
@@ -1224,7 +1224,7 @@ export default function ForecastDashboard() {
                         onClick={() => setShowUserProductBreakdown(!showUserProductBreakdown)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                           showUserProductBreakdown 
-                            ? 'bg-white text-slate-800 shadow' 
+                            ? 'bg-white text-[#546A7A] shadow' 
                             : 'bg-white/20 text-white hover:bg-white/30'
                         }`}
                       >
@@ -1247,59 +1247,59 @@ export default function ForecastDashboard() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-100/95 dark:bg-slate-800/95 shadow-sm">
-                          <th className="px-2 py-2 text-left font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95 z-20">Month</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created by this user in this month">No of offers</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created by this user in this month">Offers value</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Orders received</th>
-                          <th className="px-2 py-2 text-right font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
-                          <th className="px-2 py-2 text-right font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide bg-purple-50/50 dark:bg-purple-900/20 cursor-help" title="BU/MONTHLY: User's Yearly Target ÷ 12 = Monthly booking target">BU/Mo</th>
-                          <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
-                          <th className="px-2 py-2 text-right font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide bg-indigo-50/50 dark:bg-indigo-900/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Monthly offer target (4x pipeline coverage)">OfferBU</th>
-                          <th className="px-2 py-2 text-center font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide cursor-help" title="% DEV (Offers): ((Offers - OfferBU) / OfferBU) × 100. Negative = below target, Positive = above target">%Dev</th>
+                        <tr className="bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95 shadow-sm">
+                          <th className="px-2 py-2 text-left font-bold text-[#5D6E73] dark:text-slate-200 uppercase tracking-wide sticky left-0 bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95 z-20">Month</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="NUMBER OF OFFERS: Count of offers created by this user in this month">No of offers</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="OFFERS VALUE: Total value of all offers created by this user in this month">Offers value</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="ORDERS RECEIVED: PO value of WON offers created by this user in this month">Orders received</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="OPEN FUNNEL: Offers Value - Orders Received (pending offers in pipeline)">Open offer funnel</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#546A7A] dark:text-[#6F8A9D] uppercase tracking-wide bg-[#6F8A9D]/10/50 dark:bg-[#546A7A]/20 cursor-help" title="BU/MONTHLY: User's Yearly Target ÷ 12 = Monthly booking target">BU/Mo</th>
+                          <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="% DEV (Orders): ((Orders - BU/Mo) / BU/Mo) × 100. Negative = below target, Positive = above target">%Dev</th>
+                          <th className="px-2 py-2 text-right font-bold text-[#546A7A] dark:text-[#6F8A9D] uppercase tracking-wide bg-[#546A7A]/10/50 dark:bg-[#546A7A]/20 cursor-help" title="OFFER BU MONTH: BU/Mo × 4 = Monthly offer target (4x pipeline coverage)">OfferBU</th>
+                          <th className="px-2 py-2 text-center font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wide cursor-help" title="% DEV (Offers): ((Offers - OfferBU) / OfferBU) × 100. Negative = below target, Positive = above target">%Dev</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                         {activeUser.monthlyData.map((month, idx) => (
                           <tr 
                             key={month.month} 
-                            className={`hover:bg-blue-50/50 dark:hover:bg-slate-800/40 transition-colors ${
-                              idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'
+                            className={`hover:bg-[#96AEC2]/10/50 dark:hover:bg-[#546A7A]/40 transition-colors ${
+                              idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]/50' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/20'
                             }`}
                           >
                             <td className="px-2 py-1.5 sticky left-0 bg-inherit">
-                              <span className="font-semibold text-slate-800 dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
+                              <span className="font-semibold text-[#546A7A] dark:text-slate-200">{month.monthLabel.slice(0, 3)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{month.noOfOffers || 0}</span>
+                              <span className="font-mono font-bold text-[#5D6E73] dark:text-[#92A2A5]">{month.noOfOffers || 0}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{formatCurrencyCompact(month.offersValue)}</span>
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#6F8A9D]">{formatCurrencyCompact(month.offersValue)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">{formatCurrencyCompact(month.orderReceived)}</span>
+                              <span className="font-mono font-medium text-[#4F6A64] dark:text-[#82A094]">{formatCurrencyCompact(month.orderReceived)}</span>
                             </td>
                             <td className="px-2 py-1.5 text-right">
-                              <span className="font-mono font-medium text-amber-600 dark:text-amber-400">{formatCurrencyCompact(month.ordersInHand)}</span>
+                              <span className="font-mono font-medium text-[#976E44] dark:text-[#CE9F6B]">{formatCurrencyCompact(month.ordersInHand)}</span>
                             </td>
-                            <td className="px-2 py-1.5 text-right bg-purple-50/30 dark:bg-purple-900/10">
-                              <span className="font-mono font-medium text-purple-600 dark:text-purple-400">{formatCurrencyCompact(month.buMonthly)}</span>
+                            <td className="px-2 py-1.5 text-right bg-[#6F8A9D]/10/30 dark:bg-[#546A7A]/10">
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#6F8A9D]">{formatCurrencyCompact(month.buMonthly)}</span>
                             </td>
                             <td className="px-1 py-1.5 text-center">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.percentDev)} ${getDeviationColor(month.percentDev)}`}>
                                 {month.percentDev !== null ? (
                                   <>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>
-                                ) : <span className="text-slate-400">-</span>}
+                                ) : <span className="text-[#979796]">-</span>}
                               </span>
                             </td>
-                            <td className="px-2 py-1.5 text-right bg-indigo-50/30 dark:bg-indigo-900/10">
-                              <span className="font-mono font-medium text-indigo-600 dark:text-indigo-400">{formatCurrencyCompact(month.offerBUMonth)}</span>
+                            <td className="px-2 py-1.5 text-right bg-[#546A7A]/10/30 dark:bg-[#546A7A]/10">
+                              <span className="font-mono font-medium text-[#546A7A] dark:text-[#96AEC2]">{formatCurrencyCompact(month.offerBUMonth)}</span>
                             </td>
                             <td className="px-1 py-1.5 text-center">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.offerBUMonthDev)} ${getDeviationColor(month.offerBUMonthDev)}`}>
                                 {month.offerBUMonthDev !== null ? (
                                   <>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>
-                                ) : <span className="text-slate-400">-</span>}
+                                ) : <span className="text-[#979796]">-</span>}
                               </span>
                             </td>
                           </tr>
@@ -1307,20 +1307,20 @@ export default function ForecastDashboard() {
                       </tbody>
                       <tfoot>
                         <tr className="bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 font-bold">
-                          <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-800">
+                          <td className="px-2 py-2 text-[#546A7A] dark:text-white sticky left-0 bg-[#92A2A5]/30 dark:bg-[#546A7A]">
                             <span className="flex items-center gap-1">
                               <TrendingUp className="h-3 w-3" />
                               Total
                             </span>
                           </td>
-                          <td className="px-2 py-2 text-right font-mono text-slate-900 dark:text-white">{activeUser.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-blue-700 dark:text-blue-300">{formatCurrencyCompact(activeUser.totals.offersValue)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-emerald-700 dark:text-emerald-300">{formatCurrencyCompact(activeUser.totals.orderReceived)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-amber-700 dark:text-amber-300">{formatCurrencyCompact(activeUser.totals.ordersInHand)}</td>
-                          <td className="px-2 py-2 text-right font-mono text-purple-700 dark:text-purple-300 bg-purple-100/50 dark:bg-purple-900/30">{formatCurrencyCompact(activeUser.totals.buMonthly)}</td>
-                          <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
-                          <td className="px-2 py-2 text-right font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-100/50 dark:bg-indigo-900/30">{formatCurrencyCompact(activeUser.totals.offerBUMonth)}</td>
-                          <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-white">{activeUser.monthlyData.reduce((sum, m) => sum + (m.noOfOffers || 0), 0)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#96AEC2]">{formatCurrencyCompact(activeUser.totals.offersValue)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#4F6A64] dark:text-[#82A094]">{formatCurrencyCompact(activeUser.totals.orderReceived)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#976E44] dark:text-[#CE9F6B]">{formatCurrencyCompact(activeUser.totals.ordersInHand)}</td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#6F8A9D] bg-[#6F8A9D]/20/50 dark:bg-[#546A7A]/30">{formatCurrencyCompact(activeUser.totals.buMonthly)}</td>
+                          <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
+                          <td className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-[#6F8A9D] bg-[#546A7A]/20/50 dark:bg-[#546A7A]/30">{formatCurrencyCompact(activeUser.totals.offerBUMonth)}</td>
+                          <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
                         </tr>
                       </tfoot>
                     </table>
@@ -1328,9 +1328,9 @@ export default function ForecastDashboard() {
 
                   {/* User Product Breakdown Section - Expandable */}
                   {showUserProductBreakdown && activeUser.productBreakdown && activeUser.productBreakdown.length > 0 && (
-                    <div className="border-t border-slate-200 dark:border-slate-700 mt-2">
-                      <div className="px-4 py-2 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20">
-                        <h4 className="text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider flex items-center gap-2">
+                    <div className="border-t border-[#92A2A5] dark:border-[#5D6E73] mt-2">
+                      <div className="px-4 py-2 bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10 dark:from-cyan-900/20 dark:to-[#546A7A]/20">
+                        <h4 className="text-xs font-bold text-[#546A7A] dark:text-cyan-300 uppercase tracking-wider flex items-center gap-2">
                           <Package className="h-3.5 w-3.5" />
                           Product Type Breakdown ({activeUser.productBreakdown.length} types)
                         </h4>
@@ -1339,7 +1339,7 @@ export default function ForecastDashboard() {
                         {activeUser.productBreakdown.map((product: any) => {
                           const isExpanded = expandedUserProducts.has(product.productType)
                           return (
-                            <div key={product.productType} className="border border-cyan-200 dark:border-cyan-800 rounded-lg overflow-hidden">
+                            <div key={product.productType} className="border border-[#96AEC2]/50 dark:border-cyan-800 rounded-lg overflow-hidden">
                               {/* Product Header - Clickable */}
                               <button
                                 onClick={() => {
@@ -1351,29 +1351,29 @@ export default function ForecastDashboard() {
                                   }
                                   setExpandedUserProducts(newSet)
                                 }}
-                                className="w-full flex items-center justify-between px-3 py-2 bg-cyan-50 dark:bg-cyan-900/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"
+                                className="w-full flex items-center justify-between px-3 py-2 bg-[#96AEC2]/10 dark:bg-[#546A7A]/30 hover:bg-[#96AEC2]/20 dark:hover:bg-[#546A7A]/50 transition-colors"
                               >
                                 <div className="flex items-center gap-2">
-                                  {isExpanded ? <ChevronDown className="h-4 w-4 text-cyan-600" /> : <ChevronRight className="h-4 w-4 text-cyan-600" />}
-                                  <Package className="h-4 w-4 text-cyan-600" />
-                                  <span className="font-semibold text-slate-800 dark:text-white">{product.productLabel}</span>
+                                  {isExpanded ? <ChevronDown className="h-4 w-4 text-[#546A7A]" /> : <ChevronRight className="h-4 w-4 text-[#546A7A]" />}
+                                  <Package className="h-4 w-4 text-[#546A7A]" />
+                                  <span className="font-semibold text-[#546A7A] dark:text-white">{product.productLabel}</span>
                                   {product.yearlyTarget > 0 && (
-                                    <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full">
+                                    <span className="text-xs px-2 py-0.5 bg-[#6F8A9D]/20 dark:bg-[#546A7A] text-[#546A7A] dark:text-[#6F8A9D] rounded-full">
                                       Target: {formatCurrencyCompact(product.yearlyTarget)}
                                     </span>
                                   )}
                                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                    product.hitRate >= 50 ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300' : 
-                                    product.hitRate >= 25 ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300' : 
-                                    'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                    product.hitRate >= 50 ? 'bg-[#82A094]/20 dark:bg-[#4F6A64] text-[#4F6A64] dark:text-[#82A094]' : 
+                                    product.hitRate >= 25 ? 'bg-[#CE9F6B]/20 dark:bg-[#976E44] text-[#976E44] dark:text-[#CE9F6B]' : 
+                                    'bg-[#AEBFC3]/20 dark:bg-[#5D6E73] text-[#5D6E73] dark:text-[#92A2A5]'
                                   }`}>
                                     Hit: {product.hitRate}%
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs">
-                                  <span className="text-blue-600">Offers: {formatCurrencyCompact(product.totals.offersValue)}</span>
-                                  <span className="text-emerald-600">Orders: {formatCurrencyCompact(product.totals.orderReceived)}</span>
-                                  <span className="text-amber-600">Funnel: {formatCurrencyCompact(product.totals.ordersInHand)}</span>
+                                  <span className="text-[#546A7A]">Offers: {formatCurrencyCompact(product.totals.offersValue)}</span>
+                                  <span className="text-[#4F6A64]">Orders: {formatCurrencyCompact(product.totals.orderReceived)}</span>
+                                  <span className="text-[#976E44]">Funnel: {formatCurrencyCompact(product.totals.ordersInHand)}</span>
                                 </div>
                               </button>
                               
@@ -1382,52 +1382,52 @@ export default function ForecastDashboard() {
                                 <div className="overflow-x-auto">
                                   <table className="w-full text-xs">
                                     <thead>
-                                      <tr className="bg-slate-100/95 dark:bg-slate-800/95">
-                                        <th className="px-2 py-2 text-left font-bold text-slate-700 uppercase tracking-wide sticky left-0 bg-slate-100/95 dark:bg-slate-800/95">Month</th>
-                                        <th className="px-2 py-2 text-right font-bold text-slate-600">No of offers</th>
-                                        <th className="px-2 py-2 text-right font-bold text-blue-600">Offers value</th>
-                                        <th className="px-2 py-2 text-right font-bold text-emerald-600">Orders received</th>
-                                        <th className="px-2 py-2 text-right font-bold text-amber-600">Open offer funnel</th>
-                                        <th className="px-2 py-2 text-right font-bold text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">BU/Mo</th>
-                                        <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
-                                        <th className="px-2 py-2 text-right font-bold text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">OfferBU</th>
-                                        <th className="px-2 py-2 text-center font-bold text-slate-600">%Dev</th>
+                                      <tr className="bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95">
+                                        <th className="px-2 py-2 text-left font-bold text-[#5D6E73] uppercase tracking-wide sticky left-0 bg-[#AEBFC3]/20/95 dark:bg-[#546A7A]/95">Month</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#5D6E73]">No of offers</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A]">Offers value</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#4F6A64]">Orders received</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#976E44]">Open offer funnel</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A] bg-[#6F8A9D]/10/50 dark:bg-[#546A7A]/20">BU/Mo</th>
+                                        <th className="px-2 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
+                                        <th className="px-2 py-2 text-right font-bold text-[#546A7A] bg-[#546A7A]/10/50 dark:bg-[#546A7A]/20">OfferBU</th>
+                                        <th className="px-2 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                                       {product.monthlyData.map((month: any, idx: number) => (
-                                        <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-slate-50/50 dark:bg-slate-800/20'}>
-                                          <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-slate-800">{month.monthLabel.slice(0, 3)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-slate-700">{month.noOfOffers || 0}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-blue-600">{formatCurrencyCompact(month.offersValue)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-emerald-600">{formatCurrencyCompact(month.orderReceived)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-amber-600">{formatCurrencyCompact(month.ordersInHand)}</td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-purple-600 bg-purple-50/30 dark:bg-purple-900/10">{formatCurrencyCompact(month.buMonthly)}</td>
+                                        <tr key={month.month} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]/50' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/20'}>
+                                          <td className="px-2 py-1.5 sticky left-0 bg-inherit font-semibold text-[#546A7A]">{month.monthLabel.slice(0, 3)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono font-bold text-[#5D6E73]">{month.noOfOffers || 0}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(month.offersValue)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(month.orderReceived)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#976E44]">{formatCurrencyCompact(month.ordersInHand)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A] bg-[#6F8A9D]/10/30 dark:bg-[#546A7A]/10">{formatCurrencyCompact(month.buMonthly)}</td>
                                           <td className="px-1 py-1.5 text-center">
                                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.percentDev)} ${getDeviationColor(month.percentDev)}`}>
-                                              {month.percentDev !== null ? (<>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>) : <span className="text-slate-400">-</span>}
+                                              {month.percentDev !== null ? (<>{month.percentDev > 0 ? '+' : ''}{month.percentDev}%</>) : <span className="text-[#979796]">-</span>}
                                             </span>
                                           </td>
-                                          <td className="px-2 py-1.5 text-right font-mono text-indigo-600 bg-indigo-50/30 dark:bg-indigo-900/10">{formatCurrencyCompact(month.offerBUMonth)}</td>
+                                          <td className="px-2 py-1.5 text-right font-mono text-[#546A7A] bg-[#546A7A]/10/30 dark:bg-[#546A7A]/10">{formatCurrencyCompact(month.offerBUMonth)}</td>
                                           <td className="px-1 py-1.5 text-center">
                                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getDeviationBg(month.offerBUMonthDev)} ${getDeviationColor(month.offerBUMonthDev)}`}>
-                                              {month.offerBUMonthDev !== null ? (<>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>) : <span className="text-slate-400">-</span>}
+                                              {month.offerBUMonthDev !== null ? (<>{month.offerBUMonthDev > 0 ? '+' : ''}{month.offerBUMonthDev}%</>) : <span className="text-[#979796]">-</span>}
                                             </span>
                                           </td>
                                         </tr>
                                       ))}
                                     </tbody>
                                     <tfoot>
-                                      <tr className="bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30 font-bold">
-                                        <td className="px-2 py-2 text-slate-900 dark:text-white sticky left-0 bg-cyan-100 dark:bg-cyan-900/30">Total</td>
-                                        <td className="px-2 py-2 text-right font-mono text-slate-900">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-blue-700">{formatCurrencyCompact(product.totals.offersValue)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-emerald-700">{formatCurrencyCompact(product.totals.orderReceived)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-amber-700">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
-                                        <td className="px-2 py-2 text-right font-mono text-purple-700 bg-purple-100/50">{formatCurrencyCompact(product.totals.buMonthly)}</td>
-                                        <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
-                                        <td className="px-2 py-2 text-right font-mono text-indigo-700 bg-indigo-100/50">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
-                                        <td className="px-1 py-2 text-center"><span className="text-slate-400">—</span></td>
+                                      <tr className="bg-gradient-to-r from-cyan-100 to-[#96AEC2]/20 dark:from-cyan-900/30 dark:to-[#546A7A]/30 font-bold">
+                                        <td className="px-2 py-2 text-[#546A7A] dark:text-white sticky left-0 bg-[#96AEC2]/20 dark:bg-[#546A7A]/30">Total</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A]">{product.monthlyData.reduce((sum: number, m: any) => sum + (m.noOfOffers || 0), 0)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(product.totals.offersValue)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(product.totals.orderReceived)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#976E44]">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A] bg-[#6F8A9D]/20/50">{formatCurrencyCompact(product.totals.buMonthly)}</td>
+                                        <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
+                                        <td className="px-2 py-2 text-right font-mono text-[#546A7A] bg-[#546A7A]/20/50">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
+                                        <td className="px-1 py-2 text-center"><span className="text-[#979796]">—</span></td>
                                       </tr>
                                     </tfoot>
                                   </table>
@@ -1446,29 +1446,29 @@ export default function ForecastDashboard() {
         )}
 
         {/* Legend Footer - Compact */}
-        <Card className="border-0 shadow-md bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm rounded-xl">
+        <Card className="border-0 shadow-md bg-white/70 dark:bg-[#546A7A]/70 backdrop-blur-sm rounded-xl">
           <CardContent className="py-2 px-4">
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                <span className="text-slate-600 dark:text-slate-400">100%+</span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-[#82A094]" />
+                <span className="text-[#5D6E73] dark:text-[#979796]">100%+</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                <span className="text-slate-600 dark:text-slate-400">75-99%</span>
+                <AlertTriangle className="h-3.5 w-3.5 text-[#CE9F6B]" />
+                <span className="text-[#5D6E73] dark:text-[#979796]">75-99%</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <XCircle className="h-3.5 w-3.5 text-rose-500" />
-                <span className="text-slate-600 dark:text-slate-400">&lt;75%</span>
+                <XCircle className="h-3.5 w-3.5 text-[#E17F70]" />
+                <span className="text-[#5D6E73] dark:text-[#979796]">&lt;75%</span>
               </div>
-              <div className="h-3 w-px bg-slate-300 dark:bg-slate-700" />
+              <div className="h-3 w-px bg-[#92A2A5] dark:bg-[#5D6E73]" />
               <div className="flex items-center gap-1.5">
-                <span className="px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 text-[10px] font-bold">+%</span>
-                <span className="text-slate-600 dark:text-slate-400">Above Target</span>
+                <span className="px-1 py-0.5 rounded bg-[#82A094]/20 dark:bg-[#4F6A64]/30 text-[#4F6A64] text-[10px] font-bold">+%</span>
+                <span className="text-[#5D6E73] dark:text-[#979796]">Above Target</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="px-1 py-0.5 rounded bg-rose-100 dark:bg-rose-900/30 text-rose-600 text-[10px] font-bold">-%</span>
-                <span className="text-slate-600 dark:text-slate-400">Below Target</span>
+                <span className="px-1 py-0.5 rounded bg-[#EEC1BF]/20 dark:bg-[#9E3B47]/30 text-[#9E3B47] text-[10px] font-bold">-%</span>
+                <span className="text-[#5D6E73] dark:text-[#979796]">Below Target</span>
               </div>
             </div>
           </CardContent>

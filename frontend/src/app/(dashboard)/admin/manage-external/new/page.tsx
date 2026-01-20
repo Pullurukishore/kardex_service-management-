@@ -6,12 +6,12 @@ export default function NewExternalUserPage() {
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#82A094] via-[#6F8A9D] to-[#6F8A9D] p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Add New User</h1>
-            <p className="text-green-100">
+            <p className="text-[#A2B9AF]">
               Create a new user account with secure credentials
             </p>
           </div>

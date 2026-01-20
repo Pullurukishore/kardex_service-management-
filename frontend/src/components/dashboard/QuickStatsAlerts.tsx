@@ -23,19 +23,19 @@ export default function QuickStatsAlerts({ dashboardData }: QuickStatsAlertsProp
     <div className="space-y-6">
       {/* Critical Alerts */}
       {(dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) > 5 && (
-        <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200 shadow-lg">
+        <Card className="bg-gradient-to-r from-[#E17F70]/10 to-[#EEC1BF]/10 border-[#E17F70] shadow-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-red-800">
+            <CardTitle className="flex items-center gap-2 text-[#75242D]">
               <AlertTriangle className="w-5 h-5" />
               Critical Alert
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-red-700">
+              <p className="text-sm text-[#75242D]">
                 <strong>{dashboardData?.stats?.kpis?.unassignedTickets?.value}</strong> tickets require immediate assignment
               </p>
-              <Button size="sm" className="bg-red-600 hover:bg-red-700">
+              <Button size="sm" className="bg-[#9E3B47] hover:bg-[#75242D]">
                 Assign Now
               </Button>
             </div>
@@ -47,7 +47,7 @@ export default function QuickStatsAlerts({ dashboardData }: QuickStatsAlertsProp
       <Card className="bg-white shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] rounded-lg">
               <Activity className="w-5 h-5 text-white" />
             </div>
             System Overview
@@ -57,14 +57,14 @@ export default function QuickStatsAlerts({ dashboardData }: QuickStatsAlertsProp
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-slate-600" />
+                <Users className="w-4 h-4 text-[#5D6E73]" />
                 <span className="text-sm font-medium">Service Personnel</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-slate-900">
+                <span className="text-sm font-semibold text-[#546A7A]">
                   {dashboardData?.stats?.kpis?.activeServicePersons?.value || 0} Active
                 </span>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-[#757777]">
                   of {dashboardData?.adminStats?.totalServicePersons || 0} total
                 </span>
               </div>
@@ -80,14 +80,14 @@ export default function QuickStatsAlerts({ dashboardData }: QuickStatsAlertsProp
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-slate-600" />
+                <Building2 className="w-4 h-4 text-[#5D6E73]" />
                 <span className="text-sm font-medium">Active Customers</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-slate-900">
+                <span className="text-sm font-semibold text-[#546A7A]">
                   {dashboardData?.stats?.kpis?.activeCustomers?.value || 0}
                 </span>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-[#757777]">
                   of {dashboardData?.adminStats?.totalCustomers || 0} total
                 </span>
               </div>
@@ -103,15 +103,15 @@ export default function QuickStatsAlerts({ dashboardData }: QuickStatsAlertsProp
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-slate-600" />
+                <MapPin className="w-4 h-4 text-[#5D6E73]" />
                 <span className="text-sm font-medium">Service Zones</span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-slate-900">
+                <span className="text-sm font-semibold text-[#546A7A]">
                   {dashboardData?.adminStats?.totalServiceZones || 0} Zones
                 </span>
                 {dashboardData?.adminStats?.zoneWiseTickets?.some(z => z.totalTickets > 0) && (
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-[#757777]">
                     {dashboardData.adminStats.zoneWiseTickets.filter(z => z.totalTickets > 0).length} active
                   </span>
                 )}

@@ -96,39 +96,39 @@ export default function ServiceZoneDetailPage() {
       case 'open':
       case 'in_progress':
       case 'pending_parts':
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+        return <AlertCircle className="h-4 w-4 text-[#CE9F6B]" />;
       case 'resolved':
       case 'closed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-[#82A094]" />;
       case 'cancelled':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-[#E17F70]" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-[#AEBFC3]0" />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
       case 'high':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[#E17F70]/20 text-[#75242D]';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#CE9F6B]/20 text-[#976E44]';
       case 'low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#AEBFC3]/20 text-[#546A7A]';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
-            <RefreshCw className="h-6 w-6 text-green-600 animate-spin" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#A2B9AF]/20 mb-4">
+            <RefreshCw className="h-6 w-6 text-[#4F6A64] animate-spin" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Service Zone</h3>
-          <p className="text-sm text-gray-500">Please wait while we fetch the zone details...</p>
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Loading Service Zone</h3>
+          <p className="text-sm text-[#AEBFC3]0">Please wait while we fetch the zone details...</p>
         </div>
       </div>
     );
@@ -136,14 +136,14 @@ export default function ServiceZoneDetailPage() {
 
   if (!zone || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
-            <XCircle className="h-6 w-6 text-red-600" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20 mb-4">
+            <XCircle className="h-6 w-6 text-[#9E3B47]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Service Zone Not Found</h3>
-          <p className="text-sm text-gray-500 mb-6">The service zone you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={() => router.push('/admin/service-zones')} className="bg-green-600 hover:bg-green-700">
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Service Zone Not Found</h3>
+          <p className="text-sm text-[#AEBFC3]0 mb-6">The service zone you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => router.push('/admin/service-zones')} className="bg-[#4F6A64] hover:bg-[#4F6A64]">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Service Zones
           </Button>
@@ -155,7 +155,7 @@ export default function ServiceZoneDetailPage() {
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-green-600 via-teal-600 to-green-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#82A094] via-[#82A094] to-green-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
@@ -173,7 +173,7 @@ export default function ServiceZoneDetailPage() {
                 variant={zone.isActive ? 'default' : 'secondary'}
                 className={zone.isActive 
                   ? 'bg-white/20 text-white hover:bg-white/30' 
-                  : 'bg-gray-600 text-gray-200 hover:bg-gray-700'
+                  : 'bg-[#5D6E73] text-[#AEBFC3] hover:bg-[#5D6E73]'
                 }
               >
                 {zone.isActive ? (
@@ -190,7 +190,7 @@ export default function ServiceZoneDetailPage() {
               </Badge>
               <Button 
                 onClick={() => router.push(`/admin/service-zones/${zone.id}/edit`)}
-                className="bg-white text-green-600 hover:bg-green-50 shadow-lg"
+                className="bg-white text-[#4F6A64] hover:bg-[#A2B9AF]/10 shadow-lg"
               >
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit Zone
@@ -203,7 +203,7 @@ export default function ServiceZoneDetailPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold mb-2">{zone.name}</h1>
-              <p className="text-green-100 flex items-center gap-2">
+              <p className="text-[#A2B9AF] flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 Service Zone Details & Management
               </p>
@@ -219,14 +219,14 @@ export default function ServiceZoneDetailPage() {
             variant="ghost" 
             size="sm"
             onClick={() => router.push('/admin/service-zones')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-[#5D6E73] hover:text-[#546A7A]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           <Button 
             onClick={() => router.push(`/admin/service-zones/${zone.id}/edit`)}
-            className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+            className="bg-[#4F6A64] hover:bg-[#4F6A64] text-white shadow-lg"
           >
             <Pencil className="mr-2 h-4 w-4" /> Edit
           </Button>
@@ -239,8 +239,8 @@ export default function ServiceZoneDetailPage() {
           <Badge 
             variant={zone.isActive ? 'default' : 'secondary'}
             className={zone.isActive 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-gray-100 text-gray-600'
+              ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+              : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
             }
           >
             {zone.isActive ? (
@@ -260,60 +260,60 @@ export default function ServiceZoneDetailPage() {
 
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#6F8A9D] shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Service Personnel</p>
-                <p className="text-3xl font-bold text-purple-900">{stats.counts.servicePersons}</p>
-                <p className="text-xs text-purple-700 mt-1">Assigned to zone</p>
+                <p className="text-sm font-medium text-[#546A7A]">Service Personnel</p>
+                <p className="text-3xl font-bold text-[#546A7A]">{stats.counts.servicePersons}</p>
+                <p className="text-xs text-[#546A7A] mt-1">Assigned to zone</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-purple-500 flex items-center justify-center shadow-lg">
+              <div className="h-14 w-14 rounded-full bg-[#6F8A9D]/100 flex items-center justify-center shadow-lg">
                 <Users className="h-7 w-7 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B] shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600">Customers</p>
-                <p className="text-3xl font-bold text-orange-900">{stats.counts.customers}</p>
-                <p className="text-xs text-orange-700 mt-1">In this zone</p>
+                <p className="text-sm font-medium text-[#976E44]">Customers</p>
+                <p className="text-3xl font-bold text-[#976E44]">{stats.counts.customers}</p>
+                <p className="text-xs text-[#976E44] mt-1">In this zone</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-orange-500 flex items-center justify-center shadow-lg">
+              <div className="h-14 w-14 rounded-full bg-[#CE9F6B]/100 flex items-center justify-center shadow-lg">
                 <Building className="h-7 w-7 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2] shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Total Tickets</p>
-                <p className="text-3xl font-bold text-blue-900">{stats.counts.tickets}</p>
-                <p className="text-xs text-blue-700 mt-1">All time</p>
+                <p className="text-sm font-medium text-[#546A7A]">Total Tickets</p>
+                <p className="text-3xl font-bold text-[#546A7A]">{stats.counts.tickets}</p>
+                <p className="text-xs text-[#546A7A] mt-1">All time</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
+              <div className="h-14 w-14 rounded-full bg-[#96AEC2]/100 flex items-center justify-center shadow-lg">
                 <Ticket className="h-7 w-7 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF] shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Active Tickets</p>
-                <p className="text-3xl font-bold text-green-900">{stats.counts.activeTickets}</p>
-                <p className="text-xs text-green-700 mt-1">Currently open</p>
+                <p className="text-sm font-medium text-[#4F6A64]">Active Tickets</p>
+                <p className="text-3xl font-bold text-[#4F6A64]">{stats.counts.activeTickets}</p>
+                <p className="text-xs text-[#4F6A64] mt-1">Currently open</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
+              <div className="h-14 w-14 rounded-full bg-[#A2B9AF]/100 flex items-center justify-center shadow-lg">
                 <Activity className="h-7 w-7 text-white" />
               </div>
             </div>
@@ -323,48 +323,48 @@ export default function ServiceZoneDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Enhanced Zone Information */}
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-gray-100">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-100 rounded-t-lg border-b">
-            <CardTitle className="text-gray-800 flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-green-600" />
+        <Card className="shadow-lg border-0 bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/20">
+          <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 rounded-t-lg border-b">
+            <CardTitle className="text-[#546A7A] flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-[#4F6A64]" />
               Zone Information
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                <MapPin className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-full bg-[#A2B9AF]/20 flex items-center justify-center">
+                <MapPin className="h-5 w-5 text-[#4F6A64]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Zone Name</label>
-                <p className="text-lg font-semibold text-gray-900">{zone.name}</p>
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Zone Name</label>
+                <p className="text-lg font-semibold text-[#546A7A]">{zone.name}</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mt-1">
-                <Eye className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-full bg-[#96AEC2]/20 flex items-center justify-center mt-1">
+                <Eye className="h-5 w-5 text-[#546A7A]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Description</label>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Description</label>
+                <p className="text-sm text-[#5D6E73] leading-relaxed mt-1">
                   {zone.description || 'No description provided for this service zone.'}
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <UserCheck className="h-5 w-5 text-purple-600" />
+              <div className="h-10 w-10 rounded-full bg-[#6F8A9D]/20 flex items-center justify-center">
+                <UserCheck className="h-5 w-5 text-[#546A7A]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Status</label>
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Status</label>
                 <div className="mt-2">
                   <Badge 
                     variant={zone.isActive ? 'default' : 'secondary'}
                     className={zone.isActive 
-                      ? 'bg-green-100 text-green-800 hover:bg-green-200 px-3 py-1' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1'
+                      ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30 px-3 py-1' 
+                      : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30 px-3 py-1'
                     }
                   >
                     {zone.isActive ? (
@@ -384,19 +384,19 @@ export default function ServiceZoneDetailPage() {
             </div>
             
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-orange-600" />
+              <div className="h-10 w-10 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-[#976E44]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Created Date</label>
-                <p className="text-sm font-medium text-gray-900 mt-1">
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Created Date</label>
+                <p className="text-sm font-medium text-[#546A7A] mt-1">
                   {new Date(zone.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                   })}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#AEBFC3]0">
                   {new Date(zone.createdAt).toLocaleDateString('en-US', { weekday: 'long' })}
                 </p>
               </div>
@@ -405,10 +405,10 @@ export default function ServiceZoneDetailPage() {
         </Card>
 
         {/* Enhanced Service Persons */}
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-indigo-100">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-100 rounded-t-lg border-b">
-            <CardTitle className="text-gray-800 flex items-center gap-2">
-              <Users className="h-5 w-5 text-purple-600" />
+        <Card className="shadow-lg border-0 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
+          <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-t-lg border-b">
+            <CardTitle className="text-[#546A7A] flex items-center gap-2">
+              <Users className="h-5 w-5 text-[#546A7A]" />
               Assigned Service Personnel ({zone.servicePersons?.length || 0})
             </CardTitle>
           </CardHeader>
@@ -417,25 +417,25 @@ export default function ServiceZoneDetailPage() {
               <div className="space-y-4">
                 {zone.servicePersons.map((person, index) => (
                   <div key={person.id} className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center text-white font-bold text-lg shadow-lg">
                       {(person.user.name || person.user.email).charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-[#546A7A]">
                           {person.user.name || 'Service Person'}
                         </p>
-                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                        <Badge variant="outline" className="text-xs bg-[#6F8A9D]/10 text-[#546A7A] border-[#6F8A9D]">
                           SP-{person.id.toString().padStart(3, '0')}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                      <p className="text-sm text-[#5D6E73] flex items-center gap-1 mt-1">
                         <Users className="h-3 w-3" />
                         {person.user.email}
                       </p>
                     </div>
                     <Link href={`/admin/service-person/${person.id}`}>
-                      <Button variant="outline" size="sm" className="hover:bg-purple-50 hover:border-purple-300">
+                      <Button variant="outline" size="sm" className="hover:bg-[#6F8A9D]/10 hover:border-[#6F8A9D]">
                         <Eye className="mr-1 h-3 w-3" />
                         View
                       </Button>
@@ -445,15 +445,15 @@ export default function ServiceZoneDetailPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center mb-4">
-                  <Users className="h-8 w-8 text-purple-500" />
+                <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-[#96AEC2]/20 to-[#96AEC2]/20 flex items-center justify-center mb-4">
+                  <Users className="h-8 w-8 text-[#6F8A9D]" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Service Personnel</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No Service Personnel</h3>
+                <p className="text-[#AEBFC3]0 mb-4">
                   No service personnel are currently assigned to this zone.
                 </p>
                 <Link href="/admin/service-person/new">
-                  <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg">
+                  <Button className="bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg">
                     <Users className="mr-2 h-4 w-4" />
                     Assign Personnel
                   </Button>
@@ -465,10 +465,10 @@ export default function ServiceZoneDetailPage() {
       </div>
 
       {/* Enhanced Recent Tickets */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-cyan-100">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-100 rounded-t-lg border-b">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <Ticket className="h-5 w-5 text-blue-600" />
+      <Card className="shadow-lg border-0 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-t-lg border-b">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <Ticket className="h-5 w-5 text-[#546A7A]" />
             Recent Tickets ({stats.recentTickets.length})
           </CardTitle>
         </CardHeader>
@@ -478,27 +478,27 @@ export default function ServiceZoneDetailPage() {
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-gray-50">
+                  <TableHeader className="bg-[#AEBFC3]/10">
                     <TableRow>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6">Ticket Details</TableHead>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6">Customer</TableHead>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6">Status</TableHead>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6">Priority</TableHead>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6">Created</TableHead>
-                      <TableHead className="font-semibold text-gray-700 py-4 px-6 text-right">Actions</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Ticket Details</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Customer</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Status</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Priority</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Created</TableHead>
+                      <TableHead className="font-semibold text-[#5D6E73] py-4 px-6 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody className="divide-y divide-gray-100">
                     {stats.recentTickets.map((ticket) => (
-                      <TableRow key={ticket.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-cyan-50/50 transition-all duration-200">
+                      <TableRow key={ticket.id} className="hover:bg-gradient-to-r hover:from-[#96AEC2]/10/50 hover:to-[#96AEC2]/10/50 transition-all duration-200">
                         <TableCell className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-semibold">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#6F8A9D] to-cyan-600 flex items-center justify-center text-white font-semibold">
                               #{ticket.id.toString().slice(-2)}
                             </div>
                             <div>
-                              <p className="font-semibold text-gray-900">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
-                              <p className="text-sm text-gray-500 max-w-xs truncate">
+                              <p className="font-semibold text-[#546A7A]">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
+                              <p className="text-sm text-[#AEBFC3]0 max-w-xs truncate">
                                 {ticket.title}
                               </p>
                             </div>
@@ -506,10 +506,10 @@ export default function ServiceZoneDetailPage() {
                         </TableCell>
                         <TableCell className="py-4 px-6">
                           <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
-                              <Building className="h-4 w-4 text-orange-600" />
+                            <div className="h-8 w-8 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center">
+                              <Building className="h-4 w-4 text-[#976E44]" />
                             </div>
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-[#546A7A]">
                               {ticket.customer.companyName || `Customer #${ticket.customer.id}`}
                             </p>
                           </div>
@@ -530,7 +530,7 @@ export default function ServiceZoneDetailPage() {
                             {ticket.priority}
                           </Badge>
                         </TableCell>
-                        <TableCell className="py-4 px-6 text-gray-600">
+                        <TableCell className="py-4 px-6 text-[#5D6E73]">
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
                             <span className="text-sm">
@@ -540,7 +540,7 @@ export default function ServiceZoneDetailPage() {
                         </TableCell>
                         <TableCell className="py-4 px-6 text-right">
                           <Link href={`/admin/tickets/${ticket.id}`}>
-                            <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300">
+                            <Button variant="outline" size="sm" className="hover:bg-[#96AEC2]/10 hover:border-[#96AEC2]">
                               <Eye className="mr-1 h-3 w-3" />
                               View
                             </Button>
@@ -558,24 +558,24 @@ export default function ServiceZoneDetailPage() {
                   <div key={ticket.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow duration-200">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-semibold">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#6F8A9D] to-cyan-600 flex items-center justify-center text-white font-semibold">
                           #{ticket.id.toString().slice(-2)}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="font-semibold text-[#546A7A]">Ticket #{ticket.ticketNumber ?? ticket.id}</p>
+                          <p className="text-xs text-[#AEBFC3]0">
                             {new Date(ticket.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
                       <Link href={`/admin/tickets/${ticket.id}`}>
-                        <Button variant="outline" size="sm" className="hover:bg-blue-50">
+                        <Button variant="outline" size="sm" className="hover:bg-[#96AEC2]/10">
                           <Eye className="h-3 w-3" />
                         </Button>
                       </Link>
                     </div>
                     
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                    <p className="text-sm text-[#5D6E73] mb-3 line-clamp-2">
                       {ticket.title}
                     </p>
                     
@@ -594,8 +594,8 @@ export default function ServiceZoneDetailPage() {
                       </Badge>
                     </div>
                     
-                    <div className="mt-2 pt-2 border-t border-gray-100">
-                      <p className="text-xs text-gray-600 flex items-center gap-1">
+                    <div className="mt-2 pt-2 border-t border-[#AEBFC3]/30">
+                      <p className="text-xs text-[#5D6E73] flex items-center gap-1">
                         <Building className="h-3 w-3" />
                         {ticket.customer.companyName || `Customer #${ticket.customer.id}`}
                       </p>
@@ -606,15 +606,15 @@ export default function ServiceZoneDetailPage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mb-4">
-                <Ticket className="h-8 w-8 text-blue-500" />
+              <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-[#96AEC2]/20 to-[#96AEC2]/20 flex items-center justify-center mb-4">
+                <Ticket className="h-8 w-8 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Tickets</h3>
-              <p className="text-gray-500 mb-4">
+              <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No Recent Tickets</h3>
+              <p className="text-[#AEBFC3]0 mb-4">
                 No tickets have been created for this service zone yet.
               </p>
               <Link href="/admin/tickets/new">
-                <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg">
+                <Button className="bg-gradient-to-r from-[#6F8A9D] to-cyan-600 hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg">
                   <Ticket className="mr-2 h-4 w-4" />
                   Create Ticket
                 </Button>

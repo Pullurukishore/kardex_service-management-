@@ -191,50 +191,50 @@ export default function ActivitySchedulingClient() {
     switch (status) {
       case 'PENDING':
         return { 
-          gradient: 'from-amber-500 to-orange-500', 
-          bg: 'bg-gradient-to-r from-amber-50 to-orange-50', 
-          text: 'text-amber-700',
-          border: 'border-amber-200',
+          gradient: 'from-[#CE9F6B] to-[#CE9F6B]', 
+          bg: 'bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10', 
+          text: 'text-[#976E44]',
+          border: 'border-[#CE9F6B]/50',
           icon: <AlertCircle className="h-4 w-4" />
         };
       case 'ACCEPTED':
         return { 
-          gradient: 'from-blue-500 to-indigo-500', 
-          bg: 'bg-gradient-to-r from-blue-50 to-indigo-50', 
-          text: 'text-blue-700',
-          border: 'border-blue-200',
+          gradient: 'from-[#6F8A9D] to-[#6F8A9D]', 
+          bg: 'bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10', 
+          text: 'text-[#546A7A]',
+          border: 'border-[#96AEC2]',
           icon: <CheckCircle className="h-4 w-4" />
         };
       case 'COMPLETED':
         return { 
-          gradient: 'from-emerald-500 to-teal-500', 
-          bg: 'bg-gradient-to-r from-emerald-50 to-teal-50', 
-          text: 'text-emerald-700',
-          border: 'border-emerald-200',
+          gradient: 'from-[#82A094] to-[#82A094]', 
+          bg: 'bg-gradient-to-r from-[#A2B9AF]/10 to-[#82A094]/10', 
+          text: 'text-[#4F6A64]',
+          border: 'border-[#82A094]/50',
           icon: <CheckCircle className="h-4 w-4" />
         };
       case 'REJECTED':
         return { 
-          gradient: 'from-red-500 to-rose-500', 
-          bg: 'bg-gradient-to-r from-red-50 to-rose-50', 
-          text: 'text-red-700',
-          border: 'border-red-200',
+          gradient: 'from-[#E17F70] to-[#E17F70]', 
+          bg: 'bg-gradient-to-r from-[#E17F70]/10 to-[#EEC1BF]/10', 
+          text: 'text-[#75242D]',
+          border: 'border-[#E17F70]',
           icon: <XCircle className="h-4 w-4" />
         };
       case 'CANCELLED':
         return { 
-          gradient: 'from-gray-500 to-slate-500', 
-          bg: 'bg-gradient-to-r from-gray-50 to-slate-50', 
-          text: 'text-gray-700',
-          border: 'border-gray-200',
+          gradient: 'from-[#AEBFC3]/100 to-[#AEBFC3]/100', 
+          bg: 'bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/10', 
+          text: 'text-[#5D6E73]',
+          border: 'border-[#92A2A5]',
           icon: <X className="h-4 w-4" />
         };
       default:
         return { 
-          gradient: 'from-gray-500 to-slate-500', 
-          bg: 'bg-gradient-to-r from-gray-50 to-slate-50', 
-          text: 'text-gray-700',
-          border: 'border-gray-200',
+          gradient: 'from-[#AEBFC3]/100 to-[#AEBFC3]/100', 
+          bg: 'bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/10', 
+          text: 'text-[#5D6E73]',
+          border: 'border-[#92A2A5]',
           icon: null 
         };
     }
@@ -243,15 +243,15 @@ export default function ActivitySchedulingClient() {
   const getPriorityConfig = (priority: string) => {
     switch (priority) {
       case 'URGENT':
-        return { color: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50', icon: <Zap className="h-3 w-3" /> };
+        return { color: 'bg-[#E17F70]/100', text: 'text-[#75242D]', bg: 'bg-[#E17F70]/10', icon: <Zap className="h-3 w-3" /> };
       case 'HIGH':
-        return { color: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50', icon: <Target className="h-3 w-3" /> };
+        return { color: 'bg-[#CE9F6B]/100', text: 'text-[#976E44]', bg: 'bg-[#CE9F6B]/10', icon: <Target className="h-3 w-3" /> };
       case 'MEDIUM':
-        return { color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: <Activity className="h-3 w-3" /> };
+        return { color: 'bg-[#96AEC2]/100', text: 'text-[#546A7A]', bg: 'bg-[#96AEC2]/10', icon: <Activity className="h-3 w-3" /> };
       case 'LOW':
-        return { color: 'bg-green-500', text: 'text-green-700', bg: 'bg-green-50', icon: <CheckCircle className="h-3 w-3" /> };
+        return { color: 'bg-[#A2B9AF]/100', text: 'text-[#4F6A64]', bg: 'bg-[#A2B9AF]/10', icon: <CheckCircle className="h-3 w-3" /> };
       default:
-        return { color: 'bg-gray-500', text: 'text-gray-700', bg: 'bg-gray-50', icon: null };
+        return { color: 'bg-[#AEBFC3]/100', text: 'text-[#5D6E73]', bg: 'bg-[#AEBFC3]/10', icon: null };
     }
   };
 
@@ -288,14 +288,14 @@ export default function ActivitySchedulingClient() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Scheduled */}
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] opacity-90" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOGMxOS44ODIgMCAxOC04LjA1OSAxOC0xOHMtOC4wNTktMTgtMTgtMTh6IiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIuMDUiLz48L2c+PC9zdmc+')] opacity-30" />
           <CardContent className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium mb-1">Total Scheduled</p>
+                <p className="text-[#96AEC2] text-sm font-medium mb-1">Total Scheduled</p>
                 <p className="text-4xl font-bold text-white">{stats.total}</p>
-                <p className="text-blue-100 text-xs mt-2 flex items-center gap-1">
+                <p className="text-[#96AEC2] text-xs mt-2 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   All time activities
                 </p>
@@ -309,11 +309,11 @@ export default function ActivitySchedulingClient() {
 
         {/* Pending Response */}
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#CE9F6B] to-[#CE9F6B] opacity-90" />
           <CardContent className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-100 text-sm font-medium mb-1">Pending Response</p>
+                <p className="text-[#EEC1BF] text-sm font-medium mb-1">Pending Response</p>
                 <p className="text-4xl font-bold text-white">{stats.pending}</p>
                 <div className="mt-3">
                   <div className="w-full h-1.5 bg-white/30 rounded-full overflow-hidden">
@@ -333,11 +333,11 @@ export default function ActivitySchedulingClient() {
 
         {/* Completion Rate */}
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#82A094] to-[#82A094] opacity-90" />
           <CardContent className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-emerald-100 text-sm font-medium mb-1">Completion Rate</p>
+                <p className="text-[#A2B9AF] text-sm font-medium mb-1">Completion Rate</p>
                 <p className="text-4xl font-bold text-white">{stats.completionRate}%</p>
                 <div className="mt-3">
                   <div className="w-full h-1.5 bg-white/30 rounded-full overflow-hidden">
@@ -357,7 +357,7 @@ export default function ActivitySchedulingClient() {
 
         {/* Acceptance Rate */}
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] opacity-90" />
           <CardContent className="relative p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -385,7 +385,7 @@ export default function ActivitySchedulingClient() {
         <div className="flex items-center gap-3">
           <Button 
             onClick={() => router.push(`${getBasePath()}/activity-scheduling/new`)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+            className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
           >
             <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             New Schedule
@@ -393,7 +393,7 @@ export default function ActivitySchedulingClient() {
           <Button 
             variant="outline" 
             onClick={fetchSchedules}
-            className="border-gray-200 hover:bg-gray-50"
+            className="border-[#92A2A5] hover:bg-[#AEBFC3]/10"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -405,7 +405,7 @@ export default function ActivitySchedulingClient() {
             variant={showFilters ? 'default' : 'outline'}
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'bg-blue-600 text-white' : 'border-gray-200'}
+            className={showFilters ? 'bg-[#6F8A9D] text-white' : 'border-[#92A2A5]'}
           >
             <Filter className="h-4 w-4 mr-2" />
             Filters
@@ -415,17 +415,17 @@ export default function ActivitySchedulingClient() {
               </span>
             )}
           </Button>
-          <div className="border-l border-gray-200 h-8 mx-2" />
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+          <div className="border-l border-[#92A2A5] h-8 mx-2" />
+          <div className="flex items-center bg-[#AEBFC3]/20 rounded-lg p-1">
             <button
               onClick={() => setViewMode('table')}
-              className={`p-2 rounded-md transition-all ${viewMode === 'table' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+              className={`p-2 rounded-md transition-all ${viewMode === 'table' ? 'bg-white shadow-sm' : 'hover:bg-[#92A2A5]/30'}`}
             >
               <List className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('cards')}
-              className={`p-2 rounded-md transition-all ${viewMode === 'cards' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+              className={`p-2 rounded-md transition-all ${viewMode === 'cards' ? 'bg-white shadow-sm' : 'hover:bg-[#92A2A5]/30'}`}
             >
               <LayoutGrid className="h-4 w-4" />
             </button>
@@ -436,11 +436,11 @@ export default function ActivitySchedulingClient() {
       {/* Filters Panel */}
       {showFilters && (
         <Card className="border-0 shadow-lg overflow-hidden animate-in slide-in-from-top-2 duration-300">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b">
+          <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/10 border-b">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Filter className="h-4 w-4 text-blue-600" />
+                <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                  <Filter className="h-4 w-4 text-[#546A7A]" />
                 </div>
                 Filters & Search
               </CardTitle>
@@ -449,7 +449,7 @@ export default function ActivitySchedulingClient() {
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="text-[#9E3B47] hover:text-[#75242D] hover:bg-[#E17F70]/10"
                 >
                   <X className="h-4 w-4 mr-1" />
                   Clear All
@@ -460,53 +460,53 @@ export default function ActivitySchedulingClient() {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">Search</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#979796]" />
                   <Input
                     placeholder="Search activities..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">Status</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="border-gray-200">
+                  <SelectTrigger className="border-[#92A2A5]">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All statuses</SelectItem>
                     <SelectItem value="PENDING">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                        <div className="w-2 h-2 bg-[#CE9F6B]/100 rounded-full" />
                         Pending
                       </div>
                     </SelectItem>
                     <SelectItem value="ACCEPTED">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                        <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full" />
                         Accepted
                       </div>
                     </SelectItem>
                     <SelectItem value="COMPLETED">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                        <div className="w-2 h-2 bg-[#82A094]/100 rounded-full" />
                         Completed
                       </div>
                     </SelectItem>
                     <SelectItem value="REJECTED">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full" />
+                        <div className="w-2 h-2 bg-[#E17F70]/100 rounded-full" />
                         Rejected
                       </div>
                     </SelectItem>
                     <SelectItem value="CANCELLED">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-gray-500 rounded-full" />
+                        <div className="w-2 h-2 bg-[#AEBFC3]/100 rounded-full" />
                         Cancelled
                       </div>
                     </SelectItem>
@@ -515,34 +515,34 @@ export default function ActivitySchedulingClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">Priority</label>
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="border-gray-200">
+                  <SelectTrigger className="border-[#92A2A5]">
                     <SelectValue placeholder="All priorities" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All priorities</SelectItem>
                     <SelectItem value="URGENT">
                       <div className="flex items-center gap-2">
-                        <Zap className="h-3 w-3 text-red-500" />
+                        <Zap className="h-3 w-3 text-[#E17F70]" />
                         Urgent
                       </div>
                     </SelectItem>
                     <SelectItem value="HIGH">
                       <div className="flex items-center gap-2">
-                        <Target className="h-3 w-3 text-orange-500" />
+                        <Target className="h-3 w-3 text-[#CE9F6B]" />
                         High
                       </div>
                     </SelectItem>
                     <SelectItem value="MEDIUM">
                       <div className="flex items-center gap-2">
-                        <Activity className="h-3 w-3 text-blue-500" />
+                        <Activity className="h-3 w-3 text-[#6F8A9D]" />
                         Medium
                       </div>
                     </SelectItem>
                     <SelectItem value="LOW">
                       <div className="flex items-center gap-2">
-                        <CheckCircle className="h-3 w-3 text-green-500" />
+                        <CheckCircle className="h-3 w-3 text-[#82A094]" />
                         Low
                       </div>
                     </SelectItem>
@@ -551,9 +551,9 @@ export default function ActivitySchedulingClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Zone</label>
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">Zone</label>
                 <Select value={zoneFilter} onValueChange={setZoneFilter}>
-                  <SelectTrigger className="border-gray-200">
+                  <SelectTrigger className="border-[#92A2A5]">
                     <SelectValue placeholder="All zones" />
                   </SelectTrigger>
                   <SelectContent>
@@ -568,9 +568,9 @@ export default function ActivitySchedulingClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Service Person</label>
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">Service Person</label>
                 <Select value={servicePersonFilter} onValueChange={setServicePersonFilter}>
-                  <SelectTrigger className="border-gray-200">
+                  <SelectTrigger className="border-[#92A2A5]">
                     <SelectValue placeholder="All persons" />
                   </SelectTrigger>
                   <SelectContent>
@@ -590,22 +590,22 @@ export default function ActivitySchedulingClient() {
 
       {/* Schedules Content */}
       <Card className="border-0 shadow-xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-white to-gray-50 border-b">
+        <CardHeader className="bg-gradient-to-r from-white to-[#AEBFC3]/10 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+              <div className="p-2 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl shadow-lg">
                 <Activity className="h-5 w-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-gray-900">Activity Schedules</CardTitle>
-                <CardDescription className="text-gray-500">
+                <CardTitle className="text-xl font-bold text-[#546A7A]">Activity Schedules</CardTitle>
+                <CardDescription className="text-[#AEBFC3]0">
                   {schedules.length} schedule{schedules.length !== 1 ? 's' : ''} found
                   {loading && ' • Loading...'}
                 </CardDescription>
               </div>
             </div>
             {totalPages > 1 && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-[#AEBFC3]0">
                 <span>Page {page} of {totalPages}</span>
               </div>
             )}
@@ -615,19 +615,19 @@ export default function ActivitySchedulingClient() {
           {loading ? (
             <div className="py-20 text-center">
               <div className="relative mx-auto w-16 h-16 mb-4">
-                <div className="absolute inset-0 rounded-full border-4 border-gray-200" />
+                <div className="absolute inset-0 rounded-full border-4 border-[#92A2A5]" />
                 <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
               </div>
-              <p className="text-gray-600 font-medium">Loading schedules...</p>
-              <p className="text-gray-400 text-sm mt-1">Please wait</p>
+              <p className="text-[#5D6E73] font-medium">Loading schedules...</p>
+              <p className="text-[#979796] text-sm mt-1">Please wait</p>
             </div>
           ) : schedules.length === 0 ? (
             <div className="py-20 text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Calendar className="h-12 w-12 text-gray-400" />
+              <div className="w-24 h-24 bg-gradient-to-br from-[#AEBFC3]/20 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Calendar className="h-12 w-12 text-[#979796]" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No schedules found</h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              <h3 className="text-xl font-semibold text-[#546A7A] mb-2">No schedules found</h3>
+              <p className="text-[#AEBFC3]0 mb-6 max-w-md mx-auto">
                 {hasActiveFilters 
                   ? 'Try adjusting your filters to find more results'
                   : 'Create your first activity schedule to get started'}
@@ -640,7 +640,7 @@ export default function ActivitySchedulingClient() {
                 )}
                 <Button 
                   onClick={() => router.push(`${getBasePath()}/activity-scheduling/new`)}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
+                  className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Schedule
@@ -656,7 +656,7 @@ export default function ActivitySchedulingClient() {
                 return (
                   <Card 
                     key={schedule.id} 
-                    className="border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer"
+                    className="border border-[#AEBFC3]/30 hover:border-[#96AEC2] hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer"
                     onClick={() => router.push(`${getBasePath()}/activity-scheduling/${schedule.id}`)}
                   >
                     <div className={`h-2 bg-gradient-to-r ${statusConfig.gradient}`} />
@@ -667,10 +667,10 @@ export default function ActivitySchedulingClient() {
                             <Activity className="h-5 w-5" />
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            <p className="font-semibold text-[#546A7A] group-hover:text-[#546A7A] transition-colors">
                               {schedule.activityType.replace(/_/g, ' ')}
                             </p>
-                            <p className="text-sm text-gray-500">#{schedule.id}</p>
+                            <p className="text-sm text-[#AEBFC3]0">#{schedule.id}</p>
                           </div>
                         </div>
                         <Badge className={`${statusConfig.bg} ${statusConfig.text} ${statusConfig.border} border`}>
@@ -680,25 +680,25 @@ export default function ActivitySchedulingClient() {
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <User className="h-4 w-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-sm text-[#5D6E73]">
+                          <User className="h-4 w-4 text-[#979796]" />
                           <span>{schedule.servicePerson.name}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-sm text-[#5D6E73]">
+                          <Calendar className="h-4 w-4 text-[#979796]" />
                           <span>{formatDate(schedule.scheduledDate)}</span>
-                          <Clock className="h-4 w-4 text-gray-400 ml-2" />
+                          <Clock className="h-4 w-4 text-[#979796] ml-2" />
                           <span>{formatTime(schedule.scheduledDate)}</span>
                         </div>
                         {schedule.location && (
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <MapPin className="h-4 w-4 text-gray-400" />
+                          <div className="flex items-center gap-2 text-sm text-[#5D6E73]">
+                            <MapPin className="h-4 w-4 text-[#979796]" />
                             <span className="truncate">{schedule.location}</span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-between pt-4 border-t border-[#AEBFC3]/30">
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${priorityConfig.color}`} />
                           <span className={`text-xs font-medium ${priorityConfig.text}`}>{schedule.priority}</span>
@@ -706,7 +706,7 @@ export default function ActivitySchedulingClient() {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 group-hover:bg-blue-50"
+                          className="text-[#546A7A] hover:text-[#546A7A] hover:bg-[#96AEC2]/10 group-hover:bg-[#96AEC2]/10"
                           onClick={(e) => {
                             e.stopPropagation();
                             router.push(`${getBasePath()}/activity-scheduling/${schedule.id}`);
@@ -725,18 +725,18 @@ export default function ActivitySchedulingClient() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Activity</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Assigned To</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created By</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Zone</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Schedule</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                  <tr className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/10 border-b border-[#92A2A5]">
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">ID</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Activity</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Status</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Priority</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Assigned To</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Created By</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Zone</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Customer</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Schedule</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Location</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-[#AEBFC3]0 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
@@ -745,11 +745,11 @@ export default function ActivitySchedulingClient() {
                     const priorityConfig = getPriorityConfig(schedule.priority);
 
                     return (
-                      <tr key={schedule.id} className="hover:bg-blue-50/50 transition-colors group">
+                      <tr key={schedule.id} className="hover:bg-[#96AEC2]/10/50 transition-colors group">
                         <td className="px-3 py-2">
                           <span 
                             onClick={() => router.push(`${getBasePath()}/activity-scheduling/${schedule.id}`)}
-                            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded cursor-pointer hover:from-blue-600 hover:to-indigo-700 hover:shadow-md transition-all"
+                            className="bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white text-xs font-bold px-2 py-0.5 rounded cursor-pointer hover:from-[#546A7A] hover:to-[#546A7A] hover:shadow-md transition-all"
                           >
                             #{schedule.id}
                           </span>
@@ -764,11 +764,11 @@ export default function ActivitySchedulingClient() {
                               <Activity className="h-3 w-3" />
                             </div>
                             <div>
-                              <p className="font-medium text-sm text-gray-900 group-hover:text-blue-600 group-hover:underline">
+                              <p className="font-medium text-sm text-[#546A7A] group-hover:text-[#546A7A] group-hover:underline">
                                 {schedule.activityType.replace(/_/g, ' ')}
                               </p>
                               {schedule.description && (
-                                <p className="text-xs text-gray-500 truncate max-w-[120px]">{schedule.description}</p>
+                                <p className="text-xs text-[#AEBFC3]0 truncate max-w-[120px]">{schedule.description}</p>
                               )}
                             </div>
                           </div>
@@ -790,54 +790,54 @@ export default function ActivitySchedulingClient() {
                         
                         <td className="px-3 py-2">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-6 h-6 bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] rounded-full flex items-center justify-center text-white text-xs font-bold">
                               {schedule.servicePerson.name.charAt(0).toUpperCase()}
                             </div>
-                            <span className="text-sm text-gray-900">{schedule.servicePerson.name}</span>
+                            <span className="text-sm text-[#546A7A]">{schedule.servicePerson.name}</span>
                           </div>
                         </td>
                         
                         <td className="px-3 py-2">
                           {schedule.scheduledBy ? (
                             <div className="flex items-center gap-1.5">
-                              <div className="w-6 h-6 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                              <div className="w-6 h-6 bg-gradient-to-br from-[#82A094] to-[#6F8A9D] rounded-full flex items-center justify-center text-white text-xs font-bold">
                                 {schedule.scheduledBy.name?.charAt(0).toUpperCase() || 'U'}
                               </div>
-                              <span className="text-sm text-gray-900">{schedule.scheduledBy.name || 'Unknown'}</span>
+                              <span className="text-sm text-[#546A7A]">{schedule.scheduledBy.name || 'Unknown'}</span>
                             </div>
                           ) : (
-                            <span className="text-gray-400 text-xs">—</span>
+                            <span className="text-[#979796] text-xs">—</span>
                           )}
                         </td>
                         
                         <td className="px-3 py-2">
                           {schedule.zone ? (
-                            <span className="text-sm text-gray-700 font-medium">{schedule.zone.name}</span>
+                            <span className="text-sm text-[#5D6E73] font-medium">{schedule.zone.name}</span>
                           ) : (
-                            <span className="text-gray-400 text-xs">—</span>
+                            <span className="text-[#979796] text-xs">—</span>
                           )}
                         </td>
                         
                         <td className="px-3 py-2">
                           {schedule.customer ? (
-                            <span className="text-sm text-gray-700 truncate max-w-[100px] block">{schedule.customer.companyName}</span>
+                            <span className="text-sm text-[#5D6E73] truncate max-w-[100px] block">{schedule.customer.companyName}</span>
                           ) : (
-                            <span className="text-gray-400 text-xs">—</span>
+                            <span className="text-[#979796] text-xs">—</span>
                           )}
                         </td>
                         
                         <td className="px-3 py-2">
                           <div className="text-xs">
-                            <span className="text-gray-900 font-medium">{formatDate(schedule.scheduledDate)}</span>
-                            <span className="text-gray-500 ml-1">{formatTime(schedule.scheduledDate)}</span>
+                            <span className="text-[#546A7A] font-medium">{formatDate(schedule.scheduledDate)}</span>
+                            <span className="text-[#AEBFC3]0 ml-1">{formatTime(schedule.scheduledDate)}</span>
                           </div>
                         </td>
                         
                         <td className="px-3 py-2">
                           {schedule.location ? (
-                            <span className="text-xs text-gray-600 truncate max-w-[80px] block">{schedule.location}</span>
+                            <span className="text-xs text-[#5D6E73] truncate max-w-[80px] block">{schedule.location}</span>
                           ) : (
-                            <span className="text-gray-400 text-xs">—</span>
+                            <span className="text-[#979796] text-xs">—</span>
                           )}
                         </td>
                         
@@ -847,7 +847,7 @@ export default function ActivitySchedulingClient() {
                               variant="outline" 
                               size="sm"
                               onClick={() => router.push(`${getBasePath()}/activity-scheduling/${schedule.id}`)}
-                              className="h-7 px-2 text-xs border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600"
+                              className="h-7 px-2 text-xs border-[#92A2A5] hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] hover:text-[#546A7A]"
                             >
                               <Eye className="h-3 w-3 mr-1" />
                               View
@@ -857,7 +857,7 @@ export default function ActivitySchedulingClient() {
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => router.push(`${getBasePath()}/activity-scheduling/${schedule.id}/edit`)}
-                                className="h-7 px-2 text-xs border-gray-200 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600"
+                                className="h-7 px-2 text-xs border-[#92A2A5] hover:bg-[#CE9F6B]/10 hover:border-[#CE9F6B]/50 hover:text-[#976E44]"
                               >
                                 <Edit className="h-3 w-3 mr-1" />
                                 Edit
@@ -875,8 +875,8 @@ export default function ActivitySchedulingClient() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t">
-              <div className="text-sm text-gray-600">
+            <div className="flex items-center justify-between px-6 py-4 bg-[#AEBFC3]/10 border-t">
+              <div className="text-sm text-[#5D6E73]">
                 Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, stats.total)} of {stats.total} schedules
               </div>
               <div className="flex items-center gap-2">
@@ -885,7 +885,7 @@ export default function ActivitySchedulingClient() {
                   size="sm"
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="border-gray-200"
+                  className="border-[#92A2A5]"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Previous
@@ -909,7 +909,7 @@ export default function ActivitySchedulingClient() {
                         variant={pageNum === page ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setPage(pageNum)}
-                        className={`h-9 w-9 p-0 ${pageNum === page ? 'bg-blue-600 text-white' : 'border-gray-200'}`}
+                        className={`h-9 w-9 p-0 ${pageNum === page ? 'bg-[#6F8A9D] text-white' : 'border-[#92A2A5]'}`}
                       >
                         {pageNum}
                       </Button>
@@ -921,7 +921,7 @@ export default function ActivitySchedulingClient() {
                   size="sm"
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="border-gray-200"
+                  className="border-[#92A2A5]"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-1" />

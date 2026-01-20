@@ -43,118 +43,118 @@ const STAGE_CONFIG = {
     label: 'Started',
     description: 'Activity has been initiated',
     icon: Play,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-700',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200'
+    color: 'bg-[#96AEC2]/100',
+    textColor: 'text-[#546A7A]',
+    bgColor: 'bg-[#96AEC2]/10',
+    borderColor: 'border-[#96AEC2]'
   },
   'TRAVELING': {
     label: 'Traveling',
     description: 'En route to destination',
     icon: MapPin,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-700',
-    bgColor: 'bg-purple-50',
-    borderColor: 'border-purple-200'
+    color: 'bg-[#6F8A9D]/100',
+    textColor: 'text-[#546A7A]',
+    bgColor: 'bg-[#6F8A9D]/10',
+    borderColor: 'border-[#6F8A9D]'
   },
   'ARRIVED': {
     label: 'Arrived',
     description: 'Reached the destination',
     icon: Flag,
-    color: 'bg-green-500',
-    textColor: 'text-green-700',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200'
+    color: 'bg-[#A2B9AF]/100',
+    textColor: 'text-[#4F6A64]',
+    bgColor: 'bg-[#A2B9AF]/10',
+    borderColor: 'border-[#A2B9AF]'
   },
   'WORK_IN_PROGRESS': {
     label: 'Work in Progress',
     description: 'Actively working on the task',
     icon: Wrench,
-    color: 'bg-orange-500',
-    textColor: 'text-orange-700',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200'
+    color: 'bg-[#CE9F6B]/100',
+    textColor: 'text-[#976E44]',
+    bgColor: 'bg-[#CE9F6B]/10',
+    borderColor: 'border-[#CE9F6B]'
   },
   'COMPLETED': {
     label: 'Completed',
     description: 'Task has been finished',
     icon: CheckCircle,
-    color: 'bg-green-600',
-    textColor: 'text-green-700',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200'
+    color: 'bg-[#4F6A64]',
+    textColor: 'text-[#4F6A64]',
+    bgColor: 'bg-[#A2B9AF]/10',
+    borderColor: 'border-[#A2B9AF]'
   },
   'ASSESSMENT': {
     label: 'Assessment',
     description: 'Evaluating the situation',
     icon: Target,
-    color: 'bg-indigo-500',
-    textColor: 'text-indigo-700',
-    bgColor: 'bg-indigo-50',
-    borderColor: 'border-indigo-200'
+    color: 'bg-[#546A7A]/100',
+    textColor: 'text-[#546A7A]',
+    bgColor: 'bg-[#546A7A]/10',
+    borderColor: 'border-[#546A7A]'
   },
   'PLANNING': {
     label: 'Planning',
     description: 'Planning the approach',
     icon: FileText,
-    color: 'bg-cyan-500',
-    textColor: 'text-cyan-700',
-    bgColor: 'bg-cyan-50',
-    borderColor: 'border-cyan-200'
+    color: 'bg-[#96AEC2]/100',
+    textColor: 'text-[#546A7A]',
+    bgColor: 'bg-[#96AEC2]/10',
+    borderColor: 'border-[#96AEC2]/40'
   },
   'EXECUTION': {
     label: 'Execution',
     description: 'Executing the plan',
     icon: Settings,
-    color: 'bg-red-500',
-    textColor: 'text-red-700',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200'
+    color: 'bg-[#E17F70]/100',
+    textColor: 'text-[#75242D]',
+    bgColor: 'bg-[#E17F70]/10',
+    borderColor: 'border-[#E17F70]'
   },
   'TESTING': {
     label: 'Testing',
     description: 'Testing and validation',
     icon: CheckCircle,
-    color: 'bg-yellow-500',
-    textColor: 'text-yellow-700',
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200'
+    color: 'bg-[#EEC1BF]/100',
+    textColor: 'text-[#976E44]',
+    bgColor: 'bg-[#EEC1BF]/10',
+    borderColor: 'border-[#CE9F6B]'
   },
   'DOCUMENTATION': {
     label: 'Documentation',
     description: 'Creating documentation',
     icon: FileText,
-    color: 'bg-gray-500',
-    textColor: 'text-gray-700',
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200'
+    color: 'bg-[#AEBFC3]/100',
+    textColor: 'text-[#5D6E73]',
+    bgColor: 'bg-[#AEBFC3]/10',
+    borderColor: 'border-[#92A2A5]'
   },
   'CUSTOMER_HANDOVER': {
     label: 'Customer Handover',
     description: 'Handing over to customer',
     icon: Users,
-    color: 'bg-teal-500',
-    textColor: 'text-teal-700',
-    bgColor: 'bg-teal-50',
-    borderColor: 'border-teal-200'
+    color: 'bg-[#82A094]/100',
+    textColor: 'text-[#4F6A64]',
+    bgColor: 'bg-[#82A094]/10',
+    borderColor: 'border-[#A2B9AF]/40'
   },
   'PREPARATION': {
     label: 'Preparation',
     description: 'Preparing for the task',
     icon: Settings,
-    color: 'bg-violet-500',
-    textColor: 'text-violet-700',
-    bgColor: 'bg-violet-50',
-    borderColor: 'border-violet-200'
+    color: 'bg-[#6F8A9D]',
+    textColor: 'text-[#546A7A]',
+    bgColor: 'bg-[#96AEC2]/10',
+    borderColor: 'border-[#96AEC2]/40'
   },
   'CLEANUP': {
     label: 'Cleanup',
     description: 'Cleaning up after work',
     icon: CheckCircle,
-    color: 'bg-emerald-500',
-    textColor: 'text-emerald-700',
-    bgColor: 'bg-emerald-50',
-    borderColor: 'border-emerald-200'
+    color: 'bg-[#82A094]/100',
+    textColor: 'text-[#4F6A64]',
+    bgColor: 'bg-[#82A094]/10',
+    borderColor: 'border-[#A2B9AF]/40'
   }
 };
 
@@ -279,7 +279,7 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
   const renderStageProgress = () => {
     return (
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Stage Progress</h3>
+        <h3 className="text-lg font-semibold text-[#546A7A] mb-4">Stage Progress</h3>
         <div className="space-y-3">
           {stageTemplate.map((stageType, index) => {
             const config = STAGE_CONFIG[stageType as keyof typeof STAGE_CONFIG];
@@ -297,16 +297,16 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
                   isCompleted 
                     ? `${config?.bgColor} ${config?.borderColor}` 
                     : isCurrent 
-                    ? 'bg-blue-50 border-blue-200' 
-                    : 'bg-gray-50 border-gray-200'
+                    ? 'bg-[#96AEC2]/10 border-[#96AEC2]' 
+                    : 'bg-[#AEBFC3]/10 border-[#92A2A5]'
                 }`}
               >
                 <div className={`p-2 rounded-full mr-3 ${
                   isCompleted 
                     ? config?.color 
                     : isCurrent 
-                    ? 'bg-blue-500' 
-                    : 'bg-gray-400'
+                    ? 'bg-[#96AEC2]/100' 
+                    : 'bg-[#979796]'
                 } text-white`}>
                   <Icon className="w-4 h-4" />
                 </div>
@@ -317,20 +317,20 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
                       isCompleted 
                         ? config?.textColor 
                         : isCurrent 
-                        ? 'text-blue-700' 
-                        : 'text-gray-500'
+                        ? 'text-[#546A7A]' 
+                        : 'text-[#AEBFC3]0'
                     }`}>
                       {config?.label}
                     </h4>
                     
                     {isCompleted && stageData && (
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-[#5D6E73]">
                         {formatDuration(stageData.startTime, stageData.endTime)}
                       </span>
                     )}
                     
                     {isCurrent && (
-                      <span className="text-xs text-blue-600 font-medium">Current</span>
+                      <span className="text-xs text-[#546A7A] font-medium">Current</span>
                     )}
                   </div>
                   
@@ -338,14 +338,14 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
                     isCompleted 
                       ? config?.textColor 
                       : isCurrent 
-                      ? 'text-blue-600' 
-                      : 'text-gray-400'
+                      ? 'text-[#546A7A]' 
+                      : 'text-[#979796]'
                   }`}>
                     {config?.description}
                   </p>
                   
                   {isCompleted && stageData?.location && (
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
+                    <div className="flex items-center mt-1 text-xs text-[#AEBFC3]0">
                       <MapPin className="w-3 h-3 mr-1" />
                       <span className="truncate">{stageData.location}</span>
                     </div>
@@ -353,7 +353,7 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
                 </div>
                 
                 {isCompleted && (
-                  <CheckCircle className="w-5 h-5 text-green-500 ml-2" />
+                  <CheckCircle className="w-5 h-5 text-[#82A094] ml-2" />
                 )}
               </div>
             );
@@ -368,10 +368,10 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-[#546A7A] mb-2">
             {activity.activityType.replace('_', ' ')} Activity
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#5D6E73]">
             Started: {new Date(activity.startTime).toLocaleString()}
           </p>
         </div>
@@ -381,31 +381,31 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
 
         {/* Current Stage Actions */}
         {!isCompleted && nextStageType && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Next Stage</h3>
+          <div className="bg-white border border-[#92A2A5] rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-semibold text-[#546A7A] mb-4">Next Stage</h3>
             
             <div className="mb-4">
               <div className="flex items-center space-x-3 mb-2">
                 {React.createElement(STAGE_CONFIG[nextStageType as keyof typeof STAGE_CONFIG]?.icon || Clock, {
-                  className: "w-6 h-6 text-blue-600"
+                  className: "w-6 h-6 text-[#546A7A]"
                 })}
-                <h4 className="font-medium text-gray-900">
+                <h4 className="font-medium text-[#546A7A]">
                   {STAGE_CONFIG[nextStageType as keyof typeof STAGE_CONFIG]?.label}
                 </h4>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-[#5D6E73] text-sm">
                 {STAGE_CONFIG[nextStageType as keyof typeof STAGE_CONFIG]?.description}
               </p>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#5D6E73] mb-2">
                 Stage Notes (Optional):
               </label>
               <textarea
                 value={stageNotes}
                 onChange={(e) => setStageNotes(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full p-2 border border-[#92A2A5] rounded-lg text-sm"
                 rows={2}
                 placeholder="Add any notes about this stage..."
               />
@@ -414,7 +414,7 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
             <button
               onClick={handleNextStage}
               disabled={isUpdatingStage}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold flex items-center justify-center space-x-2"
+              className="w-full bg-[#6F8A9D] hover:bg-[#546A7A] disabled:bg-[#979796] text-white py-3 px-4 rounded-lg font-semibold flex items-center justify-center space-x-2"
             >
               {isUpdatingStage ? (
                 <>
@@ -435,16 +435,16 @@ export default function StageManagement({ activity, onEndActivity, getCurrentLoc
         <div className="text-center">
           <button
             onClick={handleEndActivity}
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold"
+            className="bg-[#9E3B47] hover:bg-[#75242D] text-white px-8 py-3 rounded-lg font-semibold"
           >
             End Activity
           </button>
         </div>
 
         {/* Instructions */}
-        <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Instructions:</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
+        <div className="mt-6 bg-[#AEBFC3]/10 border border-[#92A2A5] rounded-lg p-4">
+          <h4 className="font-semibold text-[#546A7A] mb-2">Instructions:</h4>
+          <ul className="text-sm text-[#5D6E73] space-y-1">
             <li>• Progress through each stage in sequence</li>
             <li>• Location is automatically captured at each stage</li>
             <li>• Add notes to provide context for each stage</li>

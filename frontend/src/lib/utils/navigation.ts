@@ -11,7 +11,7 @@ export function getRoleBasedRedirect(role?: UserRole): string {
     case UserRole.ZONE_USER:
       return '/zone/dashboard';
     case UserRole.EXTERNAL_USER:
-      return '/dashboard';
+      return '/external/tickets';  // External users only see tickets, not dashboard
     default:
       return '/dashboard';
   }
@@ -25,14 +25,18 @@ export function isRouteAccessible(route: string, userRole?: UserRole): boolean {
   // If no role is provided, only public routes are accessible
   if (!userRole) return false;
 
+  // Common routes accessible to all authenticated users
+  const commonAuthenticatedRoutes = ['/module-select', '/fsm', '/finance'];
+  if (commonAuthenticatedRoutes.some(prefix => route.startsWith(prefix))) return true;
+
   // Role-based route access
   const roleRoutes: Record<UserRole, string[]> = {
-    [UserRole.ADMIN]: ['/admin', '/api/admin', '/admin/FSA', '/api/assets', '/api/customers', '/api/zone-users'],
-    [UserRole.ZONE_MANAGER]: ['/zone-manager', '/api/zone-manager'],
-    [UserRole.SERVICE_PERSON]: ['/service-person', '/api/service-person'],
-    [UserRole.ZONE_USER]: ['/zone', '/api/zone'],
+    [UserRole.ADMIN]: ['/admin', '/api/admin', '/admin/FSA', '/api/assets', '/api/customers', '/api/zone-users', '/api/tickets'],
+    [UserRole.ZONE_MANAGER]: ['/zone-manager', '/api/zone-manager', '/zone', '/api/zone', '/api/tickets'],
+    [UserRole.SERVICE_PERSON]: ['/service-person', '/api/service-person', '/api/tickets'],
+    [UserRole.ZONE_USER]: ['/zone', '/api/zone', '/api/tickets'],
     [UserRole.EXPERT_HELPDESK]: ['/expert', '/api/expert', '/api/tickets', '/api/offers'],
-    [UserRole.EXTERNAL_USER]: ['/external', '/api/external', '/dashboard'],
+    [UserRole.EXTERNAL_USER]: ['/external', '/api/external', '/api/tickets'],
   };
 
   // Get allowed routes for the user's role

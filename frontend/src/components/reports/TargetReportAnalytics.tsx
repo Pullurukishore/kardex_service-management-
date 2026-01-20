@@ -322,8 +322,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Target className="h-5 w-5 text-indigo-600" /> Overall Achievement
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <Target className="h-5 w-5 text-[#546A7A]" /> Overall Achievement
             </CardTitle>
             <CardDescription>Progress towards target</CardDescription>
           </CardHeader>
@@ -337,44 +337,44 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
                 </ResponsiveContainer>
               </div>
               <div>
-                <div className="text-4xl font-extrabold text-slate-900">{pct(totalAchievement)}%</div>
-                <div className="text-sm text-slate-600 mt-1">Actual: <span title={formatINRFull(summary?.totalZoneActualValue || 0)} className="font-medium">{formatValue(summary?.totalZoneActualValue || 0)}</span></div>
-                <div className="text-sm text-slate-600">Target: <span title={formatINRFull(summary?.totalZoneTargetValue || 0)} className="font-medium">{formatValue(summary?.totalZoneTargetValue || 0)}</span></div>
+                <div className="text-4xl font-extrabold text-[#546A7A]">{pct(totalAchievement)}%</div>
+                <div className="text-sm text-[#5D6E73] mt-1">Actual: <span title={formatINRFull(summary?.totalZoneActualValue || 0)} className="font-medium">{formatValue(summary?.totalZoneActualValue || 0)}</span></div>
+                <div className="text-sm text-[#5D6E73]">Target: <span title={formatINRFull(summary?.totalZoneTargetValue || 0)} className="font-medium">{formatValue(summary?.totalZoneTargetValue || 0)}</span></div>
                 <div className="mt-2">
-                  <Badge variant="outline" className={totalAchievement >= 100 ? 'border-green-600 text-green-700' : totalAchievement >= 80 ? 'border-blue-600 text-blue-700' : totalAchievement >= 50 ? 'border-amber-600 text-amber-700' : 'border-rose-600 text-rose-700'}>
+                  <Badge variant="outline" className={totalAchievement >= 100 ? 'border-[#4F6A64] text-[#4F6A64]' : totalAchievement >= 80 ? 'border-[#546A7A] text-[#546A7A]' : totalAchievement >= 50 ? 'border-[#976E44] text-[#976E44]' : 'border-[#9E3B47] text-[#9E3B47]'}>
                     {totalAchievement >= 100 ? 'On Target' : totalAchievement >= 80 ? 'Near Target' : totalAchievement >= 50 ? 'Needs Attention' : 'Off Track'}
                   </Badge>
                 </div>
               </div>
             </div>
             <div className="mt-4 flex items-center gap-2 text-xs">
-              <span className="text-slate-500">Values:</span>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='AUTO'?'border-slate-700 text-slate-900':'border-slate-300 text-slate-600'}`} onClick={() => setValueUnit('AUTO')}>Auto</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='LAKH'?'border-slate-700 text-slate-900':'border-slate-300 text-slate-600'}`} onClick={() => setValueUnit('LAKH')}>Lakh</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='CR'?'border-slate-700 text-slate-900':'border-slate-300 text-slate-600'}`} onClick={() => setValueUnit('CR')}>Cr</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='INR'?'border-slate-700 text-slate-900':'border-slate-300 text-slate-600'}`} onClick={() => setValueUnit('INR')}>Full</button>
+              <span className="text-[#757777]">Values:</span>
+              <button className={`px-2 py-1 rounded border ${valueUnit==='AUTO'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('AUTO')}>Auto</button>
+              <button className={`px-2 py-1 rounded border ${valueUnit==='LAKH'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('LAKH')}>Lakh</button>
+              <button className={`px-2 py-1 rounded border ${valueUnit==='CR'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('CR')}>Cr</button>
+              <button className={`px-2 py-1 rounded border ${valueUnit==='INR'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('INR')}>Full</button>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <MapPin className="h-5 w-5 text-emerald-600" /> Coverage
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <MapPin className="h-5 w-5 text-[#4F6A64]" /> Coverage
             </CardTitle>
             <CardDescription>Zones and users with targets</CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg p-4 bg-emerald-50 border border-emerald-100">
-                <div className="text-xs text-emerald-700">Zones Covered</div>
-                <div className="text-2xl font-bold text-emerald-800">{coverage.zones.count}/{coverage.zones.total}</div>
-                <div className="text-xs text-emerald-700 mt-1">{coverage.zones.pct}% coverage</div>
+              <div className="rounded-lg p-4 bg-[#82A094]/10 border border-[#A2B9AF]/30">
+                <div className="text-xs text-[#4F6A64]">Zones Covered</div>
+                <div className="text-2xl font-bold text-[#4F6A64]">{coverage.zones.count}/{coverage.zones.total}</div>
+                <div className="text-xs text-[#4F6A64] mt-1">{coverage.zones.pct}% coverage</div>
               </div>
-              <div className="rounded-lg p-4 bg-indigo-50 border border-indigo-100">
-                <div className="text-xs text-indigo-700">Users With Targets</div>
-                <div className="text-2xl font-bold text-indigo-800">{coverage.users.count}</div>
-                <div className="text-xs text-indigo-700 mt-1">Active assignments</div>
+              <div className="rounded-lg p-4 bg-[#546A7A]/10 border border-[#6F8A9D]/30">
+                <div className="text-xs text-[#546A7A]">Users With Targets</div>
+                <div className="text-2xl font-bold text-[#546A7A]">{coverage.users.count}</div>
+                <div className="text-xs text-[#546A7A] mt-1">Active assignments</div>
               </div>
             </div>
           </CardContent>
@@ -382,23 +382,23 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
 
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Activity className="h-5 w-5 text-amber-600" /> {periodType === 'MONTHLY' ? 'Monthly Pace' : 'Performance Spread'}
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <Activity className="h-5 w-5 text-[#976E44]" /> {periodType === 'MONTHLY' ? 'Monthly Pace' : 'Performance Spread'}
             </CardTitle>
             <CardDescription>{periodType === 'MONTHLY' ? 'Run-rate to hit target' : 'Zone achievement distribution'}</CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
             {periodType === 'MONTHLY' && pace ? (
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg p-4 bg-amber-50 border border-amber-100">
-                  <div className="text-xs text-amber-700">Current Pace</div>
-                  <div className="text-3xl font-bold text-amber-800">{pct(pace.pacePct)}%</div>
-                  <div className="text-xs text-amber-700 mt-1">Daily actual {formatCrLakh(pace.curDaily)} vs need {formatCrLakh(pace.reqDaily)}</div>
+                <div className="rounded-lg p-4 bg-[#CE9F6B]/10 border border-[#EEC1BF]/30">
+                  <div className="text-xs text-[#976E44]">Current Pace</div>
+                  <div className="text-3xl font-bold text-[#976E44]">{pct(pace.pacePct)}%</div>
+                  <div className="text-xs text-[#976E44] mt-1">Daily actual {formatCrLakh(pace.curDaily)} vs need {formatCrLakh(pace.reqDaily)}</div>
                 </div>
-                <div className="rounded-lg p-4 bg-rose-50 border border-rose-100">
-                  <div className="text-xs text-rose-700">Target Gap</div>
-                  <div className="text-3xl font-bold text-rose-800">{formatCrLakh(pace.gap)}</div>
-                  <div className="text-xs text-rose-700 mt-1">Need {formatCrLakh(pace.neededPerDay)} per day</div>
+                <div className="rounded-lg p-4 bg-[#EEC1BF]/10 border border-[#EEC1BF]/30">
+                  <div className="text-xs text-[#9E3B47]">Target Gap</div>
+                  <div className="text-3xl font-bold text-[#75242D]">{formatCrLakh(pace.gap)}</div>
+                  <div className="text-xs text-[#9E3B47] mt-1">Need {formatCrLakh(pace.neededPerDay)} per day</div>
                 </div>
               </div>
             ) : (
@@ -421,32 +421,32 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
 
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className={`border-0 shadow-lg ${kpis.totalVariance >= 0 ? 'bg-gradient-to-br from-emerald-50 to-emerald-100' : 'bg-gradient-to-br from-rose-50 to-rose-100'}`}>
+        <Card className={`border-0 shadow-lg ${kpis.totalVariance >= 0 ? 'bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20' : 'bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20'}`}>
           <CardContent className="p-5">
-            <div className={`text-xs font-semibold ${kpis.totalVariance >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>Total Variance</div>
-            <div className={`text-3xl font-bold mt-2 ${kpis.totalVariance >= 0 ? 'text-emerald-800' : 'text-rose-800'}`}>{kpis.totalVariance >= 0 ? '+' : ''}{formatCrLakh(kpis.totalVariance)}</div>
-            <div className={`text-xs mt-1 ${kpis.totalVariance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>Actual vs Target</div>
+            <div className={`text-xs font-semibold ${kpis.totalVariance >= 0 ? 'text-[#4F6A64]' : 'text-[#9E3B47]'}`}>Total Variance</div>
+            <div className={`text-3xl font-bold mt-2 ${kpis.totalVariance >= 0 ? 'text-[#4F6A64]' : 'text-[#75242D]'}`}>{kpis.totalVariance >= 0 ? '+' : ''}{formatCrLakh(kpis.totalVariance)}</div>
+            <div className={`text-xs mt-1 ${kpis.totalVariance >= 0 ? 'text-[#4F6A64]' : 'text-[#9E3B47]'}`}>Actual vs Target</div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-teal-100">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/20">
           <CardContent className="p-5">
-            <div className="text-xs font-semibold text-emerald-700">Zones ≥ 100%</div>
-            <div className="text-3xl font-bold mt-2 text-emerald-800">{kpis.zones100}</div>
-            <div className="text-xs mt-1 text-emerald-600">High performers</div>
+            <div className="text-xs font-semibold text-[#4F6A64]">Zones ≥ 100%</div>
+            <div className="text-3xl font-bold mt-2 text-[#4F6A64]">{kpis.zones100}</div>
+            <div className="text-xs mt-1 text-[#4F6A64]">High performers</div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-amber-50 to-orange-100">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20">
           <CardContent className="p-5">
-            <div className="text-xs font-semibold text-amber-700">Zones &lt; 80%</div>
-            <div className="text-3xl font-bold mt-2 text-amber-800">{kpis.zonesUnder80}</div>
-            <div className="text-xs mt-1 text-amber-600">At risk</div>
+            <div className="text-xs font-semibold text-[#976E44]">Zones &lt; 80%</div>
+            <div className="text-3xl font-bold mt-2 text-[#976E44]">{kpis.zonesUnder80}</div>
+            <div className="text-xs mt-1 text-[#976E44]">At risk</div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-purple-100">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20">
           <CardContent className="p-5">
-            <div className="text-xs font-semibold text-indigo-700">Top Product Type</div>
-            <div className="text-lg font-bold mt-2 text-indigo-800">{String(kpis.topPTName).split('_').join(' ')}</div>
-            <div className="text-xs mt-1 text-indigo-600">{pct(kpis.topPTShare)}% of actual</div>
+            <div className="text-xs font-semibold text-[#546A7A]">Top Product Type</div>
+            <div className="text-lg font-bold mt-2 text-[#546A7A]">{String(kpis.topPTName).split('_').join(' ')}</div>
+            <div className="text-xs mt-1 text-[#546A7A]">{pct(kpis.topPTShare)}% of actual</div>
           </CardContent>
         </Card>
       </div>
@@ -457,8 +457,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Trophy className="h-5 w-5 text-emerald-600" /> Top Zones
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <Trophy className="h-5 w-5 text-[#4F6A64]" /> Top Zones
             </CardTitle>
             <CardDescription>By achievement</CardDescription>
           </CardHeader>
@@ -469,13 +469,13 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
                 return (
                   <div key={z.zoneId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">{idx + 1}</span>
+                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#82A094]/10 text-[#4F6A64] text-xs font-semibold">{idx + 1}</span>
                       <div>
-                        <button className="font-medium text-slate-800 hover:underline" onClick={() => handleZoneDrill(z.zoneId)}>{z.zoneName}</button>
-                        <div className="text-xs text-slate-500">{formatCrLakh(z.actual || 0)} / {formatCrLakh(z.target || 0)}</div>
+                        <button className="font-medium text-[#546A7A] hover:underline" onClick={() => handleZoneDrill(z.zoneId)}>{z.zoneName}</button>
+                        <div className="text-xs text-[#757777]">{formatCrLakh(z.actual || 0)} / {formatCrLakh(z.target || 0)}</div>
                       </div>
                     </div>
-                    <Badge variant="outline" className="border-emerald-600 text-emerald-700">{pct(z.achievement || 0)}%</Badge>
+                    <Badge variant="outline" className="border-[#4F6A64] text-[#4F6A64]">{pct(z.achievement || 0)}%</Badge>
                   </div>
                 );
               }).filter(Boolean)}
@@ -485,8 +485,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
 
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Users className="h-5 w-5 text-indigo-600" /> Top Users
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <Users className="h-5 w-5 text-[#546A7A]" /> Top Users
             </CardTitle>
             <CardDescription>By achievement</CardDescription>
           </CardHeader>
@@ -497,13 +497,13 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
                 return (
                   <div key={u.userId} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">{idx + 1}</span>
+                      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#546A7A]/10 text-[#546A7A] text-xs font-semibold">{idx + 1}</span>
                       <div>
-                        <div className="font-medium text-slate-800">{u.name || 'Unknown'}</div>
-                        <div className="text-xs text-slate-500">{u.email || 'N/A'}</div>
+                        <div className="font-medium text-[#546A7A]">{u.name || 'Unknown'}</div>
+                        <div className="text-xs text-[#757777]">{u.email || 'N/A'}</div>
                       </div>
                     </div>
-                    <Badge variant="outline" className="border-indigo-600 text-indigo-700">{pct(u.achievement || 0)}%</Badge>
+                    <Badge variant="outline" className="border-[#546A7A] text-[#546A7A]">{pct(u.achievement || 0)}%</Badge>
                   </div>
                 );
               }).filter(Boolean)}
@@ -513,8 +513,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
 
         <Card className="border-0 shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <TrendingDown className="h-5 w-5 text-rose-600" /> Biggest Gaps
+            <CardTitle className="flex items-center gap-2 text-[#546A7A]">
+              <TrendingDown className="h-5 w-5 text-[#9E3B47]" /> Biggest Gaps
             </CardTitle>
             <CardDescription>Variance to target</CardDescription>
           </CardHeader>
@@ -524,8 +524,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
                 if (!z) return null;
                 return (
                   <div key={z.zoneId} className="flex items-center justify-between">
-                    <button className="font-medium text-slate-800 hover:underline text-left" onClick={() => handleZoneDrill(z.zoneId)}>{z.zoneName || 'Unknown'}</button>
-                    <div className="text-rose-700" title={formatINRFull(Math.abs(z.variance || 0))}>-{formatCrLakh(Math.abs(z.variance || 0))}</div>
+                    <button className="font-medium text-[#546A7A] hover:underline text-left" onClick={() => handleZoneDrill(z.zoneId)}>{z.zoneName || 'Unknown'}</button>
+                    <div className="text-[#9E3B47]" title={formatINRFull(Math.abs(z.variance || 0))}>-{formatCrLakh(Math.abs(z.variance || 0))}</div>
                   </div>
                 );
               }).filter(Boolean)}

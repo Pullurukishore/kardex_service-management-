@@ -68,26 +68,26 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'HIGH':
-        return 'from-red-500 to-red-600';
+        return 'from-[#E17F70] to-red-600';
       case 'MEDIUM':
-        return 'from-orange-500 to-orange-600';
+        return 'from-[#CE9F6B] to-[#976E44]';
       case 'LOW':
-        return 'from-green-500 to-green-600';
+        return 'from-[#82A094] to-[#4F6A64]';
       default:
-        return 'from-gray-500 to-gray-600';
+        return 'from-[#92A2A5] to-[#5D6E73]';
     }
   };
 
   const getRiskBgColor = (level: string) => {
     switch (level) {
       case 'HIGH':
-        return 'bg-red-50 border-red-200';
+        return 'bg-[#E17F70]/10 border-[#E17F70]';
       case 'MEDIUM':
-        return 'bg-orange-50 border-orange-200';
+        return 'bg-[#CE9F6B]/10 border-[#CE9F6B]';
       case 'LOW':
-        return 'bg-green-50 border-green-200';
+        return 'bg-[#A2B9AF]/10 border-[#A2B9AF]';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-[#AEBFC3]/10 border-[#92A2A5]';
     }
   };
 
@@ -144,13 +144,13 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-red-600" />
+            <Shield className="h-5 w-5 text-[#9E3B47]" />
             Security Monitor
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9E3B47]"></div>
           </div>
         </CardContent>
       </Card>
@@ -162,12 +162,12 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-red-600" />
+            <Shield className="h-5 w-5 text-[#9E3B47]" />
             Security Monitor
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-64 text-red-600">
+          <div className="flex items-center justify-center h-64 text-[#9E3B47]">
             {error}
           </div>
         </CardContent>
@@ -182,7 +182,7 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-red-600" />
+            <Shield className="h-5 w-5 text-[#9E3B47]" />
             Security Monitor
           </CardTitle>
           <select
@@ -229,37 +229,37 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
 
           {/* Alert Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-br from-red-50 to-red-100">
+            <Card className="bg-gradient-to-br from-[#E17F70]/10 to-red-100">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="h-5 w-5 text-red-600" />
-                  <span className="font-semibold text-red-900">Total Alerts</span>
+                  <AlertTriangle className="h-5 w-5 text-[#9E3B47]" />
+                  <span className="font-semibold text-[#75242D]">Total Alerts</span>
                 </div>
-                <div className="text-2xl font-bold text-red-700">
+                <div className="text-2xl font-bold text-[#75242D]">
                   {securityData.summary.totalAlerts}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100">
+            <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Globe className="h-5 w-5 text-purple-600" />
-                  <span className="font-semibold text-purple-900">Unique IPs</span>
+                  <Globe className="h-5 w-5 text-[#546A7A]" />
+                  <span className="font-semibold text-[#546A7A]">Unique IPs</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-700">
+                <div className="text-2xl font-bold text-[#546A7A]">
                   {securityData.summary.uniqueIPs}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
+            <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Users className="h-5 w-5 text-blue-600" />
-                  <span className="font-semibold text-blue-900">Affected Users</span>
+                  <Users className="h-5 w-5 text-[#546A7A]" />
+                  <span className="font-semibold text-[#546A7A]">Affected Users</span>
                 </div>
-                <div className="text-2xl font-bold text-blue-700">
+                <div className="text-2xl font-bold text-[#546A7A]">
                   {securityData.summary.uniqueUsers}
                 </div>
               </CardContent>
@@ -307,12 +307,12 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
                   {getAlertData(selectedAlertType).map((alert, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                      className="flex items-center justify-between p-3 bg-[#AEBFC3]/10 rounded-lg border"
                     >
                       <div className="flex items-center gap-3">
                         {alert.user && (
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-gray-500" />
+                            <Users className="h-4 w-4 text-[#AEBFC3]0" />
                             <span className="font-medium">{alert.user.name}</span>
                             <Badge variant="outline" className="text-xs">
                               {alert.user.role}
@@ -321,7 +321,7 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
                         )}
                         {selectedAlertType === 'ip' && (
                           <div className="flex items-center gap-2">
-                            <Wifi className="h-4 w-4 text-gray-500" />
+                            <Wifi className="h-4 w-4 text-[#AEBFC3]0" />
                             <span className="font-mono">{alert.ipAddress}</span>
                             <Badge variant="outline" className="text-xs">
                               {alert.count} requests
@@ -329,7 +329,7 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-[#AEBFC3]0">
                         <Clock className="h-4 w-4" />
                         {formatTimeAgo(alert.createdAt || alert.lastSeen)}
                       </div>
@@ -337,7 +337,7 @@ const SecurityMonitor: React.FC<SecurityMonitorProps> = ({ className }) => {
                   ))}
                   
                   {getAlertData(selectedAlertType).length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-[#AEBFC3]0">
                       <Eye className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       No alerts of this type in the selected timeframe
                     </div>

@@ -22,9 +22,9 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
               : String(value);
 
           return (
-            <Card key={key} className="bg-gradient-to-r from-white to-gray-50 hover:shadow-md transition-all duration-200 card-mobile touch-manipulation">
+            <Card key={key} className="bg-gradient-to-r from-white to-[#AEBFC3]/10 hover:shadow-md transition-all duration-200 card-mobile touch-manipulation">
               <CardContent className="p-4 sm:p-6">
-                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                <div className="text-2xl sm:text-3xl font-bold text-[#546A7A] mb-1">
                   {displayValue}
                 </div>
                 <div className="text-sm text-muted-foreground capitalize leading-tight">

@@ -53,9 +53,9 @@ interface LiveTrackingData {
 }
 
 const STATUS_CONFIG = {
-  CHECKED_IN: { label: 'Checked In', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  CHECKED_OUT: { label: 'Checked Out', color: 'bg-gray-100 text-gray-800', icon: XCircle },
-  EARLY_CHECKOUT: { label: 'Early Checkout', color: 'bg-yellow-100 text-yellow-800', icon: AlertTriangle },
+  CHECKED_IN: { label: 'Checked In', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', icon: CheckCircle },
+  CHECKED_OUT: { label: 'Checked Out', color: 'bg-[#AEBFC3]/20 text-[#546A7A]', icon: XCircle },
+  EARLY_CHECKOUT: { label: 'Early Checkout', color: 'bg-[#CE9F6B]/20 text-[#976E44]', icon: AlertTriangle },
 };
 
 export function AttendanceDashboard() {
@@ -166,8 +166,8 @@ export function AttendanceDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Attendance Dashboard</h1>
-          <p className="text-gray-600 mt-1">Monitor and manage team attendance</p>
+          <h1 className="text-3xl font-bold text-[#546A7A]">Attendance Dashboard</h1>
+          <p className="text-[#5D6E73] mt-1">Monitor and manage team attendance</p>
         </div>
         <div className="flex items-center gap-4">
           <Button onClick={loadLiveTracking} disabled={refreshing} variant="outline">
@@ -186,7 +186,7 @@ export function AttendanceDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{liveTracking.totalActive}</div>
+              <div className="text-2xl font-bold text-[#4F6A64]">{liveTracking.totalActive}</div>
               <p className="text-xs text-muted-foreground">
                 Service persons checked in
               </p>
@@ -287,14 +287,14 @@ export function AttendanceDashboard() {
           <CardContent>
             <div className="space-y-4">
               {liveTracking.liveTracking.map((record) => (
-                <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg bg-green-50">
+                <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg bg-[#A2B9AF]/10">
                   <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="w-3 h-3 bg-[#A2B9AF]/100 rounded-full animate-pulse"></div>
                     <div>
                       <h4 className="font-medium">{record.user.name}</h4>
-                      <p className="text-sm text-gray-600">{record.user.email}</p>
+                      <p className="text-sm text-[#5D6E73]">{record.user.email}</p>
                       {record.user.serviceZones && record.user.serviceZones.length > 0 && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#AEBFC3]0">
                           Zone: {record.user.serviceZones[0].serviceZone.name}
                         </p>
                       )}
@@ -305,7 +305,7 @@ export function AttendanceDashboard() {
                       Since {new Date(record.checkInAt).toLocaleTimeString()}
                     </p>
                     {record.checkInAddress && (
-                      <p className="text-xs text-gray-500 flex items-center">
+                      <p className="text-xs text-[#AEBFC3]0 flex items-center">
                         <MapPin className="h-3 w-3 mr-1" />
                         {record.checkInAddress}
                       </p>
@@ -334,14 +334,14 @@ export function AttendanceDashboard() {
             {attendanceRecords.map((record) => {
               const StatusIcon = STATUS_CONFIG[record.status].icon;
               return (
-                <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-[#AEBFC3]/10">
                   <div className="flex items-center space-x-4">
-                    <StatusIcon className="h-5 w-5 text-gray-500" />
+                    <StatusIcon className="h-5 w-5 text-[#AEBFC3]0" />
                     <div>
                       <h4 className="font-medium">{record.user.name}</h4>
-                      <p className="text-sm text-gray-600">{record.user.email}</p>
+                      <p className="text-sm text-[#5D6E73]">{record.user.email}</p>
                       {record.user.serviceZones && record.user.serviceZones.length > 0 && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#AEBFC3]0">
                           Zone: {record.user.serviceZones[0].serviceZone.name}
                         </p>
                       )}
@@ -351,7 +351,7 @@ export function AttendanceDashboard() {
                     <Badge className={STATUS_CONFIG[record.status].color}>
                       {STATUS_CONFIG[record.status].label}
                     </Badge>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[#AEBFC3]0 mt-1">
                       {formatDateTime(record.checkInAt)}
                     </p>
                   </div>
@@ -362,12 +362,12 @@ export function AttendanceDashboard() {
                       </p>
                     )}
                     {record.checkOutAt && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[#AEBFC3]0">
                         Out: {new Date(record.checkOutAt).toLocaleTimeString()}
                       </p>
                     )}
                     {record.checkInAddress && (
-                      <p className="text-xs text-gray-500 flex items-center justify-end mt-1">
+                      <p className="text-xs text-[#AEBFC3]0 flex items-center justify-end mt-1">
                         <MapPin className="h-3 w-3 mr-1" />
                         Location tracked
                       </p>
@@ -381,7 +381,7 @@ export function AttendanceDashboard() {
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#5D6E73]">
                 Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} records
               </p>
               <div className="flex space-x-2">

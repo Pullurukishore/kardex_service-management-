@@ -184,7 +184,7 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Ticket Analytics Report',
     description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
     icon: 'BarChart3',
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-[#96AEC2] to-[#6F8A9D]' // Blue 1 to Blue 2
   },
 
   {
@@ -192,21 +192,21 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Machine Reports',
     description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
     icon: 'Settings',
-    color: 'from-green-500 to-green-600'
+    color: 'from-[#A2B9AF] to-[#82A094]' // Green 1 to Green 2
   },
   {
     value: 'zone-performance',
     label: 'Zone Performance Report',
     description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]' // Blue 2 to Blue 3
   },
   {
     value: 'agent-productivity',
     label: 'Service Person Performance Report',
     description: 'Comprehensive performance analytics for all service persons including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
-    color: 'from-indigo-500 to-indigo-600'
+    color: 'from-[#82A094] to-[#4F6A64]' // Green 2 to Green 3
   },
 
   {
@@ -214,14 +214,14 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Service Person Attendance Report',
     description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
     icon: 'UserCheck',
-    color: 'from-teal-500 to-teal-600'
+    color: 'from-[#92A2A5] to-[#5D6E73]' // Silver 2 to Silver 3
   },
   {
     value: 'offer-summary',
     label: 'Offer Summary Report',
     description: 'Comprehensive offer analytics with status, stage, priority trends, daily trends, top customers, and detailed offer information',
     icon: 'FileText',
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-[#96AEC2] to-[#6F8A9D]', // Blue 1 to Blue 2
   },
 ];
 
@@ -232,49 +232,49 @@ export const TICKET_REPORT_TYPES: ReportType[] = [
     label: 'Ticket Summary Report',
     description: 'Comprehensive ticket analytics with status distribution, priority trends, resolution times, and performance metrics',
     icon: 'Ticket',
-    color: 'from-violet-500 to-violet-600',
+    color: 'from-[#6F8A9D] to-[#546A7A]', // Blue 2 to Blue 3
   },
   {
     value: 'sla-performance',
     label: 'SLA Performance Report',
     description: 'SLA compliance analysis with breach rates, response times, and resolution performance metrics',
     icon: 'Clock',
-    color: 'from-red-500 to-red-600',
+    color: 'from-[#E17F70] to-[#9E3B47]', // Red 1 to Red 2
   },
   {
     value: 'zone-performance',
     label: 'Zone Performance Report',
     description: 'Zone-wise performance analysis with ticket handling metrics, resolution rates, and comparative performance',
     icon: 'MapPin',
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-[#96AEC2] to-[#6F8A9D]', // Blue 1 to Blue 2
   },
   {
     value: 'agent-productivity',
     label: 'Agent Productivity Report',
     description: 'Service agent performance analysis with ticket handling metrics, resolution rates, and productivity trends',
     icon: 'Users',
-    color: 'from-orange-500 to-orange-600',
+    color: 'from-[#CE9F6B] to-[#976E44]', // Sand 2 to Sand 3
   },
   {
     value: 'industrial-data',
     label: 'Industrial Data Report',
     description: 'Equipment and asset performance analysis with downtime metrics, maintenance schedules, and operational insights',
     icon: 'Activity',
-    color: 'from-amber-500 to-amber-600',
+    color: 'from-[#EEC18F] to-[#CE9F6B]', // Sand 1 to Sand 2
   },
   {
     value: 'executive-summary',
     label: 'Executive Summary Report',
     description: 'High-level overview of key metrics, trends, and performance indicators for management reporting',
     icon: 'BarChart3',
-    color: 'from-purple-500 to-purple-600',
+    color: 'from-[#82A094] to-[#4F6A64]', // Green 2 to Green 3
   },
   {
     value: 'her-analysis',
     label: 'HER Analysis Report',
     description: 'Detailed analysis of ticket resolution patterns, response times, and efficiency metrics',
     icon: 'TrendingUp',
-    color: 'from-cyan-500 to-cyan-600',
+    color: 'from-[#92A2A5] to-[#5D6E73]', // Silver 2 to Silver 3
   },
 ];
 
@@ -285,7 +285,7 @@ export const SALES_REPORT_TYPES: ReportType[] = [
     label: 'Offer Summary Report',
     description: 'Comprehensive offer analytics with status, stage, priority trends, daily trends, top customers, and detailed offer information',
     icon: 'FileText',
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-[#96AEC2] to-[#6F8A9D]', // Blue 1 to Blue 2
   },
 ];
 
@@ -296,42 +296,42 @@ export const ZONE_USER_REPORT_TYPES: ReportType[] = [
     label: 'Ticket Analytics Report',
     description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
     icon: 'BarChart3',
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-[#96AEC2] to-[#6F8A9D]' // Blue 1 to Blue 2
   },
   {
     value: 'industrial-data',
     label: 'Machine Reports',
     description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
     icon: 'Settings',
-    color: 'from-green-500 to-green-600'
+    color: 'from-[#A2B9AF] to-[#82A094]' // Green 1 to Green 2
   },
   {
     value: 'zone-performance',
     label: 'Zone Performance Report',
     description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]' // Blue 2 to Blue 3
   },
   {
     value: 'agent-productivity',
     label: 'Service Person Performance Report',
     description: 'Comprehensive performance analytics for all service persons including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
-    color: 'from-indigo-500 to-indigo-600'
+    color: 'from-[#82A094] to-[#4F6A64]' // Green 2 to Green 3
   },
   {
     value: 'sla-performance',
     label: 'Service Person Attendance Report',
     description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
     icon: 'UserCheck',
-    color: 'from-teal-500 to-teal-600'
+    color: 'from-[#92A2A5] to-[#5D6E73]' // Silver 2 to Silver 3
   },
   {
     value: 'zone-user-offer-summary',
     label: 'My Offers Summary',
     description: 'View and analyze all offers you have created or been assigned to. Includes status, stage, value, and performance metrics for your offers only.',
     icon: 'FileText',
-    color: 'from-indigo-500 to-indigo-600',
+    color: 'from-[#EEC18F] to-[#CE9F6B]', // Sand 1 to Sand 2
   },
 ];
 
@@ -342,81 +342,82 @@ export const ZONE_MANAGER_REPORT_TYPES: ReportType[] = [
     label: 'Zone Offer Summary',
     description: 'View and analyze ALL offers in your zone. Comprehensive offer analytics with status, stage, value, and performance metrics.',
     icon: 'FileText',
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-[#96AEC2] to-[#6F8A9D]', // Blue 1 to Blue 2
   },
   {
     value: 'ticket-summary',
     label: 'Ticket Analytics Report',
     description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
     icon: 'BarChart3',
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-[#96AEC2] to-[#6F8A9D]' // Blue 1 to Blue 2
   },
   {
     value: 'industrial-data',
     label: 'Machine Reports',
     description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
     icon: 'Settings',
-    color: 'from-green-500 to-green-600'
+    color: 'from-[#A2B9AF] to-[#82A094]' // Green 1 to Green 2
   },
   {
     value: 'zone-performance',
     label: 'Zone Performance Report',
     description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]' // Blue 2 to Blue 3
   },
   {
     value: 'agent-productivity',
     label: 'Service Person Performance Report',
     description: 'Comprehensive performance analytics for all service persons including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
-    color: 'from-indigo-500 to-indigo-600'
+    color: 'from-[#82A094] to-[#4F6A64]' // Green 2 to Green 3
   },
   {
     value: 'sla-performance',
     label: 'Service Person Attendance Report',
     description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
     icon: 'UserCheck',
-    color: 'from-teal-500 to-teal-600'
+    color: 'from-[#92A2A5] to-[#5D6E73]' // Silver 2 to Silver 3
   },
 ];
 
-export const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#FF6B6B', '#4ECDC4', '#45B7D1'];
+// Kardex Company Colors for Charts
+export const COLORS = ['#96AEC2', '#A2B9AF', '#6F8A9D', '#82A094', '#546A7A', '#4F6A64', '#EEC18F', '#E17F70'];
 
 export const PRIORITY_COLORS = {
-  LOW: '#10B981',
-  MEDIUM: '#F59E0B',
-  HIGH: '#EF4444',
-  CRITICAL: '#7C3AED',
+  LOW: '#A2B9AF',      // Green 1
+  MEDIUM: '#EEC18F',   // Sand 1
+  HIGH: '#E17F70',     // Red 1
+  CRITICAL: '#9E3B47', // Red 2
 };
 
 export const STATUS_COLORS: Record<string, string> = {
-  DRAFT: '#9CA3AF',
-  OPEN: '#3B82F6',
-  IN_PROGRESS: '#F59E0B',
-  QUOTED: '#8B5CF6',
-  NEGOTIATION: '#F97316',
-  WON: '#10B981',
-  LOST: '#EF4444',
-  ON_HOLD: '#6B7280',
-  CANCELLED: '#9CA3AF',
+  DRAFT: '#979796',      // Grey 3
+  OPEN: '#96AEC2',       // Blue 1
+  IN_PROGRESS: '#EEC18F', // Sand 1
+  QUOTED: '#6F8A9D',     // Blue 2
+  NEGOTIATION: '#CE9F6B', // Sand 2
+  WON: '#82A094',        // Green 2
+  LOST: '#E17F70',       // Red 1
+  ON_HOLD: '#757777',    // Silver 1
+  CANCELLED: '#979796',  // Grey 3
 };
 
 export const STAGE_COLORS: Record<string, string> = {
-  INITIAL: '#3B82F6',
-  PROPOSAL_SENT: '#8B5CF6',
-  NEGOTIATION: '#F59E0B',
-  PO_RECEIVED: '#06B6D4',
-  WON: '#10B981',
-  LOST: '#EF4444',
+  INITIAL: '#96AEC2',      // Blue 1
+  PROPOSAL_SENT: '#6F8A9D', // Blue 2
+  NEGOTIATION: '#EEC18F',   // Sand 1
+  PO_RECEIVED: '#92A2A5',   // Silver 2
+  WON: '#82A094',           // Green 2
+  LOST: '#E17F70',          // Red 1
 };
 
 export const PRODUCT_TYPE_COLORS: Record<string, string> = {
-  RELOCATION: '#3B82F6',
-  CONTRACT: '#10B981',
-  SPP: '#F59E0B',
-  UPGRADE_KIT: '#8B5CF6',
-  SOFTWARE: '#06B6D4',
+  RELOCATION: '#96AEC2',  // Blue 1
+  CONTRACT: '#A2B9AF',    // Green 1
+  SPP: '#EEC18F',         // Sand 1
+  UPGRADE_KIT: '#6F8A9D', // Blue 2
+  SOFTWARE: '#82A094',    // Green 2
 };
 
 // Comprehensive Dashboard Types

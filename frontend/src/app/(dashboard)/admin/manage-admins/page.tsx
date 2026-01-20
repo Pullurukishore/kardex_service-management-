@@ -34,18 +34,18 @@ export default async function ManageAdminsPage({ searchParams }: ManageAdminsPag
 
   return (
     <div className="space-y-6">
-      {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 p-6 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
+      {/* Desktop Header with Gradient - Kardex Colors */}
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#96AEC2] via-[#6F8A9D] to-[#546A7A] p-6 text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Manage Admins</h1>
-            <p className="text-blue-100">
+            <p className="text-white/80">
               Manage administrator accounts and permissions
             </p>
           </div>
           <Link href="/admin/manage-admins/new">
-            <Button className="bg-white text-blue-600 hover:bg-blue-50 shadow-lg">
+            <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/20 shadow-lg">
               <Plus className="mr-2 h-4 w-4" />
               Add Admin
             </Button>
@@ -60,7 +60,7 @@ export default async function ManageAdminsPage({ searchParams }: ManageAdminsPag
           description="Manage administrator accounts and permissions"
           action={
             <Link href="/admin/manage-admins/new">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+              <Button className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white shadow-lg">
                 <Plus className="mr-2 h-4 w-4" /> Add
               </Button>
             </Link>

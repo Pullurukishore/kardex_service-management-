@@ -17,10 +17,10 @@ const COLORS = {
 
     // Zone colors (matching dashboard exactly)
     zoneBg: {
-        WEST: 'DBEAFE',    // Blue light (bg-blue-50)
-        SOUTH: 'D1FAE5',   // Emerald light (bg-emerald-50)
-        NORTH: 'FEF3C7',   // Amber light (bg-amber-50)
-        EAST: 'EDE9FE',    // Purple light (bg-purple-50)
+        WEST: 'DBEAFE',    // Blue light (bg-[#96AEC2]/10)
+        SOUTH: 'D1FAE5',   // Emerald light (bg-[#82A094]/10)
+        NORTH: 'FEF3C7',   // Amber light (bg-[#CE9F6B]/10)
+        EAST: 'EDE9FE',    // Purple light (bg-[#6F8A9D]/10)
     },
     zoneAccent: {
         WEST: '3B82F6',    // Blue-500
@@ -30,11 +30,11 @@ const COLORS = {
     },
 
     // Column-specific colors (matching dashboard data cells)
-    colOffers: '2563EB',      // Blue-600 (text-blue-600)
+    colOffers: '2563EB',      // Blue-600 (text-[#546A7A])
     colOffersBg: 'DBEAFE',    // Blue-50 light background
-    colOrders: '059669',      // Emerald-600 (text-emerald-600)
+    colOrders: '059669',      // Emerald-600 (text-[#4F6A64])
     colOrdersBg: 'D1FAE5',    // Emerald-50 light background
-    colFunnel: 'D97706',      // Amber-600 (text-amber-600)
+    colFunnel: 'D97706',      // Amber-600 (text-[#976E44])
     colFunnelBg: 'FEF3C7',    // Amber-50 light background
     colBU: '7C3AED',          // Purple-600 (BU/Monthly)
     colBUBg: 'F3E8FF',        // Purple-50 light background

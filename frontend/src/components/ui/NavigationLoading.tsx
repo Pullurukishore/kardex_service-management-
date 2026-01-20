@@ -34,18 +34,18 @@ export const NavigationLoadingOverlay: React.FC<NavigationLoadingProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="flex flex-col items-center space-y-4 p-8 bg-white/90 rounded-2xl shadow-2xl border border-slate-200/60"
+            className="flex flex-col items-center space-y-4 p-8 bg-white/90 rounded-2xl shadow-2xl border border-[#92A2A5]/60"
           >
             {/* Animated loader with sparkles */}
             <div className="relative">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="absolute -inset-2"
               >
-                <Sparkles className="h-3 w-3 text-blue-400 absolute top-0 left-0" />
-                <Sparkles className="h-2 w-2 text-indigo-400 absolute bottom-0 right-0" />
+                <Sparkles className="h-3 w-3 text-[#6F8A9D] absolute top-0 left-0" />
+                <Sparkles className="h-2 w-2 text-[#96AEC2] absolute bottom-0 right-0" />
               </motion.div>
             </div>
             
@@ -54,18 +54,18 @@ export const NavigationLoadingOverlay: React.FC<NavigationLoadingProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-sm font-medium text-slate-600"
+              className="text-sm font-medium text-[#5D6E73]"
             >
               {loadingText}
             </motion.p>
             
             {/* Progress bar */}
-            <div className="w-32 h-1 bg-slate-200 rounded-full overflow-hidden">
+            <div className="w-32 h-1 bg-[#92A2A5]/30 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 1.5, ease: "easeInOut" }}
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+                className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
               />
             </div>
           </motion.div>
@@ -98,7 +98,7 @@ export const NavItemLoading: React.FC<NavItemLoadingProps> = ({
             transition={{ duration: 0.2 }}
             className="absolute inset-0 flex items-center justify-end pr-4 bg-gradient-to-r from-transparent via-white/60 to-white/80 rounded-xl backdrop-blur-sm"
           >
-            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#546A7A]" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -112,16 +112,16 @@ export const NavItemSkeleton: React.FC<{ isMobile?: boolean; collapsed?: boolean
 }) => {
   return (
     <div className={cn(
-      "flex items-center rounded-xl bg-slate-100 animate-pulse",
+      "flex items-center rounded-xl bg-[#AEBFC3]/20 animate-pulse",
       isMobile ? "px-4 py-4 min-h-[56px]" : "px-3 py-3 h-12"
     )}>
       <div className={cn(
-        "rounded-lg bg-slate-200",
+        "rounded-lg bg-[#92A2A5]/30",
         isMobile ? "h-6 w-6" : "h-5 w-5"
       )} />
       {(!collapsed || isMobile) && (
         <div className={cn(
-          "bg-slate-200 rounded",
+          "bg-[#92A2A5]/30 rounded",
           isMobile ? "ml-4 h-4 w-32" : "ml-3 h-3 w-24"
         )} />
       )}
@@ -139,12 +139,12 @@ export const LoadingProgress: React.FC<LoadingProgressProps> = ({
   className
 }) => {
   return (
-    <div className={cn("w-full h-1 bg-slate-200 rounded-full overflow-hidden", className)}>
+    <div className={cn("w-full h-1 bg-[#92A2A5]/30 rounded-full overflow-hidden", className)}>
       <motion.div
         initial={{ width: "0%" }}
         animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+        className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
       />
     </div>
   );
@@ -165,7 +165,7 @@ export const PulseLoader: React.FC<{ className?: string }> = ({ className }) => 
             repeat: Infinity,
             delay: i * 0.2,
           }}
-          className="w-2 h-2 bg-blue-500 rounded-full"
+          className="w-2 h-2 bg-[#96AEC2]/100 rounded-full"
         />
       ))}
     </div>

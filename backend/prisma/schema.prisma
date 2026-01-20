@@ -1228,3 +1228,66 @@ model ARPaymentHistory {
   @@index([invoiceId])
   @@map("ar_payment_history")
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BANK ACCOUNTS MODULE - Finance
+// Vendor bank details management with role-based change request workflow
+// ═══════════════════════════════════════════════════════════════════════════
+
+model BankAccount {
+  id                  String   @id @default(uuid())
+  vendorName          String
+  beneficiaryBankName String
+  accountNumber       String   @unique
+  ifscCode            String
+  emailId             String?
+  nickName            String?
+  isActive            Boolean  @default(true)
+  createdById         Int
+  updatedById         Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  changeRequests      BankAccountChangeRequest[] @relation("BankAccountRequests")
+
+  @@index([vendorName])
+  @@index([accountNumber])
+  @@index([isActive])
+  @@map("bank_accounts")
+}
+
+model BankAccountChangeRequest {
+  id              String   @id @default(uuid())
+  bankAccountId   String?  // null for CREATE requests
+  requestType     BankAccountRequestType
+  status          BankAccountRequestStatus @default(PENDING)
+  
+  // Requested changes (JSON storing the proposed values)
+  requestedData   Json
+  
+  // Approval tracking
+  requestedById   Int
+  requestedAt     DateTime @default(now())
+  reviewedById    Int?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  
+  bankAccount     BankAccount? @relation("BankAccountRequests", fields: [bankAccountId], references: [id], onDelete: Cascade)
+  
+  @@index([status])
+  @@index([requestedById])
+  @@index([bankAccountId])
+  @@map("bank_account_change_requests")
+}
+
+enum BankAccountRequestType {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum BankAccountRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

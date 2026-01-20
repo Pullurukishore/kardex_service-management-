@@ -229,42 +229,42 @@ export default function ImageManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#5D6E73] via-slate-800 to-[#5D6E73] p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">📦 Image Storage Management</h1>
-          <p className="text-slate-400">Bulk download and delete images to manage storage space</p>
+          <p className="text-[#979796]">Bulk download and delete images to manage storage space</p>
         </div>
 
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg">
+            <div className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl p-6 text-white shadow-lg">
               <div className="text-4xl font-bold">{stats.totalImages.toLocaleString()}</div>
-              <div className="text-blue-100">Total Images</div>
+              <div className="text-[#96AEC2]">Total Images</div>
             </div>
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
+            <div className="bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-xl p-6 text-white shadow-lg">
               <div className="text-4xl font-bold">{formatBytes(stats.totalSizeBytes)}</div>
               <div className="text-emerald-100">Total Storage Used</div>
             </div>
-            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 text-white shadow-lg">
+            <div className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl p-6 text-white shadow-lg">
               <div className="text-4xl font-bold">{stats.byMonth.length}</div>
-              <div className="text-purple-100">Months with Data</div>
+              <div className="text-[#6F8A9D]">Months with Data</div>
             </div>
           </div>
         )}
 
         {/* Storage by Month */}
         {stats && stats.byMonth.length > 0 && (
-          <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 mb-8 border border-slate-700">
+          <div className="bg-[#546A7A]/50 backdrop-blur rounded-xl p-6 mb-8 border border-[#5D6E73]">
             <h2 className="text-xl font-semibold text-white mb-4">📅 Storage by Month</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {stats.byMonth.slice(0, 12).map(m => (
-                <div key={m.month} className="bg-slate-700/50 rounded-lg p-3 text-center">
-                  <div className="text-sm text-slate-400">{m.month}</div>
+                <div key={m.month} className="bg-[#5D6E73]/50 rounded-lg p-3 text-center">
+                  <div className="text-sm text-[#979796]">{m.month}</div>
                   <div className="text-lg font-semibold text-white">{m.count}</div>
-                  <div className="text-xs text-slate-500">{formatBytes(m.sizeBytes)}</div>
+                  <div className="text-xs text-[#757777]">{formatBytes(m.sizeBytes)}</div>
                 </div>
               ))}
             </div>
@@ -272,47 +272,47 @@ export default function ImageManagementPage() {
         )}
 
         {/* Filters & Actions */}
-        <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 mb-6 border border-slate-700">
+        <div className="bg-[#546A7A]/50 backdrop-blur rounded-xl p-6 mb-6 border border-[#5D6E73]">
           <div className="flex flex-wrap gap-4 items-end">
             <div>
-              <label className="block text-sm text-slate-400 mb-1">From Date</label>
+              <label className="block text-sm text-[#979796] mb-1">From Date</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={e => setDateFrom(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="bg-[#5D6E73] border border-slate-600 rounded-lg px-4 py-2 text-white"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-1">To Date</label>
+              <label className="block text-sm text-[#979796] mb-1">To Date</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={e => setDateTo(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                className="bg-[#5D6E73] border border-slate-600 rounded-lg px-4 py-2 text-white"
               />
             </div>
             <button
               onClick={handleFilter}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition"
+              className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white px-6 py-2 rounded-lg font-medium transition"
             >
               Filter
             </button>
             <div className="flex-1" />
-            <div className="text-slate-400 text-sm">
+            <div className="text-[#979796] text-sm">
               Selected: <span className="text-white font-bold">{selectedIds.size}</span> images
             </div>
             <button
               onClick={handleBulkDownload}
               disabled={selectedIds.size === 0 || downloading}
-              className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2"
+              className="bg-[#4F6A64] hover:bg-[#4F6A64] disabled:bg-[#5D6E73] disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2"
             >
               {downloading ? '⏳ Downloading...' : '⬇️ Download ZIP'}
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={selectedIds.size === 0}
-              className="bg-red-600 hover:bg-red-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2"
+              className="bg-[#9E3B47] hover:bg-[#75242D] disabled:bg-[#5D6E73] disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition flex items-center gap-2"
             >
               🗑️ Delete Selected
             </button>
@@ -320,10 +320,10 @@ export default function ImageManagementPage() {
         </div>
 
         {/* Images Table */}
-        <div className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 overflow-hidden">
+        <div className="bg-[#546A7A]/50 backdrop-blur rounded-xl border border-[#5D6E73] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-700/50">
+              <thead className="bg-[#5D6E73]/50">
                 <tr>
                   <th className="p-4 text-left">
                     <input
@@ -333,23 +333,23 @@ export default function ImageManagementPage() {
                       className="w-5 h-5 rounded"
                     />
                   </th>
-                  <th className="p-4 text-left text-sm font-medium text-slate-300">Preview</th>
-                  <th className="p-4 text-left text-sm font-medium text-slate-300">Filename</th>
-                  <th className="p-4 text-left text-sm font-medium text-slate-300">Size</th>
-                  <th className="p-4 text-left text-sm font-medium text-slate-300">Date</th>
-                  <th className="p-4 text-left text-sm font-medium text-slate-300">Ticket</th>
+                  <th className="p-4 text-left text-sm font-medium text-[#92A2A5]">Preview</th>
+                  <th className="p-4 text-left text-sm font-medium text-[#92A2A5]">Filename</th>
+                  <th className="p-4 text-left text-sm font-medium text-[#92A2A5]">Size</th>
+                  <th className="p-4 text-left text-sm font-medium text-[#92A2A5]">Date</th>
+                  <th className="p-4 text-left text-sm font-medium text-[#92A2A5]">Ticket</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                    <td colSpan={6} className="p-8 text-center text-[#979796]">
                       Loading images...
                     </td>
                   </tr>
                 ) : images.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                    <td colSpan={6} className="p-8 text-center text-[#979796]">
                       No images found
                     </td>
                   </tr>
@@ -357,8 +357,8 @@ export default function ImageManagementPage() {
                   images.map(img => (
                     <tr
                       key={img.id}
-                      className={`border-t border-slate-700 hover:bg-slate-700/30 transition ${
-                        selectedIds.has(img.id) ? 'bg-blue-900/20' : ''
+                      className={`border-t border-[#5D6E73] hover:bg-[#5D6E73]/30 transition ${
+                        selectedIds.has(img.id) ? 'bg-[#546A7A]/20' : ''
                       }`}
                     >
                       <td className="p-4">
@@ -373,21 +373,21 @@ export default function ImageManagementPage() {
                         <img
                           src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5003'}${img.url}`}
                           alt={img.filename}
-                          className="w-16 h-16 object-cover rounded-lg bg-slate-700"
+                          className="w-16 h-16 object-cover rounded-lg bg-[#5D6E73]"
                           onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-image.png'; }}
                         />
                       </td>
                       <td className="p-4">
                         <div className="text-white text-sm font-mono truncate max-w-xs">{img.filename}</div>
                       </td>
-                      <td className="p-4 text-slate-300">{img.sizeFormatted}</td>
-                      <td className="p-4 text-slate-300">
+                      <td className="p-4 text-[#92A2A5]">{img.sizeFormatted}</td>
+                      <td className="p-4 text-[#92A2A5]">
                         {format(new Date(img.createdAt), 'dd MMM yyyy')}
                       </td>
                       <td className="p-4">
                         <a
                           href={`/admin/tickets/${img.ticketId}/list`}
-                          className="text-blue-400 hover:text-blue-300"
+                          className="text-[#6F8A9D] hover:text-[#96AEC2]"
                         >
                           #{img.ticketId}
                         </a>
@@ -401,15 +401,15 @@ export default function ImageManagementPage() {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 p-4 border-t border-slate-700">
+            <div className="flex justify-center gap-2 p-4 border-t border-[#5D6E73]">
               {Array.from({ length: Math.min(pagination.totalPages, 10) }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
                   onClick={() => fetchImages(page)}
                   className={`px-4 py-2 rounded-lg transition ${
                     page === pagination.page
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      ? 'bg-[#6F8A9D] text-white'
+                      : 'bg-[#5D6E73] text-[#92A2A5] hover:bg-[#5D6E73]'
                   }`}
                 >
                   {page}
@@ -423,24 +423,24 @@ export default function ImageManagementPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-slate-700">
+          <div className="bg-[#546A7A] rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-[#5D6E73]">
             <h3 className="text-2xl font-bold text-white mb-4">⚠️ Confirm Delete</h3>
-            <p className="text-slate-300 mb-6">
-              Are you sure you want to delete <strong className="text-red-400">{selectedIds.size}</strong> images?
+            <p className="text-[#92A2A5] mb-6">
+              Are you sure you want to delete <strong className="text-[#E17F70]">{selectedIds.size}</strong> images?
               <br /><br />
-              <span className="text-red-400 font-medium">This action cannot be undone!</span>
+              <span className="text-[#E17F70] font-medium">This action cannot be undone!</span>
             </p>
             <div className="flex gap-4">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-lg font-medium transition"
+                className="flex-1 bg-[#5D6E73] hover:bg-[#5D6E73] text-white py-3 rounded-lg font-medium transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBulkDelete}
                 disabled={deleting}
-                className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white py-3 rounded-lg font-medium transition"
+                className="flex-1 bg-[#9E3B47] hover:bg-[#75242D] disabled:bg-[#75242D] text-white py-3 rounded-lg font-medium transition"
               >
                 {deleting ? 'Deleting...' : '🗑️ Delete'}
               </button>

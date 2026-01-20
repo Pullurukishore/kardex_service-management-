@@ -44,15 +44,15 @@ type ActivityLogItemProps = {
 const getActivityTypeColor = (type: string) => {
   switch (type.toLowerCase()) {
     case 'ticket_work':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
+      return 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]';
     case 'travel':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]';
     case 'break':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
     case 'meeting':
-      return 'bg-purple-100 text-purple-800 border-purple-200';
+      return 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]';
   }
 };
 
@@ -91,22 +91,22 @@ export function ActivityLogItem({ activity, className = '' }: ActivityLogItemPro
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 {getActivityIcon(activity.activityType)}
-                <h4 className="font-medium text-gray-900">{activity.title}</h4>
+                <h4 className="font-medium text-[#546A7A]">{activity.title}</h4>
               </div>
               <Badge className={`text-xs ${getActivityTypeColor(activity.activityType)}`}>
                 {activity.activityType.replace('_', ' ').toUpperCase()}
               </Badge>
               {hasLocation && (
-                <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                <Badge variant="outline" className="text-xs bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2]">
                   📍 Location
                 </Badge>
               )}
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {endTime ? (
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-[#82A094]" />
               ) : (
-                <AlertCircle className="h-4 w-4 text-orange-500" />
+                <AlertCircle className="h-4 w-4 text-[#CE9F6B]" />
               )}
               <span>{formatDistanceToNow(startTime, { addSuffix: true })}</span>
             </div>
@@ -114,7 +114,7 @@ export function ActivityLogItem({ activity, className = '' }: ActivityLogItemPro
 
           {/* Activity description */}
           {activity.description && (
-            <p className="text-sm text-gray-600">{activity.description}</p>
+            <p className="text-sm text-[#5D6E73]">{activity.description}</p>
           )}
 
           {/* Time information */}
@@ -125,13 +125,13 @@ export function ActivityLogItem({ activity, className = '' }: ActivityLogItemPro
             </div>
             {endTime && (
               <div className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-500" />
+                <CheckCircle className="h-3 w-3 text-[#82A094]" />
                 <span>Ended: {endTime.toLocaleTimeString()}</span>
               </div>
             )}
             {activity.duration && (
               <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3 text-blue-500" />
+                <Clock className="h-3 w-3 text-[#6F8A9D]" />
                 <span>Duration: {Math.round(activity.duration)} minutes</span>
               </div>
             )}
@@ -139,16 +139,16 @@ export function ActivityLogItem({ activity, className = '' }: ActivityLogItemPro
 
           {/* Location information */}
           {hasLocation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+            <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-md p-3">
               <div className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-blue-600 mt-0.5" />
+                <MapPin className="h-4 w-4 text-[#546A7A] mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-blue-800 font-medium">
+                  <p className="text-sm text-[#546A7A] font-medium">
                     {activity.address || `${activity.latitude?.toFixed(6)}, ${activity.longitude?.toFixed(6)}`}
                   </p>
                   <button
                     onClick={handleMapClick}
-                    className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1 mt-1"
+                    className="text-xs text-[#546A7A] hover:text-[#546A7A] underline flex items-center gap-1 mt-1"
                   >
                     <ExternalLink className="h-3 w-3" />
                     View on Map
@@ -160,14 +160,14 @@ export function ActivityLogItem({ activity, className = '' }: ActivityLogItemPro
 
           {/* Related ticket information */}
           {activity.ticket && (
-            <div className="bg-gray-50 border rounded-md p-3">
+            <div className="bg-[#AEBFC3]/10 border rounded-md p-3">
               <div className="flex items-center gap-2">
-                <Ticket className="h-4 w-4 text-gray-600" />
+                <Ticket className="h-4 w-4 text-[#5D6E73]" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-[#546A7A]">
                     Related Ticket: #{activity.ticket.id}
                   </p>
-                  <p className="text-sm text-gray-600">{activity.ticket.title}</p>
+                  <p className="text-sm text-[#5D6E73]">{activity.ticket.title}</p>
                   <Badge variant="outline" className="text-xs mt-1">
                     {activity.ticket.status}
                   </Badge>

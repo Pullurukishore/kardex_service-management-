@@ -65,50 +65,50 @@ const ACTION_CONFIG: Record<string, {
   'OFFER_CREATED': {
     label: 'Offer Created',
     icon: Plus,
-    color: 'text-green-600',
-    bgColor: 'bg-green-100',
+    color: 'text-[#4F6A64]',
+    bgColor: 'bg-[#A2B9AF]/20',
     description: 'New offer was created'
   },
   'OFFER_UPDATED': {
     label: 'Offer Updated',
     icon: EditIcon,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
+    color: 'text-[#546A7A]',
+    bgColor: 'bg-[#96AEC2]/20',
     description: 'Offer details were modified'
   },
   'OFFER_STATUS_UPDATED': {
     label: 'Status Changed',
     icon: TrendingUp,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
+    color: 'text-[#546A7A]',
+    bgColor: 'bg-[#6F8A9D]/20',
     description: 'Offer status or stage was changed'
   },
   'OFFER_DELETED': {
     label: 'Offer Deleted',
     icon: Trash2,
-    color: 'text-red-600',
-    bgColor: 'bg-red-100',
+    color: 'text-[#9E3B47]',
+    bgColor: 'bg-[#E17F70]/20',
     description: 'Offer was deleted'
   },
   'OFFER_NOTE_ADDED': {
     label: 'Note Added',
     icon: FileText,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-100',
+    color: 'text-[#976E44]',
+    bgColor: 'bg-[#CE9F6B]/20',
     description: 'A note was added to the offer'
   },
   'USER_LOGIN': {
     label: 'User Login',
     icon: User,
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    color: 'text-[#5D6E73]',
+    bgColor: 'bg-[#AEBFC3]/20',
     description: 'User logged into the system'
   },
   'USER_LOGOUT': {
     label: 'User Logout',
     icon: User,
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    color: 'text-[#5D6E73]',
+    bgColor: 'bg-[#AEBFC3]/20',
     description: 'User logged out of the system'
   }
 }
@@ -116,27 +116,27 @@ const ACTION_CONFIG: Record<string, {
 // Stage colors for visual distinction
 // Note: ORDER_BOOKED kept for backwards compatibility with existing data
 const STAGE_COLORS: Record<string, string> = {
-  'INITIAL': 'bg-blue-600 hover:bg-blue-700',
-  'PROPOSAL_SENT': 'bg-indigo-600 hover:bg-indigo-700',
-  'NEGOTIATION': 'bg-amber-600 hover:bg-amber-700',
-  'FINAL_APPROVAL': 'bg-purple-600 hover:bg-purple-700',
-  'PO_RECEIVED': 'bg-green-600 hover:bg-green-700',
-  'ORDER_BOOKED': 'bg-teal-600 hover:bg-teal-700', // Kept for backwards compatibility
-  'WON': 'bg-emerald-600 hover:bg-emerald-700',
-  'LOST': 'bg-red-600 hover:bg-red-700',
+  'INITIAL': 'bg-[#6F8A9D] hover:bg-[#546A7A]',
+  'PROPOSAL_SENT': 'bg-[#546A7A] hover:bg-[#546A7A]',
+  'NEGOTIATION': 'bg-[#976E44] hover:bg-[#976E44]',
+  'FINAL_APPROVAL': 'bg-[#546A7A] hover:bg-[#546A7A]',
+  'PO_RECEIVED': 'bg-[#4F6A64] hover:bg-[#4F6A64]',
+  'ORDER_BOOKED': 'bg-[#4F6A64] hover:bg-[#4F6A64]', // Kept for backwards compatibility
+  'WON': 'bg-[#4F6A64] hover:bg-[#4F6A64]',
+  'LOST': 'bg-[#9E3B47] hover:bg-[#75242D]',
 }
 
 // Status colors
 const STATUS_COLORS: Record<string, string> = {
-  'DRAFT': 'bg-gray-600 hover:bg-gray-700',
-  'OPEN': 'bg-blue-600 hover:bg-blue-700',
-  'IN_PROGRESS': 'bg-indigo-600 hover:bg-indigo-700',
-  'QUOTED': 'bg-purple-600 hover:bg-purple-700',
-  'NEGOTIATION': 'bg-amber-600 hover:bg-amber-700',
-  'WON': 'bg-green-600 hover:bg-green-700',
-  'LOST': 'bg-red-600 hover:bg-red-700',
-  'ON_HOLD': 'bg-orange-600 hover:bg-orange-700',
-  'CANCELLED': 'bg-gray-600 hover:bg-gray-700',
+  'DRAFT': 'bg-[#5D6E73] hover:bg-[#5D6E73]',
+  'OPEN': 'bg-[#6F8A9D] hover:bg-[#546A7A]',
+  'IN_PROGRESS': 'bg-[#546A7A] hover:bg-[#546A7A]',
+  'QUOTED': 'bg-[#546A7A] hover:bg-[#546A7A]',
+  'NEGOTIATION': 'bg-[#976E44] hover:bg-[#976E44]',
+  'WON': 'bg-[#4F6A64] hover:bg-[#4F6A64]',
+  'LOST': 'bg-[#9E3B47] hover:bg-[#75242D]',
+  'ON_HOLD': 'bg-[#976E44] hover:bg-[#976E44]',
+  'CANCELLED': 'bg-[#5D6E73] hover:bg-[#5D6E73]',
 }
 
 // Field labels and descriptions for better display
@@ -300,8 +300,8 @@ export default function OfferActivityPage() {
     const config = ACTION_CONFIG[activity.action] || {
       label: activity.action.replace(/_/g, ' '),
       icon: Activity,
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100',
+      color: 'text-[#5D6E73]',
+      bgColor: 'bg-[#AEBFC3]/20',
       description: ''
     }
 
@@ -312,7 +312,7 @@ export default function OfferActivityPage() {
     return (
       <div className="group">
         <div 
-          className={`flex items-start gap-4 p-4 rounded-lg border bg-white hover:shadow-md hover:border-gray-400 transition-all ${
+          className={`flex items-start gap-4 p-4 rounded-lg border bg-white hover:shadow-md hover:border-[#979796] transition-all ${
             hasDetails ? 'cursor-pointer' : ''
           }`}
           onClick={() => hasDetails && toggleActivity(activity.id)}
@@ -327,25 +327,25 @@ export default function OfferActivityPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900">{config.label}</h3>
+                  <h3 className="font-semibold text-[#546A7A]">{config.label}</h3>
                   <Badge variant="outline" className="text-xs font-mono">
                     {activity.action}
                   </Badge>
                 </div>
                 
                 {/* Activity Summary */}
-                <p className="text-sm text-gray-700 mb-2">{summary}</p>
+                <p className="text-sm text-[#5D6E73] mb-2">{summary}</p>
 
                 {/* Show Stage Changes Inline (Collapsed View) */}
                 {activity.action === 'OFFER_UPDATED' && activity.details?.changes?.stage && (
                   <div className="mb-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-600 font-medium">Stage:</span>
+                      <span className="text-[#5D6E73] font-medium">Stage:</span>
                       <Badge variant="outline" className="text-xs">
                         {activity.details.changes.stage.from}
                       </Badge>
-                      <ArrowLeft className="h-3 w-3 text-gray-400 rotate-180" />
-                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.changes.stage.to] || 'bg-purple-600'}`}>
+                      <ArrowLeft className="h-3 w-3 text-[#979796] rotate-180" />
+                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.changes.stage.to] || 'bg-[#546A7A]'}`}>
                         {activity.details.changes.stage.to}
                       </Badge>
                     </div>
@@ -356,12 +356,12 @@ export default function OfferActivityPage() {
                 {activity.action === 'OFFER_STATUS_UPDATED' && activity.details?.fromStage && activity.details?.toStage && (
                   <div className="mb-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-600 font-medium">Stage:</span>
+                      <span className="text-[#5D6E73] font-medium">Stage:</span>
                       <Badge variant="outline" className="text-xs">
                         {activity.details.fromStage}
                       </Badge>
-                      <ArrowLeft className="h-3 w-3 text-gray-400 rotate-180" />
-                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.toStage] || 'bg-purple-600'}`}>
+                      <ArrowLeft className="h-3 w-3 text-[#979796] rotate-180" />
+                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.toStage] || 'bg-[#546A7A]'}`}>
                         {activity.details.toStage}
                       </Badge>
                     </div>
@@ -372,8 +372,8 @@ export default function OfferActivityPage() {
                 {activity.action === 'OFFER_CREATED' && activity.details?.stage && (
                   <div className="mb-3">
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-600 font-medium">Initial Stage:</span>
-                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.stage] || 'bg-blue-600'}`}>
+                      <span className="text-[#5D6E73] font-medium">Initial Stage:</span>
+                      <Badge variant="default" className={`text-xs ${STAGE_COLORS[activity.details.stage] || 'bg-[#6F8A9D]'}`}>
                         {activity.details.stage}
                       </Badge>
                     </div>
@@ -383,18 +383,18 @@ export default function OfferActivityPage() {
                 {activity.performedBy && (
                   <div className="flex items-center gap-2 mb-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center text-white font-semibold text-xs">
                         {(activity.performedBy.name || activity.performedBy.email).charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{activity.performedBy.name || activity.performedBy.email}</p>
-                        <p className="text-xs text-gray-500">{activity.performedBy.email}</p>
+                        <p className="font-medium text-[#546A7A]">{activity.performedBy.name || activity.performedBy.email}</p>
+                        <p className="text-xs text-[#AEBFC3]0">{activity.performedBy.email}</p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                <div className="flex items-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-4 text-xs text-[#AEBFC3]0">
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {format(new Date(activity.createdAt), 'dd MMM yyyy, hh:mm a')}
@@ -422,12 +422,12 @@ export default function OfferActivityPage() {
                     {activity.details.fromStatus && activity.details.toStatus && (
                       <div className="flex items-center gap-3">
                         <div className="text-sm">
-                          <span className="text-gray-600 font-medium">Status:</span>
+                          <span className="text-[#5D6E73] font-medium">Status:</span>
                           <Badge variant="outline" className="ml-2">
                             {activity.details.fromStatus}
                           </Badge>
-                          <span className="mx-2 text-gray-400">→</span>
-                          <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+                          <span className="mx-2 text-[#979796]">→</span>
+                          <Badge variant="default" className="bg-[#4F6A64] hover:bg-[#4F6A64]">
                             {activity.details.toStatus}
                           </Badge>
                         </div>
@@ -436,21 +436,21 @@ export default function OfferActivityPage() {
                     {activity.details.fromStage && activity.details.toStage && (
                       <div className="flex items-center gap-3">
                         <div className="text-sm">
-                          <span className="text-gray-600 font-medium">Stage:</span>
+                          <span className="text-[#5D6E73] font-medium">Stage:</span>
                           <Badge variant="outline" className="ml-2">
                             {activity.details.fromStage}
                           </Badge>
-                          <span className="mx-2 text-gray-400">→</span>
-                          <Badge variant="default" className="bg-blue-600 hover:bg-blue-700">
+                          <span className="mx-2 text-[#979796]">→</span>
+                          <Badge variant="default" className="bg-[#6F8A9D] hover:bg-[#546A7A]">
                             {activity.details.toStage}
                           </Badge>
                         </div>
                       </div>
                     )}
                     {activity.details.notes && (
-                      <div className="mt-2 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm">
-                        <p className="text-gray-600 font-medium mb-1">Notes:</p>
-                        <p className="text-gray-800">{activity.details.notes}</p>
+                      <div className="mt-2 p-3 bg-[#CE9F6B]/10 rounded-lg border border-[#CE9F6B]/40 text-sm">
+                        <p className="text-[#5D6E73] font-medium mb-1">Notes:</p>
+                        <p className="text-[#546A7A]">{activity.details.notes}</p>
                       </div>
                     )}
                   </div>
@@ -460,7 +460,7 @@ export default function OfferActivityPage() {
                 {activity.action === 'OFFER_UPDATED' && activity.details.changes && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <p className="text-sm font-medium text-[#5D6E73] flex items-center gap-2">
                         <EditIcon className="h-4 w-4" />
                         Changes Made ({Object.keys(activity.details.changes).length})
                       </p>
@@ -473,37 +473,37 @@ export default function OfferActivityPage() {
                           const fieldConfig = FIELD_CONFIG[field] || { label: field, description: '', icon: FileText }
                           const FieldIcon = fieldConfig.icon
                           return (
-                            <div key={field} className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all">
+                            <div key={field} className="bg-gradient-to-r from-[#AEBFC3]/10 to-white p-4 rounded-lg border border-[#92A2A5] hover:shadow-md transition-all">
                               <div className="flex items-start gap-3">
                                 <div className="mt-1">
-                                  <FieldIcon className="h-4 w-4 text-gray-400" />
+                                  <FieldIcon className="h-4 w-4 text-[#979796]" />
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <p className="font-semibold text-gray-900">
+                                    <p className="font-semibold text-[#546A7A]">
                                       {fieldConfig.label}
                                     </p>
                                     {fieldConfig.description && (
-                                      <span className="text-xs text-gray-500">• {fieldConfig.description}</span>
+                                      <span className="text-xs text-[#AEBFC3]0">• {fieldConfig.description}</span>
                                     )}
                                   </div>
                                   <div className="mt-2 space-y-2">
                                     <div className="flex items-start gap-3">
                                       <div className="flex-1">
-                                        <p className="text-xs text-gray-500 mb-1">Previous Value</p>
-                                        <div className="px-3 py-2 bg-red-50 rounded border border-red-200 text-sm">
-                                          <span className="text-red-700 line-through">
+                                        <p className="text-xs text-[#AEBFC3]0 mb-1">Previous Value</p>
+                                        <div className="px-3 py-2 bg-[#E17F70]/10 rounded border border-[#E17F70] text-sm">
+                                          <span className="text-[#75242D] line-through">
                                             {formatValue(change.from)}
                                           </span>
                                         </div>
                                       </div>
                                       <div className="flex items-center pt-6">
-                                        <ArrowLeft className="h-4 w-4 text-gray-400 rotate-180" />
+                                        <ArrowLeft className="h-4 w-4 text-[#979796] rotate-180" />
                                       </div>
                                       <div className="flex-1">
-                                        <p className="text-xs text-gray-500 mb-1">New Value</p>
-                                        <div className="px-3 py-2 bg-green-50 rounded border border-green-200 text-sm">
-                                          <span className="text-green-700 font-medium">
+                                        <p className="text-xs text-[#AEBFC3]0 mb-1">New Value</p>
+                                        <div className="px-3 py-2 bg-[#A2B9AF]/10 rounded border border-[#A2B9AF] text-sm">
+                                          <span className="text-[#4F6A64] font-medium">
                                             {formatValue(change.to)}
                                           </span>
                                         </div>
@@ -522,57 +522,57 @@ export default function OfferActivityPage() {
                 {/* Offer Created Details */}
                 {activity.action === 'OFFER_CREATED' && (
                   <div className="space-y-4">
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
-                      <p className="text-sm font-semibold text-green-900 mb-2 flex items-center gap-2">
+                    <div className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 p-4 rounded-lg border border-[#A2B9AF]">
+                      <p className="text-sm font-semibold text-[#4F6A64] mb-2 flex items-center gap-2">
                         <Plus className="h-4 w-4" />
                         Offer Creation Details
                       </p>
-                      <p className="text-xs text-green-700">Initial values set when the offer was created</p>
+                      <p className="text-xs text-[#4F6A64]">Initial values set when the offer was created</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       {activity.details.title && (
                         <div className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
                           <div className="flex items-center gap-2 mb-2">
-                            <FileText className="h-4 w-4 text-blue-600" />
-                            <p className="text-gray-600 font-medium">Title</p>
+                            <FileText className="h-4 w-4 text-[#546A7A]" />
+                            <p className="text-[#5D6E73] font-medium">Title</p>
                           </div>
-                          <p className="font-semibold text-gray-900">{activity.details.title}</p>
+                          <p className="font-semibold text-[#546A7A]">{activity.details.title}</p>
                         </div>
                       )}
                       {activity.details.productType && (
                         <div className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
                           <div className="flex items-center gap-2 mb-2">
-                            <Package className="h-4 w-4 text-purple-600" />
-                            <p className="text-gray-600 font-medium">Product Type</p>
+                            <Package className="h-4 w-4 text-[#546A7A]" />
+                            <p className="text-[#5D6E73] font-medium">Product Type</p>
                           </div>
-                          <Badge variant="default" className="bg-purple-600">{activity.details.productType}</Badge>
+                          <Badge variant="default" className="bg-[#546A7A]">{activity.details.productType}</Badge>
                         </div>
                       )}
                       {activity.details.company && (
                         <div className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
                           <div className="flex items-center gap-2 mb-2">
-                            <User className="h-4 w-4 text-indigo-600" />
-                            <p className="text-gray-600 font-medium">Company</p>
+                            <User className="h-4 w-4 text-[#546A7A]" />
+                            <p className="text-[#5D6E73] font-medium">Company</p>
                           </div>
-                          <p className="font-semibold text-gray-900">{activity.details.company}</p>
+                          <p className="font-semibold text-[#546A7A]">{activity.details.company}</p>
                         </div>
                       )}
                       {activity.details.offerValue && (
                         <div className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
                           <div className="flex items-center gap-2 mb-2">
-                            <TrendingUp className="h-4 w-4 text-green-600" />
-                            <p className="text-gray-600 font-medium">Offer Value</p>
+                            <TrendingUp className="h-4 w-4 text-[#4F6A64]" />
+                            <p className="text-[#5D6E73] font-medium">Offer Value</p>
                           </div>
-                          <p className="font-semibold text-gray-900 text-lg">₹{formatValue(activity.details.offerValue)}</p>
+                          <p className="font-semibold text-[#546A7A] text-lg">₹{formatValue(activity.details.offerValue)}</p>
                         </div>
                       )}
                       {activity.details.stage && (
                         <div className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow">
                           <div className="flex items-center gap-2 mb-2">
-                            <TrendingUp className="h-4 w-4 text-amber-600" />
-                            <p className="text-gray-600 font-medium">Initial Stage</p>
+                            <TrendingUp className="h-4 w-4 text-[#976E44]" />
+                            <p className="text-[#5D6E73] font-medium">Initial Stage</p>
                           </div>
-                          <Badge variant="default" className={`text-sm ${STAGE_COLORS[activity.details.stage] || 'bg-purple-600'}`}>{activity.details.stage}</Badge>
+                          <Badge variant="default" className={`text-sm ${STAGE_COLORS[activity.details.stage] || 'bg-[#546A7A]'}`}>{activity.details.stage}</Badge>
                         </div>
                       )}
                     </div>
@@ -581,19 +581,19 @@ export default function OfferActivityPage() {
 
                 {/* Note Content */}
                 {activity.action === 'OFFER_NOTE_ADDED' && activity.details.content && (
-                  <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 text-sm">
-                    <p className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <div className="p-4 bg-[#CE9F6B]/10 rounded-lg border border-[#CE9F6B]/40 text-sm">
+                    <p className="font-medium text-[#5D6E73] mb-2 flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       Note Content:
                     </p>
-                    <p className="text-gray-800 leading-relaxed">{activity.details.content}</p>
+                    <p className="text-[#546A7A] leading-relaxed">{activity.details.content}</p>
                   </div>
                 )}
 
                 {/* Generic Details Display */}
                 {!['OFFER_STATUS_UPDATED', 'OFFER_UPDATED', 'OFFER_CREATED', 'OFFER_NOTE_ADDED'].includes(activity.action) && (
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <pre className="text-xs text-gray-700 overflow-x-auto">
+                  <div className="p-3 bg-[#AEBFC3]/10 rounded-lg">
+                    <pre className="text-xs text-[#5D6E73] overflow-x-auto">
                       {JSON.stringify(activity.details, null, 2)}
                     </pre>
                   </div>
@@ -610,15 +610,15 @@ export default function OfferActivityPage() {
     return (
       <div className="container mx-auto py-8">
         <div className="flex flex-col items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading activity timeline...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#546A7A] mb-4" />
+          <p className="text-[#5D6E73]">Loading activity timeline...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50">
       <div className="container mx-auto py-8 px-4">
         {/* Premium Header */}
         <div className="mb-8">
@@ -632,7 +632,7 @@ export default function OfferActivityPage() {
             Back to Offer
           </Button>
 
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-6 shadow-xl">
+          <div className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -642,7 +642,7 @@ export default function OfferActivityPage() {
                   <h1 className="text-2xl font-bold text-white flex items-center gap-3">
                     Activity Timeline
                   </h1>
-                  <p className="text-blue-100 mt-1">
+                  <p className="text-[#96AEC2] mt-1">
                     Complete history for <span className="font-mono font-semibold text-white bg-white/20 px-2 py-0.5 rounded">{offerReferenceNumber}</span>
                   </p>
                 </div>
@@ -663,12 +663,12 @@ export default function OfferActivityPage() {
 
         {/* Stats Cards - Premium Design */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-blue-500 to-blue-600 text-white overflow-hidden">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] text-white overflow-hidden">
             <CardContent className="pt-6 relative">
               <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <p className="text-sm text-blue-100 mb-1">Total Activities</p>
+                  <p className="text-sm text-[#96AEC2] mb-1">Total Activities</p>
                   <p className="text-3xl font-bold">{pagination.total}</p>
                 </div>
                 <div className="p-3 bg-white/20 rounded-xl">
@@ -678,12 +678,12 @@ export default function OfferActivityPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-[#82A094] to-[#82A094] text-white overflow-hidden">
             <CardContent className="pt-6 relative">
               <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <p className="text-sm text-green-100 mb-1">Updates</p>
+                  <p className="text-sm text-[#A2B9AF] mb-1">Updates</p>
                   <p className="text-3xl font-bold">
                     {activities.filter(a => a.action === 'OFFER_UPDATED').length}
                   </p>
@@ -695,12 +695,12 @@ export default function OfferActivityPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-purple-500 to-indigo-600 text-white overflow-hidden">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] text-white overflow-hidden">
             <CardContent className="pt-6 relative">
               <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <p className="text-sm text-purple-100 mb-1">Stage Changes</p>
+                  <p className="text-sm text-[#6F8A9D] mb-1">Stage Changes</p>
                   <p className="text-3xl font-bold">
                     {activities.filter(a => 
                       (a.action === 'OFFER_UPDATED' && a.details?.changes?.stage) || 
@@ -715,7 +715,7 @@ export default function OfferActivityPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-amber-500 to-orange-600 text-white overflow-hidden">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all bg-gradient-to-br from-[#CE9F6B] to-[#976E44] text-white overflow-hidden">
             <CardContent className="pt-6 relative">
               <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
               <div className="flex items-center justify-between relative z-10">
@@ -735,9 +735,9 @@ export default function OfferActivityPage() {
 
       {/* Activity Timeline */}
       <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10">
           <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
+            <Clock className="h-5 w-5 text-[#546A7A]" />
             Activity Timeline
           </CardTitle>
           <CardDescription>
@@ -748,11 +748,11 @@ export default function OfferActivityPage() {
         <CardContent className="pt-6">
           {activities.length === 0 ? (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                <Activity className="h-8 w-8 text-gray-400" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#AEBFC3]/20 rounded-full mb-4">
+                <Activity className="h-8 w-8 text-[#979796]" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No activities yet</h3>
-              <p className="text-gray-600 max-w-md mx-auto">
+              <h3 className="text-lg font-medium text-[#546A7A] mb-2">No activities yet</h3>
+              <p className="text-[#5D6E73] max-w-md mx-auto">
                 Activity history will appear here as changes are made to this offer. All updates, status changes, and modifications will be tracked.
               </p>
             </div>
@@ -762,7 +762,7 @@ export default function OfferActivityPage() {
                 <div key={activity.id} className="relative">
                   {/* Timeline connector */}
                   {index !== activities.length - 1 && (
-                    <div className="absolute left-[26px] top-[60px] w-0.5 h-full bg-gray-200 -z-10" />
+                    <div className="absolute left-[26px] top-[60px] w-0.5 h-full bg-[#92A2A5]/30 -z-10" />
                   )}
                   {renderActivityDetails(activity)}
                 </div>
@@ -773,7 +773,7 @@ export default function OfferActivityPage() {
           {/* Pagination */}
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-8 pt-6 border-t">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#5D6E73]">
                 Page <span className="font-semibold">{pagination.page}</span> of <span className="font-semibold">{pagination.pages}</span>
               </p>
               <div className="flex gap-2">

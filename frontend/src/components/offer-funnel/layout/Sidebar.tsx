@@ -52,72 +52,72 @@ const navigation: NavItem[] = [
     href: "/admin/dashboard", 
     icon: Home, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-blue-600",
-    iconBgColor: "bg-blue-50",
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10",
   },
   { 
     title: "Offers", 
     href: "/admin/offers", 
     icon: Rocket, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-purple-600",
-    iconBgColor: "bg-purple-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10"
   },
   { 
     title: "Customers", 
     href: "/admin/customers", 
     icon: Building2, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-emerald-600",
-    iconBgColor: "bg-emerald-50"
+    iconColor: "text-[#4F6A64]",
+    iconBgColor: "bg-[#82A094]/10"
   },
   { 
     title: "Spare Parts", 
     href: "/admin/spare-parts", 
     icon: Package, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-orange-600",
-    iconBgColor: "bg-orange-50"
+    iconColor: "text-[#976E44]",
+    iconBgColor: "bg-[#CE9F6B]/10"
   },
   { 
     title: "Targets", 
     href: "/admin/targets", 
     icon: Target, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-amber-600",
-    iconBgColor: "bg-amber-50"
+    iconColor: "text-[#976E44]",
+    iconBgColor: "bg-[#CE9F6B]/10"
   },
     { 
     title: "Reports", 
     href: "/admin/reports", 
     icon: BarChart2, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-violet-600",
-    iconBgColor: "bg-violet-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10"
   },
   { 
     title: "Zones", 
     href: "/admin/zones", 
     icon: MapPin, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-cyan-600",
-    iconBgColor: "bg-cyan-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
   },
   { 
     title: "Users", 
     href: "/admin/users", 
     icon: Users, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-indigo-600",
-    iconBgColor: "bg-indigo-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#546A7A]/10"
   },
   { 
     title: "Activity", 
     href: "/admin/activity", 
     icon: Activity, 
     roles: [UserRole.ADMIN],
-    iconColor: "text-pink-600",
-    iconBgColor: "bg-pink-50"
+    iconColor: "text-[#9E3B47]",
+    iconBgColor: "bg-[#EEC1BF]/10"
   },
 
   // Zone Manager
@@ -126,48 +126,48 @@ const navigation: NavItem[] = [
     href: "/zone-manager/dashboard", 
     icon: Home, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-blue-600",
-    iconBgColor: "bg-blue-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
   },
   { 
     title: "Offers", 
     href: "/zone-manager/offers", 
     icon: Rocket, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-purple-600",
-    iconBgColor: "bg-purple-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10"
   },
   { 
     title: "Customers", 
     href: "/zone-manager/customers", 
     icon: Building2, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-emerald-600",
-    iconBgColor: "bg-emerald-50"
+    iconColor: "text-[#4F6A64]",
+    iconBgColor: "bg-[#82A094]/10"
   },
   { 
     title: "Spare Parts", 
     href: "/zone-manager/spare-parts", 
     icon: Package, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-orange-600",
-    iconBgColor: "bg-orange-50"
+    iconColor: "text-[#976E44]",
+    iconBgColor: "bg-[#CE9F6B]/10"
   },
   { 
     title: "Reports", 
     href: "/zone-manager/reports", 
     icon: BarChart2, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-violet-600",
-    iconBgColor: "bg-violet-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10"
   },
   { 
     title: "Activity", 
     href: "/zone-manager/activity", 
     icon: Activity, 
     roles: [UserRole.ZONE_MANAGER],
-    iconColor: "text-pink-600",
-    iconBgColor: "bg-pink-50"
+    iconColor: "text-[#9E3B47]",
+    iconBgColor: "bg-[#EEC1BF]/10"
   },
 
   // Zone User
@@ -176,32 +176,32 @@ const navigation: NavItem[] = [
     href: "/zone-user/dashboard", 
     icon: Home, 
     roles: [UserRole.ZONE_USER],
-    iconColor: "text-blue-600",
-    iconBgColor: "bg-blue-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
   },
   { 
     title: "Offers", 
     href: "/zone-user/offers", 
     icon: Rocket, 
     roles: [UserRole.ZONE_USER],
-    iconColor: "text-purple-600",
-    iconBgColor: "bg-purple-50"
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10"
   },
   { 
     title: "Customers", 
     href: "/zone-user/customers", 
     icon: Building2, 
     roles: [UserRole.ZONE_USER],
-    iconColor: "text-emerald-600",
-    iconBgColor: "bg-emerald-50"
+    iconColor: "text-[#4F6A64]",
+    iconBgColor: "bg-[#82A094]/10"
   },
   { 
     title: "Spare Parts", 
     href: "/zone-user/spare-parts", 
     icon: Package, 
     roles: [UserRole.ZONE_USER],
-    iconColor: "text-orange-600",
-    iconBgColor: "bg-orange-50"
+    iconColor: "text-[#976E44]",
+    iconBgColor: "bg-[#CE9F6B]/10"
   },
 ];
 
@@ -378,25 +378,25 @@ export function Sidebar({
           aria-label={item.title}
           ref={isActive ? activeItemRef : undefined}
           className={cn(
-            "group relative flex items-center w-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60",
+            "group relative flex items-center w-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#96AEC2]/60",
             isMobile ? "px-3 py-3 mx-2 my-1 rounded-2xl" : collapsed ? "px-2 py-3 mx-2 my-1 rounded-xl justify-center" : "px-3 py-2.5 mx-2 my-0.5 rounded-xl",
             isActive
-              ? "bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/50 ring-1 ring-blue-200/60"
-              : "text-slate-700 hover:bg-slate-50",
+              ? "bg-gradient-to-r from-[#96AEC2]/10 via-[#6F8A9D]/10 to-[#6F8A9D]/10 border border-[#96AEC2]/50 ring-1 ring-[#96AEC2]/50/60"
+              : "text-[#5D6E73] hover:bg-[#AEBFC3]/10",
           )}
         >
           {isHovered && !isActive && (
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/8 via-indigo-500/8 to-purple-500/8" />
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#6F8A9D]/8 via-[#6F8A9D]/8 to-[#6F8A9D]/8" />
           )}
           {isActive && (
-            <div className="absolute left-0 top-1/2 h-6 w-1.5 -translate-y-1/2 rounded-r-full bg-blue-600" />
+            <div className="absolute left-0 top-1/2 h-6 w-1.5 -translate-y-1/2 rounded-r-full bg-[#6F8A9D]" />
           )}
           {/* Icon Container */}
           <div className={cn(
             "relative flex items-center justify-center rounded-lg transition-all duration-200",
             isMobile ? "h-10 w-10" : collapsed ? "h-9 w-9" : "h-9 w-9",
             isActive 
-              ? "bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 shadow-md" 
+              ? "bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] shadow-md" 
               : cn(item.iconBgColor, "group-hover:scale-110")
           )}>
             <Icon
@@ -409,7 +409,7 @@ export function Sidebar({
               )}
             />
             {collapsed && !isMobile && isActive && (
-              <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-blue-600" />
+              <span className="absolute -bottom-1 h-1.5 w-1.5 rounded-full bg-[#6F8A9D]" />
             )}
           </div>
           
@@ -419,7 +419,7 @@ export function Sidebar({
               <span className={cn(
                 "font-semibold truncate",
                 isMobile ? "text-sm" : "text-sm",
-                isActive ? "text-slate-900" : "text-slate-700"
+                isActive ? "text-[#546A7A]" : "text-[#5D6E73]"
               )}>
                 {item.title}
               </span>
@@ -430,8 +430,8 @@ export function Sidebar({
                   className={cn(
                     "ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold",
                     isActive 
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-slate-100 text-slate-700"
+                      ? "bg-[#96AEC2]/20 text-[#546A7A]"
+                      : "bg-[#AEBFC3]/20 text-[#5D6E73]"
                   )}
                 >
                   {item.badge}
@@ -448,7 +448,7 @@ export function Sidebar({
               exit={{ opacity: 0, x: -10 }}
               className="absolute left-full ml-3 z-50 pointer-events-none"
             >
-              <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
+              <div className="bg-[#546A7A] text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
                 {item.title}
                 <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900" />
               </div>
@@ -470,7 +470,7 @@ export function Sidebar({
       animate={{ x: 0 }}
       suppressHydrationWarning
       className={cn(
-        "fixed left-0 top-0 z-[60] flex h-screen flex-col bg-gradient-to-br from-white via-slate-50/80 to-blue-50/30 border-r border-slate-200/80 shadow-xl transition-all duration-300 ease-out",
+        "fixed left-0 top-0 z-[60] flex h-screen flex-col bg-gradient-to-br from-white via-slate-50/80 to-[#96AEC2]/10/30 border-r border-[#92A2A5]/80 shadow-xl transition-all duration-300 ease-out",
         // Mobile-first responsive design
         isMobile 
           ? "w-80" // Wider on mobile for better touch targets
@@ -481,11 +481,11 @@ export function Sidebar({
       aria-label="Primary"
     >
       {/* Clean accent elements */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-60"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.02] via-transparent to-transparent pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] opacity-60"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#6F8A9D]/[0.02] via-transparent to-transparent pointer-events-none"></div>
       {/* Modern Header */}
       <div className={cn(
-        "flex items-center justify-between border-b border-slate-200/50 bg-white/90 relative z-10 shadow-sm",
+        "flex items-center justify-between border-b border-[#92A2A5]/50 bg-white/90 relative z-10 shadow-sm",
         // Mobile-optimized header height and padding
         isMobile ? "h-16 px-6" : "h-20 px-4"
       )}>
@@ -541,9 +541,9 @@ export function Sidebar({
           onClick={() => isMobile ? onClose?.() : setCollapsed?.(!collapsed)}
         >
           {isMobile ? (
-            <X className="h-5 w-5 text-slate-600" />
+            <X className="h-5 w-5 text-[#5D6E73]" />
           ) : (
-            <ChevronLeft className="h-5 w-5 text-slate-600" />
+            <ChevronLeft className="h-5 w-5 text-[#5D6E73]" />
           )}
         </motion.button>
         
@@ -551,10 +551,10 @@ export function Sidebar({
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-slate-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
             onClick={() => setCollapsed?.(!collapsed)}
           >
-            <ChevronLeft className="h-3 w-3 text-slate-600" />
+            <ChevronLeft className="h-3 w-3 text-[#5D6E73]" />
           </motion.button>
         )}
         
@@ -562,10 +562,10 @@ export function Sidebar({
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-slate-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
             onClick={() => setCollapsed?.(!collapsed)}
           >
-            <ChevronRight className="h-3 w-3 text-slate-600" />
+            <ChevronRight className="h-3 w-3 text-[#5D6E73]" />
           </motion.button>
         )}
       </div>
@@ -592,25 +592,25 @@ export function Sidebar({
 
       {/* Logout section */}
       <div className={cn(
-        "border-t border-slate-200/60 bg-white/90 relative z-10 shadow-sm",
+        "border-t border-[#92A2A5]/60 bg-white/90 relative z-10 shadow-sm",
         isMobile ? "px-6 py-4" : collapsed ? "px-2 py-3" : "px-4 py-3"
       )}>
         <button
           onClick={() => logout?.()}
           aria-label="Logout"
           className={cn(
-            "group w-full flex items-center rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-transparent",
-            "hover:bg-red-50 hover:shadow-md text-slate-700 hover:text-red-700",
+            "group w-full flex items-center rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#E17F70]/50 focus:ring-offset-2 focus:ring-offset-transparent",
+            "hover:bg-[#E17F70]/10 hover:shadow-md text-[#5D6E73] hover:text-[#75242D]",
             isMobile ? "px-3 py-3 text-base" : collapsed ? "px-2.5 py-2.5 text-sm justify-center" : "px-2.5 py-2.5 text-sm"
           )}
         >
           {/* Icon with colored background */}
           <div className={cn(
-            "flex-shrink-0 rounded-lg transition-all duration-200 flex items-center justify-center bg-red-50 group-hover:bg-red-100 group-hover:shadow-md group-hover:scale-105",
+            "flex-shrink-0 rounded-lg transition-all duration-200 flex items-center justify-center bg-[#E17F70]/10 group-hover:bg-[#E17F70]/20 group-hover:shadow-md group-hover:scale-105",
             isMobile ? "h-10 w-10" : "h-9 w-9"
           )}>
             <LogOut className={cn(
-              "transition-all duration-200 text-red-600 group-hover:scale-110",
+              "transition-all duration-200 text-[#9E3B47] group-hover:scale-110",
               isMobile ? "h-5 w-5" : "h-4 w-4"
             )} />
           </div>
@@ -624,7 +624,7 @@ export function Sidebar({
           {collapsed && !isMobile && (
             <span
               className={cn(
-                "pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-900/95 px-2 py-1 text-xs font-medium text-white shadow-lg",
+                "pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-[#546A7A]/95 px-2 py-1 text-xs font-medium text-white shadow-lg",
                 "opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-150"
               )}
               role="tooltip"

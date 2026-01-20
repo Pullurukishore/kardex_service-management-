@@ -15,8 +15,8 @@ export function ServiceZoneFilters({ searchParams }: ServiceZoneFiltersProps) {
 
   return (
     <Card className="shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
-        <CardTitle className="text-gray-800">Search & Filter</CardTitle>
+      <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 rounded-t-lg">
+        <CardTitle className="text-[#546A7A]">Search & Filter</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <form method="GET" className="flex flex-col md:flex-row gap-4">
@@ -25,13 +25,13 @@ export function ServiceZoneFilters({ searchParams }: ServiceZoneFiltersProps) {
           
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
               <Input
                 name="search"
                 type="search"
                 placeholder="Search zones by name or description..."
                 defaultValue={currentSearch}
-                className="pl-10 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="pl-10 focus:ring-2 focus:ring-[#82A094] focus:border-[#82A094]"
               />
             </div>
           </div>

@@ -40,7 +40,7 @@ const formatDuration = (hours: number, minutes: number): string => {
 const ChangeIndicator = ({ change, isPositive }: { change: number; isPositive: boolean }) => {
   if (change === 0) return null;
   
-  const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
+  const colorClass = isPositive ? 'text-[#4F6A64]' : 'text-[#9E3B47]';
   const arrow = isPositive ? '↓' : '↑';
   
   return (
@@ -59,7 +59,7 @@ export default function ZoneFieldServiceAnalytics({
     <div className="mb-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-[#546A7A] to-cyan-600 rounded-lg">
             <Gauge className="w-6 h-6 text-white" />
           </div>
           Field Service Analytics
@@ -68,21 +68,21 @@ export default function ZoneFieldServiceAnalytics({
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Response Time Card */}
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
+              <div className="p-3 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] rounded-xl">
                 <Clock className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-blue-700">
+                <p className="text-2xl font-bold text-[#546A7A]">
                   {formatDuration(stats.avgResponseTime.hours, stats.avgResponseTime.minutes)}
                 </p>
-                <p className="text-sm text-blue-600">Avg Response Time</p>
+                <p className="text-sm text-[#546A7A]">Avg Response Time</p>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-blue-700">Time to first response</p>
+              <p className="text-xs text-[#546A7A]">Time to first response</p>
               <ChangeIndicator 
                 change={stats.avgResponseTime.change} 
                 isPositive={stats.avgResponseTime.isPositive} 
@@ -92,39 +92,39 @@ export default function ZoneFieldServiceAnalytics({
         </Card>
 
         {/* Travel Time Card */}
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl">
+              <div className="p-3 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] rounded-xl">
                 <MapPin className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-purple-700">
+                <p className="text-2xl font-bold text-[#546A7A]">
                   {formatDuration(Math.floor(metrics.avgTravelTime / 60), metrics.avgTravelTime % 60)}
                 </p>
-                <p className="text-sm text-purple-600">Avg Travel Time</p>
+                <p className="text-sm text-[#546A7A]">Avg Travel Time</p>
               </div>
             </div>
-            <p className="text-xs text-purple-700">Time to reach customer sites</p>
+            <p className="text-xs text-[#546A7A]">Time to reach customer sites</p>
           </CardContent>
         </Card>
 
         {/* Resolution Time Card */}
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl">
+              <div className="p-3 bg-gradient-to-r from-[#82A094] to-[#4F6A64] rounded-xl">
                 <CheckCircle className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-green-700">
+                <p className="text-2xl font-bold text-[#4F6A64]">
                   {formatDuration(stats.avgResolutionTime.days * 24 + stats.avgResolutionTime.hours, stats.avgResolutionTime.minutes)}
                 </p>
-                <p className="text-sm text-green-600">Avg Resolution Time</p>
+                <p className="text-sm text-[#4F6A64]">Avg Resolution Time</p>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-green-700">Time to complete tickets</p>
+              <p className="text-xs text-[#4F6A64]">Time to complete tickets</p>
               <ChangeIndicator 
                 change={stats.avgResolutionTime.change} 
                 isPositive={stats.avgResolutionTime.isPositive} 
@@ -141,15 +141,15 @@ export default function ZoneFieldServiceAnalytics({
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-cyan-600" />
-                <span className="text-sm font-medium text-gray-700">Technician Efficiency</span>
+                <TrendingUp className="h-5 w-5 text-[#546A7A]" />
+                <span className="text-sm font-medium text-[#5D6E73]">Technician Efficiency</span>
               </div>
-              <span className="text-xl font-bold text-cyan-600">
+              <span className="text-xl font-bold text-[#546A7A]">
                 {metrics.technicianEfficiency.toFixed(1)}%
               </span>
             </div>
             <Progress value={metrics.technicianEfficiency} className="h-3 mb-2" />
-            <p className="text-xs text-gray-600">Overall performance</p>
+            <p className="text-xs text-[#5D6E73]">Overall performance</p>
           </CardContent>
         </Card>
       </div>

@@ -305,7 +305,7 @@ const ItemRow = ({ item, index, isEditMode, onUpdate, onRemove, canRemove }: Ite
           onClick={() => onRemove(item.id)}
           size="sm"
           variant="ghost"
-          className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+          className="h-6 w-6 p-0 text-[#E17F70] hover:text-[#75242D] hover:bg-[#E17F70]/10"
           disabled={!canRemove}
           aria-label={`Remove item ${index + 1}`}
           title={canRemove ? 'Remove item' : 'Cannot remove last item'}
@@ -545,8 +545,8 @@ export default function QuoteGenerationPage() {
     return (
       <div className="container mx-auto py-8">
         <div className="flex flex-col items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading quotation...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#546A7A] mb-4" />
+          <p className="text-[#5D6E73]">Loading quotation...</p>
         </div>
       </div>
     )
@@ -556,7 +556,7 @@ export default function QuoteGenerationPage() {
     return (
       <div className="container mx-auto py-8">
         <div className="text-center">
-          <p className="text-gray-600">Offer not found</p>
+          <p className="text-[#5D6E73]">Offer not found</p>
           <Button onClick={() => router.back()} className="mt-4">
             Go Back
           </Button>
@@ -620,7 +620,7 @@ export default function QuoteGenerationPage() {
             <div className="page-content">
               {/* Title - Centered and Underlined */}
               <div className="page-title">
-                <h1><span className="bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 rounded-lg shadow-sm border border-blue-300">Kardex Remstar Spare Parts Package</span></h1>
+                <h1><span className="bg-gradient-to-r from-[#96AEC2]/20 to-blue-200 px-4 py-2 rounded-lg shadow-sm border border-[#96AEC2]">Kardex Remstar Spare Parts Package</span></h1>
               </div>
 
               {/* Header */}
@@ -634,7 +634,7 @@ export default function QuoteGenerationPage() {
                       placeholder="Quotation Title"
                     />
                   ) : (
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{editableData.title || 'Quotation'}</h1>
+                    <h1 className="text-3xl font-bold text-[#546A7A] mb-2">{editableData.title || 'Quotation'}</h1>
                   )}
                 </div>
 
@@ -677,15 +677,15 @@ export default function QuoteGenerationPage() {
 
               {/* Customer Details */}
               <div className="customer-details">
-                <div className="font-semibold text-gray-900">M/s {offer.customer?.companyName || offer.company}</div>
-                {offer.customer?.address && <div className="text-gray-700">{offer.customer.address}</div>}
+                <div className="font-semibold text-[#546A7A]">M/s {offer.customer?.companyName || offer.company}</div>
+                {offer.customer?.address && <div className="text-[#5D6E73]">{offer.customer.address}</div>}
                 {(offer.customer?.city || offer.customer?.state) && (
-                  <div className="text-gray-700">
+                  <div className="text-[#5D6E73]">
                     {[offer.customer?.city, offer.customer?.state].filter(Boolean).join(' - ')}
                   </div>
                 )}
                 {offer.contactPersonName && (
-                  <div className="text-gray-700 mt-2">
+                  <div className="text-[#5D6E73] mt-2">
                     <span className="font-medium">Kind Attn:</span> {offer.contactPersonName}
                   </div>
                 )}
@@ -871,7 +871,7 @@ export default function QuoteGenerationPage() {
                 <li>If delivery address is different than the Invoice address, then we need Delivery address GST details, HSN codes</li>
                 <li>PO should be on address as mentioned in quotation.</li>
                 <li>PO should contain Quotation reference i.e, {offer.offerReferenceNumber}.</li>
-                <li>PO should contain Kardex Ident Number as per the quotation: <span className="font-bold bg-yellow-200 px-1">KRIND/S/REL/AU00004</span></li>
+                <li>PO should contain Kardex Ident Number as per the quotation: <span className="font-bold bg-[#CE9F6B]/30 px-1">KRIND/S/REL/AU00004</span></li>
                 <li>PO should contain all line items mention in quotation, if more than one item.</li>
                 <li>PO should contain delivery address and contact person's details.</li>
                 <li>PO should have company seal signature.</li>
@@ -891,7 +891,7 @@ export default function QuoteGenerationPage() {
                 Tel   : {editableData.companyPhone} 
                 {editableData.companyFax && <> Fax  : {editableData.companyFax}</>}
               </p>
-              <p>Website : <a href={`https://${editableData.companyWebsite}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{editableData.companyWebsite}</a></p>
+              <p>Website : <a href={`https://${editableData.companyWebsite}`} target="_blank" rel="noopener noreferrer" className="text-[#546A7A] hover:underline">{editableData.companyWebsite}</a></p>
               
               <p>If you need any clarifications/ information, please do contact the undersigned.</p>
               <p className="font-semibold">Yours faithfully</p>
@@ -1139,7 +1139,7 @@ export default function QuoteGenerationPage() {
               </p>
 
               {/* Part A: General Provisions */}
-              <h3 className="text-sm font-bold text-gray-900 mt-6 mb-3">A. General Provisions</h3>
+              <h3 className="text-sm font-bold text-[#546A7A] mt-6 mb-3">A. General Provisions</h3>
               
               <div className="mb-4">
                 <h4 className="font-semibold mb-2">1. Scope of the T&C</h4>
@@ -1257,7 +1257,7 @@ export default function QuoteGenerationPage() {
             <div className="page-content terms-page">
               <div className="terms-content grid grid-cols-2 gap-4">
               {/* Part B */}
-              <h3 className="text-sm font-bold text-gray-900 mt-6 mb-3">B. Specific Provisions for Deliveries</h3>
+              <h3 className="text-sm font-bold text-[#546A7A] mt-6 mb-3">B. Specific Provisions for Deliveries</h3>
               
               <div className="mb-4">
                 <h4 className="font-semibold mb-2">1. Delivery</h4>
@@ -1373,7 +1373,7 @@ export default function QuoteGenerationPage() {
             <div className="page-content terms-page">
               <div className="terms-content grid grid-cols-2 gap-4">
               {/* Part C */}
-              <h3 className="text-sm font-bold text-gray-900 mt-6 mb-3">C. Provisions for Life Cycle Services</h3>
+              <h3 className="text-sm font-bold text-[#546A7A] mt-6 mb-3">C. Provisions for Life Cycle Services</h3>
               
               <h4 className="font-semibold mb-2 mt-4">C1: General Definitions</h4>
               

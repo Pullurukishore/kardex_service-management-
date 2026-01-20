@@ -93,7 +93,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
       <div className="flex items-center space-x-3">
         <Link 
           href="/admin/manage-external"
-          className="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors"
+          className="flex items-center space-x-2 text-[#5D6E73] hover:text-[#546A7A] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Manage External Users</span>
@@ -101,16 +101,16 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
       </div>
 
       {/* External User Info Card */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+      <div className="bg-gradient-to-r from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-xl p-6 border border-[#546A7A]">
         <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="h-16 w-16 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-full flex items-center justify-center shadow-lg">
             <User className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{externalUser.name || 'External User'}</h3>
-            <p className="text-gray-600">{externalUser.email}</p>
+            <h3 className="text-xl font-bold text-[#546A7A]">{externalUser.name || 'External User'}</h3>
+            <p className="text-[#5D6E73]">{externalUser.email}</p>
             {externalUser.customer && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-[#AEBFC3]0 mt-1">
                 <Building2 className="inline h-4 w-4 mr-1" />
                 {externalUser.customer.companyName}
               </p>
@@ -118,11 +118,11 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
             <div className="mt-2">
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                 externalUser.isActive 
-                  ? 'bg-green-100 text-green-800 border border-green-200' 
-                  : 'bg-red-100 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/20 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/20 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`w-2 h-2 rounded-full mr-2 ${
-                  externalUser.isActive ? 'bg-green-400' : 'bg-red-400'
+                  externalUser.isActive ? 'bg-[#82A094]' : 'bg-[#E17F70]'
                 }`}></div>
                 {externalUser.isActive ? 'Active' : 'Inactive'}
               </span>
@@ -133,15 +133,15 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
 
       {/* Desktop Form */}
       <div className="hidden md:block max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-indigo-50">
+        <div className="bg-white rounded-xl shadow-lg border border-[#92A2A5] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#92A2A5] bg-gradient-to-r from-[#AEBFC3]/10 to-[#6F8A9D]/10">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#546A7A] rounded-lg flex items-center justify-center">
                 <Lock className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Change Password</h2>
-                <p className="text-sm text-gray-600">Update external user password securely</p>
+                <h2 className="text-lg font-semibold text-[#546A7A]">Change Password</h2>
+                <p className="text-sm text-[#5D6E73]">Update external user password securely</p>
               </div>
             </div>
           </div>
@@ -150,11 +150,11 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -164,8 +164,8 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="newPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="newPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>New Password *</span>
                 </label>
                 <div className="relative">
@@ -174,7 +174,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                     id="newPassword"
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                     required
                     minLength={6}
                     placeholder="Enter new password"
@@ -182,20 +182,20 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A] transition-colors"
                   >
                     {showPasswords.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
+                <p className="text-xs text-[#AEBFC3]0 mt-2 flex items-center space-x-1">
                   <span>🔐</span>
                   <span>Password must be at least 6 characters long</span>
                 </p>
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Confirm New Password *</span>
                 </label>
                 <div className="relative">
@@ -204,26 +204,26 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                     required
                     placeholder="Confirm new password"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A] transition-colors"
                   >
                     {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {formData.confirmPassword && formData.newPassword !== formData.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-2 flex items-center space-x-1">
+                  <p className="text-xs text-[#E17F70] mt-2 flex items-center space-x-1">
                     <span>❌</span>
                     <span>Passwords do not match</span>
                   </p>
                 )}
                 {formData.confirmPassword && formData.newPassword === formData.confirmPassword && formData.newPassword.length >= 6 && (
-                  <p className="text-xs text-green-600 mt-2 flex items-center space-x-1">
+                  <p className="text-xs text-[#4F6A64] mt-2 flex items-center space-x-1">
                     <span>✅</span>
                     <span>Passwords match</span>
                   </p>
@@ -231,10 +231,10 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               </div>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div className="bg-[#546A7A]/10 border border-[#546A7A] rounded-lg p-4">
               <div className="flex items-center space-x-2">
-                <Lock className="h-5 w-5 text-indigo-600" />
-                <div className="text-sm text-indigo-800">
+                <Lock className="h-5 w-5 text-[#546A7A]" />
+                <div className="text-sm text-[#546A7A]">
                   <p className="font-medium">Password Security</p>
                   <p className="mt-1">
                     The new password will be securely hashed and the user will need to use it for their next login.
@@ -243,11 +243,11 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               </div>
             </div>
 
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#92A2A5]">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-[#5D6E73] bg-white border border-[#92A2A5] rounded-lg hover:bg-[#AEBFC3]/10 focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
               >
                 <X className="h-4 w-4" />
                 <span>Cancel</span>
@@ -255,7 +255,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               <button
                 type="submit"
                 disabled={loading || formData.newPassword !== formData.confirmPassword || formData.newPassword.length < 6}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#546A7A] to-[#546A7A] border border-transparent rounded-lg hover:from-[#546A7A] hover:to-[#546A7A] focus:ring-2 focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
               >
                 <Save className="h-4 w-4" />
                 <span>{loading ? 'Changing Password...' : 'Change Password'}</span>
@@ -272,11 +272,11 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -284,10 +284,10 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               </div>
             )}
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div className="bg-[#546A7A]/10 border border-[#546A7A] rounded-lg p-4">
               <div className="flex items-center space-x-2">
-                <Lock className="h-5 w-5 text-indigo-600" />
-                <div className="text-sm text-indigo-800">
+                <Lock className="h-5 w-5 text-[#546A7A]" />
+                <div className="text-sm text-[#546A7A]">
                   <p className="font-medium">Password Security</p>
                   <p className="mt-1">Secure password update for external user</p>
                 </div>
@@ -296,8 +296,8 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
 
             <MobileForm>
               <MobileFormRow>
-                <label htmlFor="mobile-newPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-newPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>New Password *</span>
                 </label>
                 <div className="relative">
@@ -306,7 +306,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                     id="mobile-newPassword"
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                     required
                     minLength={6}
                     placeholder="Enter new password"
@@ -314,7 +314,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A]"
                   >
                     {showPasswords.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -322,8 +322,8 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Confirm New Password *</span>
                 </label>
                 <div className="relative">
@@ -332,20 +332,20 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
                     id="mobile-confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                     required
                     placeholder="Confirm new password"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A]"
                   >
                     {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {formData.confirmPassword && formData.newPassword !== formData.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-2">Passwords do not match</p>
+                  <p className="text-xs text-[#E17F70] mt-2">Passwords do not match</p>
                 )}
               </MobileFormRow>
             </MobileForm>
@@ -354,7 +354,7 @@ export default function ExternalUserPasswordChangeClient({ externalUser }: Exter
               <MobileButton
                 type="submit"
                 disabled={loading || formData.newPassword !== formData.confirmPassword || formData.newPassword.length < 6}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
+                className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-lg"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Changing...' : 'Change Password'}

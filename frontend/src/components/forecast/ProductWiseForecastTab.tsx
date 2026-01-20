@@ -37,13 +37,13 @@ interface ProductWiseForecastResponse {
 
 // Zone colors
 const zoneColors: Record<string, { bg: string; text: string; light: string; gradient: string }> = {
-  WEST: { bg: 'bg-blue-600', text: 'text-blue-600', light: 'bg-blue-50', gradient: 'from-blue-500 to-blue-600' },
-  SOUTH: { bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-emerald-50', gradient: 'from-emerald-500 to-emerald-600' },
-  NORTH: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', gradient: 'from-amber-400 to-orange-500' },
-  EAST: { bg: 'bg-purple-600', text: 'text-purple-600', light: 'bg-purple-50', gradient: 'from-purple-500 to-purple-600' },
+  WEST: { bg: 'bg-[#6F8A9D]', text: 'text-[#546A7A]', light: 'bg-[#96AEC2]/10', gradient: 'from-[#6F8A9D] to-[#546A7A]' },
+  SOUTH: { bg: 'bg-[#4F6A64]', text: 'text-[#4F6A64]', light: 'bg-[#82A094]/10', gradient: 'from-[#82A094] to-[#4F6A64]' },
+  NORTH: { bg: 'bg-[#CE9F6B]/100', text: 'text-[#976E44]', light: 'bg-[#CE9F6B]/10', gradient: 'from-[#CE9F6B] to-[#CE9F6B]' },
+  EAST: { bg: 'bg-[#546A7A]', text: 'text-[#546A7A]', light: 'bg-[#6F8A9D]/10', gradient: 'from-[#6F8A9D] to-[#546A7A]' },
 }
 
-const getZoneColor = (name: string) => zoneColors[name.toUpperCase()] || { bg: 'bg-slate-600', text: 'text-slate-600', light: 'bg-slate-50', gradient: 'from-slate-500 to-slate-600' }
+const getZoneColor = (name: string) => zoneColors[name.toUpperCase()] || { bg: 'bg-[#5D6E73]', text: 'text-[#5D6E73]', light: 'bg-[#AEBFC3]/10', gradient: 'from-[#757777] to-[#5D6E73]' }
 
 interface Props {
   year: number
@@ -127,8 +127,8 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        <p className="text-sm text-slate-600">Loading data...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
+        <p className="text-sm text-[#5D6E73]">Loading data...</p>
       </div>
     )
   }
@@ -141,14 +141,14 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
   return (
     <div className="space-y-4">
       {/* Header Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#546A7A] rounded-xl shadow-sm border border-[#92A2A5] dark:border-[#5D6E73]">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
             <Calendar className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-800 dark:text-white">Product-wise Monthly Forecast</h2>
-            <p className="text-xs text-slate-500">{year} • Zone → User → Product × Month</p>
+            <h2 className="text-sm font-bold text-[#546A7A] dark:text-white">Product-wise Monthly Forecast</h2>
+            <p className="text-xs text-[#757777]">{year} • Zone → User → Product × Month</p>
           </div>
         </div>
         
@@ -167,12 +167,12 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
                 className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                   isActive 
                     ? `bg-gradient-to-r ${color.gradient} text-white shadow-md`
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                    : 'bg-white dark:bg-[#546A7A] text-[#5D6E73] dark:text-[#979796] border border-[#92A2A5] dark:border-[#5D6E73] hover:border-[#92A2A5]'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span>{zone.zoneName}</span>
-                  <span className={`text-xs ${isActive ? 'text-white/80' : 'text-slate-400'}`}>
+                  <span className={`text-xs ${isActive ? 'text-white/80' : 'text-[#979796]'}`}>
                     {formatCrore(zone.grandTotal)}
                   </span>
                 </div>
@@ -203,37 +203,37 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
                   {/* User Header - Always Visible */}
                   <button
                     onClick={() => toggleUser(user.userId)}
-                    className={`w-full px-4 py-2.5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-                      isExpanded ? 'bg-slate-50 dark:bg-slate-800/50' : ''
+                    className={`w-full px-4 py-2.5 flex items-center justify-between hover:bg-[#AEBFC3]/10 dark:hover:bg-[#546A7A]/50 transition-colors ${
+                      isExpanded ? 'bg-[#AEBFC3]/10 dark:bg-[#546A7A]/50' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                        <ChevronDown className="h-4 w-4 text-[#979796]" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-slate-400" />
+                        <ChevronRight className="h-4 w-4 text-[#979796]" />
                       )}
                       <div className={`w-7 h-7 rounded-full ${color.bg} flex items-center justify-center`}>
                         <span className="text-xs font-bold text-white">{user.userName.charAt(0)}</span>
                       </div>
-                      <span className="font-semibold text-sm text-slate-800 dark:text-white">{user.userName}</span>
+                      <span className="font-semibold text-sm text-[#546A7A] dark:text-white">{user.userName}</span>
                     </div>
-                    <span className="font-bold text-sm text-slate-800 dark:text-white">{formatCrore(user.grandTotal)}</span>
+                    <span className="font-bold text-sm text-[#546A7A] dark:text-white">{formatCrore(user.grandTotal)}</span>
                   </button>
 
                   {/* User Details - Expandable */}
                   {isExpanded && (
-                    <div className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                    <div className="bg-white dark:bg-[#546A7A] border-t border-[#AEBFC3]/30 dark:border-slate-800">
                       {/* Monthly Totals Row */}
                       <div className="overflow-x-auto">
                         <table className="w-full text-xs">
                           <thead>
-                            <tr className="bg-yellow-50 dark:bg-yellow-900/20">
-                              <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-300 sticky left-0 bg-yellow-50 dark:bg-yellow-900/20 z-10 min-w-[120px]">
+                            <tr className="bg-[#EEC1BF]/10 dark:bg-[#976E44]/20">
+                              <th className="px-3 py-2 text-left font-bold text-[#5D6E73] dark:text-[#92A2A5] sticky left-0 bg-[#EEC1BF]/10 dark:bg-[#976E44]/20 z-10 min-w-[120px]">
                                 Monthly Total
                               </th>
                               {months.map(month => (
-                                <th key={month} className="px-2 py-2 text-center font-medium text-slate-600 dark:text-slate-400 min-w-[55px]">
+                                <th key={month} className="px-2 py-2 text-center font-medium text-[#5D6E73] dark:text-[#979796] min-w-[55px]">
                                   {month}
                                 </th>
                               ))}
@@ -241,12 +241,12 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
                             </tr>
                           </thead>
                           <tbody>
-                            <tr className="bg-yellow-50/50 dark:bg-yellow-900/10 font-semibold">
-                              <td className="px-3 py-2 sticky left-0 bg-yellow-50/50 dark:bg-yellow-900/10 z-10">
-                                <span className="text-slate-700 dark:text-slate-300">All Products</span>
+                            <tr className="bg-[#EEC1BF]/10/50 dark:bg-[#976E44]/10 font-semibold">
+                              <td className="px-3 py-2 sticky left-0 bg-[#EEC1BF]/10/50 dark:bg-[#976E44]/10 z-10">
+                                <span className="text-[#5D6E73] dark:text-[#92A2A5]">All Products</span>
                               </td>
                               {months.map(month => (
-                                <td key={month} className="px-2 py-2 text-right font-mono text-slate-800 dark:text-slate-200">
+                                <td key={month} className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-slate-200">
                                   {formatValue(user.monthlyTotals[month] || 0)}
                                 </td>
                               ))}
@@ -259,19 +259,19 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
                       </div>
 
                       {/* Product Breakdown */}
-                      <div className="overflow-x-auto border-t border-slate-100 dark:border-slate-800">
+                      <div className="overflow-x-auto border-t border-[#AEBFC3]/30 dark:border-slate-800">
                         <table className="w-full text-xs">
                           <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-800">
-                              <th className="px-3 py-1.5 text-left font-bold text-slate-600 dark:text-slate-400 sticky left-0 bg-slate-50 dark:bg-slate-800 z-10 min-w-[120px]">
+                            <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]">
+                              <th className="px-3 py-1.5 text-left font-bold text-[#5D6E73] dark:text-[#979796] sticky left-0 bg-[#AEBFC3]/10 dark:bg-[#546A7A] z-10 min-w-[120px]">
                                 Product
                               </th>
                               {months.map(month => (
-                                <th key={month} className="px-2 py-1.5 text-center font-medium text-slate-500 dark:text-slate-500 min-w-[55px]">
+                                <th key={month} className="px-2 py-1.5 text-center font-medium text-[#757777] dark:text-[#757777] min-w-[55px]">
                                   {month}
                                 </th>
                               ))}
-                              <th className="px-3 py-1.5 text-right font-bold text-slate-600 dark:text-slate-400 min-w-[70px] bg-slate-100 dark:bg-slate-700">
+                              <th className="px-3 py-1.5 text-right font-bold text-[#5D6E73] dark:text-[#979796] min-w-[70px] bg-[#AEBFC3]/20 dark:bg-[#5D6E73]">
                                 Total
                               </th>
                             </tr>
@@ -280,20 +280,20 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
                             {user.products.map((product, idx) => (
                               <tr 
                                 key={product.productType}
-                                className={`${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/30 dark:bg-slate-800/20'} hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors`}
+                                className={`${idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/30 dark:bg-[#546A7A]/20'} hover:bg-[#96AEC2]/10/50 dark:hover:bg-[#546A7A]/50 transition-colors`}
                               >
-                                <td className="px-3 py-1.5 font-medium text-slate-700 dark:text-slate-300 sticky left-0 bg-inherit z-10">
+                                <td className="px-3 py-1.5 font-medium text-[#5D6E73] dark:text-[#92A2A5] sticky left-0 bg-inherit z-10">
                                   {product.productLabel}
                                 </td>
                                 {months.map(month => {
                                   const value = product.monthlyValues[month] || 0
                                   return (
-                                    <td key={month} className={`px-2 py-1.5 text-right font-mono ${value > 0 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'}`}>
+                                    <td key={month} className={`px-2 py-1.5 text-right font-mono ${value > 0 ? 'text-[#5D6E73] dark:text-[#92A2A5]' : 'text-[#92A2A5] dark:text-[#5D6E73]'}`}>
                                       {formatValue(value)}
                                     </td>
                                   )
                                 })}
-                                <td className="px-3 py-1.5 text-right font-mono font-semibold text-slate-800 dark:text-white bg-slate-100/50 dark:bg-slate-700/30">
+                                <td className="px-3 py-1.5 text-right font-mono font-semibold text-[#546A7A] dark:text-white bg-[#AEBFC3]/20/50 dark:bg-[#5D6E73]/30">
                                   {formatValue(product.total)}
                                 </td>
                               </tr>
@@ -312,7 +312,7 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
 
       {/* Grand Total Footer */}
       {!zoneId && (
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gradient-to-r from-slate-800 to-[#5D6E73] rounded-xl">
           <div className="flex items-center gap-3">
             <Package className="h-5 w-5 text-white" />
             <div>
@@ -328,7 +328,7 @@ export default function ProductWiseForecastTab({ year, minProbability = 0, zoneI
               return (
                 <div key={zone.zoneId} className={`px-2.5 py-1.5 rounded-lg ${color.light}`}>
                   <p className={`text-[10px] font-bold ${color.text} uppercase`}>{zone.zoneName}</p>
-                  <p className="text-xs font-bold text-slate-800">{formatCrore(zone.grandTotal)}</p>
+                  <p className="text-xs font-bold text-[#546A7A]">{formatCrore(zone.grandTotal)}</p>
                 </div>
               )
             })}

@@ -41,26 +41,26 @@ import {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'ACTIVE':
-      return <CheckCircle className="h-4 w-4 text-green-600" />;
+      return <CheckCircle className="h-4 w-4 text-[#4F6A64]" />;
     case 'INACTIVE':
-      return <AlertCircle className="h-4 w-4 text-gray-600" />;
+      return <AlertCircle className="h-4 w-4 text-[#5D6E73]" />;
     case 'MAINTENANCE':
-      return <Wrench className="h-4 w-4 text-yellow-600" />;
+      return <Wrench className="h-4 w-4 text-[#976E44]" />;
     default:
-      return <Clock className="h-4 w-4 text-red-600" />;
+      return <Clock className="h-4 w-4 text-[#9E3B47]" />;
   }
 };
 
 const getStatusBadgeStyles = (status: string) => {
   switch (status) {
     case 'ACTIVE':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]';
     case 'INACTIVE':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]';
     case 'MAINTENANCE':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
     default:
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]';
   }
 };
 
@@ -141,9 +141,9 @@ export default function CustomerAssetsPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900">Customer not found</h2>
-          <p className="text-gray-600 mt-2">The customer you're looking for doesn't exist.</p>
+          <AlertCircle className="h-12 w-12 text-[#E17F70] mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-[#546A7A]">Customer not found</h2>
+          <p className="text-[#5D6E73] mt-2">The customer you're looking for doesn't exist.</p>
         </div>
       </div>
     );
@@ -177,7 +177,7 @@ export default function CustomerAssetsPage() {
     }) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -199,20 +199,20 @@ export default function CustomerAssetsPage() {
             {/* Title and Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
+                <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#546A7A] break-words">
                   {customer.companyName} - Assets
                 </h1>
-                <p className="text-sm sm:text-base text-gray-600 mt-1">
+                <p className="text-sm sm:text-base text-[#5D6E73] mt-1">
                   Manage all assets for this customer
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 flex-shrink-0">
-                <Badge className="bg-blue-100 text-blue-800 px-3 py-1 text-center">
+                <Badge className="bg-[#96AEC2]/20 text-[#546A7A] px-3 py-1 text-center">
                   {filteredAssets.length} of {customer._count.assets} assets
                 </Badge>
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                  className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white w-full sm:w-auto"
                   onClick={() => router.push(`/admin/customers/${customer.id}/assets/new`)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -229,7 +229,7 @@ export default function CustomerAssetsPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
                   <Input
                     placeholder="Search assets..."
                     value={searchTerm}
@@ -274,14 +274,14 @@ export default function CustomerAssetsPage() {
                 <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                      <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
-                        <HardDrive className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                      <div className="p-2 sm:p-3 bg-[#96AEC2]/20 rounded-lg flex-shrink-0">
+                        <HardDrive className="h-5 w-5 sm:h-6 sm:w-6 text-[#546A7A]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-sm sm:text-lg truncate" title={asset.serialNo}>
+                        <h3 className="font-semibold text-[#546A7A] text-sm sm:text-lg truncate" title={asset.serialNo}>
                           {asset.serialNo || 'N/A'}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 mt-1">Asset ID: {asset.id}</p>
+                        <p className="text-xs sm:text-sm text-[#5D6E73] mt-1">Asset ID: {asset.id}</p>
                       </div>
                     </div>
                     <Badge className={`${getStatusBadgeStyles(asset.status)} flex items-center gap-1 text-xs flex-shrink-0`}>
@@ -294,17 +294,17 @@ export default function CustomerAssetsPage() {
                 <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
                   <div className="space-y-2 sm:space-y-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Model</p>
-                      <p className="text-sm text-gray-900 break-words" title={asset.model}>
+                      <p className="text-sm font-medium text-[#5D6E73]">Model</p>
+                      <p className="text-sm text-[#546A7A] break-words" title={asset.model}>
                         {asset.model || 'No model specified'}
                       </p>
                     </div>
                     
                     {asset.location && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Location</p>
-                        <p className="text-sm text-gray-900 flex items-center">
-                          <MapPin className="h-3 w-3 mr-1 text-gray-400" />
+                        <p className="text-sm font-medium text-[#5D6E73]">Location</p>
+                        <p className="text-sm text-[#546A7A] flex items-center">
+                          <MapPin className="h-3 w-3 mr-1 text-[#979796]" />
                           {asset.location}
                         </p>
                       </div>
@@ -312,9 +312,9 @@ export default function CustomerAssetsPage() {
                     
                     {asset.purchaseDate && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Purchase Date</p>
-                        <p className="text-sm text-gray-900 flex items-center">
-                          <Calendar className="h-3 w-3 mr-1 text-gray-400" />
+                        <p className="text-sm font-medium text-[#5D6E73]">Purchase Date</p>
+                        <p className="text-sm text-[#546A7A] flex items-center">
+                          <Calendar className="h-3 w-3 mr-1 text-[#979796]" />
                           {format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}
                         </p>
                       </div>
@@ -322,11 +322,11 @@ export default function CustomerAssetsPage() {
                     
                     {asset.warrantyEnd && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Warranty</p>
+                        <p className="text-sm font-medium text-[#5D6E73]">Warranty</p>
                         <p className={`text-sm flex items-center ${
                           new Date(asset.warrantyEnd) > new Date() 
-                            ? 'text-green-600' 
-                            : 'text-red-600'
+                            ? 'text-[#4F6A64]' 
+                            : 'text-[#9E3B47]'
                         }`}>
                           <Calendar className="h-3 w-3 mr-1" />
                           Until {format(new Date(asset.warrantyEnd), 'MMM dd, yyyy')}
@@ -336,7 +336,7 @@ export default function CustomerAssetsPage() {
                   </div>
                   
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 sm:pt-4 border-t space-y-2 sm:space-y-0">
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[#AEBFC3]0">
                       Asset ID: {asset.id}
                     </div>
                     <div className="flex items-center space-x-2">
@@ -344,7 +344,7 @@ export default function CustomerAssetsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => router.push(`/admin/assets/${asset.id}/edit`)}
-                        className="text-blue-600 hover:text-blue-800 flex-1 sm:flex-none"
+                        className="text-[#546A7A] hover:text-[#546A7A] flex-1 sm:flex-none"
                       >
                         <Pencil className="h-4 w-4 mr-1" />
                         <span className="hidden sm:inline">Edit</span>
@@ -355,7 +355,7 @@ export default function CustomerAssetsPage() {
                         size="sm"
                         onClick={() => handleDeleteAsset(asset.id, asset.serialNo || asset.model || `Asset ${asset.id}`)}
                         disabled={deletingAssetId === asset.id}
-                        className="text-red-600 hover:text-red-800 flex-1 sm:flex-none"
+                        className="text-[#9E3B47] hover:text-[#75242D] flex-1 sm:flex-none"
                       >
                         {deletingAssetId === asset.id ? (
                           <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -374,11 +374,11 @@ export default function CustomerAssetsPage() {
         ) : (
           <Card>
             <CardContent className="text-center py-12">
-              <HardDrive className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <HardDrive className="mx-auto h-16 w-16 text-[#979796] mb-4" />
+              <h3 className="text-lg font-medium text-[#546A7A] mb-2">
                 {searchTerm || statusFilter !== 'all' ? 'No assets found' : 'No assets yet'}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#5D6E73] mb-6">
                 {searchTerm || statusFilter !== 'all' 
                   ? 'Try adjusting your search or filter criteria.'
                   : 'Add assets to this customer to track their equipment.'
@@ -386,7 +386,7 @@ export default function CustomerAssetsPage() {
               </p>
               {!searchTerm && statusFilter === 'all' && (
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white"
                   onClick={() => router.push(`/admin/customers/${customer.id}/assets/new`)}
                 >
                   <Plus className="h-4 w-4 mr-2" />

@@ -34,15 +34,15 @@ interface Target {
 }
 
 const PRODUCT_TYPE_LABELS: { [key: string]: { label: string; icon: string; color: string; gradient: string } } = {
-  'RELOCATION': { label: 'Relocation', icon: '🚚', color: 'blue', gradient: 'from-blue-500 to-blue-600' },
-  'CONTRACT': { label: 'Contract', icon: '📋', color: 'emerald', gradient: 'from-emerald-500 to-emerald-600' },
-  'SPP': { label: 'SPP', icon: '🔧', color: 'purple', gradient: 'from-purple-500 to-purple-600' },
-  'UPGRADE_KIT': { label: 'Upgrade Kit', icon: '⬆️', color: 'amber', gradient: 'from-amber-500 to-amber-600' },
-  'SOFTWARE': { label: 'Software', icon: '💻', color: 'cyan', gradient: 'from-cyan-500 to-cyan-600' },
-  'BD_CHARGES': { label: 'BD Charges', icon: '💰', color: 'rose', gradient: 'from-rose-500 to-rose-600' },
-  'BD_SPARE': { label: 'BD Spare', icon: '🔩', color: 'indigo', gradient: 'from-indigo-500 to-indigo-600' },
-  'MIDLIFE_UPGRADE': { label: 'Midlife Upgrade', icon: '🔄', color: 'teal', gradient: 'from-teal-500 to-teal-600' },
-  'RETROFIT_KIT': { label: 'Retrofit Kit', icon: '🛠️', color: 'orange', gradient: 'from-orange-500 to-orange-600' },
+  'RELOCATION': { label: 'Relocation', icon: '🚚', color: 'blue', gradient: 'from-[#6F8A9D] to-[#6F8A9D]' },
+  'CONTRACT': { label: 'Contract', icon: '📋', color: 'emerald', gradient: 'from-[#82A094] to-[#82A094]' },
+  'SPP': { label: 'SPP', icon: '🔧', color: 'purple', gradient: 'from-[#6F8A9D] to-[#6F8A9D]' },
+  'UPGRADE_KIT': { label: 'Upgrade Kit', icon: '⬆️', color: 'amber', gradient: 'from-[#CE9F6B] to-[#976E44]' },
+  'SOFTWARE': { label: 'Software', icon: '💻', color: 'cyan', gradient: 'from-[#6F8A9D] to-cyan-600' },
+  'BD_CHARGES': { label: 'BD Charges', icon: '💰', color: 'rose', gradient: 'from-[#E17F70] to-[#9E3B47]' },
+  'BD_SPARE': { label: 'BD Spare', icon: '🔩', color: 'indigo', gradient: 'from-[#6F8A9D] to-[#6F8A9D]' },
+  'MIDLIFE_UPGRADE': { label: 'Midlife Upgrade', icon: '🔄', color: 'teal', gradient: 'from-[#82A094] to-[#82A094]' },
+  'RETROFIT_KIT': { label: 'Retrofit Kit', icon: '🛠️', color: 'orange', gradient: 'from-[#CE9F6B] to-[#976E44]' },
 };
 
 export default function EditTargetPage() {
@@ -358,18 +358,18 @@ export default function EditTargetPage() {
   // Show loading state while auth is being checked
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#5D6E73] via-[#546A7A] to-[#546A7A]">
         <div className="text-center">
           <div className="relative">
-            <div className="w-24 h-24 border-4 border-blue-400/20 rounded-full"></div>
-            <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-blue-400 border-r-blue-400/50 rounded-full animate-spin"></div>
+            <div className="w-24 h-24 border-4 border-[#6F8A9D]/20 rounded-full"></div>
+            <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-[#96AEC2] border-r-blue-400/50 rounded-full animate-spin"></div>
             <div className="absolute inset-2 w-20 h-20 border-4 border-transparent border-b-purple-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
           </div>
-          <p className="text-blue-200 font-medium mt-6 text-lg animate-pulse">Loading...</p>
+          <p className="text-[#96AEC2] font-medium mt-6 text-lg animate-pulse">Loading...</p>
           <div className="flex justify-center gap-1 mt-3">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="w-2 h-2 bg-[#6F8A9D] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-[#6F8A9D] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-[#6F8A9D] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
         </div>
       </div>
@@ -383,21 +383,21 @@ export default function EditTargetPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex items-center justify-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border border-slate-100 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50 flex items-center justify-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border border-[#AEBFC3]/20 relative overflow-hidden">
           {/* Animated gradient orb */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-full blur-2xl animate-pulse"></div>
           <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="absolute inset-0 w-24 h-24 border-4 border-blue-100 rounded-full"></div>
+            <div className="absolute inset-0 w-24 h-24 border-4 border-[#96AEC2]/30 rounded-full"></div>
             <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-t-blue-600 border-r-blue-400/50 rounded-full animate-spin"></div>
             <div className="absolute inset-2 w-20 h-20 border-4 border-transparent border-b-indigo-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
           </div>
-          <p className="text-slate-700 font-bold text-xl">Loading targets...</p>
-          <p className="text-slate-500 text-sm mt-2">Please wait while we fetch the data</p>
+          <p className="text-[#5D6E73] font-bold text-xl">Loading targets...</p>
+          <p className="text-[#757777] text-sm mt-2">Please wait while we fetch the data</p>
           <div className="flex justify-center gap-1 mt-4">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-[#546A7A]/100 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-[#6F8A9D]/100 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
         </div>
       </div>
@@ -413,12 +413,12 @@ export default function EditTargetPage() {
   const overallAchievement = totalTarget > 0 ? (totalActual / totalTarget) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50">
       <div className="p-6 max-w-5xl mx-auto">
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition-all group"
+          className="flex items-center gap-2 text-[#5D6E73] hover:text-[#546A7A] mb-6 transition-all group"
         >
           <div className="p-2 rounded-lg bg-white shadow-sm group-hover:shadow-md group-hover:-translate-x-1 transition-all">
             <ArrowLeft className="w-5 h-5" />
@@ -429,13 +429,13 @@ export default function EditTargetPage() {
         {/* Hero Header */}
         <div className={`relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl mb-8 bg-gradient-to-r group ${
           targetType === 'ZONE' 
-            ? 'from-blue-600 via-indigo-600 to-purple-700' 
-            : 'from-purple-600 via-pink-600 to-rose-600'
+            ? 'from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A]' 
+            : 'from-[#6F8A9D] via-pink-600 to-[#9E3B47]'
         }`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOGM5Ljk0MSAwIDE4LTguMDU5IDE4LTE4cy04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
           {/* Animated gradient orbs */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" style={{ animation: 'pulse 3s ease-in-out infinite alternate' }}></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#6F8A9D]/100/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" style={{ animation: 'pulse 3s ease-in-out infinite alternate' }}></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-5 mb-5">
@@ -448,7 +448,7 @@ export default function EditTargetPage() {
               <div>
                 <h1 className="text-4xl font-bold flex items-center gap-3">
                   {isCreatingNew ? 'Create Targets' : 'Edit Targets'}
-                  <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+                  <Sparkles className="w-8 h-8 text-[#CE9F6B] animate-pulse" />
                 </h1>
                 <p className="text-white/80 mt-2 text-lg">
                   {isCreatingNew ? 'Set yearly targets for' : 'Update yearly targets for'} <span className="font-bold text-white">{entityName}</span>
@@ -482,8 +482,8 @@ export default function EditTargetPage() {
             // Create new target form
             <>
               {/* Overall Target Card */}
-              <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all">
-                <div className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 px-6 py-5">
+              <div className="bg-white rounded-2xl shadow-xl border border-[#AEBFC3]/20 overflow-hidden hover:shadow-2xl transition-all">
+                <div className="bg-gradient-to-r from-[#82A094] via-[#82A094] to-[#82A094] px-6 py-5">
                   <div className="flex items-center gap-4 text-white">
                     <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
                       <TrendingUp className="w-7 h-7" />
@@ -495,24 +495,24 @@ export default function EditTargetPage() {
                   </div>
                 </div>
                 <div className="p-8">
-                  <label className="block text-sm font-bold text-slate-700 mb-3">
-                    Target Value (₹) <span className="text-slate-400 font-normal">- Yearly total, will be divided by 12 for monthly view</span>
+                  <label className="block text-sm font-bold text-[#5D6E73] mb-3">
+                    Target Value (₹) <span className="text-[#979796] font-normal">- Yearly total, will be divided by 12 for monthly view</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-2xl">₹</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#979796] font-bold text-2xl">₹</span>
                     <input
                       type="number"
                       value={newTargetValue}
                       onChange={(e) => setNewTargetValue(e.target.value)}
-                      className="w-full pl-14 pr-6 py-5 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold transition-all hover:border-emerald-300"
+                      className="w-full pl-14 pr-6 py-5 border-2 border-[#92A2A5] rounded-xl focus:ring-4 focus:ring-[#82A094]/20 focus:border-[#82A094] text-2xl font-bold transition-all hover:border-emerald-300"
                       min="0"
                       step="1"
                       placeholder="50,00,000"
                     />
                   </div>
                   {newTargetValue && (
-                    <p className="text-sm text-slate-500 mt-3 flex items-center gap-2">
-                      <span className="px-2 py-1 bg-emerald-50 rounded-lg text-emerald-600 font-medium">
+                    <p className="text-sm text-[#757777] mt-3 flex items-center gap-2">
+                      <span className="px-2 py-1 bg-[#82A094]/10 rounded-lg text-[#4F6A64] font-medium">
                         📅 Monthly: {formatCurrency(parseFloat(newTargetValue) / 12)}
                       </span>
                     </p>
@@ -521,8 +521,8 @@ export default function EditTargetPage() {
               </div>
 
               {/* Product-Specific Targets Section */}
-              <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 px-6 py-5">
+              <div className="bg-white rounded-2xl shadow-xl border border-[#AEBFC3]/20 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] px-6 py-5">
                   <div className="flex items-center gap-4 text-white">
                     <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
                       <Package className="w-7 h-7" />
@@ -543,7 +543,7 @@ export default function EditTargetPage() {
                         <div 
                           key={productType} 
                           className={`group relative bg-white border-2 rounded-xl p-5 hover:shadow-lg transition-all ${
-                            productTargets[productType] ? `border-${config.color}-300 bg-${config.color}-50/30` : 'border-slate-200 hover:border-slate-300'
+                            productTargets[productType] ? `border-${config.color}-300 bg-${config.color}-50/30` : 'border-[#92A2A5] hover:border-[#92A2A5]'
                           }`}
                         >
                           <div className="flex items-center gap-3 mb-4">
@@ -551,12 +551,12 @@ export default function EditTargetPage() {
                               <Package className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                              <h4 className="font-bold text-slate-900">{config.label}</h4>
-                              <p className="text-xs text-slate-500">{config.icon} Product Type</p>
+                              <h4 className="font-bold text-[#546A7A]">{config.label}</h4>
+                              <p className="text-xs text-[#757777]">{config.icon} Product Type</p>
                             </div>
                           </div>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#979796] font-medium">₹</span>
                             <input
                               type="number"
                               value={productTargets[productType] || ''}
@@ -564,14 +564,14 @@ export default function EditTargetPage() {
                                 ...productTargets,
                                 [productType]: e.target.value
                               })}
-                              className="w-full pl-8 pr-3 py-3 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-semibold transition-all hover:border-purple-300"
+                              className="w-full pl-8 pr-3 py-3 border-2 border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] font-semibold transition-all hover:border-[#6F8A9D]"
                               min="0"
                               step="1"
                               placeholder="Enter yearly target"
                             />
                           </div>
                           {productTargets[productType] && (
-                            <p className="text-xs text-slate-500 mt-2">
+                            <p className="text-xs text-[#757777] mt-2">
                               📅 Monthly: {formatCurrency(parseFloat(productTargets[productType]) / 12)}
                             </p>
                           )}
@@ -586,7 +586,7 @@ export default function EditTargetPage() {
             // Edit existing targets form
             <>
               {/* Summary Dashboard */}
-              <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-br from-[#5D6E73] via-slate-800 to-[#5D6E73] rounded-2xl shadow-2xl overflow-hidden">
                 <div className="p-8">
                   <div className="flex items-center gap-3 mb-6 text-white">
                     <div className="p-3 bg-white/10 backdrop-blur-xl rounded-xl">
@@ -597,25 +597,25 @@ export default function EditTargetPage() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-white/10 backdrop-blur-xl rounded-xl p-5 border border-white/10">
-                      <div className="text-slate-400 text-sm font-semibold mb-2">Total Target</div>
+                      <div className="text-[#979796] text-sm font-semibold mb-2">Total Target</div>
                       <div className="text-3xl font-bold text-white">{formatCurrency(totalTarget)}</div>
                     </div>
                     <div className="bg-white/10 backdrop-blur-xl rounded-xl p-5 border border-white/10">
-                      <div className="text-slate-400 text-sm font-semibold mb-2">Actual Value</div>
-                      <div className="text-3xl font-bold text-emerald-400">{formatCurrency(totalActual)}</div>
+                      <div className="text-[#979796] text-sm font-semibold mb-2">Actual Value</div>
+                      <div className="text-3xl font-bold text-[#A2B9AF]">{formatCurrency(totalActual)}</div>
                     </div>
                     <div className="bg-white/10 backdrop-blur-xl rounded-xl p-5 border border-white/10">
-                      <div className="text-slate-400 text-sm font-semibold mb-2">Achievement</div>
+                      <div className="text-[#979796] text-sm font-semibold mb-2">Achievement</div>
                       <div className={`text-3xl font-bold ${
-                        overallAchievement >= 100 ? 'text-emerald-400' :
-                        overallAchievement >= 75 ? 'text-amber-400' : 'text-red-400'
+                        overallAchievement >= 100 ? 'text-[#A2B9AF]' :
+                        overallAchievement >= 75 ? 'text-[#CE9F6B]' : 'text-[#E17F70]'
                       }`}>
                         {overallAchievement.toFixed(1)}%
                       </div>
                     </div>
                     <div className="bg-white/10 backdrop-blur-xl rounded-xl p-5 border border-white/10">
-                      <div className="text-slate-400 text-sm font-semibold mb-2">Monthly Target</div>
-                      <div className="text-3xl font-bold text-blue-400">{formatCurrency(totalTarget / 12)}</div>
+                      <div className="text-[#979796] text-sm font-semibold mb-2">Monthly Target</div>
+                      <div className="text-3xl font-bold text-[#6F8A9D]">{formatCurrency(totalTarget / 12)}</div>
                     </div>
                   </div>
                 </div>
@@ -625,8 +625,8 @@ export default function EditTargetPage() {
               {targets.filter(t => !t.productType).map((target) => {
                 const actualIndex = targets.findIndex(t => t.id === target.id);
                 return (
-                  <div key={target.id} className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all">
-                    <div className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 px-6 py-5">
+                  <div key={target.id} className="bg-white rounded-2xl shadow-xl border border-[#AEBFC3]/20 overflow-hidden hover:shadow-2xl transition-all">
+                    <div className="bg-gradient-to-r from-[#82A094] via-[#82A094] to-[#82A094] px-6 py-5">
                       <div className="flex items-center justify-between text-white">
                         <div className="flex items-center gap-4">
                           <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
@@ -644,27 +644,27 @@ export default function EditTargetPage() {
                       </div>
                     </div>
                     <div className="p-8">
-                      <label className="block text-sm font-bold text-slate-700 mb-3">
-                        Target Value (₹) <span className="text-red-500">*</span>
-                        <span className="text-slate-400 font-normal ml-2">Yearly total</span>
+                      <label className="block text-sm font-bold text-[#5D6E73] mb-3">
+                        Target Value (₹) <span className="text-[#E17F70]">*</span>
+                        <span className="text-[#979796] font-normal ml-2">Yearly total</span>
                       </label>
                       <div className="relative">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-2xl">₹</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#979796] font-bold text-2xl">₹</span>
                         <input
                           type="number"
                           value={inputValues[target.id] ?? ''}
                           onChange={(e) => updateInputValue(target.id, e.target.value)}
-                          className="w-full pl-14 pr-6 py-5 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 text-2xl font-bold transition-all hover:border-emerald-300"
+                          className="w-full pl-14 pr-6 py-5 border-2 border-[#92A2A5] rounded-xl focus:ring-4 focus:ring-[#82A094]/20 focus:border-[#82A094] text-2xl font-bold transition-all hover:border-emerald-300"
                           required
                           min="0"
                           step="1"
                         />
                       </div>
                       <div className="flex items-center gap-4 mt-4 text-sm">
-                        <span className="px-3 py-1.5 bg-emerald-50 rounded-lg text-emerald-600 font-medium">
+                        <span className="px-3 py-1.5 bg-[#82A094]/10 rounded-lg text-[#4F6A64] font-medium">
                           📅 Monthly: {formatCurrency(getTargetNumericValue(target.id) / 12)}
                         </span>
-                        <span className="px-3 py-1.5 bg-blue-50 rounded-lg text-blue-600 font-medium">
+                        <span className="px-3 py-1.5 bg-[#96AEC2]/10 rounded-lg text-[#546A7A] font-medium">
                           💰 Actual: {formatCurrency(target.actualValue || 0)}
                         </span>
                       </div>
@@ -674,8 +674,8 @@ export default function EditTargetPage() {
               })}
 
               {/* Product-Specific Targets */}
-              <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 px-6 py-5">
+              <div className="bg-white rounded-2xl shadow-xl border border-[#AEBFC3]/20 overflow-hidden">
+                <div className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] px-6 py-5">
                   <div className="flex items-center gap-4 text-white">
                     <div className="p-3 bg-white/20 backdrop-blur-xl rounded-xl border border-white/30">
                       <Package className="w-7 h-7" />
@@ -709,27 +709,27 @@ export default function EditTargetPage() {
                           key={productType} 
                           className={`group relative rounded-xl p-5 transition-all ${
                             hasTarget 
-                              ? 'bg-white border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl' 
+                              ? 'bg-white border-2 border-[#6F8A9D] hover:border-[#6F8A9D] hover:shadow-xl' 
                               : hasNewValue
-                                ? 'bg-green-50 border-2 border-green-300 hover:border-green-400 hover:shadow-xl'
-                                : 'bg-white border-2 border-dashed border-slate-200 hover:border-purple-300'
+                                ? 'bg-[#A2B9AF]/10 border-2 border-[#82A094] hover:border-green-400 hover:shadow-xl'
+                                : 'bg-white border-2 border-dashed border-[#92A2A5] hover:border-[#6F8A9D]'
                           }`}
                         >
                           {/* Header Section */}
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <div className={`p-2 rounded-lg ${hasTarget || hasNewValue ? `bg-gradient-to-br ${config.gradient}` : 'bg-slate-300'} shadow-md`}>
+                              <div className={`p-2 rounded-lg ${hasTarget || hasNewValue ? `bg-gradient-to-br ${config.gradient}` : 'bg-[#92A2A5]'} shadow-md`}>
                                 <Package className="w-5 h-5 text-white" />
                               </div>
                               <div>
-                                <h4 className="font-bold text-slate-900">{config.label}</h4>
+                                <h4 className="font-bold text-[#546A7A]">{config.label}</h4>
                                 {!hasTarget && !hasNewValue && (
-                                  <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-medium">
+                                  <span className="text-xs text-[#546A7A] bg-[#96AEC2]/10 px-2 py-0.5 rounded-full font-medium">
                                     ✨ New Target
                                   </span>
                                 )}
                                 {hasNewValue && (
-                                  <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">
+                                  <span className="text-xs text-[#4F6A64] bg-[#A2B9AF]/10 px-2 py-0.5 rounded-full font-medium">
                                     🆕 Will be created
                                   </span>
                                 )}
@@ -737,8 +737,8 @@ export default function EditTargetPage() {
                             </div>
                             {hasTarget && (
                               <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
-                                achievement >= 100 ? 'bg-emerald-100 text-emerald-700' :
-                                achievement >= 75 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
+                                achievement >= 100 ? 'bg-[#82A094]/20 text-[#4F6A64]' :
+                                achievement >= 75 ? 'bg-[#CE9F6B]/20 text-[#976E44]' : 'bg-[#E17F70]/20 text-[#75242D]'
                               }`}>
                                 {achievement.toFixed(0)}%
                               </span>
@@ -747,11 +747,11 @@ export default function EditTargetPage() {
 
                           {/* Input Section */}
                           <div className="space-y-2">
-                            <label className="block text-xs font-semibold text-slate-600">
-                              Yearly Target (₹) {hasTarget && <span className="text-red-500">*</span>}
+                            <label className="block text-xs font-semibold text-[#5D6E73]">
+                              Yearly Target (₹) {hasTarget && <span className="text-[#E17F70]">*</span>}
                             </label>
                             <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#979796] text-sm">₹</span>
                               <input
                                 type="number"
                                 value={targetInputValue}
@@ -766,7 +766,7 @@ export default function EditTargetPage() {
                                     }));
                                   }
                                 }}
-                                className="w-full pl-8 pr-3 py-3 border-2 rounded-lg font-semibold text-sm transition-all border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-purple-300 bg-white"
+                                className="w-full pl-8 pr-3 py-3 border-2 rounded-lg font-semibold text-sm transition-all border-[#92A2A5] focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] hover:border-[#6F8A9D] bg-white"
                                 required={hasTarget}
                                 min="0"
                                 step="1"
@@ -775,18 +775,18 @@ export default function EditTargetPage() {
                             </div>
                             
                             {targetValue > 0 ? (
-                              <div className="flex items-center gap-2 text-xs text-slate-500 mt-2">
-                                <span className="px-2 py-1 bg-purple-50 rounded text-purple-600">
+                              <div className="flex items-center gap-2 text-xs text-[#757777] mt-2">
+                                <span className="px-2 py-1 bg-[#6F8A9D]/10 rounded text-[#546A7A]">
                                   📅 Monthly: {formatCurrency(targetValue / 12)}
                                 </span>
                                 {hasTarget && (
-                                  <span className="px-2 py-1 bg-blue-50 rounded text-blue-600">
+                                  <span className="px-2 py-1 bg-[#96AEC2]/10 rounded text-[#546A7A]">
                                     💰 Actual: {formatCurrency(actualValue)}
                                   </span>
                                 )}
                               </div>
                             ) : (
-                              <p className="text-xs text-slate-400 mt-2">
+                              <p className="text-xs text-[#979796] mt-2">
                                 💡 Enter a value to create a new target for this product
                               </p>
                             )}
@@ -801,12 +801,12 @@ export default function EditTargetPage() {
           )}
 
           {/* Action Buttons */}
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6">
+          <div className="bg-white rounded-2xl shadow-xl border border-[#AEBFC3]/20 p-6">
             <div className="flex gap-4">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 px-6 py-4 border-2 border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 font-bold text-lg transition-all"
+                className="flex-1 px-6 py-4 border-2 border-[#92A2A5] text-[#5D6E73] rounded-xl hover:bg-[#AEBFC3]/10 hover:border-[#92A2A5] font-bold text-lg transition-all"
                 disabled={saving}
               >
                 Cancel
@@ -815,8 +815,8 @@ export default function EditTargetPage() {
                 type="submit"
                 className={`flex-1 px-6 py-4 text-white rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl ${
                   targetType === 'ZONE' 
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' 
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+                    ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#546A7A] hover:to-[#546A7A]' 
+                    : 'bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47] hover:from-[#546A7A] hover:to-pink-700'
                 }`}
                 disabled={saving || (isCreatingNew && !newTargetValue && Object.values(productTargets).every(v => !v))}
               >

@@ -93,27 +93,27 @@ export default function CustomerFilters({
 
   return (
     <Card className="shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
-        <CardTitle className="text-gray-800">Search & Filter</CardTitle>
+      <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 rounded-t-lg">
+        <CardTitle className="text-[#546A7A]">Search & Filter</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
             <div className="relative flex-1 sm:max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#979796]" />
               <input
                 type="search"
                 placeholder="Search customers..."
                 value={searchValue}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-[#92A2A5] rounded-md focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D]"
               />
             </div>
             
             <select
               value={statusValue}
               onChange={handleStatusChange}
-              className="w-full sm:w-[140px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full sm:w-[140px] px-3 py-2 border border-[#92A2A5] rounded-md focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D]"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -121,7 +121,7 @@ export default function CustomerFilters({
             </select>
           </div>
           
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-[#5D6E73]">
             {filteredResults > 0 && (
               <span>
                 Showing <span className="font-semibold">{filteredResults}</span> of{' '}

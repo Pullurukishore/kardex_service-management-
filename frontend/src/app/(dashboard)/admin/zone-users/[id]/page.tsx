@@ -118,13 +118,13 @@ export default function ZoneUserDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cyan-100 mb-4">
-            <RefreshCw className="h-6 w-6 text-cyan-600 animate-spin" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#96AEC2]/20 mb-4">
+            <RefreshCw className="h-6 w-6 text-[#546A7A] animate-spin" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Zone User</h3>
-          <p className="text-sm text-gray-500">Please wait while we fetch the user details...</p>
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Loading Zone User</h3>
+          <p className="text-sm text-[#AEBFC3]0">Please wait while we fetch the user details...</p>
         </div>
       </div>
     );
@@ -132,30 +132,30 @@ export default function ZoneUserDetailsPage() {
 
   if (!loading && !zoneUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
-            <XCircle className="h-6 w-6 text-red-600" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20 mb-4">
+            <XCircle className="h-6 w-6 text-[#9E3B47]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Zone User Not Found</h3>
-          <p className="text-sm text-gray-500 mb-2">
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Zone User Not Found</h3>
+          <p className="text-sm text-[#AEBFC3]0 mb-2">
             User ID {params?.id} doesn't exist in the database or has been removed.
           </p>
-          <p className="text-xs text-gray-400 mb-2">
+          <p className="text-xs text-[#979796] mb-2">
             The API request completed successfully but returned no data.
           </p>
-          <p className="text-xs text-gray-400 mb-6">
+          <p className="text-xs text-[#979796] mb-6">
             Please check if this user ID exists in the zone users list.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={() => router.push('/admin/zone-users')} className="bg-cyan-600 hover:bg-cyan-700">
+            <Button onClick={() => router.push('/admin/zone-users')} className="bg-[#546A7A] hover:bg-[#546A7A]">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Zone Users
             </Button>
             <Button 
               onClick={() => window.location.reload()} 
               variant="outline"
-              className="border-cyan-300 text-cyan-600 hover:bg-cyan-50"
+              className="border-cyan-300 text-[#546A7A] hover:bg-[#96AEC2]/10"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
@@ -172,7 +172,7 @@ export default function ZoneUserDetailsPage() {
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-[#6F8A9D] to-cyan-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
@@ -190,7 +190,7 @@ export default function ZoneUserDetailsPage() {
                 variant={user.isActive ? 'default' : 'secondary'}
                 className={user.isActive 
                   ? 'bg-white/20 text-white hover:bg-white/30' 
-                  : 'bg-gray-600 text-gray-200 hover:bg-gray-700'
+                  : 'bg-[#5D6E73] text-[#AEBFC3] hover:bg-[#5D6E73]'
                 }
               >
                 {user.isActive ? (
@@ -206,7 +206,7 @@ export default function ZoneUserDetailsPage() {
                 )}
               </Badge>
               <Link href={`/admin/zone-users/${user.id}/edit`}>
-                <Button className="bg-white text-cyan-600 hover:bg-cyan-50 shadow-lg">
+                <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/10 shadow-lg">
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit User
                 </Button>
@@ -236,14 +236,14 @@ export default function ZoneUserDetailsPage() {
             variant="ghost" 
             size="sm"
             onClick={() => router.push('/admin/zone-users')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-[#5D6E73] hover:text-[#546A7A]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to List
           </Button>
           <div className="flex items-center gap-2">
             <Link href={`/admin/zone-users/${user.id}/edit`}>
-              <Button className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg">
+              <Button className="bg-[#546A7A] hover:bg-[#546A7A] text-white shadow-lg">
                 <Pencil className="mr-2 h-4 w-4" /> Edit
               </Button>
             </Link>
@@ -258,8 +258,8 @@ export default function ZoneUserDetailsPage() {
           <Badge 
             variant={user.isActive ? 'default' : 'secondary'}
             className={user.isActive 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-gray-100 text-gray-600'
+              ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+              : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
             }
           >
             {user.isActive ? (
@@ -278,10 +278,10 @@ export default function ZoneUserDetailsPage() {
       </div>
 
       {/* Enhanced User Information */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-gray-100">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-100 rounded-t-lg border-b">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <User className="h-5 w-5 text-cyan-600" />
+      <Card className="shadow-lg border-0 bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/20">
+        <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 rounded-t-lg border-b">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <User className="h-5 w-5 text-[#546A7A]" />
             User Information
           </CardTitle>
           <CardDescription>
@@ -290,36 +290,36 @@ export default function ZoneUserDetailsPage() {
         </CardHeader>
         <CardContent className="p-6 space-y-6">
           <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center text-white font-bold text-lg">
               {(user.name || user.email).charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
-              <p className="text-lg font-semibold text-gray-900">{user.name || 'Not provided'}</p>
+              <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Full Name</label>
+              <p className="text-lg font-semibold text-[#546A7A]">{user.name || 'Not provided'}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <Mail className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-full bg-[#96AEC2]/20 flex items-center justify-center">
+              <Mail className="h-5 w-5 text-[#546A7A]" />
             </div>
             <div className="flex-1">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Email Address</label>
-              <p className="text-sm font-medium text-gray-900 mt-1">{user.email}</p>
+              <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Email Address</label>
+              <p className="text-sm font-medium text-[#546A7A] mt-1">{user.email}</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <Shield className="h-5 w-5 text-orange-600" />
+              <div className="h-10 w-10 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center">
+                <Shield className="h-5 w-5 text-[#976E44]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Role</label>
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Role</label>
                 <div className="mt-2">
                   <Badge 
                     variant="outline"
-                    className="bg-orange-50 text-orange-700 border-orange-200 px-3 py-1"
+                    className="bg-[#CE9F6B]/10 text-[#976E44] border-[#CE9F6B] px-3 py-1"
                   >
                     <Shield className="mr-1 h-3 w-3" />
                     {user.role.replace('_', ' ')}
@@ -329,17 +329,17 @@ export default function ZoneUserDetailsPage() {
             </div>
             
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                <UserCheck className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-full bg-[#A2B9AF]/20 flex items-center justify-center">
+                <UserCheck className="h-5 w-5 text-[#4F6A64]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Status</label>
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Status</label>
                 <div className="mt-2">
                   <Badge 
                     variant={user.isActive ? 'default' : 'secondary'}
                     className={user.isActive 
-                      ? 'bg-green-100 text-green-800 hover:bg-green-200 px-3 py-1' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1'
+                      ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30 px-3 py-1' 
+                      : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30 px-3 py-1'
                     }
                   >
                     {user.isActive ? (
@@ -359,12 +359,12 @@ export default function ZoneUserDetailsPage() {
             </div>
             
             <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Phone className="h-5 w-5 text-purple-600" />
+              <div className="h-10 w-10 rounded-full bg-[#6F8A9D]/20 flex items-center justify-center">
+                <Phone className="h-5 w-5 text-[#546A7A]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Phone Number</label>
-                <p className="text-sm font-medium text-gray-900 mt-1">
+                <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Phone Number</label>
+                <p className="text-sm font-medium text-[#546A7A] mt-1">
                   {user.phone || 'Not provided'}
                 </p>
               </div>
@@ -374,10 +374,10 @@ export default function ZoneUserDetailsPage() {
       </Card>
 
       {/* Enhanced Service Zones */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-cyan-50 to-blue-100">
-        <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-100 rounded-t-lg border-b">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-cyan-600" />
+      <Card className="shadow-lg border-0 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-t-lg border-b">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-[#546A7A]" />
             Assigned Service Zones ({user.serviceZones?.length || 0})
           </CardTitle>
           <CardDescription>
@@ -390,17 +390,17 @@ export default function ZoneUserDetailsPage() {
               {user.serviceZones.map((z) => (
                 <Link key={z.serviceZone.id} href={`/admin/service-zones/${z.serviceZone.id}`}>
                   <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer group">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center text-white font-semibold">
                       {z.serviceZone.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-900 group-hover:text-cyan-600 transition-colors">
+                      <p className="font-semibold text-[#546A7A] group-hover:text-[#546A7A] transition-colors">
                         {z.serviceZone.name}
                       </p>
-                      <p className="text-xs text-gray-500">Service Zone</p>
+                      <p className="text-xs text-[#AEBFC3]0">Service Zone</p>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Eye className="h-4 w-4 text-cyan-600" />
+                      <Eye className="h-4 w-4 text-[#546A7A]" />
                     </div>
                   </div>
                 </Link>
@@ -408,15 +408,15 @@ export default function ZoneUserDetailsPage() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center mb-4">
-                <MapPin className="h-8 w-8 text-cyan-500" />
+              <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-cyan-100 to-[#96AEC2]/20 flex items-center justify-center mb-4">
+                <MapPin className="h-8 w-8 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Service Zones</h3>
-              <p className="text-gray-500 mb-4">
+              <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No Service Zones</h3>
+              <p className="text-[#AEBFC3]0 mb-4">
                 This user is not currently assigned to any service zones.
               </p>
               <Link href={`/admin/zone-users/${user.id}/edit`}>
-                <Button className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg">
+                <Button className="bg-gradient-to-r from-cyan-600 to-[#6F8A9D] hover:from-cyan-700 hover:to-[#546A7A] shadow-lg">
                   <MapPin className="mr-2 h-4 w-4" />
                   Assign Zones
                 </Button>

@@ -53,18 +53,19 @@ export default async function ServicePersonsPage({ searchParams }: ServicePerson
 
   return (
     <div className="space-y-6">
-      {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 p-6 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
+      {/* Desktop Header with Gradient - Vibrant Sand & Coral */}
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#976E44] via-[#CE9F6B] to-[#E17F70] p-6 text-white">
+        <div className="absolute inset-0 bg-black/5"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Service Personnel</h1>
-            <p className="text-blue-100">
+            <h1 className="text-3xl font-bold mb-2 drop-shadow-md">Service Personnel</h1>
+            <p className="text-white/90">
               Manage service personnel and their zone assignments
             </p>
           </div>
           <Link href="/admin/service-person/new">
-            <Button className="bg-white text-blue-600 hover:bg-blue-50 shadow-lg">
+            <Button className="bg-white text-[#976E44] hover:bg-[#EEC1BF] hover:text-[#9E3B47] shadow-lg font-semibold">
               <Plus className="mr-2 h-4 w-4" />
               Add Service Person
             </Button>
@@ -78,11 +79,11 @@ export default async function ServicePersonsPage({ searchParams }: ServicePerson
           title="Service Personnel"
           description="Manage service personnel and their zone assignments"
           action={
-            <Link href="/admin/service-person/new">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
-                <Plus className="mr-2 h-4 w-4" /> Add
-              </Button>
-            </Link>
+          <Link href="/admin/service-person/new">
+            <Button className="bg-[#CE9F6B] hover:bg-[#976E44] text-white shadow-lg">
+              <Plus className="mr-2 h-4 w-4" /> Add
+            </Button>
+          </Link>
           }
         />
       </div>

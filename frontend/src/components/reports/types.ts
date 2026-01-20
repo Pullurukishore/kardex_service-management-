@@ -221,7 +221,7 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Ticket Analytics Report',
     description: 'Comprehensive ticket analytics with status, priority trends, and resolution metrics',
     icon: 'BarChart3',
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]'
   },
 
   {
@@ -229,21 +229,21 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Machine Reports',
     description: 'Machine downtime analysis, equipment performance tracking, and maintenance efficiency metrics',
     icon: 'Settings',
-    color: 'from-green-500 to-green-600'
+    color: 'from-[#82A094] to-[#4F6A64]'
   },
   {
     value: 'zone-performance',
     label: 'Zone Performance Report',
     description: 'Service zone efficiency, resource utilization, and performance benchmarks',
     icon: 'Target',
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]'
   },
   {
     value: 'service-person-reports',
     label: 'Service Person Performance Report',
     description: 'Comprehensive performance analytics for all service persons and zone users including productivity, resolution rates, and efficiency metrics',
     icon: 'Users',
-    color: 'from-indigo-500 to-indigo-600'
+    color: 'from-[#6F8A9D] to-[#546A7A]'
   },
 
   {
@@ -251,7 +251,7 @@ export const REPORT_TYPES: ReportType[] = [
     label: 'Service Person Attendance Report',
     description: 'Comprehensive attendance tracking with date ranges, activity logs, and performance metrics',
     icon: 'UserCheck',
-    color: 'from-teal-500 to-teal-600'
+    color: 'from-[#82A094] to-[#4F6A64]'
   }
 ];
 

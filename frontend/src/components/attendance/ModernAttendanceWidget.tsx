@@ -566,27 +566,27 @@ export default function ModernAttendanceWidget({
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <AlertCircle className="h-5 w-5 text-amber-500 mr-2" />
+                <h2 className="text-lg font-semibold text-[#546A7A] flex items-center">
+                  <AlertCircle className="h-5 w-5 text-[#CE9F6B] mr-2" />
                   Early Check-out?
                 </h2>
                 <button
                   onClick={() => handleEarlyCheckoutConfirm(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-[#979796] hover:text-[#5D6E73]"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
               
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[#5D6E73]">
                   {earlyCheckoutData.confirmationData.message}
                 </p>
                 
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <div className="bg-[#CE9F6B]/10 border border-[#CE9F6B]/50 rounded-lg p-3">
                   <div className="flex items-center space-x-2 text-sm">
-                    <Clock className="h-4 w-4 text-amber-600" />
-                    <span className="text-amber-800">
+                    <Clock className="h-4 w-4 text-[#976E44]" />
+                    <span className="text-[#976E44]">
                       Current: {new Date(earlyCheckoutData.confirmationData.checkoutTime).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -595,8 +595,8 @@ export default function ModernAttendanceWidget({
                     </span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm mt-1">
-                    <Clock className="h-4 w-4 text-amber-600" />
-                    <span className="text-amber-800">
+                    <Clock className="h-4 w-4 text-[#976E44]" />
+                    <span className="text-[#976E44]">
                       Scheduled: {new Date(earlyCheckoutData.confirmationData.scheduledTime).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -616,7 +616,7 @@ export default function ModernAttendanceWidget({
                   </Button>
                   <Button
                     onClick={() => handleEarlyCheckoutConfirm(true)}
-                    className="flex-1 bg-amber-600 hover:bg-amber-700"
+                    className="flex-1 bg-[#976E44] hover:bg-[#976E44]"
                     disabled={actionLoading}
                   >
                     {actionLoading ? (
@@ -632,7 +632,7 @@ export default function ModernAttendanceWidget({
       )}
 
       {/* Compact Status Card - Always Visible */}
-      <Card className="border-0 shadow-sm bg-gradient-to-r from-slate-50 to-slate-100">
+      <Card className="border-0 shadow-sm bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             {/* Left: Status + Time */}
@@ -640,31 +640,31 @@ export default function ModernAttendanceWidget({
               {isCheckedIn ? (
                 <>
                   <div className="flex-shrink-0">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="w-3 h-3 bg-[#A2B9AF]/100 rounded-full animate-pulse"></div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-600">Checked In</p>
-                    <p className="text-sm font-bold text-green-700">{getElapsedTime()}</p>
+                    <p className="text-xs text-[#5D6E73]">Checked In</p>
+                    <p className="text-sm font-bold text-[#4F6A64]">{getElapsedTime()}</p>
                   </div>
                 </>
               ) : hasAttendanceToday ? (
                 <>
                   <div className="flex-shrink-0">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-[#96AEC2]/100 rounded-full"></div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-600">Checked Out</p>
-                    <p className="text-sm font-bold text-blue-700">{formatHours(attendanceData?.attendance?.totalHours)}h worked</p>
+                    <p className="text-xs text-[#5D6E73]">Checked Out</p>
+                    <p className="text-sm font-bold text-[#546A7A]">{formatHours(attendanceData?.attendance?.totalHours)}h worked</p>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex-shrink-0">
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-[#979796] rounded-full"></div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-600">Not Checked In</p>
-                    <p className="text-sm font-bold text-gray-700">Ready to start</p>
+                    <p className="text-xs text-[#5D6E73]">Not Checked In</p>
+                    <p className="text-sm font-bold text-[#5D6E73]">Ready to start</p>
                   </div>
                 </>
               )}
@@ -678,7 +678,7 @@ export default function ModernAttendanceWidget({
                   onClick={handleCheckOut}
                   disabled={actionLoading}
                   size="sm"
-                  className="h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  className="h-10 px-4 bg-[#9E3B47] hover:bg-[#75242D] text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -691,7 +691,7 @@ export default function ModernAttendanceWidget({
                   onClick={handleReCheckIn}
                   disabled={actionLoading}
                   size="sm"
-                  className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  className="h-10 px-4 bg-[#6F8A9D] hover:bg-[#546A7A] text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -704,7 +704,7 @@ export default function ModernAttendanceWidget({
                   onClick={handleCheckIn}
                   disabled={actionLoading}
                   size="sm"
-                  className="h-10 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  className="h-10 px-4 bg-[#4F6A64] hover:bg-[#4F6A64] text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -727,8 +727,8 @@ export default function ModernAttendanceWidget({
           </div>
 
           {/* Keyboard Shortcut Hint */}
-          <div className="mt-2 text-xs text-gray-500 text-center">
-            Press <kbd className="px-2 py-1 bg-white rounded border border-gray-300">Space</kbd> to toggle
+          <div className="mt-2 text-xs text-[#AEBFC3]0 text-center">
+            Press <kbd className="px-2 py-1 bg-white rounded border border-[#92A2A5]">Space</kbd> to toggle
           </div>
         </CardContent>
       </Card>
@@ -739,14 +739,14 @@ export default function ModernAttendanceWidget({
           <CardContent className="p-4 space-y-4">
             {/* Location Capture Section */}
             {enhancedLocationState.showLocationCapture && (
-              <div className="space-y-3 p-3 border border-blue-200 rounded-lg bg-blue-50">
+              <div className="space-y-3 p-3 border border-[#96AEC2] rounded-lg bg-[#96AEC2]/10">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-blue-900">📍 Location Required</h3>
+                  <h3 className="text-sm font-semibold text-[#546A7A]">📍 Location Required</h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: false }))}
-                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800"
+                    className="h-8 w-8 p-0 text-[#546A7A] hover:text-[#546A7A]"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -769,23 +769,23 @@ export default function ModernAttendanceWidget({
 
             {/* Captured Location Display */}
             {enhancedLocationState.capturedLocation && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div className="bg-[#A2B9AF]/10 border border-[#A2B9AF] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-semibold text-green-800">Location Ready</span>
+                    <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
+                    <span className="text-sm font-semibold text-[#4F6A64]">Location Ready</span>
                   </div>
                   {enhancedLocationState.capturedLocation.source === 'manual' ? (
-                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                    <Badge variant="secondary" className="text-xs bg-[#96AEC2]/20 text-[#546A7A]">
                       Manual
                     </Badge>
                   ) : (
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                    <Badge variant="secondary" className="text-xs bg-[#A2B9AF]/20 text-[#4F6A64]">
                       ±{Math.round(enhancedLocationState.capturedLocation.accuracy)}m
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-green-700 break-words">
+                <p className="text-xs text-[#4F6A64] break-words">
                   📍 {enhancedLocationState.capturedLocation.address || 
                    `${enhancedLocationState.capturedLocation.latitude.toFixed(6)}, ${enhancedLocationState.capturedLocation.longitude.toFixed(6)}`}
                 </p>
@@ -794,23 +794,23 @@ export default function ModernAttendanceWidget({
 
             {/* Attendance Details */}
             {attendanceData?.attendance && (
-              <div className="space-y-2 bg-gray-50 rounded-lg p-3">
+              <div className="space-y-2 bg-[#AEBFC3]/10 rounded-lg p-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Check-in:</span>
-                  <span className="font-semibold text-gray-900">{formatTime(attendanceData.attendance.checkInAt)}</span>
+                  <span className="text-[#5D6E73]">Check-in:</span>
+                  <span className="font-semibold text-[#546A7A]">{formatTime(attendanceData.attendance.checkInAt)}</span>
                 </div>
                 
                 {attendanceData.attendance.checkOutAt && (
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600">Check-out:</span>
-                    <span className="font-semibold text-gray-900">{formatTime(attendanceData.attendance.checkOutAt)}</span>
+                    <span className="text-[#5D6E73]">Check-out:</span>
+                    <span className="font-semibold text-[#546A7A]">{formatTime(attendanceData.attendance.checkOutAt)}</span>
                   </div>
                 )}
                 
                 {attendanceData.attendance.totalHours && (
-                  <div className="flex items-center justify-between text-xs border-t border-gray-200 pt-2">
-                    <span className="text-gray-600">Total Hours:</span>
-                    <span className="font-semibold text-gray-900">{formatHours(attendanceData.attendance.totalHours)}h</span>
+                  <div className="flex items-center justify-between text-xs border-t border-[#92A2A5] pt-2">
+                    <span className="text-[#5D6E73]">Total Hours:</span>
+                    <span className="font-semibold text-[#546A7A]">{formatHours(attendanceData.attendance.totalHours)}h</span>
                   </div>
                 )}
               </div>
@@ -820,19 +820,19 @@ export default function ModernAttendanceWidget({
             {attendanceData?.attendance?.checkInAddress && (
               <div className="space-y-2 text-xs">
                 <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                  <MapPin className="h-4 w-4 text-[#AEBFC3]0 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-600">Check-in Location:</p>
-                    <p className="text-gray-800 break-words">{attendanceData.attendance.checkInAddress}</p>
+                    <p className="text-[#5D6E73]">Check-in Location:</p>
+                    <p className="text-[#546A7A] break-words">{attendanceData.attendance.checkInAddress}</p>
                   </div>
                 </div>
                 
                 {attendanceData.attendance.checkOutAddress && (
                   <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <MapPin className="h-4 w-4 text-[#6F8A9D] mt-0.5 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-gray-600">Check-out Location:</p>
-                      <p className="text-gray-800 break-words">{attendanceData.attendance.checkOutAddress}</p>
+                      <p className="text-[#5D6E73]">Check-out Location:</p>
+                      <p className="text-[#546A7A] break-words">{attendanceData.attendance.checkOutAddress}</p>
                     </div>
                   </div>
                 )}
@@ -841,18 +841,18 @@ export default function ModernAttendanceWidget({
 
             {/* Stats */}
             {stats && (
-              <div className="grid grid-cols-3 gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3">
+              <div className="grid grid-cols-3 gap-2 bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-lg p-3">
                 <div className="text-center">
-                  <p className="text-xs text-gray-600">Total Hours</p>
-                  <p className="text-sm font-bold text-blue-700">{formatHours(stats.totalHours)}h</p>
+                  <p className="text-xs text-[#5D6E73]">Total Hours</p>
+                  <p className="text-sm font-bold text-[#546A7A]">{formatHours(stats.totalHours)}h</p>
                 </div>
-                <div className="text-center border-l border-r border-gray-200">
-                  <p className="text-xs text-gray-600">Avg/Day</p>
-                  <p className="text-sm font-bold text-indigo-700">{formatHours(stats.avgHoursPerDay)}h</p>
+                <div className="text-center border-l border-r border-[#92A2A5]">
+                  <p className="text-xs text-[#5D6E73]">Avg/Day</p>
+                  <p className="text-sm font-bold text-[#546A7A]">{formatHours(stats.avgHoursPerDay)}h</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-600">Days Worked</p>
-                  <p className="text-sm font-bold text-purple-700">{stats.totalDaysWorked}</p>
+                  <p className="text-xs text-[#5D6E73]">Days Worked</p>
+                  <p className="text-sm font-bold text-[#546A7A]">{stats.totalDaysWorked}</p>
                 </div>
               </div>
             )}

@@ -40,23 +40,23 @@ interface ServicePersonAttendanceReportProps {
 }
 
 const STATUS_CONFIG = {
-  CHECKED_IN: { label: 'Checked In', color: 'bg-green-100 text-green-800 border-green-200', icon: UserCheck },
-  CHECKED_OUT: { label: 'Checked Out', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: UserX },
-  AUTO_CHECKED_OUT: { label: 'Auto Checkout', color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Zap },
-  ABSENT: { label: 'Absent', color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
-  LATE: { label: 'Late', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertTriangle },
-  EARLY_CHECKOUT: { label: 'Early Checkout', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock3 },
+  CHECKED_IN: { label: 'Checked In', color: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]', icon: UserCheck },
+  CHECKED_OUT: { label: 'Checked Out', color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', icon: UserX },
+  AUTO_CHECKED_OUT: { label: 'Auto Checkout', color: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]', icon: Zap },
+  ABSENT: { label: 'Absent', color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: XCircle },
+  LATE: { label: 'Late', color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: AlertTriangle },
+  EARLY_CHECKOUT: { label: 'Early Checkout', color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: Clock3 },
 };
 
 const FLAG_CONFIG = {
-  LATE: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertTriangle, severity: 'warning' },
-  EARLY_CHECKOUT: { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock3, severity: 'warning' },
-  LONG_DAY: { color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Timer, severity: 'warning' },
-  AUTO_CHECKOUT: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Zap, severity: 'info' },
-  NO_ACTIVITY: { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle, severity: 'error' },
-  MISSING_CHECKOUT: { color: 'bg-red-100 text-red-800 border-red-200', icon: AlertTriangle, severity: 'error' },
-  MULTIPLE_SESSIONS: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Info, severity: 'info' },
-  ABSENT: { color: 'bg-red-100 text-red-800 border-red-200', icon: UserX, severity: 'error' },
+  LATE: { color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: AlertTriangle, severity: 'warning' },
+  EARLY_CHECKOUT: { color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: Clock3, severity: 'warning' },
+  LONG_DAY: { color: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]', icon: Timer, severity: 'warning' },
+  AUTO_CHECKOUT: { color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', icon: Zap, severity: 'info' },
+  NO_ACTIVITY: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: XCircle, severity: 'error' },
+  MISSING_CHECKOUT: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: AlertTriangle, severity: 'error' },
+  MULTIPLE_SESSIONS: { color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', icon: Info, severity: 'info' },
+  ABSENT: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: UserX, severity: 'error' },
 };
 
 export function ServicePersonAttendanceReport({ reportData }: ServicePersonAttendanceReportProps) {
@@ -93,9 +93,9 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">No Reports Found</h3>
-            <p className="text-gray-500">No service person reports available for the selected period.</p>
+            <Users className="h-12 w-12 mx-auto text-[#92A2A5] mb-4" />
+            <h3 className="text-lg font-medium text-[#5D6E73] mb-2">No Reports Found</h3>
+            <p className="text-[#AEBFC3]0">No service person reports available for the selected period.</p>
           </div>
         </CardContent>
       </Card>
@@ -224,7 +224,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                   ? `${formatDate(dateRange.from)} to ${formatDate(dateRange.to)}`
                   : 'selected period'
                 }
-                <span className="ml-2 text-blue-600 font-medium">
+                <span className="ml-2 text-[#546A7A] font-medium">
                   (Monday - Saturday working days only)
                 </span>
               </CardDescription>
@@ -237,36 +237,36 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
         <CardContent>
           {reports.length === 0 ? (
             <div className="text-center py-12">
-              <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">No Reports Found</h3>
-              <p className="text-gray-500">No service person reports available for the selected period.</p>
+              <Users className="h-12 w-12 mx-auto text-[#92A2A5] mb-4" />
+              <h3 className="text-lg font-medium text-[#5D6E73] mb-2">No Reports Found</h3>
+              <p className="text-[#AEBFC3]0">No service person reports available for the selected period.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left p-3 font-medium text-gray-900">Service Person</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Present Days</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Absent Days</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Total Hours</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Avg Hours/Day</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Activities</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Auto Checkouts</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Actions</th>
+                  <tr className="border-b bg-[#AEBFC3]/10">
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Service Person</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Present Days</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Absent Days</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Total Hours</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Avg Hours/Day</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Activities</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Auto Checkouts</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reports.map((person) => (
-                    <tr key={person.id} className="border-b hover:bg-gray-50 transition-colors">
+                    <tr key={person.id} className="border-b hover:bg-[#AEBFC3]/10 transition-colors">
                       {/* Service Person */}
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <div>
-                            <div className="font-medium text-gray-900">{person.name}</div>
-                            <div className="text-sm text-gray-600">{person.email}</div>
+                            <div className="font-medium text-[#546A7A]">{person.name}</div>
+                            <div className="text-sm text-[#5D6E73]">{person.email}</div>
                             {person.zones && person.zones.length > 0 && (
-                              <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded mt-1">
+                              <div className="text-xs text-[#AEBFC3]0 bg-[#AEBFC3]/20 px-2 py-1 rounded mt-1">
                                 {person.zones.map((zone, idx) => (
                                   <span key={idx}>
                                     {zone.name}
@@ -282,8 +282,8 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       {/* Present Days */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <CheckCircle className="h-3 w-3 text-green-600" />
-                          <span className="text-green-600">{person.summary.presentDays || person.summary.totalWorkingDays || 0}</span>
+                          <CheckCircle className="h-3 w-3 text-[#4F6A64]" />
+                          <span className="text-[#4F6A64]">{person.summary.presentDays || person.summary.totalWorkingDays || 0}</span>
                         </div>
                       </td>
 
@@ -291,9 +291,9 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
                           <XCircle className={`h-3 w-3 ${
-                            person.summary.absentDays > 0 ? 'text-red-600' : 'text-gray-400'
+                            person.summary.absentDays > 0 ? 'text-[#9E3B47]' : 'text-[#979796]'
                           }`} />
-                          <span className={person.summary.absentDays > 0 ? 'text-red-600' : 'text-gray-900'}>
+                          <span className={person.summary.absentDays > 0 ? 'text-[#9E3B47]' : 'text-[#546A7A]'}>
                             {person.summary.absentDays || 0}
                           </span>
                         </div>
@@ -302,7 +302,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       {/* Total Hours */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Clock className="h-3 w-3 text-blue-600" />
+                          <Clock className="h-3 w-3 text-[#546A7A]" />
                           {Number(person.summary.totalHours).toFixed(1)}h
                         </div>
                       </td>
@@ -310,8 +310,8 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       {/* Average Hours/Day */}
                       <td className="p-3">
                         <div className={`flex items-center gap-1 text-sm font-medium ${
-                          person.summary.averageHoursPerDay > 8 ? 'text-green-600' : 
-                          person.summary.averageHoursPerDay < 6 ? 'text-orange-600' : 'text-gray-900'
+                          person.summary.averageHoursPerDay > 8 ? 'text-[#4F6A64]' : 
+                          person.summary.averageHoursPerDay < 6 ? 'text-[#976E44]' : 'text-[#546A7A]'
                         }`}>
                           <Timer className="h-3 w-3" />
                           {Number(person.summary.averageHoursPerDay).toFixed(1)}h
@@ -321,7 +321,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       {/* Activities */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Activity className="h-3 w-3 text-purple-600" />
+                          <Activity className="h-3 w-3 text-[#546A7A]" />
                           {person.summary.totalActivities || person.summary.activitiesLogged || 0}
                         </div>
                       </td>
@@ -330,9 +330,9 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
                           <Zap className={`h-3 w-3 ${
-                            person.summary.autoCheckouts > 0 ? 'text-orange-600' : 'text-gray-400'
+                            person.summary.autoCheckouts > 0 ? 'text-[#976E44]' : 'text-[#979796]'
                           }`} />
-                          <span className={person.summary.autoCheckouts > 0 ? 'text-orange-600' : 'text-gray-900'}>
+                          <span className={person.summary.autoCheckouts > 0 ? 'text-[#976E44]' : 'text-[#546A7A]'}>
                             {person.summary.autoCheckouts || 0}
                           </span>
                         </div>
@@ -375,17 +375,17 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                    <h2 className="text-xl font-semibold text-[#546A7A] flex items-center gap-2">
                       <User className="h-5 w-5" />
                       {selectedPerson?.name} - Attendance Details
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-[#5D6E73] mt-1">
                       Comprehensive attendance breakdown for {dateRange.from && dateRange.to 
                         ? `${formatDate(dateRange.from)} to ${formatDate(dateRange.to)}`
                         : 'selected period'
                       }
                     </p>
-                    <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                    <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-[#96AEC2]/10 border border-[#96AEC2] rounded text-xs text-[#546A7A]">
                       <Calendar className="h-3 w-3" />
                       <span className="font-medium">Working Days: Monday - Saturday only</span>
                     </div>
@@ -396,7 +396,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       variant="outline"
                       size="sm"
                       onClick={() => handleExport('excel')}
-                      className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                      className="text-[#4F6A64] hover:text-[#4F6A64] hover:bg-[#A2B9AF]/10 border-[#A2B9AF]"
                     >
                       <FileSpreadsheet className="h-4 w-4 mr-1" />
                       Excel
@@ -407,7 +407,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       variant="outline"
                       size="sm"
                       onClick={() => handleExport('pdf')}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                      className="text-[#9E3B47] hover:text-[#75242D] hover:bg-[#E17F70]/10 border-[#E17F70]"
                     >
                       <Download className="h-4 w-4 mr-1" />
                       PDF
@@ -416,7 +416,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                     {/* Close button */}
                     <button
                       onClick={() => setDetailModalOpen(false)}
-                      className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+                      className="text-[#979796] hover:text-[#5D6E73] p-2 rounded-lg hover:bg-[#AEBFC3]/20"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -438,12 +438,12 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
               
               <TabsContent value="overview" className="space-y-6">
                 {/* Summary Card with Person Info */}
-                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                <Card className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 border-[#96AEC2]">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-2xl font-bold text-gray-900">{selectedPerson.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{selectedPerson.email}</p>
+                        <h3 className="text-2xl font-bold text-[#546A7A]">{selectedPerson.name}</h3>
+                        <p className="text-sm text-[#5D6E73] mt-1">{selectedPerson.email}</p>
                         {selectedPerson.zones && selectedPerson.zones.length > 0 && (
                           <div className="flex gap-2 mt-2">
                             {selectedPerson.zones.map((zone, idx) => (
@@ -455,10 +455,10 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="text-3xl font-bold text-blue-600">
+                        <div className="text-3xl font-bold text-[#546A7A]">
                           {selectedPerson.summary.performanceScore || 0}%
                         </div>
-                        <div className="text-sm text-gray-600">Performance Score</div>
+                        <div className="text-sm text-[#5D6E73]">Performance Score</div>
                       </div>
                     </div>
                   </CardContent>
@@ -466,32 +466,32 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
                 {/* Attendance Metrics */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <UserCheck className="h-5 w-5 text-blue-600" />
+                  <h4 className="text-lg font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+                    <UserCheck className="h-5 w-5 text-[#546A7A]" />
                     Attendance Summary
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                      <Card className="border-l-4 border-l-green-500">
+                      <Card className="border-l-4 border-l-[#82A094]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-gray-600">Working Days</CardTitle>
+                          <CardTitle className="text-sm text-[#5D6E73]">Working Days</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-green-600">
+                          <div className="text-3xl font-bold text-[#4F6A64]">
                             {selectedPerson.summary.presentDays || selectedPerson.summary.totalWorkingDays || 0}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Days present</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Days present</p>
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-l-4 border-l-blue-500">
+                      <Card className="border-l-4 border-l-[#6F8A9D]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-gray-600">Total Hours</CardTitle>
+                          <CardTitle className="text-sm text-[#5D6E73]">Total Hours</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-blue-600">
+                          <div className="text-3xl font-bold text-[#546A7A]">
                             {Number(selectedPerson.summary.totalHours).toFixed(1)}h
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">
                             {selectedPerson.summary.averageHoursPerDay 
                               ? `${Number(selectedPerson.summary.averageHoursPerDay).toFixed(1)}h avg/day`
                               : 'N/A avg/day'
@@ -500,39 +500,39 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-l-4 border-l-red-500">
+                      <Card className="border-l-4 border-l-[#E17F70]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-gray-600">Absent Days</CardTitle>
+                          <CardTitle className="text-sm text-[#5D6E73]">Absent Days</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-red-600">
+                          <div className="text-3xl font-bold text-[#9E3B47]">
                             {selectedPerson.summary.absentDays}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Days absent</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Days absent</p>
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-l-4 border-l-purple-500">
+                      <Card className="border-l-4 border-l-[#6F8A9D]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-gray-600">Activities</CardTitle>
+                          <CardTitle className="text-sm text-[#5D6E73]">Activities</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-purple-600">
+                          <div className="text-3xl font-bold text-[#546A7A]">
                             {selectedPerson.summary.totalActivities || selectedPerson.summary.activitiesLogged || 0}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Total logged</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Total logged</p>
                         </CardContent>
                       </Card>
 
-                      <Card className="border-l-4 border-l-orange-500">
+                      <Card className="border-l-4 border-l-[#CE9F6B]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-gray-600">Auto Checkouts</CardTitle>
+                          <CardTitle className="text-sm text-[#5D6E73]">Auto Checkouts</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-orange-600">
+                          <div className="text-3xl font-bold text-[#976E44]">
                             {selectedPerson.summary.autoCheckouts || 0}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">System generated</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">System generated</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -540,22 +540,22 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
                 {/* Ticket Performance Metrics */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <Target className="h-5 w-5 text-purple-600" />
+                  <h4 className="text-lg font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+                    <Target className="h-5 w-5 text-[#546A7A]" />
                     Ticket Performance
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <Card className="bg-blue-50 border-blue-200">
+                      <Card className="bg-[#96AEC2]/10 border-[#96AEC2]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-blue-800">Total Tickets</CardTitle>
+                          <CardTitle className="text-sm text-[#546A7A]">Total Tickets</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-blue-700">
+                          <div className="text-3xl font-bold text-[#546A7A]">
                             {selectedPerson.summary.totalTickets || 0}
                           </div>
                           <div className="mt-2 flex items-center justify-between text-xs">
-                            <span className="text-green-700">✓ {selectedPerson.summary.ticketsResolved || 0} resolved</span>
-                            <span className="text-gray-600">
+                            <span className="text-[#4F6A64]">✓ {selectedPerson.summary.ticketsResolved || 0} resolved</span>
+                            <span className="text-[#5D6E73]">
                               {selectedPerson.summary.totalTickets 
                                 ? ((selectedPerson.summary.totalTickets - (selectedPerson.summary.ticketsResolved || 0))) 
                                 : 0
@@ -565,49 +565,49 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         </CardContent>
                       </Card>
                       
-                      <Card className="bg-green-50 border-green-200">
+                      <Card className="bg-[#A2B9AF]/10 border-[#A2B9AF]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-green-800">Resolution Rate</CardTitle>
+                          <CardTitle className="text-sm text-[#4F6A64]">Resolution Rate</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-green-700">
+                          <div className="text-3xl font-bold text-[#4F6A64]">
                             {(() => {
                               const total = selectedPerson.summary.totalTickets || 0;
                               const resolved = selectedPerson.summary.ticketsResolved || 0;
                               return total > 0 ? Math.round((resolved / total) * 100) : 0;
                             })()}%
                           </div>
-                          <p className="text-xs text-green-700 mt-2">Success rate</p>
+                          <p className="text-xs text-[#4F6A64] mt-2">Success rate</p>
                         </CardContent>
                       </Card>
                       
-                      <Card className="bg-amber-50 border-amber-200">
+                      <Card className="bg-[#CE9F6B]/10 border-[#CE9F6B]/50">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-amber-800">Avg Resolution</CardTitle>
+                          <CardTitle className="text-sm text-[#976E44]">Avg Resolution</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-amber-700">
+                          <div className="text-2xl font-bold text-[#976E44]">
                             {(() => {
                               const hours = selectedPerson.summary.averageResolutionTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
-                          <p className="text-xs text-amber-700 mt-2">Business hours</p>
+                          <p className="text-xs text-[#976E44] mt-2">Business hours</p>
                         </CardContent>
                       </Card>
                       
-                      <Card className="bg-purple-50 border-purple-200">
+                      <Card className="bg-[#6F8A9D]/10 border-[#6F8A9D]">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-purple-800">Performance</CardTitle>
+                          <CardTitle className="text-sm text-[#546A7A]">Performance</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-3xl font-bold text-purple-700">
+                          <div className="text-3xl font-bold text-[#546A7A]">
                             {selectedPerson.summary.performanceScore || 0}%
                           </div>
                           <div className="mt-2">
-                            <div className="w-full bg-purple-200 rounded-full h-2">
+                            <div className="w-full bg-[#6F8A9D]/30 rounded-full h-2">
                               <div 
-                                className="bg-purple-600 h-2 rounded-full transition-all"
+                                className="bg-[#546A7A] h-2 rounded-full transition-all"
                                 style={{ width: `${selectedPerson.summary.performanceScore || 0}%` }}
                               />
                             </div>
@@ -619,56 +619,56 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
                 {/* Time Metrics */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-orange-600" />
+                  <h4 className="text-lg font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-[#976E44]" />
                     Time Analysis
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <Card>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm text-gray-600">Avg Travel Time</CardTitle>
-                            <MapPin className="h-4 w-4 text-orange-600" />
+                            <CardTitle className="text-sm text-[#5D6E73]">Avg Travel Time</CardTitle>
+                            <MapPin className="h-4 w-4 text-[#976E44]" />
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-orange-600">
+                          <div className="text-2xl font-bold text-[#976E44]">
                             {(() => {
                               const hours = selectedPerson.summary.averageTravelTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Per ticket (real-time)</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Per ticket (real-time)</p>
                         </CardContent>
                       </Card>
                       
                       <Card>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm text-gray-600">Avg Onsite Time</CardTitle>
-                            <Clock3 className="h-4 w-4 text-purple-600" />
+                            <CardTitle className="text-sm text-[#5D6E73]">Avg Onsite Time</CardTitle>
+                            <Clock3 className="h-4 w-4 text-[#546A7A]" />
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-purple-600">
+                          <div className="text-2xl font-bold text-[#546A7A]">
                             {(() => {
                               const hours = selectedPerson.summary.averageOnsiteTimeHours || 0;
                               return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Per ticket (onsite)</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Per ticket (onsite)</p>
                         </CardContent>
                       </Card>
 
                       <Card>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm text-gray-600">Total Work Time</CardTitle>
-                            <Timer className="h-4 w-4 text-blue-600" />
+                            <CardTitle className="text-sm text-[#5D6E73]">Total Work Time</CardTitle>
+                            <Timer className="h-4 w-4 text-[#546A7A]" />
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-blue-600">
+                          <div className="text-2xl font-bold text-[#546A7A]">
                             {(() => {
                               const travel = selectedPerson.summary.averageTravelTimeHours || 0;
                               const onsite = selectedPerson.summary.averageOnsiteTimeHours || 0;
@@ -676,7 +676,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                               return total > 0 ? `${total.toFixed(1)}h` : 'N/A';
                             })()} 
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Travel + Onsite avg</p>
+                          <p className="text-xs text-[#AEBFC3]0 mt-1">Travel + Onsite avg</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -684,8 +684,8 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
               </TabsContent>
               
               <TabsContent value="daily" className="space-y-4">
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-blue-800">
+                <div className="mb-4 p-3 bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-[#546A7A]">
                     <Info className="h-4 w-4" />
                     <span>Detailed day-by-day attendance with all activities and times</span>
                   </div>
@@ -702,13 +702,13 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         <Card key={index} className="overflow-hidden">
                           <CardContent className="p-0">
                             {/* Header Section */}
-                            <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b">
+                            <div className="p-4 bg-gradient-to-r from-[#AEBFC3]/10 to-white border-b">
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-3">
-                                  <Calendar className="h-5 w-5 text-blue-600" />
+                                  <Calendar className="h-5 w-5 text-[#546A7A]" />
                                   <div>
-                                    <div className="font-semibold text-gray-900">{formatDate(day.date)}</div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="font-semibold text-[#546A7A]">{formatDate(day.date)}</div>
+                                    <div className="text-xs text-[#AEBFC3]0">
                                       {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' })}
                                     </div>
                                   </div>
@@ -718,38 +718,38 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                   </Badge>
                                 </div>
                                 <div className="text-right">
-                                  <div className="text-2xl font-bold text-gray-900">{Number(day.totalHours).toFixed(1)}h</div>
-                                  <div className="text-xs text-gray-500">Total Hours</div>
+                                  <div className="text-2xl font-bold text-[#546A7A]">{Number(day.totalHours).toFixed(1)}h</div>
+                                  <div className="text-xs text-[#AEBFC3]0">Total Hours</div>
                                 </div>
                               </div>
                               
                               {/* Time Details */}
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-green-100 rounded-lg">
-                                    <Clock className="h-4 w-4 text-green-700" />
+                                  <div className="p-2 bg-[#A2B9AF]/20 rounded-lg">
+                                    <Clock className="h-4 w-4 text-[#4F6A64]" />
                                   </div>
                                   <div>
-                                    <div className="text-xs text-gray-600">Check-in</div>
-                                    <div className="font-semibold text-gray-900">{formatTime(day.checkInTime)}</div>
+                                    <div className="text-xs text-[#5D6E73]">Check-in</div>
+                                    <div className="font-semibold text-[#546A7A]">{formatTime(day.checkInTime)}</div>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-red-100 rounded-lg">
-                                    <Clock className="h-4 w-4 text-red-700" />
+                                  <div className="p-2 bg-[#E17F70]/20 rounded-lg">
+                                    <Clock className="h-4 w-4 text-[#75242D]" />
                                   </div>
                                   <div>
-                                    <div className="text-xs text-gray-600">Check-out</div>
-                                    <div className="font-semibold text-gray-900">{formatTime(day.checkOutTime)}</div>
+                                    <div className="text-xs text-[#5D6E73]">Check-out</div>
+                                    <div className="font-semibold text-[#546A7A]">{formatTime(day.checkOutTime)}</div>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="p-2 bg-purple-100 rounded-lg">
-                                    <Activity className="h-4 w-4 text-purple-700" />
+                                  <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
+                                    <Activity className="h-4 w-4 text-[#546A7A]" />
                                   </div>
                                   <div>
-                                    <div className="text-xs text-gray-600">Activities</div>
-                                    <div className="font-semibold text-gray-900">{day.activityCount}</div>
+                                    <div className="text-xs text-[#5D6E73]">Activities</div>
+                                    <div className="font-semibold text-[#546A7A]">{day.activityCount}</div>
                                   </div>
                                 </div>
                               </div>
@@ -760,7 +760,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                               <div className="p-4">
                                 <button
                                   onClick={() => toggleDay(dayKey)}
-                                  className="w-full flex items-center justify-between text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                                  className="w-full flex items-center justify-between text-sm font-medium text-[#5D6E73] hover:text-[#546A7A] transition-colors"
                                 >
                                   <span className="flex items-center gap-2">
                                     <Activity className="h-4 w-4" />
@@ -779,36 +779,36 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                 {isExpanded && (
                                   <div className="mt-3 space-y-2">
                                     {day.activities.map((activity, actIdx) => (
-                                      <div key={actIdx} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                      <div key={actIdx} className="p-3 bg-[#AEBFC3]/10 rounded-lg border border-[#92A2A5]">
                                         <div className="flex items-start justify-between mb-2">
                                           <div className="flex-1">
-                                            <div className="font-medium text-gray-900">{activity.title}</div>
+                                            <div className="font-medium text-[#546A7A]">{activity.title}</div>
                                             <Badge variant="outline" className="text-xs mt-1">{activity.activityType}</Badge>
                                           </div>
                                           {activity.duration && (
-                                            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                                            <Badge className="bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]">
                                               {Math.round(activity.duration)}m
                                             </Badge>
                                           )}
                                         </div>
-                                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mt-2">
+                                        <div className="grid grid-cols-2 gap-2 text-xs text-[#5D6E73] mt-2">
                                           <div>
-                                            <span className="text-gray-500">Start:</span> {formatTime(activity.startTime)}
+                                            <span className="text-[#AEBFC3]0">Start:</span> {formatTime(activity.startTime)}
                                           </div>
                                           <div>
-                                            <span className="text-gray-500">End:</span> {formatTime(activity.endTime)}
+                                            <span className="text-[#AEBFC3]0">End:</span> {formatTime(activity.endTime)}
                                           </div>
                                         </div>
                                         {activity.location && (
-                                          <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+                                          <div className="flex items-center gap-1 text-xs text-[#5D6E73] mt-2">
                                             <MapPin className="h-3 w-3" />
                                             <span className="truncate">{activity.location}</span>
                                           </div>
                                         )}
                                         {activity.ticket && (
-                                          <div className="mt-2 p-2 bg-white rounded border border-blue-200">
-                                            <div className="text-xs text-blue-800 font-medium">Ticket #{activity.ticketId}</div>
-                                            <div className="text-xs text-gray-600 truncate">{activity.ticket.title}</div>
+                                          <div className="mt-2 p-2 bg-white rounded border border-[#96AEC2]">
+                                            <div className="text-xs text-[#546A7A] font-medium">Ticket #{activity.ticketId}</div>
+                                            <div className="text-xs text-[#5D6E73] truncate">{activity.ticket.title}</div>
                                           </div>
                                         )}
                                       </div>
@@ -828,12 +828,12 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
               <TabsContent value="activities" className="space-y-4">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Activity className="h-5 w-5 text-purple-700" />
+                    <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
+                      <Activity className="h-5 w-5 text-[#546A7A]" />
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">All Activities</div>
-                      <div className="text-xs text-gray-600">
+                      <div className="font-semibold text-[#546A7A]">All Activities</div>
+                      <div className="text-xs text-[#5D6E73]">
                         {selectedPerson.dayWiseBreakdown.reduce((sum, day) => sum + day.activityCount, 0)} total activities
                       </div>
                     </div>
@@ -847,10 +847,10 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       return (
                         <div key={day.date}>
                           {/* Date Header */}
-                          <div className="sticky top-0 z-10 bg-white border-b-2 border-blue-600 pb-2 mb-3">
+                          <div className="sticky top-0 z-10 bg-white border-b-2 border-[#546A7A] pb-2 mb-3">
                             <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-blue-600" />
-                              <span className="font-semibold text-gray-900">{formatDate(day.date)}</span>
+                              <Calendar className="h-4 w-4 text-[#546A7A]" />
+                              <span className="font-semibold text-[#546A7A]">{formatDate(day.date)}</span>
                               <Badge variant="outline" className="text-xs">
                                 {day.activities.length} {day.activities.length === 1 ? 'activity' : 'activities'}
                               </Badge>
@@ -860,21 +860,21 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                           {/* Activities for this day */}
                           <div className="space-y-3 ml-6">
                             {day.activities.map((activity, index) => (
-                              <Card key={`${day.date}-${index}`} className="border-l-4 border-l-purple-500">
+                              <Card key={`${day.date}-${index}`} className="border-l-4 border-l-[#6F8A9D]">
                                 <CardContent className="p-4">
                                   {/* Activity Header */}
                                   <div className="flex items-start justify-between mb-3">
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2 mb-1">
-                                        <Activity className="h-4 w-4 text-purple-600" />
-                                        <span className="font-semibold text-gray-900">{activity.title}</span>
+                                        <Activity className="h-4 w-4 text-[#546A7A]" />
+                                        <span className="font-semibold text-[#546A7A]">{activity.title}</span>
                                       </div>
                                       <div className="flex items-center gap-2 mt-1">
-                                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                        <Badge variant="outline" className="text-xs bg-[#6F8A9D]/10 text-[#546A7A] border-[#6F8A9D]">
                                           {activity.activityType}
                                         </Badge>
                                         {activity.duration && (
-                                          <Badge className="text-xs bg-gray-100 text-gray-700 border-gray-300">
+                                          <Badge className="text-xs bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]">
                                             <Timer className="h-3 w-3 mr-1" />
                                             {Math.round(activity.duration)} minutes
                                           </Badge>
@@ -885,18 +885,18 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                   
                                   {/* Time Details */}
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                                    <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                                      <Clock className="h-4 w-4 text-green-700" />
+                                    <div className="flex items-center gap-2 p-2 bg-[#A2B9AF]/10 rounded-lg">
+                                      <Clock className="h-4 w-4 text-[#4F6A64]" />
                                       <div>
-                                        <div className="text-xs text-green-700 font-medium">Start Time</div>
-                                        <div className="text-sm font-semibold text-gray-900">{formatTime(activity.startTime)}</div>
+                                        <div className="text-xs text-[#4F6A64] font-medium">Start Time</div>
+                                        <div className="text-sm font-semibold text-[#546A7A]">{formatTime(activity.startTime)}</div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
-                                      <Clock className="h-4 w-4 text-red-700" />
+                                    <div className="flex items-center gap-2 p-2 bg-[#E17F70]/10 rounded-lg">
+                                      <Clock className="h-4 w-4 text-[#75242D]" />
                                       <div>
-                                        <div className="text-xs text-red-700 font-medium">End Time</div>
-                                        <div className="text-sm font-semibold text-gray-900">
+                                        <div className="text-xs text-[#75242D] font-medium">End Time</div>
+                                        <div className="text-sm font-semibold text-[#546A7A]">
                                           {activity.endTime ? formatTime(activity.endTime) : 'In Progress'}
                                         </div>
                                       </div>
@@ -905,26 +905,26 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                   
                                   {/* Location */}
                                   {activity.location && (
-                                    <div className="flex items-start gap-2 p-2 bg-orange-50 rounded-lg mb-3">
-                                      <MapPin className="h-4 w-4 text-orange-700 mt-0.5" />
+                                    <div className="flex items-start gap-2 p-2 bg-[#CE9F6B]/10 rounded-lg mb-3">
+                                      <MapPin className="h-4 w-4 text-[#976E44] mt-0.5" />
                                       <div className="flex-1">
-                                        <div className="text-xs text-orange-700 font-medium">Location</div>
-                                        <div className="text-sm text-gray-900 break-words">{activity.location}</div>
+                                        <div className="text-xs text-[#976E44] font-medium">Location</div>
+                                        <div className="text-sm text-[#546A7A] break-words">{activity.location}</div>
                                       </div>
                                     </div>
                                   )}
                                   
                                   {/* Ticket Details */}
                                   {activity.ticket && (
-                                    <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                                    <div className="p-3 bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-lg border border-[#96AEC2]">
                                       <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center gap-2">
-                                          <div className="p-1.5 bg-blue-600 rounded">
+                                          <div className="p-1.5 bg-[#6F8A9D] rounded">
                                             <FileText className="h-3 w-3 text-white" />
                                           </div>
                                           <div>
-                                            <div className="text-xs text-blue-700 font-medium">Ticket #{activity.ticketId}</div>
-                                            <div className="text-sm font-semibold text-gray-900">{activity.ticket.title}</div>
+                                            <div className="text-xs text-[#546A7A] font-medium">Ticket #{activity.ticketId}</div>
+                                            <div className="text-sm font-semibold text-[#546A7A]">{activity.ticket.title}</div>
                                           </div>
                                         </div>
                                         {activity.ticket.status && (
@@ -938,7 +938,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                         )}
                                       </div>
                                       {activity.ticket.customer && (
-                                        <div className="flex items-center gap-2 text-xs text-gray-700 mt-2">
+                                        <div className="flex items-center gap-2 text-xs text-[#5D6E73] mt-2">
                                           <Users className="h-3 w-3" />
                                           <span className="font-medium">Customer:</span>
                                           <span>{activity.ticket.customer.companyName}</span>
@@ -977,8 +977,8 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
             <div className="border-b pb-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-blue-600" />
-                  <h2 className="text-lg font-semibold text-gray-900">{selectedPerson?.name}</h2>
+                  <User className="h-5 w-5 text-[#546A7A]" />
+                  <h2 className="text-lg font-semibold text-[#546A7A]">{selectedPerson?.name}</h2>
                 </div>
                 
                 {/* Mobile Export Buttons */}
@@ -987,7 +987,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                     variant="outline"
                     size="sm"
                     onClick={() => handleExport('excel')}
-                    className="text-green-600 hover:bg-green-50 border-green-200 h-8 px-2"
+                    className="text-[#4F6A64] hover:bg-[#A2B9AF]/10 border-[#A2B9AF] h-8 px-2"
                   >
                     <FileSpreadsheet className="h-3.5 w-3.5" />
                   </Button>
@@ -996,13 +996,13 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                     variant="outline"
                     size="sm"
                     onClick={() => handleExport('pdf')}
-                    className="text-red-600 hover:bg-red-50 border-red-200 h-8 px-2"
+                    className="text-[#9E3B47] hover:bg-[#E17F70]/10 border-[#E17F70] h-8 px-2"
                   >
                     <Download className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[#5D6E73]">
                 Attendance Details for {dateRange.from && dateRange.to 
                   ? `${formatDate(dateRange.from)} to ${formatDate(dateRange.to)}`
                   : 'selected period'
@@ -1022,52 +1022,52 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                   <div className="space-y-4">
                     {/* Key Metrics */}
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                        <div className="text-lg font-bold text-green-600">
+                      <div className="bg-[#A2B9AF]/10 p-3 rounded-lg border border-[#A2B9AF]">
+                        <div className="text-lg font-bold text-[#4F6A64]">
                           {selectedPerson.summary.presentDays || selectedPerson.summary.totalWorkingDays || 0}
                         </div>
-                        <div className="text-xs text-green-700">Working Days</div>
+                        <div className="text-xs text-[#4F6A64]">Working Days</div>
                       </div>
                       
-                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                        <div className="text-lg font-bold text-blue-600">
+                      <div className="bg-[#96AEC2]/10 p-3 rounded-lg border border-[#96AEC2]">
+                        <div className="text-lg font-bold text-[#546A7A]">
                           {Number(selectedPerson.summary.totalHours).toFixed(1)}h
                         </div>
-                        <div className="text-xs text-blue-700">Total Hours</div>
+                        <div className="text-xs text-[#546A7A]">Total Hours</div>
                       </div>
                       
-                      <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                        <div className="text-lg font-bold text-red-600">
+                      <div className="bg-[#E17F70]/10 p-3 rounded-lg border border-[#E17F70]">
+                        <div className="text-lg font-bold text-[#9E3B47]">
                           {selectedPerson.summary.absentDays}
                         </div>
-                        <div className="text-xs text-red-700">Absent Days</div>
+                        <div className="text-xs text-[#75242D]">Absent Days</div>
                       </div>
                       
-                      <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                        <div className="text-lg font-bold text-purple-600">
+                      <div className="bg-[#6F8A9D]/10 p-3 rounded-lg border border-[#6F8A9D]">
+                        <div className="text-lg font-bold text-[#546A7A]">
                           {selectedPerson.summary.totalActivities || selectedPerson.summary.activitiesLogged || 0}
                         </div>
-                        <div className="text-xs text-purple-700">Activities</div>
+                        <div className="text-xs text-[#546A7A]">Activities</div>
                       </div>
                     </div>
 
                     {/* Performance Metrics */}
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                        <Target className="h-4 w-4 text-purple-600" />
+                      <h4 className="text-sm font-semibold text-[#546A7A] flex items-center gap-2">
+                        <Target className="h-4 w-4 text-[#546A7A]" />
                         Performance
                       </h4>
                       <div className="grid grid-cols-1 gap-3">
-                        <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="bg-[#AEBFC3]/10 p-3 rounded-lg">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Total Tickets</span>
-                            <span className="font-semibold text-blue-600">{selectedPerson.summary.totalTickets || 0}</span>
+                            <span className="text-sm text-[#5D6E73]">Total Tickets</span>
+                            <span className="font-semibold text-[#546A7A]">{selectedPerson.summary.totalTickets || 0}</span>
                           </div>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="bg-[#AEBFC3]/10 p-3 rounded-lg">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Resolution Rate</span>
-                            <span className="font-semibold text-green-600">
+                            <span className="text-sm text-[#5D6E73]">Resolution Rate</span>
+                            <span className="font-semibold text-[#4F6A64]">
                               {(() => {
                                 const total = selectedPerson.summary.totalTickets || 0;
                                 const resolved = selectedPerson.summary.ticketsResolved || 0;
@@ -1076,10 +1076,10 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                             </span>
                           </div>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="bg-[#AEBFC3]/10 p-3 rounded-lg">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Performance Score</span>
-                            <span className="font-semibold text-purple-600">{selectedPerson.summary.performanceScore || 0}%</span>
+                            <span className="text-sm text-[#5D6E73]">Performance Score</span>
+                            <span className="font-semibold text-[#546A7A]">{selectedPerson.summary.performanceScore || 0}%</span>
                           </div>
                         </div>
                       </div>
@@ -1087,22 +1087,22 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
 
                     {/* Additional Metrics */}
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-orange-600" />
+                      <h4 className="text-sm font-semibold text-[#546A7A] flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-[#976E44]" />
                         Additional Info
                       </h4>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                          <div className="text-lg font-bold text-orange-600">
+                        <div className="bg-[#CE9F6B]/10 p-3 rounded-lg border border-[#CE9F6B]">
+                          <div className="text-lg font-bold text-[#976E44]">
                             {selectedPerson.summary.autoCheckouts || 0}
                           </div>
-                          <div className="text-xs text-orange-700">Auto Checkouts</div>
+                          <div className="text-xs text-[#976E44]">Auto Checkouts</div>
                         </div>
-                        <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
-                          <div className="text-lg font-bold text-indigo-600">
+                        <div className="bg-[#546A7A]/10 p-3 rounded-lg border border-[#546A7A]">
+                          <div className="text-lg font-bold text-[#546A7A]">
                             {Number(selectedPerson.summary.averageHoursPerDay || 0).toFixed(1)}h
                           </div>
-                          <div className="text-xs text-indigo-700">Avg Hours/Day</div>
+                          <div className="text-xs text-[#546A7A]">Avg Hours/Day</div>
                         </div>
                       </div>
                     </div>
@@ -1117,13 +1117,13 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                         const StatusIcon = statusConfig.icon;
                         
                         return (
-                          <div key={index} className="bg-white border border-gray-200 rounded-lg p-3">
+                          <div key={index} className="bg-white border border-[#92A2A5] rounded-lg p-3">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <Calendar className="h-3 w-3 text-gray-600" />
+                                <Calendar className="h-3 w-3 text-[#5D6E73]" />
                                 <span className="text-sm font-medium">{formatDate(day.date)}</span>
                               </div>
-                              <div className="text-xs text-gray-600">
+                              <div className="text-xs text-[#5D6E73]">
                                 {Number(day.totalHours).toFixed(1)}h
                               </div>
                             </div>
@@ -1137,11 +1137,11 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                             
                             <div className="grid grid-cols-2 gap-2 text-xs">
                               <div>
-                                <span className="text-gray-500">In:</span>
+                                <span className="text-[#AEBFC3]0">In:</span>
                                 <span className="ml-1 font-medium">{formatTime(day.checkInTime)}</span>
                               </div>
                               <div>
-                                <span className="text-gray-500">Out:</span>
+                                <span className="text-[#AEBFC3]0">Out:</span>
                                 <span className="ml-1 font-medium">{formatTime(day.checkOutTime)}</span>
                               </div>
                             </div>
@@ -1152,7 +1152,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                                   const flagConfig = FLAG_CONFIG[flag.type as keyof typeof FLAG_CONFIG];
                                   const FlagIcon = flagConfig?.icon || AlertTriangle;
                                   return (
-                                    <div key={flagIndex} className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${flagConfig?.color || 'bg-gray-100 text-gray-800'} border`}>
+                                    <div key={flagIndex} className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${flagConfig?.color || 'bg-[#AEBFC3]/20 text-[#546A7A]'} border`}>
                                       <FlagIcon className="h-2 w-2" />
                                       {flag.message.substring(0, 20)}...
                                     </div>
@@ -1165,7 +1165,7 @@ export function ServicePersonAttendanceReport({ reportData }: ServicePersonAtten
                       })}
                       {selectedPerson.dayWiseBreakdown.length > 10 && (
                         <div className="text-center py-2">
-                          <span className="text-xs text-gray-500">Showing first 10 days</span>
+                          <span className="text-xs text-[#AEBFC3]0">Showing first 10 days</span>
                         </div>
                       )}
                     </div>

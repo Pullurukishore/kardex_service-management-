@@ -8,7 +8,7 @@ import {
   ArrowLeft, Edit, Trash2, FileText, Calendar, User, IndianRupee, Clock, 
   AlertTriangle, CheckCircle, Loader2, Mail, Phone, MapPin, Building, 
   CreditCard, Hash, Receipt, Truck, MessageSquare, Shield, Copy, 
-  ExternalLink, Printer, Download, RefreshCw, Plus, X
+  ExternalLink, Printer, Download, RefreshCw, Plus, X, Sparkles
 } from 'lucide-react';
 
 export default function InvoiceViewPage() {
@@ -20,7 +20,6 @@ export default function InvoiceViewPage() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   
-  // Payment Modal State
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentForm, setPaymentForm] = useState({
@@ -90,7 +89,6 @@ export default function InvoiceViewPage() {
         notes: ''
       });
       
-      // Reload invoice to show new payment
       await loadInvoice(invoice.id);
     } catch (err) {
       console.error('Failed to record payment:', err);
@@ -108,35 +106,34 @@ export default function InvoiceViewPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'PAID': return { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30', icon: CheckCircle, glow: 'shadow-emerald-500/20' };
-      case 'PARTIAL': return { bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30', icon: Clock, glow: 'shadow-amber-500/20' };
-      case 'OVERDUE': return { bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/30', icon: AlertTriangle, glow: 'shadow-red-500/20' };
-      case 'PENDING': return { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30', icon: Clock, glow: 'shadow-blue-500/20' };
-      case 'CANCELLED': return { bg: 'bg-gray-500/15', text: 'text-gray-400', border: 'border-gray-500/30', icon: FileText, glow: '' };
-      default: return { bg: 'bg-gray-500/15', text: 'text-gray-400', border: 'border-gray-500/30', icon: FileText, glow: '' };
+      case 'PAID': return { bg: 'bg-gradient-to-r from-[#82A094] to-[#4F6A64]', text: 'text-white', icon: CheckCircle };
+      case 'PARTIAL': return { bg: 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44]', text: 'text-white', icon: Clock };
+      case 'OVERDUE': return { bg: 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47]', text: 'text-white', icon: AlertTriangle };
+      case 'PENDING': return { bg: 'bg-gradient-to-r from-[#6F8A9D] to-[#546A7A]', text: 'text-white', icon: Clock };
+      case 'CANCELLED': return { bg: 'bg-gradient-to-r from-[#AEBFC3] to-[#92A2A5]', text: 'text-white', icon: FileText };
+      default: return { bg: 'bg-gradient-to-r from-[#AEBFC3] to-[#92A2A5]', text: 'text-white', icon: FileText };
     }
   };
 
   const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'LOW': return { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
-      case 'MEDIUM': return { bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30' };
-      case 'HIGH': return { bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/30' };
-      case 'CRITICAL': return { bg: 'bg-red-600/20', text: 'text-red-300', border: 'border-red-500/40' };
-      default: return { bg: 'bg-gray-500/15', text: 'text-gray-400', border: 'border-gray-500/30' };
+      case 'LOW': return 'bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white';
+      case 'MEDIUM': return 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white';
+      case 'HIGH': return 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white';
+      case 'CRITICAL': return 'bg-gradient-to-r from-[#9E3B47] to-[#75242D] text-white';
+      default: return 'bg-[#AEBFC3]/15 text-[#5D6E73] border border-[#AEBFC3]/40';
     }
   };
 
   const getDeliveryBadge = (status: string) => {
     switch (status) {
-      case 'DELIVERED': return { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' };
-      case 'SENT': return { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30' };
-      case 'ACKNOWLEDGED': return { bg: 'bg-purple-500/15', text: 'text-purple-400', border: 'border-purple-500/30' };
-      default: return { bg: 'bg-gray-500/15', text: 'text-gray-400', border: 'border-gray-500/30' };
+      case 'DELIVERED': return 'bg-[#4F6A64]/15 text-[#4F6A64] border border-[#82A094]/40';
+      case 'SENT': return 'bg-[#CE9F6B]/15 text-[#976E44] border border-[#CE9F6B]/40';
+      case 'ACKNOWLEDGED': return 'bg-[#6F8A9D]/15 text-[#546A7A] border border-[#6F8A9D]/40';
+      default: return 'bg-[#AEBFC3]/15 text-[#5D6E73] border border-[#AEBFC3]/40';
     }
   };
 
-  // Field display component
   const Field = ({ label, value, copyable = false, highlight = false, className = '' }: { 
     label: string; 
     value: string | number | null | undefined; 
@@ -145,17 +142,17 @@ export default function InvoiceViewPage() {
     className?: string;
   }) => (
     <div className={className}>
-      <p className="text-white/40 text-xs uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1.5 font-medium">{label}</p>
       <div className="flex items-center gap-2">
-        <p className={`font-medium ${highlight ? 'text-cyan-400' : value ? 'text-white' : 'text-white/25'}`}>
+        <p className={`font-semibold ${highlight ? 'text-[#E17F70]' : value ? 'text-[#546A7A]' : 'text-[#AEBFC3]'}`}>
           {value || '-'}
         </p>
         {copyable && value && (
           <button 
             onClick={() => copyToClipboard(String(value))}
-            className="p-1 rounded hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[#E17F70]/10 transition-colors"
           >
-            <Copy className="w-3 h-3 text-white/30 hover:text-white/60" />
+            <Copy className="w-3.5 h-3.5 text-[#92A2A5] hover:text-[#E17F70]" />
           </button>
         )}
       </div>
@@ -170,12 +167,12 @@ export default function InvoiceViewPage() {
             {[0, 1, 2].map((i) => (
               <div 
                 key={i}
-                className="w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-bounce"
+                className="w-4 h-4 rounded-full bg-gradient-to-r from-[#E17F70] to-[#CE9F6B] animate-bounce"
                 style={{ animationDelay: `${i * 0.15}s` }}
               />
             ))}
           </div>
-          <span className="text-white/40 text-sm">Loading invoice...</span>
+          <span className="text-[#92A2A5] text-sm">Loading invoice...</span>
         </div>
       </div>
     );
@@ -185,10 +182,12 @@ export default function InvoiceViewPage() {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
         <div className="text-center">
-          <FileText className="w-16 h-16 text-white/10 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Invoice Not Found</h2>
-          <p className="text-white/40 mb-6">{error || "The invoice you're looking for doesn't exist."}</p>
-          <Link href="/finance/ar/invoices" className="text-purple-400 hover:text-purple-300">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#E17F70]/20 to-[#CE9F6B]/20 flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-12 h-12 text-[#CE9F6B]" />
+          </div>
+          <h2 className="text-xl font-bold text-[#546A7A] mb-2">Invoice Not Found</h2>
+          <p className="text-[#92A2A5] mb-6">{error || "The invoice you're looking for doesn't exist."}</p>
+          <Link href="/finance/ar/invoices" className="text-[#E17F70] hover:text-[#9E3B47] font-semibold">
             ← Back to Invoices
           </Link>
         </div>
@@ -198,10 +197,7 @@ export default function InvoiceViewPage() {
 
   const statusInfo = getStatusBadge(invoice.status);
   const StatusIcon = statusInfo.icon;
-  const riskInfo = getRiskBadge(invoice.riskClass);
-  const deliveryInfo = getDeliveryBadge(invoice.deliveryStatus);
   
-  // Parse amounts
   const totalAmount = Number(invoice.totalAmount || 0);
   const netAmount = Number(invoice.netAmount || 0);
   const taxAmount = Number(invoice.taxAmount || 0);
@@ -211,130 +207,147 @@ export default function InvoiceViewPage() {
   const balanceAmount = Number(invoice.balance) || (totalAmount - totalReceived);
   const paymentProgress = totalAmount > 0 ? Math.min(100, (totalReceived / totalAmount) * 100) : 0;
 
-  // Use backend-calculated values or calculate locally
   const daysOverdue = (invoice as any).daysOverdue || 0;
   const isOverdue = (invoice as any).isOverdue || (daysOverdue > 0 && invoice.status !== 'PAID');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Decorative Background */}
+      <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-to-br from-[#E17F70]/10 to-[#CE9F6B]/10 rounded-full blur-3xl pointer-events-none" />
+
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-4">
-          <Link 
-            href="/finance/ar/invoices"
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
-                {invoice.invoiceNumber}
-              </h1>
-              <span className={`px-3 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-1.5 shadow-lg ${statusInfo.bg} ${statusInfo.text} ${statusInfo.border} ${statusInfo.glow}`}>
-                <StatusIcon className="w-4 h-4" />
-                {invoice.status}
-              </span>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${riskInfo.bg} ${riskInfo.text} ${riskInfo.border}`}>
-                {invoice.riskClass} RISK
-              </span>
-            </div>
-            <p className="text-white/40 text-sm mt-1">{invoice.customerName} • {invoice.bpCode}</p>
-          </div>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#E17F70] via-[#CE9F6B] to-[#976E44] p-6 shadow-xl">
+        {/* Decorative Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-12 w-32 h-32 border-4 border-white rounded-full" />
+          <div className="absolute -bottom-8 right-32 w-48 h-48 border-4 border-white rounded-full" />
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => loadInvoice(params.id as string)}
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all"
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setShowPaymentModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-all font-medium"
-          >
-            <IndianRupee className="w-4 h-4" />
-            Record Payment
-          </button>
-          <Link
-            href={`/finance/ar/invoices/${encodeURIComponent(invoice.invoiceNumber)}/edit`}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
-          >
-            <Edit className="w-4 h-4" />
-            Edit
-          </Link>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
-          >
-            {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-            Delete
-          </button>
+
+        <div className="relative flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/finance/ar/invoices"
+              className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl font-bold text-white">
+                  {invoice.invoiceNumber}
+                </h1>
+                <span className={`px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 ${statusInfo.bg} ${statusInfo.text} shadow-lg`}>
+                  <StatusIcon className="w-4 h-4" />
+                  {invoice.status}
+                </span>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${getRiskBadge(invoice.riskClass)} shadow-md`}>
+                  {invoice.riskClass} RISK
+                </span>
+              </div>
+              <p className="text-white/80 text-sm mt-1">{invoice.customerName} • {invoice.bpCode}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => loadInvoice(params.id as string)}
+              className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all"
+              title="Refresh"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowPaymentModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#4F6A64] font-semibold hover:shadow-lg transition-all"
+            >
+              <IndianRupee className="w-4 h-4" />
+              Record Payment
+            </button>
+            <Link
+              href={`/finance/ar/invoices/${encodeURIComponent(invoice.invoiceNumber)}/edit`}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all"
+            >
+              <Edit className="w-4 h-4" />
+              Edit
+            </Link>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#75242D]/80 backdrop-blur-sm border border-[#9E3B47]/50 text-white hover:bg-[#75242D] transition-all disabled:opacity-50"
+            >
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              Delete
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Copied Toast */}
       {copied && (
-        <div className="fixed top-4 right-4 px-4 py-2 bg-emerald-500 text-white rounded-lg shadow-lg animate-fade-in z-50">
+        <div className="fixed top-4 right-4 px-4 py-2 bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white rounded-lg shadow-xl animate-fade-in z-50">
           Copied to clipboard!
         </div>
       )}
 
       {/* Financial Summary Card */}
-      <div className="bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent backdrop-blur-xl rounded-2xl border border-purple-500/20 p-6 shadow-lg shadow-purple-500/5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="text-center p-4 rounded-xl bg-white/5">
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Total Amount</p>
-            <p className="text-xl lg:text-2xl font-bold text-white">{formatARCurrency(totalAmount)}</p>
+      <div className="relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-xl">
+        <div className="absolute -top-20 -right-20 w-48 h-48 bg-gradient-to-br from-[#E17F70]/10 to-[#CE9F6B]/10 rounded-full blur-2xl" />
+        
+        <div className="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="text-center p-4 rounded-xl bg-gradient-to-br from-white to-[#AEBFC3]/10 border border-[#AEBFC3]/30 shadow-sm">
+            <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-2 font-medium">Total Amount</p>
+            <p className="text-xl lg:text-2xl font-bold text-[#546A7A]">{formatARCurrency(totalAmount)}</p>
           </div>
-          <div className="text-center p-4 rounded-xl bg-white/5">
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Net Amount</p>
-            <p className="text-xl lg:text-2xl font-bold text-cyan-400">{formatARCurrency(netAmount)}</p>
+          <div className="text-center p-4 rounded-xl bg-gradient-to-br from-white to-[#6F8A9D]/10 border border-[#6F8A9D]/30 shadow-sm">
+            <p className="text-[#6F8A9D] text-xs uppercase tracking-wider mb-2 font-medium">Net Amount</p>
+            <p className="text-xl lg:text-2xl font-bold text-[#6F8A9D]">{formatARCurrency(netAmount)}</p>
           </div>
-          <div className="text-center p-4 rounded-xl bg-white/5">
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Tax</p>
-            <p className="text-xl lg:text-2xl font-bold text-purple-400">{taxAmount > 0 ? `${taxAmount}%` : '-'}</p>
+          <div className="text-center p-4 rounded-xl bg-gradient-to-br from-white to-[#AEBFC3]/10 border border-[#AEBFC3]/30 shadow-sm">
+            <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-2 font-medium">Tax</p>
+            <p className="text-xl lg:text-2xl font-bold text-[#5D6E73]">{taxAmount > 0 ? `${taxAmount}%` : '-'}</p>
           </div>
-          <div className="text-center p-4 rounded-xl bg-white/5">
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Receipts</p>
-            <p className="text-xl lg:text-2xl font-bold text-blue-400">{formatARCurrency(receipts)}</p>
+          <div className="text-center p-4 rounded-xl bg-gradient-to-br from-white to-[#AEBFC3]/10 border border-[#AEBFC3]/30 shadow-sm">
+            <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-2 font-medium">Receipts</p>
+            <p className="text-xl lg:text-2xl font-bold text-[#5D6E73]">{formatARCurrency(receipts)}</p>
           </div>
-          <div className="text-center p-4 rounded-xl bg-emerald-500/10">
-            <p className="text-emerald-400/60 text-xs uppercase tracking-wider mb-2">Total Receipts</p>
-            <p className="text-xl lg:text-2xl font-bold text-emerald-400">{formatARCurrency(totalReceived)}</p>
+          <div className="text-center p-4 rounded-xl bg-gradient-to-br from-[#82A094]/10 to-[#4F6A64]/10 border border-[#82A094]/30 shadow-sm">
+            <p className="text-[#82A094] text-xs uppercase tracking-wider mb-2 font-medium">Total Receipts</p>
+            <p className="text-xl lg:text-2xl font-bold text-[#4F6A64]">{formatARCurrency(totalReceived)}</p>
           </div>
-          <div className={`text-center p-4 rounded-xl ${balanceAmount > 0 ? 'bg-amber-500/10' : 'bg-emerald-500/10'}`}>
-            <p className={`${balanceAmount > 0 ? 'text-amber-400/60' : 'text-emerald-400/60'} text-xs uppercase tracking-wider mb-2`}>Balance</p>
-            <p className={`text-xl lg:text-2xl font-bold ${balanceAmount > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+          <div className={`text-center p-4 rounded-xl ${balanceAmount > 0 ? 'bg-gradient-to-br from-[#E17F70]/10 to-[#CE9F6B]/10 border-[#E17F70]/30' : 'bg-gradient-to-br from-[#82A094]/10 to-[#4F6A64]/10 border-[#82A094]/30'} border shadow-sm`}>
+            <p className={`${balanceAmount > 0 ? 'text-[#E17F70]' : 'text-[#82A094]'} text-xs uppercase tracking-wider mb-2 font-medium`}>Balance</p>
+            <p className={`text-xl lg:text-2xl font-bold ${balanceAmount > 0 ? 'text-[#9E3B47]' : 'text-[#4F6A64]'}`}>
               {formatARCurrency(balanceAmount)}
             </p>
           </div>
         </div>
+        
         {/* Progress Bar */}
-        <div className="mt-6">
-          <div className="flex justify-between text-xs text-white/40 mb-2">
+        <div className="relative mt-6">
+          <div className="flex justify-between text-xs text-[#92A2A5] mb-2">
             <span>Payment Progress</span>
-            <span className="text-white/60 font-medium">{Math.round(paymentProgress)}%</span>
+            <span className="text-[#5D6E73] font-bold">{Math.round(paymentProgress)}%</span>
             <span>{formatARCurrency(totalReceived)} of {formatARCurrency(totalAmount)}</span>
           </div>
-          <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-4 bg-[#AEBFC3]/20 rounded-full overflow-hidden shadow-inner">
             <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-[#82A094] via-[#4F6A64] to-[#82A094] rounded-full transition-all duration-500 relative"
               style={{ width: `${paymentProgress}%` }}
-            />
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Grid - 4 Column Layout */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         {/* Column 1: SAP Invoice Details */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-purple-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#E17F70]/20 p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#E17F70] to-[#CE9F6B]">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
             SAP Details
           </h3>
           <div className="space-y-4">
@@ -348,94 +361,95 @@ export default function InvoiceViewPage() {
         </div>
 
         {/* Column 2: Dates & Status */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-cyan-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
             Dates & Status
           </h3>
           <div className="space-y-4">
             <Field label="Invoice Date" value={formatARDate(invoice.invoiceDate)} />
             <Field label="Due Date" value={formatARDate(invoice.dueDate)} />
             <div>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Days Overdue</p>
+              <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1.5 font-medium">Days Overdue</p>
               {daysOverdue > 0 ? (
-                <p className="text-red-400 font-bold bg-red-500/10 px-2 py-1 rounded inline-block">{daysOverdue} days</p>
+                <p className="text-white font-bold bg-gradient-to-r from-[#E17F70] to-[#9E3B47] px-3 py-1.5 rounded-full inline-block shadow-md">{daysOverdue} days</p>
               ) : (
-                <p className="text-emerald-400 font-medium flex items-center gap-1">
-                  <CheckCircle className="w-3.5 h-3.5" /> On Time
+                <p className="text-[#4F6A64] font-semibold flex items-center gap-1.5 bg-[#82A094]/10 px-3 py-1.5 rounded-full inline-flex">
+                  <CheckCircle className="w-4 h-4" /> On Time
                 </p>
               )}
             </div>
             <div className="relative group">
-              <div className="flex items-center gap-1.5 mb-1">
-                <p className="text-white/40 text-xs uppercase tracking-wider">Due By Days</p>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <p className="text-[#92A2A5] text-xs uppercase tracking-wider font-medium">Due By Days</p>
                 <div className="relative">
-                  <Shield className="w-3.5 h-3.5 text-white/30 cursor-help" />
-                  {/* Risk Class Tooltip */}
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-4 py-3 bg-[#1a1d2e] border border-white/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 w-64">
-                    <p className="text-white font-semibold text-xs mb-2">Risk Class Criteria</p>
+                  <Shield className="w-3.5 h-3.5 text-[#92A2A5] cursor-help" />
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-4 py-3 bg-white border-2 border-[#E17F70]/30 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 w-64">
+                    <p className="text-[#546A7A] font-bold text-xs mb-2">Risk Class Criteria</p>
                     <div className="space-y-1.5 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-white/60">≤ 0 days</span>
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">LOW</span>
+                        <span className="text-[#5D6E73]">≤ 0 days</span>
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-medium">LOW</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-white/60">1 - 30 days</span>
-                        <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">MEDIUM</span>
+                        <span className="text-[#5D6E73]">1 - 30 days</span>
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white font-medium">MEDIUM</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-white/60">31 - 90 days</span>
-                        <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">HIGH</span>
+                        <span className="text-[#5D6E73]">31 - 90 days</span>
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white font-medium">HIGH</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-white/60">&gt; 90 days</span>
-                        <span className="px-2 py-0.5 rounded bg-red-600/30 text-red-300 font-medium">CRITICAL</span>
+                        <span className="text-[#5D6E73]">&gt; 90 days</span>
+                        <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9E3B47] to-[#75242D] text-white font-medium">CRITICAL</span>
                       </div>
                     </div>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white/20"></div>
                   </div>
                 </div>
               </div>
-              <p className="text-white font-medium">{invoice.dueByDays ?? '-'}</p>
+              <p className="text-[#546A7A] font-semibold">{invoice.dueByDays ?? '-'}</p>
             </div>
           </div>
         </div>
 
         {/* Column 3: Customer Info */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <User className="w-5 h-5 text-amber-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#CE9F6B] to-[#976E44]">
+              <User className="w-5 h-5 text-white" />
+            </div>
             Customer
           </h3>
           
-          {/* Customer Header */}
-          <div className="flex items-center gap-3 pb-4 mb-4 border-b border-white/10">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
-              <Building className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-3 pb-4 mb-4 border-b border-[#AEBFC3]/30">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#E17F70] to-[#CE9F6B] flex items-center justify-center shadow-lg shadow-[#CE9F6B]/30">
+              <Building className="w-7 h-7 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-semibold truncate">{invoice.customerName}</p>
-              <p className="text-cyan-400 font-mono text-sm">{invoice.bpCode}</p>
+              <p className="text-[#546A7A] font-bold truncate">{invoice.customerName}</p>
+              <p className="text-[#E17F70] font-mono text-sm font-medium">{invoice.bpCode}</p>
             </div>
           </div>
 
           <div className="space-y-4">
             {invoice.emailId && (
               <div className="flex items-center gap-3 text-sm">
-                <Mail className="w-4 h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/70 truncate">{invoice.emailId}</span>
+                <Mail className="w-4 h-4 text-[#CE9F6B] flex-shrink-0" />
+                <span className="text-[#5D6E73] truncate">{invoice.emailId}</span>
               </div>
             )}
             {invoice.contactNo && (
               <div className="flex items-center gap-3 text-sm">
-                <Phone className="w-4 h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/70">{invoice.contactNo}</span>
+                <Phone className="w-4 h-4 text-[#CE9F6B] flex-shrink-0" />
+                <span className="text-[#5D6E73]">{invoice.contactNo}</span>
               </div>
             )}
             {invoice.region && (
               <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-white/40 flex-shrink-0" />
-                <span className="text-white/70">{invoice.region}</span>
+                <MapPin className="w-4 h-4 text-[#CE9F6B] flex-shrink-0" />
+                <span className="text-[#5D6E73]">{invoice.region}</span>
               </div>
             )}
             <Field label="Department" value={invoice.department} />
@@ -444,15 +458,17 @@ export default function InvoiceViewPage() {
         </div>
 
         {/* Column 4: Delivery */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <Truck className="w-5 h-5 text-blue-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#6F8A9D]/20 p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
+              <Truck className="w-5 h-5 text-white" />
+            </div>
             Delivery
           </h3>
           <div className="space-y-4">
             <div>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Delivery Status</p>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${deliveryInfo.bg} ${deliveryInfo.text} ${deliveryInfo.border}`}>
+              <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1.5 font-medium">Delivery Status</p>
+              <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getDeliveryBadge(invoice.deliveryStatus)}`}>
                 {invoice.deliveryStatus}
               </span>
             </div>
@@ -464,15 +480,17 @@ export default function InvoiceViewPage() {
       </div>
 
       {/* Payment History Section */}
-      <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+      <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 p-6 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-            <Receipt className="w-5 h-5 text-emerald-400" />
+          <h3 className="text-lg font-bold text-[#546A7A] flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
+              <Receipt className="w-5 h-5 text-white" />
+            </div>
             Payment History
           </h3>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm hover:bg-emerald-500/20 transition-all font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#82A094]/30 transition-all"
           >
             <Plus className="w-4 h-4" />
             Add Payment
@@ -480,33 +498,32 @@ export default function InvoiceViewPage() {
         </div>
 
         {invoice.paymentHistory && invoice.paymentHistory.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-[#AEBFC3]/20">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Date</th>
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Time</th>
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Mode</th>
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Ref No</th>
-                  <th className="text-right text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Amount</th>
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Added By</th>
-                  <th className="text-left text-xs uppercase tracking-wider text-white/40 font-medium py-3 px-4">Notes</th>
+                <tr className="bg-gradient-to-r from-[#82A094]/10 to-[#4F6A64]/10 border-b border-[#AEBFC3]/20">
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Date</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Time</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Mode</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Ref No</th>
+                  <th className="text-right text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Amount</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Added By</th>
+                  <th className="text-left text-xs uppercase tracking-wider text-[#5D6E73] font-bold py-4 px-5">Notes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[#AEBFC3]/15">
                 {invoice.paymentHistory.map((payment) => {
-                  // Use paymentTime from backend if available
                   const timeStr = (payment as any).paymentTime || '-';
                   const addedBy = (payment as any).recordedBy || '-';
                   return (
-                    <tr key={payment.id} className="hover:bg-white/5 transition-colors">
-                      <td className="py-3 px-4 text-white/80">{formatARDate(payment.paymentDate)}</td>
-                      <td className="py-3 px-4 text-purple-300 font-mono text-sm">{timeStr}</td>
-                      <td className="py-3 px-4 text-cyan-300 font-mono text-sm">{payment.paymentMode || '-'}</td>
-                      <td className="py-3 px-4 text-white/60">{payment.referenceNo || '-'}</td>
-                      <td className="py-3 px-4 text-right text-emerald-400 font-medium">{formatARCurrency(payment.amount)}</td>
-                      <td className="py-3 px-4 text-amber-300 text-sm">{addedBy}</td>
-                      <td className="py-3 px-4 text-white/60 text-sm max-w-xs truncate">{payment.notes || '-'}</td>
+                    <tr key={payment.id} className="hover:bg-gradient-to-r hover:from-[#82A094]/5 hover:to-[#4F6A64]/5 transition-colors">
+                      <td className="py-4 px-5 text-[#546A7A] font-medium">{formatARDate(payment.paymentDate)}</td>
+                      <td className="py-4 px-5 text-[#6F8A9D] font-mono text-sm">{timeStr}</td>
+                      <td className="py-4 px-5 text-[#6F8A9D] font-mono text-sm">{payment.paymentMode || '-'}</td>
+                      <td className="py-4 px-5 text-[#5D6E73]">{payment.referenceNo || '-'}</td>
+                      <td className="py-4 px-5 text-right text-[#4F6A64] font-bold">{formatARCurrency(payment.amount)}</td>
+                      <td className="py-4 px-5 text-[#CE9F6B] text-sm font-medium">{addedBy}</td>
+                      <td className="py-4 px-5 text-[#5D6E73] text-sm max-w-xs truncate">{payment.notes || '-'}</td>
                     </tr>
                   );
                 })}
@@ -514,105 +531,112 @@ export default function InvoiceViewPage() {
             </table>
           </div>
         ) : (
-          <div className="text-center py-10 bg-white/[0.02] rounded-xl border border-white/5 dashed">
-            <Clock className="w-10 h-10 text-white/20 mx-auto mb-3" />
-            <p className="text-white/40">No payment history recorded yet.</p>
+          <div className="text-center py-12 bg-gradient-to-br from-[#AEBFC3]/10 to-[#82A094]/5 rounded-xl border-2 border-dashed border-[#AEBFC3]/30">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#82A094]/20 to-[#4F6A64]/20 flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-8 h-8 text-[#82A094]" />
+            </div>
+            <p className="text-[#5D6E73] font-medium">No payment history recorded yet.</p>
+            <p className="text-[#92A2A5] text-sm mt-1">Click "Add Payment" to record the first payment.</p>
           </div>
         )}
       </div>
 
       {/* Comments Section */}
       {invoice.comments && (
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-cyan-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#6F8A9D]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-4 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
+              <MessageSquare className="w-5 h-5 text-white" />
+            </div>
             Comments & Remarks
           </h3>
-          <p className="text-white/70 leading-relaxed whitespace-pre-wrap">{invoice.comments}</p>
+          <p className="text-[#5D6E73] leading-relaxed whitespace-pre-wrap bg-[#AEBFC3]/10 p-4 rounded-xl">{invoice.comments}</p>
         </div>
       )}
 
       {/* Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f111a] border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white border-2 border-[#82A094]/30 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button 
               onClick={() => setShowPaymentModal(false)}
-              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-[#92A2A5] hover:text-[#5D6E73] transition-colors p-1 hover:bg-[#AEBFC3]/20 rounded-lg"
             >
               <X className="w-5 h-5" />
             </button>
             
-            <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-              <IndianRupee className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-xl font-bold text-[#546A7A] mb-1 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
+                <IndianRupee className="w-5 h-5 text-white" />
+              </div>
               Record Payment
             </h3>
-            <p className="text-white/40 text-sm mb-6">Add a new payment record for this invoice.</p>
+            <p className="text-[#92A2A5] text-sm mb-6">Add a new payment record for this invoice.</p>
             
             <form onSubmit={handlePaymentSubmit} className="space-y-4">
               <div>
-                <label className="block text-white/60 text-sm font-medium mb-2">Amount (₹)</label>
+                <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Amount (₹)</label>
                 <input 
                   type="number" 
                   step="0.01"
                   required
                   value={paymentForm.amount}
                   onChange={e => setPaymentForm({...paymentForm, amount: e.target.value})}
-                  className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono text-lg"
+                  className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all font-mono text-lg"
                   placeholder="0.00"
                 />
               </div>
               
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-white/60 text-sm font-medium mb-2">Date</label>
+                  <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Date</label>
                   <input 
                     type="date" 
                     required
                     value={paymentForm.paymentDate}
                     onChange={e => setPaymentForm({...paymentForm, paymentDate: e.target.value})}
-                    className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-sm font-medium mb-2">Time</label>
+                  <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Time</label>
                   <input 
                     type="time" 
                     required
                     value={paymentForm.paymentTime}
                     onChange={e => setPaymentForm({...paymentForm, paymentTime: e.target.value})}
-                    className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/60 text-sm font-medium mb-2">Mode</label>
+                  <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Mode</label>
                   <input 
                     type="text"
                     value={paymentForm.paymentMode}
                     onChange={e => setPaymentForm({...paymentForm, paymentMode: e.target.value})}
-                    className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm font-medium"
+                    className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all text-sm font-medium"
                     placeholder="e.g. NEFT"
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-white/60 text-sm font-medium mb-2">Reference / UTR No</label>
+                <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Reference / UTR No</label>
                 <input 
                   type="text" 
                   value={paymentForm.referenceNo}
                   onChange={e => setPaymentForm({...paymentForm, referenceNo: e.target.value})}
-                  className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all"
                   placeholder="e.g. UTR123456789"
                 />
               </div>
               
               <div>
-                <label className="block text-white/60 text-sm font-medium mb-2">Notes</label>
+                <label className="block text-[#5D6E73] text-sm font-semibold mb-2">Notes</label>
                 <textarea 
                   value={paymentForm.notes}
                   onChange={e => setPaymentForm({...paymentForm, notes: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none h-20"
+                  className="w-full px-4 py-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/20 transition-all resize-none h-20"
                   placeholder="Optional notes..."
                 />
               </div>
@@ -621,14 +645,14 @@ export default function InvoiceViewPage() {
                 <button 
                   type="button"
                   onClick={() => setShowPaymentModal(false)}
-                  className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all font-medium"
+                  className="flex-1 py-3 rounded-xl bg-white border-2 border-[#AEBFC3]/40 text-[#5D6E73] hover:bg-[#AEBFC3]/10 transition-all font-semibold"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={paymentLoading}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-bold hover:shadow-lg hover:shadow-[#82A094]/40 transition-all flex items-center justify-center gap-2"
                 >
                   {paymentLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle className="w-5 h-5" />}
                   Record Payment

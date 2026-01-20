@@ -82,7 +82,7 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
       <div className="hidden sm:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="hover:bg-gray-100">
+            <Button variant="ghost" size="sm" className="hover:bg-[#AEBFC3]/20">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -93,16 +93,16 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
             alignOffset={-5}
           >
             <DropdownMenuItem onClick={handleViewStats}>
-              <BarChart3 className="mr-2 h-4 w-4 text-blue-500" />
+              <BarChart3 className="mr-2 h-4 w-4 text-[#6F8A9D]" />
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleEdit}>
-              <Pencil className="mr-2 h-4 w-4 text-green-500" />
+              <Pencil className="mr-2 h-4 w-4 text-[#82A094]" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => setDeleteDialogOpen(true)}
-              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              className="text-[#9E3B47] focus:text-[#9E3B47] focus:bg-[#E17F70]/10"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
@@ -116,7 +116,7 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="hover:bg-gray-100 btn-touch"
+          className="hover:bg-[#AEBFC3]/20 btn-touch"
           onClick={() => setMobileMenuOpen(true)}
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -127,7 +127,7 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
       <AlertDialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <AlertDialogContent className="max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 flex items-center gap-2">
+            <AlertDialogTitle className="text-[#546A7A] flex items-center gap-2">
               <MoreHorizontal className="h-5 w-5" />
               Actions for {zone.name}
             </AlertDialogTitle>
@@ -138,9 +138,9 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
                 setMobileMenuOpen(false);
                 handleViewStats();
               }}
-              className="flex items-center w-full p-3 text-left hover:bg-blue-50 rounded-lg transition-colors"
+              className="flex items-center w-full p-3 text-left hover:bg-[#96AEC2]/10 rounded-lg transition-colors"
             >
-              <BarChart3 className="mr-3 h-5 w-5 text-blue-500" />
+              <BarChart3 className="mr-3 h-5 w-5 text-[#6F8A9D]" />
               <span className="font-medium">View Details</span>
             </button>
             <button
@@ -148,9 +148,9 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
                 setMobileMenuOpen(false);
                 handleEdit();
               }}
-              className="flex items-center w-full p-3 text-left hover:bg-green-50 rounded-lg transition-colors"
+              className="flex items-center w-full p-3 text-left hover:bg-[#A2B9AF]/10 rounded-lg transition-colors"
             >
-              <Pencil className="mr-3 h-5 w-5 text-green-500" />
+              <Pencil className="mr-3 h-5 w-5 text-[#82A094]" />
               <span className="font-medium">Edit</span>
             </button>
             <button
@@ -158,7 +158,7 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
                 setMobileMenuOpen(false);
                 setDeleteDialogOpen(true);
               }}
-              className="flex items-center w-full p-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
+              className="flex items-center w-full p-3 text-left hover:bg-[#E17F70]/10 rounded-lg transition-colors text-[#9E3B47]"
             >
               <Trash2 className="mr-3 h-5 w-5" />
               <span className="font-medium">Delete</span>
@@ -178,11 +178,11 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-600 flex items-center gap-2">
+            <AlertDialogTitle className="text-[#9E3B47] flex items-center gap-2">
               <Trash2 className="h-5 w-5" />
               Delete Service Zone
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogDescription className="text-[#5D6E73]">
               This will permanently delete the service zone <span className="font-semibold">"{zone.name}"</span>. 
               This action cannot be undone and will fail if there are associated customers, 
               service persons, or tickets.
@@ -191,14 +191,14 @@ export function ServiceZoneActions({ zone }: ServiceZoneActionsProps) {
           <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel 
               disabled={isDeleting}
-              className="w-full sm:w-auto hover:bg-gray-100"
+              className="w-full sm:w-auto hover:bg-[#AEBFC3]/20"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
-              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+              className="w-full sm:w-auto bg-[#9E3B47] hover:bg-[#75242D] text-white"
             >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>

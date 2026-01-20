@@ -61,7 +61,7 @@ export function StatusHistoryItem({ statusHistory, className = '' }: StatusHisto
             <div className="flex gap-4 text-sm">
               {statusHistory.timeInStatus && (
                 <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-orange-500" />
+                  <Clock className="h-3 w-3 text-[#CE9F6B]" />
                   <span className="text-muted-foreground">
                     Time in previous status: {Math.round(statusHistory.timeInStatus)} minutes
                   </span>
@@ -69,7 +69,7 @@ export function StatusHistoryItem({ statusHistory, className = '' }: StatusHisto
               )}
               {statusHistory.totalTimeOpen && (
                 <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-blue-500" />
+                  <Clock className="h-3 w-3 text-[#6F8A9D]" />
                   <span className="text-muted-foreground">
                     Total time open: {Math.round(statusHistory.totalTimeOpen)} minutes
                   </span>
@@ -85,11 +85,11 @@ export function StatusHistoryItem({ statusHistory, className = '' }: StatusHisto
           {cleanNotes && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Notes</span>
+                <MessageSquare className="h-4 w-4 text-[#AEBFC3]0" />
+                <span className="text-sm font-medium text-[#5D6E73]">Notes</span>
               </div>
-              <div className="bg-gray-50 border rounded-md p-3">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">{cleanNotes}</p>
+              <div className="bg-[#AEBFC3]/10 border rounded-md p-3">
+                <p className="text-sm text-[#5D6E73] whitespace-pre-wrap">{cleanNotes}</p>
               </div>
             </div>
           )}

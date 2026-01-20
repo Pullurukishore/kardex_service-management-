@@ -34,26 +34,26 @@ import {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'ACTIVE':
-      return <CheckCircle className="h-4 w-4 text-green-600" />;
+      return <CheckCircle className="h-4 w-4 text-[#4F6A64]" />;
     case 'INACTIVE':
-      return <AlertCircle className="h-4 w-4 text-gray-600" />;
+      return <AlertCircle className="h-4 w-4 text-[#5D6E73]" />;
     case 'MAINTENANCE':
-      return <Wrench className="h-4 w-4 text-yellow-600" />;
+      return <Wrench className="h-4 w-4 text-[#976E44]" />;
     default:
-      return <Clock className="h-4 w-4 text-red-600" />;
+      return <Clock className="h-4 w-4 text-[#9E3B47]" />;
   }
 };
 
 const getStatusBadgeStyles = (status: string) => {
   switch (status) {
     case 'ACTIVE':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]';
     case 'INACTIVE':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]';
     case 'MAINTENANCE':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
     default:
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]';
   }
 };
 
@@ -100,9 +100,9 @@ export default function ZoneCustomerAssetsPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900">Customer not found</h2>
-          <p className="text-gray-600 mt-2">The customer you're looking for doesn't exist.</p>
+          <AlertCircle className="h-12 w-12 text-[#E17F70] mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-[#546A7A]">Customer not found</h2>
+          <p className="text-[#5D6E73] mt-2">The customer you're looking for doesn't exist.</p>
         </div>
       </div>
     );
@@ -136,7 +136,7 @@ export default function ZoneCustomerAssetsPage() {
     }) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -152,16 +152,16 @@ export default function ZoneCustomerAssetsPage() {
                 Back to Customer
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-[#546A7A]">
                   {customer.companyName} - Assets
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-[#5D6E73] mt-1">
                   View all assets for this customer
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge className="bg-blue-100 text-blue-800 px-3 py-1">
+              <Badge className="bg-[#96AEC2]/20 text-[#546A7A] px-3 py-1">
                 {filteredAssets.length} of {customer._count.assets} assets
               </Badge>
             </div>
@@ -174,7 +174,7 @@ export default function ZoneCustomerAssetsPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
                   <Input
                     placeholder="Search by serial number, model, or location..."
                     value={searchTerm}
@@ -219,14 +219,14 @@ export default function ZoneCustomerAssetsPage() {
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="p-3 bg-blue-100 rounded-lg">
-                        <HardDrive className="h-6 w-6 text-blue-600" />
+                      <div className="p-3 bg-[#96AEC2]/20 rounded-lg">
+                        <HardDrive className="h-6 w-6 text-[#546A7A]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-lg truncate" title={asset.serialNo}>
+                        <h3 className="font-semibold text-[#546A7A] text-lg truncate" title={asset.serialNo}>
                           {asset.serialNo || 'N/A'}
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Asset ID: {asset.id}</p>
+                        <p className="text-sm text-[#5D6E73] mt-1">Asset ID: {asset.id}</p>
                       </div>
                     </div>
                     <Badge className={`${getStatusBadgeStyles(asset.status)} flex items-center gap-1`}>
@@ -238,17 +238,17 @@ export default function ZoneCustomerAssetsPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Model</p>
-                      <p className="text-sm text-gray-900 break-words" title={asset.model}>
+                      <p className="text-sm font-medium text-[#5D6E73]">Model</p>
+                      <p className="text-sm text-[#546A7A] break-words" title={asset.model}>
                         {asset.model || 'No model specified'}
                       </p>
                     </div>
                     
                     {asset.location && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Location</p>
-                        <p className="text-sm text-gray-900 flex items-center">
-                          <MapPin className="h-3 w-3 mr-1 text-gray-400" />
+                        <p className="text-sm font-medium text-[#5D6E73]">Location</p>
+                        <p className="text-sm text-[#546A7A] flex items-center">
+                          <MapPin className="h-3 w-3 mr-1 text-[#979796]" />
                           {asset.location}
                         </p>
                       </div>
@@ -256,9 +256,9 @@ export default function ZoneCustomerAssetsPage() {
                     
                     {asset.purchaseDate && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Purchase Date</p>
-                        <p className="text-sm text-gray-900 flex items-center">
-                          <Calendar className="h-3 w-3 mr-1 text-gray-400" />
+                        <p className="text-sm font-medium text-[#5D6E73]">Purchase Date</p>
+                        <p className="text-sm text-[#546A7A] flex items-center">
+                          <Calendar className="h-3 w-3 mr-1 text-[#979796]" />
                           {format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}
                         </p>
                       </div>
@@ -266,11 +266,11 @@ export default function ZoneCustomerAssetsPage() {
                     
                     {asset.warrantyEnd && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Warranty</p>
+                        <p className="text-sm font-medium text-[#5D6E73]">Warranty</p>
                         <p className={`text-sm flex items-center ${
                           new Date(asset.warrantyEnd) > new Date() 
-                            ? 'text-green-600' 
-                            : 'text-red-600'
+                            ? 'text-[#4F6A64]' 
+                            : 'text-[#9E3B47]'
                         }`}>
                           <Calendar className="h-3 w-3 mr-1" />
                           Until {format(new Date(asset.warrantyEnd), 'MMM dd, yyyy')}
@@ -280,7 +280,7 @@ export default function ZoneCustomerAssetsPage() {
                   </div>
                   
                   <div className="flex items-center justify-between pt-4 border-t">
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[#AEBFC3]0">
                       Asset ID: {asset.id}
                     </div>
                   </div>
@@ -291,11 +291,11 @@ export default function ZoneCustomerAssetsPage() {
         ) : (
           <Card>
             <CardContent className="text-center py-12">
-              <HardDrive className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <HardDrive className="mx-auto h-16 w-16 text-[#979796] mb-4" />
+              <h3 className="text-lg font-medium text-[#546A7A] mb-2">
                 {searchTerm || statusFilter !== 'all' ? 'No assets found' : 'No assets yet'}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#5D6E73] mb-6">
                 {searchTerm || statusFilter !== 'all' 
                   ? 'Try adjusting your search or filter criteria.'
                   : 'No assets available for this customer.'

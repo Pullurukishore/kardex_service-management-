@@ -123,14 +123,14 @@ const ReportsFilters: React.FC<ReportsFiltersProps> = ({
         <Label className="text-sm font-medium text-foreground flex items-center gap-2">
           Zone
           {isZoneUser && (
-            <span className="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+            <span className="text-xs font-normal text-[#546A7A] bg-[#96AEC2]/10 px-2 py-0.5 rounded">
               Your Zone
             </span>
           )}
         </Label>
         {isZoneUser ? (
           // Read-only display for zone managers
-          <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 text-sm font-medium cursor-not-allowed flex items-center">
+          <div className="w-full px-3 py-2 border border-[#92A2A5] rounded-md bg-[#AEBFC3]/10 text-[#5D6E73] text-sm font-medium cursor-not-allowed flex items-center">
             {zones && zones.length > 0 
               ? (zones.find(z => z.id.toString() === filters.zoneId)?.name || zones[0]?.name || 'No Zone')
               : 'No Zone'

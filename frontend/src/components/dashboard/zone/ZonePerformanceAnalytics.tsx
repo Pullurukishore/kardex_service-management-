@@ -42,25 +42,25 @@ const getPerformanceRating = (score: number): { rating: string; color: string; i
   if (score >= 90) {
     return {
       rating: 'Excellent',
-      color: 'text-green-600',
+      color: 'text-[#4F6A64]',
       icon: <Award className="h-4 w-4" />
     };
   } else if (score >= 75) {
     return {
       rating: 'Good',
-      color: 'text-blue-600',
+      color: 'text-[#546A7A]',
       icon: <TrendingUp className="h-4 w-4" />
     };
   } else if (score >= 60) {
     return {
       rating: 'Average',
-      color: 'text-yellow-600',
+      color: 'text-[#976E44]',
       icon: <Activity className="h-4 w-4" />
     };
   } else {
     return {
       rating: 'Needs Improvement',
-      color: 'text-red-600',
+      color: 'text-[#9E3B47]',
       icon: <AlertTriangle className="h-4 w-4" />
     };
   }
@@ -95,30 +95,30 @@ export default function ZonePerformanceAnalytics({
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-blue-500" />
+            <BarChart3 className="h-5 w-5 text-[#6F8A9D]" />
             Performance Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Key Metrics */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-4 rounded-lg bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20">
+              <div className="text-2xl font-bold text-[#546A7A]">
                 {formatNumber(totalTickets)}
               </div>
-              <div className="text-sm text-blue-800">Total Tickets</div>
+              <div className="text-sm text-[#546A7A]">Total Tickets</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-gradient-to-r from-green-50 to-green-100">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="text-center p-4 rounded-lg bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/20">
+              <div className="text-2xl font-bold text-[#4F6A64]">
                 {resolutionRate.toFixed(1)}%
               </div>
-              <div className="text-sm text-green-800">Resolution Rate</div>
+              <div className="text-sm text-[#4F6A64]">Resolution Rate</div>
             </div>
           </div>
 
           {/* Performance Indicators */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#AEBFC3]/10">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${efficiencyRating.color.replace('text-', 'bg-').replace('600', '100')}`}>
                   {efficiencyRating.icon}
@@ -136,7 +136,7 @@ export default function ZonePerformanceAnalytics({
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#AEBFC3]/10">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${satisfactionRating.color.replace('text-', 'bg-').replace('600', '100')}`}>
                   {satisfactionRating.icon}
@@ -154,7 +154,7 @@ export default function ZonePerformanceAnalytics({
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#AEBFC3]/10">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${resolutionRating.color.replace('text-', 'bg-').replace('600', '100')}`}>
                   {resolutionRating.icon}
@@ -179,24 +179,24 @@ export default function ZonePerformanceAnalytics({
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-green-500" />
+            <TrendingUp className="h-5 w-5 text-[#82A094]" />
             Resolved Tickets Trend
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Trend Summary */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100">
-              <div className="text-xl font-bold text-green-600">
+            <div className="text-center p-3 rounded-lg bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/20">
+              <div className="text-xl font-bold text-[#4F6A64]">
                 {formatNumber(totalResolved)}
               </div>
-              <div className="text-sm text-green-800">Last 7 Days</div>
+              <div className="text-sm text-[#4F6A64]">Last 7 Days</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100">
-              <div className="text-xl font-bold text-blue-600">
+            <div className="text-center p-3 rounded-lg bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20">
+              <div className="text-xl font-bold text-[#546A7A]">
                 {avgDailyResolved.toFixed(1)}
               </div>
-              <div className="text-sm text-blue-800">Daily Average</div>
+              <div className="text-sm text-[#546A7A]">Daily Average</div>
             </div>
           </div>
 
@@ -217,13 +217,13 @@ export default function ZonePerformanceAnalytics({
                     <div className="text-xs text-muted-foreground w-16">
                       {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
                     </div>
-                    <div className="flex-1 bg-gray-200 rounded-full h-4 relative overflow-hidden">
+                    <div className="flex-1 bg-[#92A2A5]/30 rounded-full h-4 relative overflow-hidden">
                       <div 
-                        className="bg-gradient-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-green-400 to-[#4F6A64] h-full rounded-full transition-all duration-300"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <div className="text-xs font-medium text-gray-600 w-8 text-right">
+                    <div className="text-xs font-medium text-[#5D6E73] w-8 text-right">
                       {day.count}
                     </div>
                   </div>
@@ -235,31 +235,31 @@ export default function ZonePerformanceAnalytics({
           {/* Performance Insights */}
           <div className="border-t pt-4">
             <div className="flex items-center gap-2 mb-2">
-              <Target className="h-4 w-4 text-blue-500" />
+              <Target className="h-4 w-4 text-[#6F8A9D]" />
               <span className="text-sm font-medium">Performance Insights</span>
             </div>
             <div className="space-y-2 text-xs text-muted-foreground">
               {avgDailyResolved > 5 && (
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#A2B9AF]/100 rounded-full" />
                   <span>Strong daily resolution performance</span>
                 </div>
               )}
               {resolutionRate > 80 && (
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full" />
                   <span>Excellent ticket resolution rate</span>
                 </div>
               )}
               {metrics.technicianEfficiency > 80 && (
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#6F8A9D]/100 rounded-full" />
                   <span>High technician efficiency maintained</span>
                 </div>
               )}
               {metrics.customerSatisfactionScore > 4.0 && (
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                  <div className="w-2 h-2 bg-[#CE9F6B]/100 rounded-full" />
                   <span>Outstanding customer satisfaction</span>
                 </div>
               )}

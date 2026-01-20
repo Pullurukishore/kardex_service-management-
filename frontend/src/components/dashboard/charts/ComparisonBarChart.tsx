@@ -41,13 +41,13 @@ export default function ComparisonBarChart({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-slate-200">
-          <p className="font-semibold text-slate-900">{payload[0].payload[nameKey]}</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-[#92A2A5]">
+          <p className="font-semibold text-[#546A7A]">{payload[0].payload[nameKey]}</p>
+          <p className="text-2xl font-bold text-[#546A7A] mt-1">
             {payload[0].value}
           </p>
           {payload[0].payload.subtitle && (
-            <p className="text-xs text-slate-500 mt-1">{payload[0].payload.subtitle}</p>
+            <p className="text-xs text-[#757777] mt-1">{payload[0].payload.subtitle}</p>
           )}
         </div>
       );
@@ -69,8 +69,8 @@ export default function ComparisonBarChart({
             )}
           </div>
           <div className="text-right">
-            <div className="text-xs text-slate-500">Average</div>
-            <div className="text-lg font-bold text-slate-900">{Math.round(avgValue)}</div>
+            <div className="text-xs text-[#757777]">Average</div>
+            <div className="text-lg font-bold text-[#546A7A]">{Math.round(avgValue)}</div>
           </div>
         </div>
       </CardHeader>

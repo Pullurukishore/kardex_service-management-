@@ -79,7 +79,7 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-blue-600" />
+            <MapPin className="h-5 w-5 text-[#546A7A]" />
             {title}
           </DialogTitle>
           <DialogDescription>
@@ -90,23 +90,23 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
         <div className="space-y-4">
           {/* GPS Retry Info */}
           {gpsRetryCount > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-yellow-800 text-sm">
+            <div className="bg-[#EEC1BF]/10 border border-[#CE9F6B] rounded-lg p-3">
+              <div className="flex items-center gap-2 text-[#976E44] text-sm">
                 <AlertTriangle className="h-4 w-4" />
                 <span className="font-medium">GPS Signal Issues</span>
               </div>
-              <p className="text-yellow-700 text-sm mt-1">
+              <p className="text-[#976E44] text-sm mt-1">
                 Tried GPS {gpsRetryCount} times. Please enter your address manually.
               </p>
             </div>
           )}
 
           {/* Instructions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="text-blue-800 text-sm font-medium mb-2">
+          <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-3">
+            <div className="text-[#546A7A] text-sm font-medium mb-2">
               ✍️ Quick & Simple
             </div>
-            <div className="text-blue-700 text-sm space-y-1">
+            <div className="text-[#546A7A] text-sm space-y-1">
               <div>• Type your current address below</div>
               <div>• Include building/office name if applicable</div>
               <div>• Click confirm to complete</div>
@@ -127,25 +127,25 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
               className="text-sm"
               autoFocus
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#AEBFC3]0">
               Be as specific as possible for better records
             </p>
           </div>
 
           {/* Preview */}
           {address.trim() && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div className="bg-[#A2B9AF]/10 border border-[#A2B9AF] rounded-lg p-3">
               <div className="flex items-start gap-3">
-                <div className="bg-green-100 rounded-full p-1">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="bg-[#A2B9AF]/20 rounded-full p-1">
+                  <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium text-green-800 text-sm">✅ Address Ready</div>
-                  <div className="text-sm text-green-700 mt-1">
+                  <div className="font-medium text-[#4F6A64] text-sm">✅ Address Ready</div>
+                  <div className="text-sm text-[#4F6A64] mt-1">
                     {address}
                   </div>
                   <div className="flex items-center gap-2 mt-2">
-                    <Badge className="bg-green-100 text-green-800 border-green-300 text-xs">
+                    <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094] text-xs">
                       <MapPin className="h-3 w-3 mr-1" />
                       Manual Address
                     </Badge>
@@ -157,7 +157,7 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center pt-4 border-t">
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-[#AEBFC3]0">
               {address.trim() ? '✅ Ready to proceed' : '📝 Please enter your address'}
             </div>
             <div className="flex gap-2">
@@ -167,7 +167,7 @@ const SimpleAddressEntry: React.FC<SimpleAddressEntryProps> = ({
               <Button 
                 onClick={handleConfirm}
                 disabled={!address.trim()}
-                className={`${address.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400'} text-white font-medium`}
+                className={`${address.trim() ? 'bg-[#4F6A64] hover:bg-[#4F6A64]' : 'bg-[#979796]'} text-white font-medium`}
                 size="sm"
               >
                 {address.trim() ? (

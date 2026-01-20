@@ -205,10 +205,10 @@ export default function ZoneManagerOffers() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Compact Header with Stats */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 rounded-2xl shadow-xl p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] via-[#82A094] to-[#546A7A] rounded-2xl shadow-xl p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10 flex justify-between items-center">
             <div className="flex items-center gap-4">
@@ -239,7 +239,7 @@ export default function ZoneManagerOffers() {
                   <p className="text-xl font-bold">{formatCurrency(stats.totalValue).replace('₹', '₹')}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/zone-manager/offers/new')} className="bg-white text-emerald-700 hover:bg-emerald-50 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={() => router.push('/zone-manager/offers/new')} className="bg-white text-[#4F6A64] hover:bg-[#82A094]/10 shadow-lg hover:shadow-xl transition-all">
                 <Plus className="h-4 w-4 mr-2" />
                 Create New
               </Button>
@@ -249,17 +249,17 @@ export default function ZoneManagerOffers() {
 
         {/* Filters */}
         <Card className="border-0 shadow-lg bg-white" style={{backgroundColor: 'white'}}>
-          <CardHeader className="bg-white border-b border-slate-200" style={{backgroundColor: 'white'}}>
+          <CardHeader className="bg-white border-b border-[#92A2A5]" style={{backgroundColor: 'white'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-indigo-600" />
+                <Filter className="h-5 w-5 text-[#546A7A]" />
                 <CardTitle className="text-lg">Search & Filter</CardTitle>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </div>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#546A7A] hover:text-[#546A7A] hover:bg-[#546A7A]/10">
                   <X className="h-4 w-4 mr-1" />
                   Clear All
                 </Button>
@@ -270,31 +270,31 @@ export default function ZoneManagerOffers() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label htmlFor="search" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Search className="h-4 w-4 text-emerald-600" />
+                <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Search className="h-4 w-4 text-[#4F6A64]" />
                   Search Offers
                 </Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                   <Input
                     id="search"
                     placeholder="Search by offer #, customer..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     disabled={loading}
-                    className="pl-10 h-11 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="pl-10 h-11 border-[#92A2A5] focus:border-[#82A094] focus:ring-[#82A094] disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Stage Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-purple-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#546A7A]" />
                   Stage
                 </Label>
                 <Select value={selectedStage} onValueChange={setSelectedStage} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -307,12 +307,12 @@ export default function ZoneManagerOffers() {
 
               {/* Product Type Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Package className="h-4 w-4 text-pink-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Package className="h-4 w-4 text-[#9E3B47]" />
                   Product Type
                 </Label>
                 <Select value={selectedProductType} onValueChange={setSelectedProductType} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -332,74 +332,74 @@ export default function ZoneManagerOffers() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white">
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('offerReferenceNumber')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('offerReferenceNumber')}>
                     <div className="flex items-center gap-1.5">
                       Offer Ref
                       {sortField === 'offerReferenceNumber' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('customer')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('customer')}>
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <Building2 className="h-3.5 w-3.5 text-[#A2B9AF]" />
                       Customer
                       {sortField === 'customer' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('productType')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('productType')}>
                     <div className="flex items-center gap-1.5">
-                      <Package className="h-3.5 w-3.5 text-orange-400" />
+                      <Package className="h-3.5 w-3.5 text-[#CE9F6B]" />
                       Type
                       {sortField === 'productType' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('offerValue')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('offerValue')}>
                     <div className="flex items-center gap-1.5">
-                      <IndianRupee className="h-3.5 w-3.5 text-green-400" />
+                      <IndianRupee className="h-3.5 w-3.5 text-[#82A094]" />
                       Value
                       {sortField === 'offerValue' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('probabilityPercentage')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('probabilityPercentage')}>
                     <div className="flex items-center gap-1.5">
-                      <Percent className="h-3.5 w-3.5 text-amber-400" />
+                      <Percent className="h-3.5 w-3.5 text-[#CE9F6B]" />
                       Prob
                       {sortField === 'probabilityPercentage' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('stage')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('stage')}>
                     <div className="flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-purple-400" />
+                      <TrendingUp className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Stage
                       {sortField === 'stage' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('createdBy')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('createdBy')}>
                     <div className="flex items-center gap-1.5">
                       <Users className="h-3.5 w-3.5 text-cyan-400" />
                       Owner
                       {sortField === 'createdBy' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('createdAt')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('createdAt')}>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5 text-pink-400" />
                       Date
                       {sortField === 'createdAt' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
@@ -409,32 +409,32 @@ export default function ZoneManagerOffers() {
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="relative">
-                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center shadow-lg">
                             <Loader2 className="h-8 w-8 animate-spin text-white" />
                           </div>
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Loading offers...</p>
-                          <p className="text-sm text-gray-500 mt-1">Please wait while we fetch the data</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">Loading offers...</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Please wait while we fetch the data</p>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : offers.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <Package className="h-8 w-8 text-gray-500" />
+                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#AEBFC3]/40 to-[#AEBFC3]/60 flex items-center justify-center">
+                          <Package className="h-8 w-8 text-[#AEBFC3]0" />
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">No offers found</p>
-                          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or create a new offer</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">No offers found</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Try adjusting your filters or create a new offer</p>
                         </div>
-                        <Button onClick={() => router.push('/zone-manager/offers/new')} className="mt-4 bg-gradient-to-r from-emerald-600 to-teal-600">
+                        <Button onClick={() => router.push('/zone-manager/offers/new')} className="mt-4 bg-gradient-to-r from-[#82A094] to-[#82A094]">
                           <Plus className="h-4 w-4 mr-2" />
                           Create Your First Offer
                         </Button>
@@ -446,119 +446,119 @@ export default function ZoneManagerOffers() {
                   <tr 
                     key={offer.id} 
                     className={`
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}
-                      hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50/50 
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/50'}
+                      hover:bg-gradient-to-r hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/10/50 
                       transition-all duration-200 cursor-pointer group
                     `}
                     onClick={() => router.push(`/zone-manager/offers/${offer.id}`)}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-blue-600 group-hover:text-blue-700 text-sm">
+                        <span className="font-mono font-bold text-[#546A7A] group-hover:text-[#546A7A] text-sm">
                           {offer.offerReferenceNumber}
                         </span>
                         {offer.stage === 'INITIAL' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded">NEW</span>
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#96AEC2]/20 text-[#546A7A] rounded">NEW</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#82A094] to-[#82A094] flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
                           {(offer.customer?.companyName || offer.company || 'U')?.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 text-sm truncate max-w-[160px]">{offer.customer?.companyName || offer.company}</p>
-                          {offer.location && <p className="text-xs text-gray-400 truncate max-w-[160px]">{offer.location}</p>}
+                          <p className="font-semibold text-[#546A7A] text-sm truncate max-w-[160px]">{offer.customer?.companyName || offer.company}</p>
+                          {offer.location && <p className="text-xs text-[#979796] truncate max-w-[160px]">{offer.location}</p>}
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <span className={`
                         inline-flex px-2 py-1 text-xs font-bold rounded-md
-                        ${offer.productType === 'SPP' ? 'bg-orange-100 text-orange-700' :
-                          offer.productType === 'CONTRACT' ? 'bg-emerald-100 text-emerald-700' :
-                          offer.productType === 'RELOCATION' ? 'bg-blue-100 text-blue-700' :
-                          offer.productType === 'UPGRADE_KIT' ? 'bg-purple-100 text-purple-700' :
-                          offer.productType === 'SOFTWARE' ? 'bg-indigo-100 text-indigo-700' :
-                          offer.productType === 'BD_CHARGES' ? 'bg-amber-100 text-amber-700' :
-                          offer.productType === 'BD_SPARE' ? 'bg-rose-100 text-rose-700' :
-                          offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-cyan-100 text-cyan-700' :
-                          offer.productType === 'RETROFIT_KIT' ? 'bg-teal-100 text-teal-700' :
-                          'bg-gray-100 text-gray-700'}
+                        ${offer.productType === 'SPP' ? 'bg-[#CE9F6B]/20 text-[#976E44]' :
+                          offer.productType === 'CONTRACT' ? 'bg-[#82A094]/20 text-[#4F6A64]' :
+                          offer.productType === 'RELOCATION' ? 'bg-[#96AEC2]/20 text-[#546A7A]' :
+                          offer.productType === 'UPGRADE_KIT' ? 'bg-[#6F8A9D]/20 text-[#546A7A]' :
+                          offer.productType === 'SOFTWARE' ? 'bg-[#546A7A]/20 text-[#546A7A]' :
+                          offer.productType === 'BD_CHARGES' ? 'bg-[#CE9F6B]/20 text-[#976E44]' :
+                          offer.productType === 'BD_SPARE' ? 'bg-[#EEC1BF]/20 text-[#9E3B47]' :
+                          offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-[#96AEC2]/20 text-[#546A7A]' :
+                          offer.productType === 'RETROFIT_KIT' ? 'bg-[#82A094]/20 text-[#4F6A64]' :
+                          'bg-[#AEBFC3]/20 text-[#5D6E73]'}
                       `}>
                         {offer.productType?.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       {offer.offerValue ? (
-                        <span className="font-bold text-gray-900">{formatCurrency(Number(offer.offerValue))}</span>
+                        <span className="font-bold text-[#546A7A]">{formatCurrency(Number(offer.offerValue))}</span>
                       ) : (
-                        <span className="text-gray-400 text-sm italic">TBD</span>
+                        <span className="text-[#979796] text-sm italic">TBD</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {offer.probabilityPercentage != null ? (
                         <div className="flex items-center gap-1.5">
                           <div className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white
-                            ${offer.probabilityPercentage >= 70 ? 'bg-gradient-to-br from-emerald-500 to-green-600' :
-                              offer.probabilityPercentage >= 40 ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
-                              'bg-gradient-to-br from-red-400 to-rose-500'}`}
+                            ${offer.probabilityPercentage >= 70 ? 'bg-gradient-to-br from-[#82A094] to-[#82A094]' :
+                              offer.probabilityPercentage >= 40 ? 'bg-gradient-to-br from-[#CE9F6B] to-[#976E44]' :
+                              'bg-gradient-to-br from-red-400 to-[#E17F70]'}`}
                           >
                             {offer.probabilityPercentage}
                           </div>
-                          <span className="text-xs text-gray-500">%</span>
+                          <span className="text-xs text-[#AEBFC3]0">%</span>
                         </div>
                       ) : (
-                        <span className="text-gray-400 text-xs">-</span>
+                        <span className="text-[#979796] text-xs">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <span className={`
                         inline-flex px-2.5 py-1 text-xs font-bold rounded-full shadow-sm
-                        ${offer.stage === 'INITIAL' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
-                          offer.stage === 'WON' ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white' :
-                          offer.stage === 'LOST' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white' :
-                          offer.stage === 'PROPOSAL_SENT' ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white' :
-                          offer.stage === 'NEGOTIATION' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' :
-                          offer.stage === 'FINAL_APPROVAL' ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white' :
-                          offer.stage === 'PO_RECEIVED' ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' :
-                          'bg-gradient-to-r from-slate-400 to-slate-500 text-white'}
+                        ${offer.stage === 'INITIAL' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white' :
+                          offer.stage === 'WON' ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white' :
+                          offer.stage === 'LOST' ? 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white' :
+                          offer.stage === 'PROPOSAL_SENT' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white' :
+                          offer.stage === 'NEGOTIATION' ? 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white' :
+                          offer.stage === 'FINAL_APPROVAL' ? 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white' :
+                          offer.stage === 'PO_RECEIVED' ? 'bg-gradient-to-r from-[#82A094] to-cyan-600 text-white' :
+                          'bg-gradient-to-r from-slate-400 to-[#AEBFC3]/100 text-white'}
                       `}>
                         {offer.stage?.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-700 font-semibold text-[10px] flex-shrink-0">
+                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-[#5D6E73] font-semibold text-[10px] flex-shrink-0">
                           {offer.createdBy?.name?.charAt(0).toUpperCase() || 'U'}
                         </div>
-                        <span className="text-gray-700 text-sm truncate max-w-[80px]">{offer.createdBy?.name?.split(' ')[0]}</span>
+                        <span className="text-[#5D6E73] text-sm truncate max-w-[80px]">{offer.createdBy?.name?.split(' ')[0]}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-gray-500 text-sm">{new Date(offer.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+                      <span className="text-[#AEBFC3]0 text-sm">{new Date(offer.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
                     </td>
                     <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-200 rounded-lg">
-                            <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-[#92A2A5]/30 rounded-lg">
+                            <MoreHorizontal className="h-4 w-4 text-[#5D6E73]" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-slate-200">
+                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-[#92A2A5]">
                           <DropdownMenuItem 
                             onClick={() => router.push(`/zone-manager/offers/${offer.id}`)}
                             className="cursor-pointer rounded-lg"
                           >
-                            <Eye className="h-4 w-4 mr-2 text-blue-600" />
+                            <Eye className="h-4 w-4 mr-2 text-[#546A7A]" />
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => router.push(`/zone-manager/offers/${offer.id}/edit`)}
                             className="cursor-pointer rounded-lg"
                           >
-                            <Edit className="h-4 w-4 mr-2 text-purple-600" />
+                            <Edit className="h-4 w-4 mr-2 text-[#546A7A]" />
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -573,10 +573,10 @@ export default function ZoneManagerOffers() {
           
           {/* Pagination */}
           {!loading && offers.length > 0 && (
-            <div className="bg-gradient-to-r from-slate-50 via-blue-50 to-purple-50/30 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/10/30 px-6 py-4 border-t border-[#92A2A5]">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700 font-medium">
-                  Showing <span className="font-bold text-slate-900">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
+                <div className="text-sm text-[#5D6E73] font-medium">
+                  Showing <span className="font-bold text-[#546A7A]">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -584,19 +584,19 @@ export default function ZoneManagerOffers() {
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                     disabled={pagination.page === 1}
-                    className="hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm text-gray-700 font-medium px-3">
-                    Page <span className="font-bold text-slate-900">{pagination.page}</span> of <span className="font-semibold">{pagination.pages}</span>
+                  <span className="text-sm text-[#5D6E73] font-medium px-3">
+                    Page <span className="font-bold text-[#546A7A]">{pagination.page}</span> of <span className="font-semibold">{pagination.pages}</span>
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.pages, prev.page + 1) }))}
                     disabled={pagination.page === pagination.pages}
-                    className="hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>

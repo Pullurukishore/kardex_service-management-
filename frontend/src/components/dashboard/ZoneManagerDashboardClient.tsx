@@ -48,14 +48,14 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
 
   const getStageColor = (stage: string) => {
     const colors: Record<string, string> = {
-      'INITIAL': 'text-blue-600 bg-blue-50',
-      'PROPOSAL_SENT': 'text-indigo-600 bg-indigo-50',
-      'NEGOTIATION': 'text-purple-600 bg-purple-50',
-      'PO_RECEIVED': 'text-cyan-600 bg-cyan-50',
-      'WON': 'text-green-600 bg-green-50',
-      'LOST': 'text-red-600 bg-red-50',
+      'INITIAL': 'text-[#546A7A] bg-[#96AEC2]/10',
+      'PROPOSAL_SENT': 'text-[#546A7A] bg-[#546A7A]/10',
+      'NEGOTIATION': 'text-[#546A7A] bg-[#6F8A9D]/10',
+      'PO_RECEIVED': 'text-[#546A7A] bg-[#96AEC2]/10',
+      'WON': 'text-[#4F6A64] bg-[#A2B9AF]/10',
+      'LOST': 'text-[#9E3B47] bg-[#E17F70]/10',
     }
-    return colors[stage] || 'text-gray-600 bg-gray-50'
+    return colors[stage] || 'text-[#5D6E73] bg-[#AEBFC3]/10'
   }
 
   const formatStage = (stage: string) => {
@@ -69,18 +69,18 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
             Zone Manager Dashboard
           </h1>
-          <p className="text-slate-600 mt-1">Overview of all zone offers and team performance</p>
+          <p className="text-[#5D6E73] mt-1">Overview of all zone offers and team performance</p>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+          <button className="px-4 py-2 text-sm font-medium text-[#5D6E73] bg-white border border-[#92A2A5] rounded-lg hover:bg-[#AEBFC3]/10 transition-colors">
             Last 30 Days
           </button>
           <a 
             href="/zone-manager/offers"
-            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-indigo-600 rounded-lg hover:from-violet-700 hover:to-indigo-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-lg hover:from-[#546A7A] hover:to-[#546A7A] transition-colors"
           >
             View All Offers
           </a>
@@ -89,7 +89,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
 
       {/* Zone Achievement */}
       {dashboardData.zoneTarget && (
-        <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
+        <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-[#546A7A] to-cyan-600 text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">{dashboardData.zoneTarget.zoneName} Zone Performance</h3>
-                  <p className="text-blue-100 text-sm">Period: {dashboardData.zoneTarget.period}</p>
+                  <p className="text-[#96AEC2] text-sm">Period: {dashboardData.zoneTarget.period}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -107,11 +107,11 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                <p className="text-blue-100 text-xs mb-1">Zone Won Value</p>
+                <p className="text-[#96AEC2] text-xs mb-1">Zone Won Value</p>
                 <p className="text-lg font-bold">{formatCurrency(stats.zoneWonValueThisMonth)}</p>
               </div>
               <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                <p className="text-blue-100 text-xs mb-1">Zone Target</p>
+                <p className="text-[#96AEC2] text-xs mb-1">Zone Target</p>
                 <p className="text-lg font-bold">{formatCurrency(dashboardData.zoneTarget.targetValue)}</p>
               </div>
             </div>
@@ -127,76 +127,76 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
 
       {/* Main Stats Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-violet-50 to-violet-100">
+        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-[#6F8A9D]/10 to-violet-100">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-violet-600 rounded-xl">
+              <div className="p-3 bg-[#546A7A] rounded-xl">
                 <FileText className="h-6 w-6 text-white" />
               </div>
-              <Users className="h-5 w-5 text-violet-600" />
+              <Users className="h-5 w-5 text-[#546A7A]" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-600">Total Zone Offers</p>
+              <p className="text-sm font-medium text-[#5D6E73]">Total Zone Offers</p>
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-bold text-slate-900">{stats.totalOffers}</h3>
+                <h3 className="text-3xl font-bold text-[#546A7A]">{stats.totalOffers}</h3>
               </div>
-              <p className="text-xs text-slate-500">{stats.openOffers} currently open</p>
+              <p className="text-xs text-[#757777]">{stats.openOffers} currently open</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-emerald-100">
+        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-emerald-600 rounded-xl">
+              <div className="p-3 bg-[#4F6A64] rounded-xl">
                 <CheckCircle className="h-6 w-6 text-white" />
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-600">Won Offers</p>
+              <p className="text-sm font-medium text-[#5D6E73]">Won Offers</p>
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-bold text-slate-900">{stats.wonOffers}</h3>
-                <span className="text-sm font-semibold text-emerald-600">
+                <h3 className="text-3xl font-bold text-[#546A7A]">{stats.wonOffers}</h3>
+                <span className="text-sm font-semibold text-[#4F6A64]">
                   {winRateNum.toFixed(1)}%
                 </span>
               </div>
-              <p className="text-xs text-slate-500">{formatCurrency(stats.wonValue)}</p>
+              <p className="text-xs text-[#757777]">{formatCurrency(stats.wonValue)}</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
+        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-600 rounded-xl">
+              <div className="p-3 bg-[#6F8A9D] rounded-xl">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-600">Pipeline Value</p>
+              <p className="text-sm font-medium text-[#5D6E73]">Pipeline Value</p>
               <div className="flex items-baseline gap-2">
-                <h3 className="text-2xl font-bold text-slate-900">{formatCurrency(stats.totalValue)}</h3>
+                <h3 className="text-2xl font-bold text-[#546A7A]">{formatCurrency(stats.totalValue)}</h3>
               </div>
-              <p className="text-xs text-slate-500">Total offers value</p>
+              <p className="text-xs text-[#757777]">Total offers value</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-amber-50 to-amber-100">
+        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-amber-600 rounded-xl">
+              <div className="p-3 bg-[#976E44] rounded-xl">
                 <Trophy className="h-6 w-6 text-white" />
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-slate-600">Win Rate</p>
+              <p className="text-sm font-medium text-[#5D6E73]">Win Rate</p>
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-bold text-slate-900">
+                <h3 className="text-3xl font-bold text-[#546A7A]">
                   {closedOffers === 0 ? 'N/A' : `${winRateNum.toFixed(1)}%`}
                 </h3>
               </div>
-              <p className="text-xs text-slate-500">{stats.wonOffers} / {closedOffers} closed</p>
+              <p className="text-xs text-[#757777]">{stats.wonOffers} / {closedOffers} closed</p>
             </div>
           </CardContent>
         </Card>
@@ -207,7 +207,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-violet-600" />
+              <Package className="h-5 w-5 text-[#546A7A]" />
               Product Type Performance
             </CardTitle>
             <CardDescription>
@@ -220,41 +220,41 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
                 <div key={product.productType} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-violet-100 rounded-lg">
-                        <Package className="h-5 w-5 text-violet-600" />
+                      <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
+                        <Package className="h-5 w-5 text-[#546A7A]" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-slate-900">{product.productType}</h4>
-                        <p className="text-sm text-slate-600">{product.count} offers</p>
+                        <h4 className="font-semibold text-[#546A7A]">{product.productType}</h4>
+                        <p className="text-sm text-[#5D6E73]">{product.count} offers</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-slate-900">{formatCurrency(product.wonValue)}</p>
-                      <p className="text-xs text-slate-600">Won value</p>
+                      <p className="text-xl font-bold text-[#546A7A]">{formatCurrency(product.wonValue)}</p>
+                      <p className="text-xs text-[#5D6E73]">Won value</p>
                     </div>
                   </div>
                   {product.targetValue && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">Target: {formatCurrency(product.targetValue)}</span>
+                        <span className="text-[#5D6E73]">Target: {formatCurrency(product.targetValue)}</span>
                         <span className={`font-semibold ${
                           product.achievement && product.achievement >= 100 
-                            ? 'text-green-600' 
+                            ? 'text-[#4F6A64]' 
                             : product.achievement && product.achievement >= 75 
-                            ? 'text-amber-600' 
-                            : 'text-red-600'
+                            ? 'text-[#976E44]' 
+                            : 'text-[#9E3B47]'
                         }`}>
                           {product.achievement?.toFixed(1)}%
                         </span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className="w-full bg-[#92A2A5]/30 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full transition-all ${
                             product.achievement && product.achievement >= 100 
-                              ? 'bg-green-600' 
+                              ? 'bg-[#4F6A64]' 
                               : product.achievement && product.achievement >= 75 
-                              ? 'bg-amber-600' 
-                              : 'bg-red-600'
+                              ? 'bg-[#976E44]' 
+                              : 'bg-[#9E3B47]'
                           }`}
                           style={{ width: `${Math.min(product.achievement || 0, 100)}%` }}
                         />
@@ -270,28 +270,28 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-l-4 border-l-purple-500">
+        <Card className="border-l-4 border-l-[#6F8A9D]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-600">Avg Deal Size</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xs font-medium text-[#5D6E73]">Avg Deal Size</p>
+                <p className="text-2xl font-bold text-[#546A7A]">
                   {formatCurrency(stats.avgOfferValue || (stats.totalOffers > 0 ? stats.totalValue / stats.totalOffers : 0))}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-purple-500" />
+              <DollarSign className="h-8 w-8 text-[#6F8A9D]" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-indigo-500">
+        <Card className="border-l-4 border-l-[#6F8A9D]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-600">Active Offers</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.activeOffers || stats.openOffers}</p>
+                <p className="text-xs font-medium text-[#5D6E73]">Active Offers</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.activeOffers || stats.openOffers}</p>
               </div>
-              <Award className="h-8 w-8 text-indigo-500" />
+              <Award className="h-8 w-8 text-[#546A7A]" />
             </div>
           </CardContent>
         </Card>
@@ -300,22 +300,22 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-600">Last 30 Days</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.last30DaysOffers || stats.totalOffers}</p>
+                <p className="text-xs font-medium text-[#5D6E73]">Last 30 Days</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.last30DaysOffers || stats.totalOffers}</p>
               </div>
-              <Clock className="h-8 w-8 text-cyan-500" />
+              <Clock className="h-8 w-8 text-[#6F8A9D]" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-red-500">
+        <Card className="border-l-4 border-l-[#E17F70]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-slate-600">Lost Offers</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.lostOffers}</p>
+                <p className="text-xs font-medium text-[#5D6E73]">Lost Offers</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.lostOffers}</p>
               </div>
-              <XCircle className="h-8 w-8 text-red-500" />
+              <XCircle className="h-8 w-8 text-[#E17F70]" />
             </div>
           </CardContent>
         </Card>
@@ -327,7 +327,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PieChartIcon className="h-5 w-5 text-violet-600" />
+              <PieChartIcon className="h-5 w-5 text-[#546A7A]" />
               Offer Stage Distribution
             </CardTitle>
             <CardDescription>
@@ -363,7 +363,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-[300px] text-slate-500">
+              <div className="flex items-center justify-center h-[300px] text-[#757777]">
                 No stage data available
               </div>
             )}
@@ -374,7 +374,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
+              <BarChart3 className="h-5 w-5 text-[#546A7A]" />
               Top Customers
             </CardTitle>
             <CardDescription>
@@ -393,7 +393,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-[300px] text-slate-500">
+              <div className="flex items-center justify-center h-[300px] text-[#757777]">
                 No customer data available
               </div>
             )}
@@ -407,7 +407,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-violet-600" />
+                <Package className="h-5 w-5 text-[#546A7A]" />
                 Product Type Distribution
               </CardTitle>
               <CardDescription>
@@ -444,7 +444,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-blue-600" />
+                <BarChart3 className="h-5 w-5 text-[#546A7A]" />
                 Product Type Value
               </CardTitle>
               <CardDescription>
@@ -478,15 +478,15 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
           <div className="space-y-4">
             {dashboardData.recentOffers.length > 0 ? (
               dashboardData.recentOffers.map((offer: any) => (
-                <div key={offer.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={offer.id} className="flex items-center justify-between p-3 bg-[#AEBFC3]/10 rounded-lg hover:bg-[#AEBFC3]/20 transition-colors">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{offer.customer?.companyName || 'Unknown'}</p>
                       {offer.assignedTo && (
-                        <span className="text-xs text-gray-500">• {offer.assignedTo.name}</span>
+                        <span className="text-xs text-[#AEBFC3]0">• {offer.assignedTo.name}</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-[#5D6E73]">
                       Created on {new Date(offer.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -499,7 +499,7 @@ export default function ZoneManagerDashboardClient({ dashboardData }: ZoneManage
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-slate-500">
+              <div className="text-center py-8 text-[#757777]">
                 No recent offers found
               </div>
             )}

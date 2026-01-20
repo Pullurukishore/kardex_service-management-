@@ -63,20 +63,20 @@ const formatResolutionTime = (hours: number) => {
 
 // Helper function to get resolution time performance level
 const getResolutionTimePerformance = (hours: number) => {
-  if (hours === 0) return { level: 'No Data', color: 'from-slate-400 to-gray-500', textClass: 'text-slate-600', bgClass: 'bg-slate-100', dotColor: 'bg-slate-400' };
-  if (hours <= 24) return { level: 'Excellent', color: 'from-emerald-400 to-green-500', textClass: 'text-emerald-700', bgClass: 'bg-emerald-100', dotColor: 'bg-emerald-500' };
-  if (hours <= 48) return { level: 'Good', color: 'from-amber-400 to-orange-500', textClass: 'text-amber-700', bgClass: 'bg-amber-100', dotColor: 'bg-amber-500' };
-  return { level: 'Needs Work', color: 'from-rose-400 to-red-500', textClass: 'text-rose-700', bgClass: 'bg-rose-100', dotColor: 'bg-rose-500' };
+  if (hours === 0) return { level: 'No Data', color: 'from-[#92A2A5] to-[#757777]', textClass: 'text-[#5D6E73]', bgClass: 'bg-[#AEBFC3]/20', dotColor: 'bg-[#92A2A5]' };
+  if (hours <= 24) return { level: 'Excellent', color: 'from-[#82A094] to-[#82A094]', textClass: 'text-[#4F6A64]', bgClass: 'bg-[#82A094]/20', dotColor: 'bg-[#82A094]/100' };
+  if (hours <= 48) return { level: 'Good', color: 'from-[#CE9F6B] to-[#CE9F6B]', textClass: 'text-[#976E44]', bgClass: 'bg-[#CE9F6B]/20', dotColor: 'bg-[#CE9F6B]/100' };
+  return { level: 'Needs Work', color: 'from-rose-400 to-[#E17F70]', textClass: 'text-[#9E3B47]', bgClass: 'bg-[#EEC1BF]/20', dotColor: 'bg-[#EEC1BF]/100' };
 };
 
 // Zone card gradient colors
 const zoneGradients = [
-  'from-blue-500 via-indigo-500 to-purple-500',
-  'from-emerald-500 via-teal-500 to-cyan-500',
-  'from-orange-500 via-rose-500 to-pink-500',
-  'from-violet-500 via-purple-500 to-fuchsia-500',
-  'from-cyan-500 via-blue-500 to-indigo-500',
-  'from-rose-500 via-pink-500 to-purple-500',
+  'from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D]',
+  'from-[#82A094] via-[#82A094] to-[#6F8A9D]',
+  'from-[#CE9F6B] via-rose-500 to-[#E17F70]',
+  'from-[#6F8A9D] via-[#6F8A9D] to-[#E17F70]',
+  'from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D]',
+  'from-[#E17F70] via-pink-500 to-[#6F8A9D]',
 ];
 
 export default function ZonePerformanceAnalytics({ 
@@ -103,12 +103,12 @@ export default function ZonePerformanceAnalytics({
   return (
     <div className="relative">
       {/* Main Card with Gradient Border Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-2xl sm:rounded-3xl blur-sm opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] rounded-2xl sm:rounded-3xl blur-sm opacity-20" />
       
       <Card className="relative overflow-hidden bg-white border-0 shadow-xl rounded-2xl sm:rounded-3xl">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-cyan-400/20 via-blue-400/15 to-transparent rounded-full blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#96AEC2]/20 via-blue-400/15 to-transparent rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-tr from-indigo-400/20 via-purple-400/15 to-transparent rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-200/10 to-transparent rounded-full blur-3xl" />
         </div>
@@ -118,23 +118,23 @@ export default function ZonePerformanceAnalytics({
             <div className="min-w-0 flex-1">
               <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
                 <div className="relative">
-                  <div className="p-3 bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30">
+                  <div className="p-3 bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A] rounded-2xl shadow-lg shadow-[#96AEC2]/30">
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   {/* Pulse effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl animate-ping opacity-20" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-2xl animate-ping opacity-20" />
                 </div>
                 <span className="bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                   Zone Analytics
                 </span>
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base mt-2 text-slate-500 ml-[52px]">
+              <CardDescription className="text-sm sm:text-base mt-2 text-[#757777] ml-[52px]">
                 Geographic performance and service coverage insights
               </CardDescription>
             </div>
             
             <div className="flex items-center gap-2 sm:gap-3 ml-[52px] sm:ml-0">
-              <Badge className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 px-3 py-1.5 text-xs font-semibold shadow-lg shadow-cyan-500/25">
+              <Badge className="bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white border-0 px-3 py-1.5 text-xs font-semibold shadow-lg shadow-cyan-500/25">
                 <Globe className="w-3 h-3 mr-1.5" />
                 {zones.length} Zones
               </Badge>
@@ -143,7 +143,7 @@ export default function ZonePerformanceAnalytics({
                 size="sm" 
                 onClick={onRefresh} 
                 disabled={isRefreshing}
-                className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700 hover:border-blue-300 shadow-sm"
+                className="bg-white hover:bg-[#96AEC2]/10 border-[#96AEC2] text-[#546A7A] hover:border-[#96AEC2] shadow-sm"
               >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </Button>
@@ -155,7 +155,7 @@ export default function ZonePerformanceAnalytics({
           {/* Quick Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {/* Total Tickets in Zones */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-4 shadow-lg shadow-blue-500/20 group hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-2xl p-4 shadow-lg shadow-[#6F8A9D]/20 group hover:shadow-xl hover:shadow-[#96AEC2]/30 transition-all duration-300">
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-white/10 rounded-full blur-2xl" />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -168,7 +168,7 @@ export default function ZonePerformanceAnalytics({
             </div>
             
             {/* Avg per Zone */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-4 shadow-lg shadow-violet-500/20 group hover:shadow-xl hover:shadow-violet-500/30 transition-all duration-300">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-2xl p-4 shadow-lg shadow-violet-500/20 group hover:shadow-xl hover:shadow-violet-500/30 transition-all duration-300">
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-white/10 rounded-full blur-2xl" />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -181,7 +181,7 @@ export default function ZonePerformanceAnalytics({
             </div>
             
             {/* Zone Staff */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 shadow-lg shadow-emerald-500/20 group hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-2xl p-4 shadow-lg shadow-[#82A094]/20 group hover:shadow-xl hover:shadow-[#82A094]/30 transition-all duration-300">
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-white/10 rounded-full blur-2xl" />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -194,7 +194,7 @@ export default function ZonePerformanceAnalytics({
             </div>
             
             {/* Coverage */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-rose-600 rounded-2xl p-4 shadow-lg shadow-orange-500/20 group hover:shadow-xl hover:shadow-orange-500/30 transition-all duration-300">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#CE9F6B] to-[#9E3B47] rounded-2xl p-4 shadow-lg shadow-orange-500/20 group hover:shadow-xl hover:shadow-[#CE9F6B]/30 transition-all duration-300">
               <div className="absolute -top-6 -right-6 w-16 h-16 bg-white/10 rounded-full blur-2xl" />
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2">
@@ -209,12 +209,12 @@ export default function ZonePerformanceAnalytics({
 
           {/* Zone Cards Grid */}
           <div>
-            <h4 className="font-bold text-lg text-slate-800 mb-4 flex items-center gap-2">
-              <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+            <h4 className="font-bold text-lg text-[#546A7A] mb-4 flex items-center gap-2">
+              <div className="p-1.5 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-lg">
                 <Building2 className="w-4 h-4 text-white" />
               </div>
               Zone Details
-              <Badge className="bg-blue-100 text-blue-700 border-0 text-xs ml-2">
+              <Badge className="bg-[#96AEC2]/20 text-[#546A7A] border-0 text-xs ml-2">
                 {zones.length} zones
               </Badge>
             </h4>
@@ -227,7 +227,7 @@ export default function ZonePerformanceAnalytics({
                 return (
                   <div 
                     key={zone.id} 
-                    className="relative bg-white rounded-2xl border border-slate-200/60 overflow-hidden hover:shadow-xl hover:border-transparent transition-all duration-500 group"
+                    className="relative bg-white rounded-2xl border border-[#92A2A5]/60 overflow-hidden hover:shadow-xl hover:border-transparent transition-all duration-500 group"
                   >
                     {/* Gradient top border */}
                     <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColor}`} />
@@ -243,11 +243,11 @@ export default function ZonePerformanceAnalytics({
                             <MapPin className="w-5 h-5 text-white" />
                           </div>
                           <div>
-                            <h5 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">{zone.name}</h5>
-                            <p className="text-xs text-slate-400">Zone #{zone.id}</p>
+                            <h5 className="font-bold text-[#546A7A] group-hover:text-[#546A7A] transition-colors">{zone.name}</h5>
+                            <p className="text-xs text-[#979796]">Zone #{zone.id}</p>
                           </div>
                         </div>
-                        <Badge className={`text-[10px] ${zone.totalTickets > 0 ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <Badge className={`text-[10px] ${zone.totalTickets > 0 ? 'bg-[#96AEC2]/20 text-[#546A7A]' : 'bg-[#AEBFC3]/20 text-[#757777]'}`}>
                           {zone.totalTickets > 0 ? (
                             <><Zap className="w-2.5 h-2.5 mr-1" />Active</>
                           ) : 'Idle'}
@@ -256,85 +256,85 @@ export default function ZonePerformanceAnalytics({
                       
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 gap-3 mb-4">
-                        <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl p-3 text-center border border-slate-100">
+                        <div className="bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/50 rounded-xl p-3 text-center border border-[#AEBFC3]/30">
                           <div className="flex items-center justify-center gap-1.5 mb-1">
-                            <Ticket className="w-3.5 h-3.5 text-blue-500" />
+                            <Ticket className="w-3.5 h-3.5 text-[#6F8A9D]" />
                           </div>
-                          <p className="text-xl font-bold text-slate-800">{zone.totalTickets}</p>
-                          <p className="text-[10px] font-medium text-slate-500">Tickets</p>
+                          <p className="text-xl font-bold text-[#546A7A]">{zone.totalTickets}</p>
+                          <p className="text-[10px] font-medium text-[#757777]">Tickets</p>
                         </div>
-                        <div className="bg-gradient-to-br from-slate-50 to-emerald-50/50 rounded-xl p-3 text-center border border-slate-100">
+                        <div className="bg-gradient-to-br from-[#AEBFC3]/10 to-[#A2B9AF]/10/50 rounded-xl p-3 text-center border border-[#AEBFC3]/30">
                           <div className="flex items-center justify-center gap-1.5 mb-1">
-                            <Clock className="w-3.5 h-3.5 text-emerald-500" />
+                            <Clock className="w-3.5 h-3.5 text-[#82A094]" />
                           </div>
-                          <p className="text-xl font-bold text-slate-800">{formatResolutionTime(resolutionTime)}</p>
-                          <p className="text-[10px] font-medium text-slate-500">Avg Resolve</p>
+                          <p className="text-xl font-bold text-[#546A7A]">{formatResolutionTime(resolutionTime)}</p>
+                          <p className="text-[10px] font-medium text-[#757777]">Avg Resolve</p>
                         </div>
                       </div>
                       
                       {/* Details - Zone Manager, Zone Users, Service Persons */}
                       <div className="space-y-2 mb-4">
-                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg border border-purple-100/50">
+                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-lg border border-[#6F8A9D]/30/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1 bg-purple-500 rounded">
+                            <div className="p-1 bg-[#6F8A9D]/100 rounded">
                               <Users className="w-3 h-3 text-white" />
                             </div>
-                            <span className="text-xs font-medium text-purple-700">Zone Manager</span>
+                            <span className="text-xs font-medium text-[#546A7A]">Zone Manager</span>
                           </div>
-                          <span className="text-sm font-bold text-purple-800">{zone.zoneManagerCount || 0}</span>
+                          <span className="text-sm font-bold text-[#546A7A]">{zone.zoneManagerCount || 0}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100/50">
+                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-lg border border-[#96AEC2]/30/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1 bg-blue-500 rounded">
+                            <div className="p-1 bg-[#96AEC2]/100 rounded">
                               <Users className="w-3 h-3 text-white" />
                             </div>
-                            <span className="text-xs font-medium text-blue-700">Zone Users</span>
+                            <span className="text-xs font-medium text-[#546A7A]">Zone Users</span>
                           </div>
-                          <span className="text-sm font-bold text-blue-800">{zone.zoneUserCount || 0}</span>
+                          <span className="text-sm font-bold text-[#546A7A]">{zone.zoneUserCount || 0}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-100/50">
+                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-[#A2B9AF]/10 to-[#82A094]/10 rounded-lg border border-[#A2B9AF]/30/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1 bg-emerald-500 rounded">
+                            <div className="p-1 bg-[#82A094]/100 rounded">
                               <Users className="w-3 h-3 text-white" />
                             </div>
-                            <span className="text-xs font-medium text-emerald-700">Service Persons</span>
+                            <span className="text-xs font-medium text-[#4F6A64]">Service Persons</span>
                           </div>
-                          <span className="text-sm font-bold text-emerald-800">{zone.servicePersonCount || 0}</span>
+                          <span className="text-sm font-bold text-[#4F6A64]">{zone.servicePersonCount || 0}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-100/50">
+                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-lg border border-[#EEC1BF]/30/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1 bg-orange-500 rounded">
+                            <div className="p-1 bg-[#CE9F6B]/100 rounded">
                               <Building2 className="w-3 h-3 text-white" />
                             </div>
-                            <span className="text-xs font-medium text-orange-700">Customers</span>
+                            <span className="text-xs font-medium text-[#976E44]">Customers</span>
                           </div>
-                          <span className="text-sm font-bold text-orange-800">{zone.customerCount || 0}</span>
+                          <span className="text-sm font-bold text-[#976E44]">{zone.customerCount || 0}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-cyan-50 to-sky-50 rounded-lg border border-cyan-100/50">
+                        <div className="flex items-center justify-between py-1.5 px-3 bg-gradient-to-r from-[#96AEC2]/10 to-sky-50 rounded-lg border border-cyan-100/50">
                           <div className="flex items-center gap-2">
-                            <div className="p-1 bg-cyan-500 rounded">
+                            <div className="p-1 bg-[#96AEC2]/100 rounded">
                               <Server className="w-3 h-3 text-white" />
                             </div>
-                            <span className="text-xs font-medium text-cyan-700">Assets</span>
+                            <span className="text-xs font-medium text-[#546A7A]">Assets</span>
                           </div>
-                          <span className="text-sm font-bold text-cyan-800">{zone.assetCount || 0}</span>
+                          <span className="text-sm font-bold text-[#546A7A]">{zone.assetCount || 0}</span>
                         </div>
                       </div>
                       
                       {/* Performance Bar */}
-                      <div className="pt-3 border-t border-slate-100">
+                      <div className="pt-3 border-t border-[#AEBFC3]/30">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-slate-500">Resolution Speed</span>
+                          <span className="text-xs font-medium text-[#757777]">Resolution Speed</span>
                           <Badge className={`text-[10px] font-semibold ${performance.bgClass} ${performance.textClass} border-0 px-2`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${performance.dotColor} mr-1.5`} />
                             {performance.level}
                           </Badge>
                         </div>
-                        <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="relative h-2 bg-[#AEBFC3]/20 rounded-full overflow-hidden">
                           <div 
                             className={`absolute inset-y-0 left-0 bg-gradient-to-r ${performance.color} rounded-full transition-all duration-500`}
                             style={{ width: `${resolutionTime === 0 ? 0 : Math.max(15, 100 - Math.min(85, (resolutionTime / 72) * 100))}%` }}
@@ -350,7 +350,7 @@ export default function ZonePerformanceAnalytics({
 
           {/* Top Performers Section */}
           {zones.length > 1 && sortedByResolution.length > 0 && (
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl p-6 shadow-xl shadow-emerald-500/20">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] via-[#82A094] to-cyan-600 rounded-2xl p-6 shadow-xl shadow-[#82A094]/20">
               {/* Background decorations */}
               <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
@@ -372,9 +372,9 @@ export default function ZonePerformanceAnalytics({
                     const resolutionHours = getZoneResolutionTime(zone);
                     const medals = ['🥇', '🥈', '🥉'];
                     const bgStyles = [
-                      'bg-gradient-to-br from-yellow-400/30 to-amber-400/20 border-yellow-300/50',
-                      'bg-gradient-to-br from-slate-300/30 to-gray-300/20 border-slate-300/50',
-                      'bg-gradient-to-br from-orange-400/30 to-amber-400/20 border-orange-300/50'
+                      'bg-gradient-to-br from-yellow-400/30 to-amber-400/20 border-[#CE9F6B]/50',
+                      'bg-gradient-to-br from-slate-300/30 to-[#92A2A5]/50/20 border-[#92A2A5]/50',
+                      'bg-gradient-to-br from-orange-400/30 to-amber-400/20 border-[#CE9F6B]/50'
                     ];
                     
                     return (
@@ -392,7 +392,7 @@ export default function ZonePerformanceAnalytics({
                             </span>
                           </div>
                         </div>
-                        {i === 0 && <Star className="w-5 h-5 text-yellow-300 animate-pulse" />}
+                        {i === 0 && <Star className="w-5 h-5 text-[#CE9F6B] animate-pulse" />}
                       </div>
                     );
                   })}
@@ -403,10 +403,10 @@ export default function ZonePerformanceAnalytics({
 
           {/* Live Indicator */}
           <div className="flex justify-center">
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-200">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-slate-500">Live Data</span>
-              <Activity className="w-3 h-3 text-slate-400" />
+            <div className="flex items-center gap-2 px-4 py-2 bg-[#AEBFC3]/10 rounded-full border border-[#92A2A5]">
+              <div className="w-2 h-2 bg-[#82A094]/100 rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-[#757777]">Live Data</span>
+              <Activity className="w-3 h-3 text-[#979796]" />
             </div>
           </div>
         </CardContent>

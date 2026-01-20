@@ -114,19 +114,19 @@ export default function ServiceZoneClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20">
+            <svg className="h-6 w-6 text-[#9E3B47]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Failed to load service zones</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <h3 className="mt-2 text-sm font-medium text-[#546A7A]">Failed to load service zones</h3>
+          <p className="mt-1 text-sm text-[#AEBFC3]0">{error}</p>
           <div className="mt-6">
             <button
               onClick={handleRefresh}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#6F8A9D] hover:bg-[#546A7A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#96AEC2]"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
@@ -146,8 +146,8 @@ export default function ServiceZoneClient({
           disabled={isRefreshing}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${
             isRefreshing 
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-              : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              ? 'bg-[#92A2A5]/30 text-[#AEBFC3]0 cursor-not-allowed' 
+              : 'bg-white text-[#5D6E73] hover:bg-[#AEBFC3]/10 border border-[#92A2A5]'
           }`}
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -157,56 +157,56 @@ export default function ServiceZoneClient({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Total Zones</p>
-                <p className="text-2xl font-bold text-green-900">{stats.total}</p>
+                <p className="text-sm font-medium text-[#4F6A64]">Total Zones</p>
+                <p className="text-2xl font-bold text-[#4F6A64]">{stats.total}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#A2B9AF]/100 flex items-center justify-center">
                 <MapPin className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Active Zones</p>
-                <p className="text-2xl font-bold text-blue-900">{stats.active}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Active Zones</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.active}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#96AEC2]/100 flex items-center justify-center">
                 <UserCheck className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-[#6F8A9D]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Service Personnel</p>
-                <p className="text-2xl font-bold text-purple-900">{stats.totalServicePersons}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Service Personnel</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.totalServicePersons}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#6F8A9D]/100 flex items-center justify-center">
                 <Users className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600">Total Customers</p>
-                <p className="text-2xl font-bold text-orange-900">{stats.totalCustomers}</p>
+                <p className="text-sm font-medium text-[#976E44]">Total Customers</p>
+                <p className="text-2xl font-bold text-[#976E44]">{stats.totalCustomers}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#CE9F6B]/100 flex items-center justify-center">
                 <Building className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -219,9 +219,9 @@ export default function ServiceZoneClient({
 
       {/* Enhanced Service Zones Table */}
       <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50 rounded-t-lg">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-green-600" />
+        <CardHeader className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#82A094]/10 rounded-t-lg">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-[#4F6A64]" />
             Service Zones ({filteredZones.length})
           </CardTitle>
           <CardDescription>
@@ -231,15 +231,15 @@ export default function ServiceZoneClient({
         <CardContent className="p-0">
           {filteredZones.length === 0 ? (
             <div className="text-center py-12">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center mb-4">
-                <MapPin className="h-12 w-12 text-green-500" />
+              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-[#A2B9AF]/20 to-[#82A094]/20 flex items-center justify-center mb-4">
+                <MapPin className="h-12 w-12 text-[#82A094]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No service zones found</h3>
-              <p className="text-gray-500 mb-6">
+              <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No service zones found</h3>
+              <p className="text-[#AEBFC3]0 mb-6">
                 Get started by creating your first service zone.
               </p>
               <Link href="/admin/service-zones/new">
-                <Button className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 shadow-lg">
+                <Button className="bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] hover:from-green-700 hover:to-[#4F6A64] shadow-lg">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Service Zone
                 </Button>
@@ -248,32 +248,32 @@ export default function ServiceZoneClient({
           ) : (
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50">
+                <TableHeader className="bg-[#AEBFC3]/10">
                   <TableRow>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Zone Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Personnel</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Customers</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Tickets</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Created</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6 text-right">Actions</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Zone Details</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Status</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Personnel</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Customers</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Tickets</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Created</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100">
                   {filteredZones.map((zone) => (
-                    <TableRow key={zone.id} className="hover:bg-gradient-to-r hover:from-green-50/50 hover:to-teal-50/50 transition-all duration-200">
+                    <TableRow key={zone.id} className="hover:bg-gradient-to-r hover:from-[#A2B9AF]/10/50 hover:to-[#82A094]/10/50 transition-all duration-200">
                       <TableCell className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-semibold">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#82A094] to-[#4F6A64] flex items-center justify-center text-white font-semibold">
                             {zone.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <Link href={`/admin/service-zones/${zone.id}`}>
-                              <div className="font-semibold text-gray-900 hover:text-green-600 transition-colors cursor-pointer">
+                              <div className="font-semibold text-[#546A7A] hover:text-[#4F6A64] transition-colors cursor-pointer">
                                 {zone.name}
                               </div>
                             </Link>
-                            <div className="text-sm text-gray-500 max-w-xs truncate">
+                            <div className="text-sm text-[#AEBFC3]0 max-w-xs truncate">
                               {zone.description || 'No description'}
                             </div>
                           </div>
@@ -283,8 +283,8 @@ export default function ServiceZoneClient({
                         <Badge 
                           variant={zone.isActive ? 'default' : 'secondary'}
                           className={zone.isActive 
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                            : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                           }
                         >
                           {zone.isActive ? 'Active' : 'Inactive'}
@@ -292,25 +292,25 @@ export default function ServiceZoneClient({
                       </TableCell>
                       <TableCell className="py-4 px-6">
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 bg-purple-50 px-2 py-1 rounded-md">
-                            <Users className="h-4 w-4 text-purple-600" />
-                            <span className="text-sm font-medium text-purple-700">{zone._count?.servicePersons || 0}</span>
+                          <div className="flex items-center gap-1 bg-[#6F8A9D]/10 px-2 py-1 rounded-md">
+                            <Users className="h-4 w-4 text-[#546A7A]" />
+                            <span className="text-sm font-medium text-[#546A7A]">{zone._count?.servicePersons || 0}</span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="py-4 px-6">
-                        <div className="flex items-center gap-1 bg-orange-50 px-2 py-1 rounded-md">
-                          <Building className="h-4 w-4 text-orange-600" />
-                          <span className="text-sm font-medium text-orange-700">{zone._count?.customers || 0}</span>
+                        <div className="flex items-center gap-1 bg-[#CE9F6B]/10 px-2 py-1 rounded-md">
+                          <Building className="h-4 w-4 text-[#976E44]" />
+                          <span className="text-sm font-medium text-[#976E44]">{zone._count?.customers || 0}</span>
                         </div>
                       </TableCell>
                       <TableCell className="py-4 px-6">
-                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md">
-                          <BarChart3 className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-700">{zone._count?.tickets || 0}</span>
+                        <div className="flex items-center gap-1 bg-[#96AEC2]/10 px-2 py-1 rounded-md">
+                          <BarChart3 className="h-4 w-4 text-[#546A7A]" />
+                          <span className="text-sm font-medium text-[#546A7A]">{zone._count?.tickets || 0}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4 px-6 text-gray-600">
+                      <TableCell className="py-4 px-6 text-[#5D6E73]">
                         {new Date(zone.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="py-4 px-6 text-right">

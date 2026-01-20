@@ -37,11 +37,11 @@ export function MobilePageHeader({ title, description, action, className }: Mobi
       className
     )}>
       <div className="flex-1 min-w-0">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 truncate">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#546A7A] truncate">
           {title}
         </h1>
         {description && (
-          <p className="mt-2 text-sm sm:text-base text-gray-600">
+          <p className="mt-2 text-sm sm:text-base text-[#5D6E73]">
             {description}
           </p>
         )}
@@ -108,7 +108,7 @@ export function MobileTable({ children, className }: MobileTableProps) {
   return (
     <div className={cn(
       "table-mobile",
-      "border border-gray-200 rounded-lg overflow-hidden",
+      "border border-[#92A2A5] rounded-lg overflow-hidden",
       className
     )}>
       {children}
@@ -217,7 +217,7 @@ export function MobileModal({ children, isOpen, onClose, title, className }: Mob
               <h3 className="text-lg font-semibold">{title}</h3>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 btn-touch"
+                className="text-[#979796] hover:text-[#5D6E73] btn-touch"
               >
                 ×
               </button>
@@ -251,10 +251,14 @@ export function MobileButton({
   const baseClasses = "btn-touch focus-mobile transition-all duration-200 font-medium rounded-lg";
   
   const variantClasses = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md",
-    secondary: "bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300",
-    ghost: "hover:bg-gray-100 text-gray-700",
-    danger: "bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md"
+    // Kardex Blue 2 for primary actions
+    primary: "bg-[#6F8A9D] hover:bg-[#546A7A] text-white shadow-sm hover:shadow-md",
+    // Kardex Grey 1 for secondary
+    secondary: "bg-[#AEBFC3]/20 hover:bg-[#92A2A5]/30 text-[#5D6E73] border border-[#92A2A5]",
+    // Ghost with Kardex Grey
+    ghost: "hover:bg-[#AEBFC3]/20 text-[#5D6E73]",
+    // Kardex Red for danger
+    danger: "bg-[#E17F70] hover:bg-[#9E3B47] text-white shadow-sm hover:shadow-md"
   };
 
   const sizeClasses = {
@@ -292,7 +296,7 @@ export function MobileCard({ children, className, clickable = false, onClick }: 
     <div
       className={cn(
         "card-mobile",
-        "bg-white rounded-lg border border-gray-200 p-4 sm:p-6",
+        "bg-white rounded-lg border border-[#92A2A5] p-4 sm:p-6",
         clickable && "cursor-pointer hover:shadow-md active:scale-[0.98]",
         className
       )}

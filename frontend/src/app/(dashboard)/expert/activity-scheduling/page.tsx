@@ -12,10 +12,10 @@ export const dynamic = 'force-dynamic';
 
 export default function ExpertActivitySchedulingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/30 to-orange-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-amber-50/30 to-[#EEC1BF]/10/30">
       {/* Premium Header Section */}
       <div className="relative overflow-hidden">
-        <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 py-10 px-4 md:px-8">
+        <div className="bg-gradient-to-r from-[#CE9F6B] via-amber-600 to-[#CE9F6B] py-10 px-4 md:px-8">
           {/* Decorative Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />

@@ -7,62 +7,116 @@ import * as customerController from '../../controllers/ar/arCustomer.controller'
 import * as dashboardController from '../../controllers/ar/arDashboard.controller';
 import * as paymentTermsController from '../../controllers/ar/arPaymentTerms.controller';
 import * as importController from '../../controllers/ar/arImport.controller';
+import * as bankAccountController from '../../controllers/ar/bankAccount.controller';
+import * as bankAccountRequestController from '../../controllers/ar/bankAccountRequest.controller';
+import * as financeUserController from '../../controllers/ar/financeUser.controller';
+
+// Import auth middleware
+import { authenticate } from '../../middleware/auth.middleware';
+
+// Import finance middleware
+import {
+    requireFinanceAccess,
+    requireFinanceAdmin,
+    requireFinanceWrite,
+    requireFinanceRead,
+    requireFinanceDelete,
+} from '../../middleware/finance.middleware';
 
 const router = Router();
 
 // Configure multer for file uploads
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Apply authentication first, then finance access check to all AR routes
+router.use(authenticate);
+router.use(requireFinanceAccess);
+
+
 // ═══════════════════════════════════════════════════════════════════════════
-// DASHBOARD ROUTES
+// DASHBOARD ROUTES - All finance users can view
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/dashboard/kpis', dashboardController.getDashboardKPIs);
-router.get('/dashboard/aging', dashboardController.getAgingAnalysis);
-router.get('/dashboard/collection-trend', dashboardController.getCollectionTrend);
-router.get('/dashboard/critical-overdue', dashboardController.getCriticalOverdue);
-router.get('/dashboard/customer-outstanding', dashboardController.getCustomerOutstanding);
-router.get('/dashboard/recent-activity', dashboardController.getRecentActivity);
-router.get('/dashboard/top-customers', dashboardController.getTopCustomers);
-router.get('/dashboard/monthly-comparison', dashboardController.getMonthlyComparison);
-router.get('/dashboard/dso-metrics', dashboardController.getDSOMetrics);
+router.get('/dashboard/kpis', requireFinanceRead, dashboardController.getDashboardKPIs);
+router.get('/dashboard/aging', requireFinanceRead, dashboardController.getAgingAnalysis);
+router.get('/dashboard/collection-trend', requireFinanceRead, dashboardController.getCollectionTrend);
+router.get('/dashboard/critical-overdue', requireFinanceRead, dashboardController.getCriticalOverdue);
+router.get('/dashboard/customer-outstanding', requireFinanceRead, dashboardController.getCustomerOutstanding);
+router.get('/dashboard/recent-activity', requireFinanceRead, dashboardController.getRecentActivity);
+router.get('/dashboard/top-customers', requireFinanceRead, dashboardController.getTopCustomers);
+router.get('/dashboard/monthly-comparison', requireFinanceRead, dashboardController.getMonthlyComparison);
+router.get('/dashboard/dso-metrics', requireFinanceRead, dashboardController.getDSOMetrics);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INVOICE ROUTES
+// View: All | Create/Edit: Admin & User | Delete: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/invoices', invoiceController.getAllInvoices);
-router.get('/invoices/:id', invoiceController.getInvoiceById);
-router.post('/invoices', invoiceController.createInvoice);
-router.put('/invoices/:id', invoiceController.updateInvoice);
-router.delete('/invoices/:id', invoiceController.deleteInvoice);
-router.put('/invoices/:id/delivery', invoiceController.updateDeliveryTracking);
-router.post('/invoices/update-overdue', invoiceController.updateOverdueStatus);
-router.post('/invoices/:id/payments', invoiceController.addPaymentRecord);
+router.get('/invoices', requireFinanceRead, invoiceController.getAllInvoices);
+router.get('/invoices/:id', requireFinanceRead, invoiceController.getInvoiceById);
+router.post('/invoices', requireFinanceWrite, invoiceController.createInvoice);
+router.put('/invoices/:id', requireFinanceWrite, invoiceController.updateInvoice);
+router.delete('/invoices/:id', requireFinanceDelete, invoiceController.deleteInvoice);
+router.put('/invoices/:id/delivery', requireFinanceWrite, invoiceController.updateDeliveryTracking);
+router.post('/invoices/update-overdue', requireFinanceWrite, invoiceController.updateOverdueStatus);
+router.post('/invoices/:id/payments', requireFinanceWrite, invoiceController.addPaymentRecord);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CUSTOMER ROUTES
+// View: All | Create/Edit: Admin & User | Delete: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/customers', customerController.getAllCustomers);
-router.get('/customers/:id', customerController.getCustomerById);
-router.post('/customers', customerController.createCustomer);
-router.put('/customers/:id', customerController.updateCustomer);
-router.delete('/customers/:id', customerController.deleteCustomer);
+router.get('/customers', requireFinanceRead, customerController.getAllCustomers);
+router.get('/customers/:id', requireFinanceRead, customerController.getCustomerById);
+router.post('/customers', requireFinanceWrite, customerController.createCustomer);
+router.put('/customers/:id', requireFinanceWrite, customerController.updateCustomer);
+router.delete('/customers/:id', requireFinanceDelete, customerController.deleteCustomer);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PAYMENT TERMS ROUTES
+// View: All | Create/Edit: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/payment-terms', paymentTermsController.getAllPaymentTerms);
-router.post('/payment-terms', paymentTermsController.createPaymentTerm);
-router.post('/payment-terms/seed', paymentTermsController.seedPaymentTerms); // Must be before :id route
-router.get('/payment-terms/:id', paymentTermsController.getPaymentTermById);
-router.put('/payment-terms/:id', paymentTermsController.updatePaymentTerm);
+router.get('/payment-terms', requireFinanceRead, paymentTermsController.getAllPaymentTerms);
+router.post('/payment-terms', requireFinanceAdmin, paymentTermsController.createPaymentTerm);
+router.post('/payment-terms/seed', requireFinanceAdmin, paymentTermsController.seedPaymentTerms);
+router.get('/payment-terms/:id', requireFinanceRead, paymentTermsController.getPaymentTermById);
+router.put('/payment-terms/:id', requireFinanceAdmin, paymentTermsController.updatePaymentTerm);
 
 // ═══════════════════════════════════════════════════════════════════════════
-// IMPORT ROUTES
+// BANK ACCOUNT ROUTES - Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.post('/import/preview', upload.single('file'), importController.previewExcel);
-router.post('/import/excel', upload.single('file'), importController.importFromExcel);
-router.get('/import/history', importController.getImportHistory);
-router.get('/import/template', importController.downloadTemplate);
-router.post('/import/recalculate', importController.recalculateAll);
+router.get('/bank-accounts', requireFinanceAdmin, bankAccountController.getAllBankAccounts);
+router.get('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.getBankAccountById);
+router.post('/bank-accounts', requireFinanceAdmin, bankAccountController.createBankAccount);
+router.put('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.updateBankAccount);
+router.delete('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.deleteBankAccount);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BANK ACCOUNT CHANGE REQUEST ROUTES
+// View own requests: All | Approve/Reject: Admin only
+// ═══════════════════════════════════════════════════════════════════════════
+router.get('/bank-accounts/requests/stats', requireFinanceAdmin, bankAccountRequestController.getRequestStats);
+router.get('/bank-accounts/requests/pending', requireFinanceAdmin, bankAccountRequestController.getPendingRequests);
+router.get('/bank-accounts/requests/my', requireFinanceRead, bankAccountRequestController.getMyRequests);
+router.get('/bank-accounts/requests/:id', requireFinanceRead, bankAccountRequestController.getRequestById);
+router.post('/bank-accounts/requests', requireFinanceWrite, bankAccountRequestController.createChangeRequest);
+router.post('/bank-accounts/requests/:id/approve', requireFinanceAdmin, bankAccountRequestController.approveRequest);
+router.post('/bank-accounts/requests/:id/reject', requireFinanceAdmin, bankAccountRequestController.rejectRequest);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// IMPORT ROUTES - Admin & User can import
+// ═══════════════════════════════════════════════════════════════════════════
+router.post('/import/preview', requireFinanceWrite, upload.single('file'), importController.previewExcel);
+router.post('/import/excel', requireFinanceWrite, upload.single('file'), importController.importFromExcel);
+router.get('/import/history', requireFinanceRead, importController.getImportHistory);
+router.get('/import/template', requireFinanceRead, importController.downloadTemplate);
+router.post('/import/recalculate', requireFinanceAdmin, importController.recalculateAll);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FINANCE USER ROUTES - Admin only
+// ═══════════════════════════════════════════════════════════════════════════
+router.get('/finance-users', requireFinanceAdmin, financeUserController.getFinanceUsers);
+router.get('/finance-users/stats', requireFinanceAdmin, financeUserController.getFinanceUserStats);
+router.get('/finance-users/:id', requireFinanceAdmin, financeUserController.getFinanceUserById);
+router.post('/finance-users', requireFinanceAdmin, financeUserController.createFinanceUser);
+router.put('/finance-users/:id', requireFinanceAdmin, financeUserController.updateFinanceUser);
+router.delete('/finance-users/:id', requireFinanceAdmin, financeUserController.deleteFinanceUser);
 
 export default router;

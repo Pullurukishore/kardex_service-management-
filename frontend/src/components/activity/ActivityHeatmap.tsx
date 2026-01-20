@@ -59,12 +59,12 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
 
   // Get color intensity based on activity count
   const getIntensityColor = (count: number) => {
-    if (count === 0) return 'bg-slate-100';
-    if (count <= 5) return 'bg-green-200';
-    if (count <= 10) return 'bg-green-300';
-    if (count <= 20) return 'bg-yellow-300';
-    if (count <= 50) return 'bg-orange-400';
-    return 'bg-red-500';
+    if (count === 0) return 'bg-[#AEBFC3]/20';
+    if (count <= 5) return 'bg-[#82A094]/30';
+    if (count <= 10) return 'bg-[#82A094]/40';
+    if (count <= 20) return 'bg-[#CE9F6B]';
+    if (count <= 50) return 'bg-[#CE9F6B]';
+    return 'bg-[#E17F70]/100';
   };
 
   // Generate calendar days
@@ -97,7 +97,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-orange-600" />
+            <Calendar className="h-5 w-5 text-[#976E44]" />
             Activity Heatmap
           </CardTitle>
         </CardHeader>
@@ -115,12 +115,12 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
       <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-orange-600" />
+            <Calendar className="h-5 w-5 text-[#976E44]" />
             Activity Heatmap
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-64 text-red-600">
+          <div className="flex items-center justify-center h-64 text-[#9E3B47]">
             <AlertCircle className="h-5 w-5 mr-2" />
             {error}
           </div>
@@ -134,7 +134,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-orange-600" />
+            <Calendar className="h-5 w-5 text-[#976E44]" />
             Activity Heatmap
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -171,7 +171,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
+                <div key={day} className="text-center text-xs font-semibold text-[#5D6E73] py-2">
                   {day}
                 </div>
               ))}
@@ -187,7 +187,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
                     className={`
                       aspect-square rounded-sm cursor-pointer transition-all duration-200 hover:scale-110
                       ${getIntensityColor(count)}
-                      ${isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
+                      ${isSelected ? 'ring-2 ring-[#96AEC2] ring-offset-2' : ''}
                     `}
                     onClick={() => setSelectedDate(dateStr)}
                     title={`${dateStr}: ${count} activities`}
@@ -205,16 +205,16 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
             {/* Legend */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-600">Less</span>
+                <span className="text-xs text-[#5D6E73]">Less</span>
                 <div className="flex gap-1">
-                  <div className="w-3 h-3 bg-slate-100 rounded-sm"></div>
-                  <div className="w-3 h-3 bg-green-200 rounded-sm"></div>
-                  <div className="w-3 h-3 bg-green-300 rounded-sm"></div>
-                  <div className="w-3 h-3 bg-yellow-300 rounded-sm"></div>
-                  <div className="w-3 h-3 bg-orange-400 rounded-sm"></div>
-                  <div className="w-3 h-3 bg-red-500 rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#AEBFC3]/20 rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#82A094]/30 rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#82A094]/40 rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#CE9F6B] rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#CE9F6B] rounded-sm"></div>
+                  <div className="w-3 h-3 bg-[#E17F70]/100 rounded-sm"></div>
                 </div>
-                <span className="text-xs text-gray-600">More</span>
+                <span className="text-xs text-[#5D6E73]">More</span>
               </div>
               <Badge variant="secondary" className="text-xs">
                 Max: {maxActivity} activities
@@ -223,9 +223,9 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
 
             {/* Selected Date Details */}
             {selectedDate && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <div className="mt-4 p-4 bg-[#96AEC2]/10 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-blue-900">
+                  <h4 className="font-semibold text-[#546A7A]">
                     {new Date(selectedDate).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
@@ -233,15 +233,15 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
                       day: 'numeric'
                     })}
                   </h4>
-                  <Badge variant="outline" className="text-blue-700">
+                  <Badge variant="outline" className="text-[#546A7A]">
                     {calendarData.get(selectedDate) || 0} activities
                   </Badge>
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {getHourlyData(selectedDate).map(item => (
                     <div key={item.hour} className="text-center p-2 bg-white rounded border">
-                      <div className="text-xs text-gray-600">{item.hour}:00</div>
-                      <div className="text-sm font-semibold text-blue-700">{item.activity_count}</div>
+                      <div className="text-xs text-[#5D6E73]">{item.hour}:00</div>
+                      <div className="text-sm font-semibold text-[#546A7A]">{item.activity_count}</div>
                     </div>
                   ))}
                 </div>
@@ -271,17 +271,17 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
                         </span>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-600 mt-1">{i}</div>
+                    <div className="text-xs text-[#5D6E73] mt-1">{i}</div>
                   </div>
                 );
               })}
             </div>
 
             {/* Peak Hours Summary */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#E17F70]/10 rounded-lg">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-orange-600" />
-                <span className="font-semibold text-orange-900">Peak Activity Hours</span>
+                <TrendingUp className="h-5 w-5 text-[#976E44]" />
+                <span className="font-semibold text-[#976E44]">Peak Activity Hours</span>
               </div>
               <div className="flex gap-2">
                 {heatmapData
@@ -297,7 +297,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ className }) => {
                   .sort((a, b) => b.count - a.count)
                   .slice(0, 3)
                   .map(item => (
-                    <Badge key={item.hour} variant="secondary" className="bg-orange-100 text-orange-800">
+                    <Badge key={item.hour} variant="secondary" className="bg-[#CE9F6B]/20 text-[#976E44]">
                       {item.hour}:00 ({item.count})
                     </Badge>
                   ))}

@@ -110,8 +110,8 @@ export default function OfferManagement() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading...</p>
+          <div className="w-12 h-12 border-4 border-[#6F8A9D] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#5D6E73] font-medium">Loading...</p>
         </div>
       </div>
     )
@@ -281,10 +281,10 @@ export default function OfferManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Compact Header with Stats */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 rounded-2xl shadow-xl p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] via-[#82A094] to-[#546A7A] rounded-2xl shadow-xl p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10 flex justify-between items-center">
             <div className="flex items-center gap-4">
@@ -315,7 +315,7 @@ export default function OfferManagement() {
                   <p className="text-xl font-bold">{formatCurrency(stats.totalValue).replace('₹', '₹')}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/expert/offers/new')} className="bg-white text-emerald-700 hover:bg-emerald-50 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={() => router.push('/expert/offers/new')} className="bg-white text-[#4F6A64] hover:bg-[#82A094]/10 shadow-lg hover:shadow-xl transition-all">
                 <Plus className="h-4 w-4 mr-2" />
                 Create New
               </Button>
@@ -325,17 +325,17 @@ export default function OfferManagement() {
 
         {/* Filters */}
         <Card className="border-0 shadow-lg bg-white" style={{backgroundColor: 'white'}}>
-          <CardHeader className="bg-white border-b border-slate-200" style={{backgroundColor: 'white'}}>
+          <CardHeader className="bg-white border-b border-[#92A2A5]" style={{backgroundColor: 'white'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-indigo-600" />
+                <Filter className="h-5 w-5 text-[#546A7A]" />
                 <CardTitle className="text-lg">Search & Filter</CardTitle>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </div>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#546A7A] hover:text-[#546A7A] hover:bg-[#546A7A]/10">
                   <X className="h-4 w-4 mr-1" />
                   Clear All
                 </Button>
@@ -346,31 +346,31 @@ export default function OfferManagement() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label htmlFor="search" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Search className="h-4 w-4 text-emerald-600" />
+                <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Search className="h-4 w-4 text-[#4F6A64]" />
                   Search Offers
                 </Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                   <Input
                     id="search"
                     placeholder="Search by offer #, customer..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     disabled={loading}
-                    className="pl-10 h-11 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="pl-10 h-11 border-[#92A2A5] focus:border-[#82A094] focus:ring-[#82A094] disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Zone Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-orange-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[#976E44]" />
                   Zone
                 </Label>
                 <Select value={selectedZone} onValueChange={setSelectedZone} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -384,12 +384,12 @@ export default function OfferManagement() {
 
               {/* Stage Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-purple-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#546A7A]" />
                   Stage
                 </Label>
                 <Select value={selectedStage} onValueChange={setSelectedStage} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -402,12 +402,12 @@ export default function OfferManagement() {
 
               {/* User Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-teal-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#4F6A64]" />
                   Created By
                 </Label>
                 <Select value={selectedUser} onValueChange={setSelectedUser} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-teal-500 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-teal-500 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -423,12 +423,12 @@ export default function OfferManagement() {
 
               {/* Product Type Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Package className="h-4 w-4 text-pink-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Package className="h-4 w-4 text-[#9E3B47]" />
                   Product Type
                 </Label>
                 <Select value={selectedProductType} onValueChange={setSelectedProductType} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -448,74 +448,74 @@ export default function OfferManagement() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white">
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('offerReferenceNumber')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('offerReferenceNumber')}>
                     <div className="flex items-center gap-1.5">
                       Offer Ref
                       {sortField === 'offerReferenceNumber' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('customer')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('customer')}>
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <Building2 className="h-3.5 w-3.5 text-[#A2B9AF]" />
                       Customer
                       {sortField === 'customer' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('productType')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('productType')}>
                     <div className="flex items-center gap-1.5">
-                      <Package className="h-3.5 w-3.5 text-orange-400" />
+                      <Package className="h-3.5 w-3.5 text-[#CE9F6B]" />
                       Type
                       {sortField === 'productType' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('zone')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('zone')}>
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-blue-400" />
+                      <MapPin className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Zone
                       {sortField === 'zone' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('offerValue')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('offerValue')}>
                     <div className="flex items-center gap-1.5">
-                      <IndianRupee className="h-3.5 w-3.5 text-green-400" />
+                      <IndianRupee className="h-3.5 w-3.5 text-[#82A094]" />
                       Value
                       {sortField === 'offerValue' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('stage')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('stage')}>
                     <div className="flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-purple-400" />
+                      <TrendingUp className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Stage
                       {sortField === 'stage' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('createdBy')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('createdBy')}>
                     <div className="flex items-center gap-1.5">
                       <Users className="h-3.5 w-3.5 text-cyan-400" />
                       Owner
                       {sortField === 'createdBy' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('createdAt')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('createdAt')}>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5 text-pink-400" />
                       Date
                       {sortField === 'createdAt' && (
-                        <span className="text-emerald-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#A2B9AF]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
@@ -528,13 +528,13 @@ export default function OfferManagement() {
                     <td colSpan={9} className="px-6 py-16 text-center">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="relative">
-                          <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                          <div className="h-16 w-16 rounded-full bg-[#96AEC2]/20 flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
                           </div>
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Loading offers...</p>
-                          <p className="text-sm text-gray-500 mt-1">Please wait while we fetch the data</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">Loading offers...</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Please wait while we fetch the data</p>
                         </div>
                       </div>
                     </td>
@@ -543,12 +543,12 @@ export default function OfferManagement() {
                   <tr>
                     <td colSpan={9} className="px-6 py-16 text-center">
                       <div className="flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
-                          <Package className="h-8 w-8 text-gray-400" />
+                        <div className="h-16 w-16 rounded-full bg-[#AEBFC3]/20 flex items-center justify-center">
+                          <Package className="h-8 w-8 text-[#979796]" />
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">No offers found</p>
-                          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or create a new offer</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">No offers found</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Try adjusting your filters or create a new offer</p>
                         </div>
                         <Button onClick={() => router.push('/expert/offers/new')} className="mt-4">
                           <Plus className="h-4 w-4 mr-2" />
@@ -559,17 +559,17 @@ export default function OfferManagement() {
                   </tr>
                 ) : (
                   sortedOffers.map((offer: any) => (
-                  <tr key={offer.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50/50 hover:via-indigo-50/30 hover:to-purple-50/20 transition-all duration-200 group">
+                  <tr key={offer.id} className="border-b border-[#AEBFC3]/20 hover:bg-gradient-to-r hover:from-[#96AEC2]/10/50 hover:via-indigo-50/30 hover:to-[#96AEC2]/10/20 transition-all duration-200 group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => router.push(`/expert/offers/${offer.id}`)}
-                          className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors"
+                          className="text-[#546A7A] hover:text-[#546A7A] font-semibold hover:underline transition-colors"
                         >
                           {offer.offerReferenceNumber}
                         </button>
                         {offer.stage === 'INITIAL' && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                          <Badge variant="secondary" className="bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]">
                             Initial
                           </Badge>
                         )}
@@ -577,76 +577,76 @@ export default function OfferManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-emerald-100 group-hover:scale-110 transition-transform">
+                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#82A094] via-[#82A094] to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-emerald-100 group-hover:scale-110 transition-transform">
                           {(offer.customer?.companyName || offer.company || 'U')?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{offer.customer?.companyName || offer.company}</p>
-                          <p className="text-xs text-gray-500">{offer.customer?.contactPerson || ''}</p>
+                          <p className="font-semibold text-[#546A7A]">{offer.customer?.companyName || offer.company}</p>
+                          <p className="text-xs text-[#AEBFC3]0">{offer.customer?.contactPerson || ''}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <Badge className={`${
-                        offer.productType === 'SPP' ? 'bg-gradient-to-r from-orange-100 to-orange-50 text-orange-800 border-orange-300 shadow-sm' :
-                        offer.productType === 'CONTRACT' ? 'bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border-emerald-300 shadow-sm' :
-                        offer.productType === 'RELOCATION' ? 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-blue-300 shadow-sm' :
-                        offer.productType === 'UPGRADE_KIT' ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border-purple-300 shadow-sm' :
-                        offer.productType === 'SOFTWARE' ? 'bg-gradient-to-r from-indigo-100 to-indigo-50 text-indigo-800 border-indigo-300 shadow-sm' :
-                        offer.productType === 'BD_CHARGES' ? 'bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 border-amber-300 shadow-sm' :
-                        offer.productType === 'BD_SPARE' ? 'bg-gradient-to-r from-rose-100 to-rose-50 text-rose-800 border-rose-300 shadow-sm' :
-                        offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-gradient-to-r from-cyan-100 to-cyan-50 text-cyan-800 border-cyan-300 shadow-sm' :
-                        offer.productType === 'RETROFIT_KIT' ? 'bg-gradient-to-r from-teal-100 to-teal-50 text-teal-800 border-teal-300 shadow-sm' :
-                        'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-800 border-gray-300 shadow-sm'
+                        offer.productType === 'SPP' ? 'bg-gradient-to-r from-orange-100 to-[#EEC1BF]/10 text-[#976E44] border-[#CE9F6B] shadow-sm' :
+                        offer.productType === 'CONTRACT' ? 'bg-gradient-to-r from-emerald-100 to-[#A2B9AF]/10 text-[#4F6A64] border-emerald-300 shadow-sm' :
+                        offer.productType === 'RELOCATION' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2] shadow-sm' :
+                        offer.productType === 'UPGRADE_KIT' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-[#6F8A9D] shadow-sm' :
+                        offer.productType === 'SOFTWARE' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-indigo-300 shadow-sm' :
+                        offer.productType === 'BD_CHARGES' ? 'bg-gradient-to-r from-amber-100 to-[#EEC1BF]/10 text-[#976E44] border-amber-300 shadow-sm' :
+                        offer.productType === 'BD_SPARE' ? 'bg-gradient-to-r from-rose-100 to-[#EEC1BF]/10 text-[#75242D] border-rose-300 shadow-sm' :
+                        offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-gradient-to-r from-cyan-100 to-[#96AEC2]/10 text-[#546A7A] border-cyan-300 shadow-sm' :
+                        offer.productType === 'RETROFIT_KIT' ? 'bg-gradient-to-r from-teal-100 to-[#A2B9AF]/10 text-[#4F6A64] border-teal-300 shadow-sm' :
+                        'bg-gradient-to-r from-gray-100 to-gray-50 text-[#546A7A] border-[#92A2A5] shadow-sm'
                       } font-semibold px-3 py-1`}>
                         {offer.productType?.replace(/_/g, ' ')}
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                        <span className="text-gray-900 font-medium">{offer.zone?.name}</span>
+                        <div className="h-2 w-2 rounded-full bg-[#96AEC2]/100"></div>
+                        <span className="text-[#546A7A] font-medium">{offer.zone?.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {offer.offerValue ? (
                         <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                            <IndianRupee className="h-4 w-4 text-emerald-600" />
+                          <div className="h-8 w-8 rounded-lg bg-[#82A094]/20 flex items-center justify-center">
+                            <IndianRupee className="h-4 w-4 text-[#4F6A64]" />
                           </div>
-                          <span className="text-gray-900 font-bold text-lg">{formatCurrency(Number(offer.offerValue))}</span>
+                          <span className="text-[#546A7A] font-bold text-lg">{formatCurrency(Number(offer.offerValue))}</span>
                         </div>
                       ) : (
                         offer.stage === 'INITIAL' ? (
-                          <Badge variant="outline" className="text-gray-500 border-dashed">TBD</Badge>
+                          <Badge variant="outline" className="text-[#AEBFC3]0 border-dashed">TBD</Badge>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-[#979796]">-</span>
                         )
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <Badge className={`${
-                        offer.stage === 'INITIAL' ? 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-blue-300 shadow-sm' :
-                        offer.stage === 'WON' ? 'bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border-emerald-300 shadow-sm' :
-                        offer.stage === 'LOST' ? 'bg-gradient-to-r from-red-100 to-red-50 text-red-800 border-red-300 shadow-sm' :
-                        offer.stage === 'PROPOSAL_SENT' ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border-purple-300 shadow-sm' :
-                        offer.stage === 'NEGOTIATION' ? 'bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 border-amber-300 shadow-sm' :
-                        offer.stage === 'PO_RECEIVED' ? 'bg-gradient-to-r from-indigo-100 to-indigo-50 text-indigo-800 border-indigo-300 shadow-sm' :
-                        'bg-gradient-to-r from-slate-100 to-slate-50 text-slate-800 border-slate-300 shadow-sm'
+                        offer.stage === 'INITIAL' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2] shadow-sm' :
+                        offer.stage === 'WON' ? 'bg-gradient-to-r from-emerald-100 to-[#A2B9AF]/10 text-[#4F6A64] border-emerald-300 shadow-sm' :
+                        offer.stage === 'LOST' ? 'bg-gradient-to-r from-red-100 to-red-50 text-[#75242D] border-[#E17F70] shadow-sm' :
+                        offer.stage === 'PROPOSAL_SENT' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-[#6F8A9D] shadow-sm' :
+                        offer.stage === 'NEGOTIATION' ? 'bg-gradient-to-r from-amber-100 to-[#EEC1BF]/10 text-[#976E44] border-amber-300 shadow-sm' :
+                        offer.stage === 'PO_RECEIVED' ? 'bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/10 text-[#546A7A] border-indigo-300 shadow-sm' :
+                        'bg-gradient-to-r from-slate-100 to-[#AEBFC3]/10 text-[#546A7A] border-[#92A2A5] shadow-sm'
                       } font-semibold px-3 py-1.5`}>
                         {offer.stage?.replace(/_/g, ' ')}
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-700 font-semibold text-xs">
+                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-[#5D6E73] font-semibold text-xs">
                           {offer.createdBy?.name?.charAt(0).toUpperCase() || 'U'}
                         </div>
-                        <span className="text-gray-700 font-medium">{offer.createdBy?.name}</span>
+                        <span className="text-[#5D6E73] font-medium">{offer.createdBy?.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-gray-600">
+                      <div className="flex items-center gap-2 text-[#5D6E73]">
                         <Calendar className="h-4 w-4" />
                         <span className="text-sm font-medium">{new Date(offer.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -654,30 +654,30 @@ export default function OfferManagement() {
                     <td className="px-6 py-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all rounded-xl">
-                            <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                          <Button variant="ghost" size="sm" className="hover:bg-gradient-to-r hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/10 transition-all rounded-xl">
+                            <MoreHorizontal className="h-4 w-4 text-[#5D6E73]" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl border-slate-200">
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl border-[#92A2A5]">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
                             onClick={() => router.push(`/expert/offers/${offer.id}`)}
-                            className="cursor-pointer rounded-lg hover:bg-blue-50"
+                            className="cursor-pointer rounded-lg hover:bg-[#96AEC2]/10"
                           >
-                            <Eye className="h-4 w-4 mr-2 text-blue-600" />
+                            <Eye className="h-4 w-4 mr-2 text-[#546A7A]" />
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => router.push(`/expert/offers/${offer.id}/edit`)}
-                            className="cursor-pointer rounded-lg hover:bg-purple-50"
+                            className="cursor-pointer rounded-lg hover:bg-[#6F8A9D]/10"
                           >
-                            <Edit className="h-4 w-4 mr-2 text-purple-600" />
+                            <Edit className="h-4 w-4 mr-2 text-[#546A7A]" />
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => handleDeleteOffer(offer.id)}
-                            className="text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
+                            className="text-[#9E3B47] cursor-pointer rounded-lg hover:bg-[#E17F70]/10"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
@@ -694,10 +694,10 @@ export default function OfferManagement() {
           
           {/* Pagination */}
           {!loading && offers.length > 0 && (
-            <div className="bg-gradient-to-r from-slate-50 via-blue-50 to-purple-50/30 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/10/30 px-6 py-4 border-t border-[#92A2A5]">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700 font-medium">
-                  Showing <span className="font-bold text-slate-900">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
+                <div className="text-sm text-[#5D6E73] font-medium">
+                  Showing <span className="font-bold text-[#546A7A]">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -705,19 +705,19 @@ export default function OfferManagement() {
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                     disabled={pagination.page === 1}
-                    className="hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm text-gray-700 font-medium px-3">
-                    Page <span className="font-bold text-slate-900">{pagination.page}</span> of <span className="font-semibold">{pagination.pages}</span>
+                  <span className="text-sm text-[#5D6E73] font-medium px-3">
+                    Page <span className="font-bold text-[#546A7A]">{pagination.page}</span> of <span className="font-semibold">{pagination.pages}</span>
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.pages, prev.page + 1) }))}
                     disabled={pagination.page === pagination.pages}
-                    className="hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>

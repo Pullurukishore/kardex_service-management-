@@ -99,7 +99,7 @@ export default function ServicePersonDetailPage() {
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -108,7 +108,7 @@ export default function ServicePersonDetailPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold mb-2">{servicePerson.name || servicePerson.email}</h1>
-              <p className="text-blue-100 flex items-center gap-2">
+              <p className="text-[#96AEC2] flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 {servicePerson.email}
               </p>
@@ -116,8 +116,8 @@ export default function ServicePersonDetailPage() {
                 <Badge 
                   variant={servicePerson.isActive ? 'default' : 'secondary'}
                   className={servicePerson.isActive 
-                    ? 'bg-green-500/20 text-green-100 border-green-400/30' 
-                    : 'bg-gray-500/20 text-gray-200 border-gray-400/30'
+                    ? 'bg-[#A2B9AF]/100/20 text-[#A2B9AF] border-green-400/30' 
+                    : 'bg-[#AEBFC3]/100/20 text-[#AEBFC3] border-[#979796]/30'
                   }
                 >
                   {servicePerson.isActive ? 'Active' : 'Inactive'}
@@ -133,7 +133,7 @@ export default function ServicePersonDetailPage() {
               </Button>
             </Link>
             <Link href={`/admin/service-person/${servicePersonId}/edit`}>
-              <Button className="bg-white text-blue-600 hover:bg-blue-50">
+              <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/10">
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </Button>
@@ -157,7 +157,7 @@ export default function ServicePersonDetailPage() {
           description={servicePerson.name ? servicePerson.email : undefined}
           action={
             <Link href={`/admin/service-person/${servicePersonId}/edit`}>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button size="sm" className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white">
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </Button>
@@ -170,10 +170,10 @@ export default function ServicePersonDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Personal Information */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-blue-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#96AEC2]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <User className="h-6 w-6 text-blue-600" />
+                <User className="h-6 w-6 text-[#546A7A]" />
                 Personal Information
               </CardTitle>
               <CardDescription>Basic details and contact information</CardDescription>
@@ -181,26 +181,26 @@ export default function ServicePersonDetailPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Full Name</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Full Name</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <User className="h-5 w-5 text-blue-500" />
-                    <span className="font-medium text-gray-900">
+                    <User className="h-5 w-5 text-[#6F8A9D]" />
+                    <span className="font-medium text-[#546A7A]">
                       {servicePerson.name || 'Not provided'}
                     </span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Email Address</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Email Address</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Mail className="h-5 w-5 text-green-500" />
-                    <span className="font-medium text-gray-900 break-all">{servicePerson.email}</span>
+                    <Mail className="h-5 w-5 text-[#82A094]" />
+                    <span className="font-medium text-[#546A7A] break-all">{servicePerson.email}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Phone Number</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Phone Number</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Phone className="h-5 w-5 text-purple-500" />
-                    <span className="font-medium text-gray-900">
+                    <Phone className="h-5 w-5 text-[#6F8A9D]" />
+                    <span className="font-medium text-[#546A7A]">
                       {servicePerson.phone || 'Not provided'}
                     </span>
                   </div>
@@ -210,10 +210,10 @@ export default function ServicePersonDetailPage() {
           </Card>
 
           {/* Account Status */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-green-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#A2B9AF]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <Activity className="h-6 w-6 text-green-600" />
+                <Activity className="h-6 w-6 text-[#4F6A64]" />
                 Account Status & Activity
               </CardTitle>
               <CardDescription>Current status and recent activity information</CardDescription>
@@ -221,16 +221,16 @@ export default function ServicePersonDetailPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Account Status</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Account Status</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
                     <div className={`h-3 w-3 rounded-full ${
-                      servicePerson.isActive ? 'bg-green-500' : 'bg-gray-400'
+                      servicePerson.isActive ? 'bg-[#A2B9AF]/100' : 'bg-[#979796]'
                     }`}></div>
                     <Badge 
                       variant={servicePerson.isActive ? 'default' : 'secondary'}
                       className={servicePerson.isActive 
-                        ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                        : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                       }
                     >
                       {servicePerson.isActive ? 'Active' : 'Inactive'}
@@ -238,19 +238,19 @@ export default function ServicePersonDetailPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Role</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Role</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Settings className="h-5 w-5 text-orange-500" />
-                    <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                    <Settings className="h-5 w-5 text-[#CE9F6B]" />
+                    <Badge variant="outline" className="bg-[#CE9F6B]/10 text-[#976E44] border-[#CE9F6B]">
                       Service Personnel
                     </Badge>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Last Login</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Last Login</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Clock className="h-5 w-5 text-blue-500" />
-                    <span className="font-medium text-gray-900">
+                    <Clock className="h-5 w-5 text-[#6F8A9D]" />
+                    <span className="font-medium text-[#546A7A]">
                       {servicePerson.lastLoginAt 
                         ? new Date(servicePerson.lastLoginAt).toLocaleDateString('en-US', {
                             year: 'numeric',
@@ -265,10 +265,10 @@ export default function ServicePersonDetailPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Account Created</label>
+                  <label className="text-sm font-semibold text-[#5D6E73] uppercase tracking-wide">Account Created</label>
                   <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                    <Calendar className="h-5 w-5 text-purple-500" />
-                    <span className="font-medium text-gray-900">
+                    <Calendar className="h-5 w-5 text-[#6F8A9D]" />
+                    <span className="font-medium text-[#546A7A]">
                       {servicePerson.createdAt 
                         ? new Date(servicePerson.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
@@ -285,10 +285,10 @@ export default function ServicePersonDetailPage() {
           </Card>
 
           {/* Service Zones */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-purple-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#96AEC2]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <MapPin className="h-6 w-6 text-purple-600" />
+                <MapPin className="h-6 w-6 text-[#546A7A]" />
                 Assigned Service Zones
               </CardTitle>
               <CardDescription>
@@ -298,15 +298,15 @@ export default function ServicePersonDetailPage() {
             <CardContent>
               {servicePerson.serviceZones.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="mx-auto h-20 w-20 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <MapPin className="h-10 w-10 text-purple-500" />
+                  <div className="mx-auto h-20 w-20 bg-[#6F8A9D]/20 rounded-full flex items-center justify-center mb-4">
+                    <MapPin className="h-10 w-10 text-[#6F8A9D]" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No zones assigned</h3>
-                  <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                  <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No zones assigned</h3>
+                  <p className="text-[#AEBFC3]0 mb-6 max-w-sm mx-auto">
                     This service person is not assigned to any zones yet. Assign zones to enable service coverage.
                   </p>
                   <Link href={`/admin/service-person/${servicePersonId}/edit`}>
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Button className="bg-[#546A7A] hover:bg-[#546A7A] text-white">
                       <MapPin className="mr-2 h-4 w-4" />
                       Assign Zones
                     </Button>
@@ -315,7 +315,7 @@ export default function ServicePersonDetailPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-gray-600">
+                    <span className="text-sm font-medium text-[#5D6E73]">
                       {servicePerson.serviceZones.length} zone{servicePerson.serviceZones.length !== 1 ? 's' : ''} assigned
                     </span>
                     <Link href={`/admin/service-person/${servicePersonId}/edit`}>
@@ -329,33 +329,33 @@ export default function ServicePersonDetailPage() {
                     {servicePerson.serviceZones.map((zone, index) => (
                       <div
                         key={zone.serviceZone.id}
-                        className="group p-4 bg-white border border-purple-200 rounded-xl hover:shadow-md hover:border-purple-300 transition-all duration-200"
+                        className="group p-4 bg-white border border-[#6F8A9D] rounded-xl hover:shadow-md hover:border-[#6F8A9D] transition-all duration-200"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                              <MapPin className="h-5 w-5 text-purple-600" />
+                            <div className="h-10 w-10 bg-[#6F8A9D]/20 rounded-lg flex items-center justify-center group-hover:bg-[#6F8A9D]/30 transition-colors">
+                              <MapPin className="h-5 w-5 text-[#546A7A]" />
                             </div>
                             <div>
-                              <h4 className="font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">
+                              <h4 className="font-semibold text-[#546A7A] group-hover:text-[#546A7A] transition-colors">
                                 {zone.serviceZone.name}
                               </h4>
-                              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                              <Badge variant="outline" className="text-xs bg-[#6F8A9D]/10 text-[#546A7A] border-[#6F8A9D]">
                                 Zone #{zone.serviceZone.id}
                               </Badge>
                             </div>
                           </div>
                         </div>
                         {zone.serviceZone.description && (
-                          <p className="text-sm text-gray-600 leading-relaxed">
+                          <p className="text-sm text-[#5D6E73] leading-relaxed">
                             {zone.serviceZone.description}
                           </p>
                         )}
-                        <div className="mt-3 pt-3 border-t border-purple-100">
-                          <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="mt-3 pt-3 border-t border-[#96AEC2]/20">
+                          <div className="flex items-center justify-between text-xs text-[#AEBFC3]0">
                             <span>Active Zone</span>
                             <div className="flex items-center gap-1">
-                              <div className="h-2 w-2 bg-green-400 rounded-full"></div>
+                              <div className="h-2 w-2 bg-[#82A094] rounded-full"></div>
                               <span>Online</span>
                             </div>
                           </div>
@@ -372,39 +372,39 @@ export default function ServicePersonDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Quick Stats */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-indigo-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#96AEC2]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Activity className="h-5 w-5 text-indigo-600" />
+                <Activity className="h-5 w-5 text-[#546A7A]" />
                 Quick Overview
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
-                <div className="p-4 bg-white rounded-lg border border-indigo-100">
+                <div className="p-4 bg-white rounded-lg border border-[#96AEC2]/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <MapPin className="h-4 w-4 text-blue-600" />
+                      <div className="h-8 w-8 bg-[#96AEC2]/20 rounded-lg flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-[#546A7A]" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">Assigned Zones</span>
+                      <span className="text-sm font-medium text-[#5D6E73]">Assigned Zones</span>
                     </div>
-                    <span className="text-xl font-bold text-blue-600">{servicePerson.serviceZones.length}</span>
+                    <span className="text-xl font-bold text-[#546A7A]">{servicePerson.serviceZones.length}</span>
                   </div>
                 </div>
-                <div className="p-4 bg-white rounded-lg border border-indigo-100">
+                <div className="p-4 bg-white rounded-lg border border-[#96AEC2]/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Activity className="h-4 w-4 text-green-600" />
+                      <div className="h-8 w-8 bg-[#A2B9AF]/20 rounded-lg flex items-center justify-center">
+                        <Activity className="h-4 w-4 text-[#4F6A64]" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">Status</span>
+                      <span className="text-sm font-medium text-[#5D6E73]">Status</span>
                     </div>
                     <Badge 
                       variant={servicePerson.isActive ? 'default' : 'secondary'}
                       className={servicePerson.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+                        : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
                       }
                     >
                       {servicePerson.isActive ? 'Active' : 'Inactive'}
@@ -416,26 +416,26 @@ export default function ServicePersonDetailPage() {
           </Card>
 
           {/* Quick Actions */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-orange-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#EEC1BF]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Settings className="h-5 w-5 text-orange-600" />
+                <Settings className="h-5 w-5 text-[#976E44]" />
                 Quick Actions
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Link href={`/admin/service-person/${servicePersonId}/edit`} className="block">
-                <Button variant="outline" className="w-full justify-start h-12 bg-white hover:bg-blue-50 border-blue-200 hover:border-blue-300">
-                  <Pencil className="mr-3 h-5 w-5 text-blue-600" />
+                <Button variant="outline" className="w-full justify-start h-12 bg-white hover:bg-[#96AEC2]/10 border-[#96AEC2] hover:border-[#96AEC2]">
+                  <Pencil className="mr-3 h-5 w-5 text-[#546A7A]" />
                   <div className="text-left">
-                    <div className="font-medium text-blue-700">Edit Details</div>
-                    <div className="text-xs text-blue-500">Update information</div>
+                    <div className="font-medium text-[#546A7A]">Edit Details</div>
+                    <div className="text-xs text-[#6F8A9D]">Update information</div>
                   </div>
                 </Button>
               </Link>
               <Button
                 variant="outline"
-                className="w-full justify-start h-12 bg-white hover:bg-red-50 border-red-200 hover:border-red-300 text-red-600 hover:text-red-700"
+                className="w-full justify-start h-12 bg-white hover:bg-[#E17F70]/10 border-[#E17F70] hover:border-[#E17F70] text-[#9E3B47] hover:text-[#75242D]"
                 onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="mr-3 h-5 w-5" />
@@ -448,30 +448,30 @@ export default function ServicePersonDetailPage() {
           </Card>
 
           {/* Contact Information */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-green-50/30">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-[#A2B9AF]/10/30">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Mail className="h-5 w-5 text-green-600" />
+                <Mail className="h-5 w-5 text-[#4F6A64]" />
                 Contact Info
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="p-3 bg-white rounded-lg border border-green-100">
+              <div className="p-3 bg-white rounded-lg border border-[#A2B9AF]/20">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-green-600" />
+                  <Mail className="h-4 w-4 text-[#4F6A64]" />
                   <div>
-                    <div className="text-xs text-gray-500 uppercase tracking-wide">Email</div>
-                    <div className="font-medium text-gray-900 text-sm break-all">{servicePerson.email}</div>
+                    <div className="text-xs text-[#AEBFC3]0 uppercase tracking-wide">Email</div>
+                    <div className="font-medium text-[#546A7A] text-sm break-all">{servicePerson.email}</div>
                   </div>
                 </div>
               </div>
               {servicePerson.phone && (
-                <div className="p-3 bg-white rounded-lg border border-green-100">
+                <div className="p-3 bg-white rounded-lg border border-[#A2B9AF]/20">
                   <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 text-green-600" />
+                    <Phone className="h-4 w-4 text-[#4F6A64]" />
                     <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">Phone</div>
-                      <div className="font-medium text-gray-900 text-sm">{servicePerson.phone}</div>
+                      <div className="text-xs text-[#AEBFC3]0 uppercase tracking-wide">Phone</div>
+                      <div className="font-medium text-[#546A7A] text-sm">{servicePerson.phone}</div>
                     </div>
                   </div>
                 </div>

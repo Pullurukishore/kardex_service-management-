@@ -60,15 +60,15 @@ export default function StatusPieChart({ data, title = "Status Distribution", on
   const total = data.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <Card className="bg-gradient-to-br from-white to-blue-50/30 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+    <Card className="bg-gradient-to-br from-white to-[#96AEC2]/10/30 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] animate-pulse"></div>
             {title}
           </span>
-          <span className="text-sm font-normal text-slate-600 bg-blue-50 px-3 py-1 rounded-full">
-            Total: <span className="font-bold text-blue-700">{total}</span>
+          <span className="text-sm font-normal text-[#5D6E73] bg-[#96AEC2]/10 px-3 py-1 rounded-full">
+            Total: <span className="font-bold text-[#546A7A]">{total}</span>
           </span>
         </CardTitle>
       </CardHeader>
@@ -111,7 +111,7 @@ export default function StatusPieChart({ data, title = "Status Distribution", on
                   <span key="value" className="font-bold text-lg" style={{ color: props.payload.color }}>
                     {value} tickets
                   </span>,
-                  <span key="name" className="text-slate-600 capitalize text-sm">
+                  <span key="name" className="text-[#5D6E73] capitalize text-sm">
                     {props.payload.status} ({percentage}%)
                   </span>
                 ];
@@ -124,7 +124,7 @@ export default function StatusPieChart({ data, title = "Status Distribution", on
               formatter={(value, entry: any) => {
                 const percentage = ((entry.payload.count / total) * 100).toFixed(1);
                 return (
-                  <span className="text-sm font-medium text-slate-700 capitalize">
+                  <span className="text-sm font-medium text-[#5D6E73] capitalize">
                     {value} ({percentage}%)
                   </span>
                 );

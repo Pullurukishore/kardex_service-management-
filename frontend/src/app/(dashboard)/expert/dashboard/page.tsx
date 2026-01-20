@@ -18,7 +18,7 @@ import DashboardClient from '@/components/dashboard/DashboardClient';
 // Loading component for Suspense boundary - Enhanced skeleton UI
 function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-3 sm:p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="w-full max-w-full">
         {/* Header skeleton */}
         <div className="mb-6 sm:mb-8">
@@ -30,28 +30,28 @@ function DashboardLoading() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="bg-white/60 rounded-xl p-4 sm:p-6 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
-              <div className="h-8 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-3 bg-gray-200 rounded w-1/3" />
+              <div className="h-4 bg-[#92A2A5]/30 rounded w-1/2 mb-3" />
+              <div className="h-8 bg-[#92A2A5]/30 rounded w-3/4 mb-2" />
+              <div className="h-3 bg-[#92A2A5]/30 rounded w-1/3" />
             </div>
           ))}
         </div>
 
         {/* Analytics section skeleton */}
         <div className="bg-white/60 rounded-xl p-4 sm:p-6 mb-6 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/4 mb-4" />
+          <div className="h-6 bg-[#92A2A5]/30 rounded w-1/4 mb-4" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="h-64 bg-gray-200 rounded" />
-            <div className="h-64 bg-gray-200 rounded" />
+            <div className="h-64 bg-[#92A2A5]/30 rounded" />
+            <div className="h-64 bg-[#92A2A5]/30 rounded" />
           </div>
         </div>
 
         {/* Recent tickets skeleton */}
         <div className="bg-white/60 rounded-xl p-4 sm:p-6 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
+          <div className="h-6 bg-[#92A2A5]/30 rounded w-1/3 mb-4" />
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-gray-200 rounded" />
+              <div key={i} className="h-20 bg-[#92A2A5]/30 rounded" />
             ))}
           </div>
         </div>
@@ -63,16 +63,16 @@ function DashboardLoading() {
 // Error component for error boundaries
 function DashboardError({ error, retry }: { error: string; retry: () => void }) {
   return (
-    <div className="bg-red-50 rounded-lg p-6 max-w-2xl mx-auto my-8">
+    <div className="bg-[#E17F70]/10 rounded-lg p-6 max-w-2xl mx-auto my-8">
       <div className="flex flex-col items-center text-center gap-4">
-        <div className="p-3 bg-red-100 rounded-full">
-          <div className="w-8 h-8 text-red-600">!</div>
+        <div className="p-3 bg-[#E17F70]/20 rounded-full">
+          <div className="w-8 h-8 text-[#9E3B47]">!</div>
         </div>
-        <h3 className="text-lg font-medium text-red-800">Failed to load dashboard</h3>
-        <p className="text-red-700">{error}</p>
+        <h3 className="text-lg font-medium text-[#75242D]">Failed to load dashboard</h3>
+        <p className="text-[#75242D]">{error}</p>
         <button
           onClick={retry}
-          className="px-4 py-2 border border-red-200 text-red-700 rounded-md hover:bg-red-50 mt-2 flex items-center gap-2"
+          className="px-4 py-2 border border-[#E17F70] text-[#75242D] rounded-md hover:bg-[#E17F70]/10 mt-2 flex items-center gap-2"
         >
           <span>Try Again</span>
         </button>
@@ -160,11 +160,11 @@ export default async function DashboardPage() {
 
     // Return error state with retry button
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20">
         <div className="text-center bg-white rounded-xl shadow-lg p-8 max-w-md mx-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20 mb-4">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-[#9E3B47]"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
@@ -177,11 +177,11 @@ export default async function DashboardPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-red-600 mb-2">Failed to load dashboard</h2>
-          <p className="text-gray-600 mb-6">There was an error loading the dashboard. Please try again.</p>
+          <h2 className="text-xl font-semibold text-[#9E3B47] mb-2">Failed to load dashboard</h2>
+          <p className="text-[#5D6E73] mb-6">There was an error loading the dashboard. Please try again.</p>
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#546A7A] hover:bg-[#546A7A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6F8A9D] transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

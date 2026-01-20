@@ -12,10 +12,10 @@ export const dynamic = 'force-dynamic';
 
 export default function ZoneActivitySchedulingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/30">
       {/* Premium Header Section */}
       <div className="relative overflow-hidden">
-        <div className="bg-gradient-to-r from-[#507295] via-[#5a8bab] to-[#6889ab] py-10 px-4 md:px-8">
+        <div className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#96AEC2] py-10 px-4 md:px-8">
           {/* Decorative Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />

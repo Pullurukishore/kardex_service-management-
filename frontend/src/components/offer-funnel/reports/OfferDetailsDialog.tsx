@@ -191,28 +191,28 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
           <div className="px-6 py-4 space-y-6">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
               </div>
             ) : offer ? (
               <>
                 {/* Header Section with Stage Prominently */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100 mb-6">
+                <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 p-6 rounded-lg border border-[#96AEC2]/30 mb-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-gray-600">Offer Reference</div>
-                      <div className="font-bold text-xl text-gray-900">{offer.offerReferenceNumber}</div>
+                      <div className="text-sm font-medium text-[#5D6E73]">Offer Reference</div>
+                      <div className="font-bold text-xl text-[#546A7A]">{offer.offerReferenceNumber}</div>
                       {offer.offerReferenceDate && (
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-[#AEBFC3]0 mt-1">
                           📅 {format(new Date(offer.offerReferenceDate), 'MMM dd, yyyy')}
                         </div>
                       )}
                       {offer.title && (
-                        <div className="text-sm text-gray-600 mt-2">{offer.title}</div>
+                        <div className="text-sm text-[#5D6E73] mt-2">{offer.title}</div>
                       )}
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <div className="text-sm font-medium text-gray-600 mb-2">Current Stage</div>
+                        <div className="text-sm font-medium text-[#5D6E73] mb-2">Current Stage</div>
                         <Badge 
                           style={{ backgroundColor: stageColor, color: 'white' }}
                           className="text-sm px-4 py-2 font-semibold shadow-lg"
@@ -225,8 +225,8 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                 </div>
 
                 {/* Customer & Contact Information */}
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white p-4">
+                <div className="bg-white rounded-lg border border-[#92A2A5] overflow-hidden">
+                  <div className="bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] text-white p-4">
                     <h3 className="font-bold text-lg flex items-center gap-2">
                       <Building2 className="h-5 w-5" />
                       Customer & Contact Information
@@ -235,33 +235,33 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   <div className="p-4 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Company Details */}
-                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-100">
-                        <h4 className="font-bold text-emerald-700 mb-3 flex items-center gap-2">
+                      <div className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/10 rounded-lg p-4 border border-[#A2B9AF]/30">
+                        <h4 className="font-bold text-[#4F6A64] mb-3 flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
                           Company Details
                         </h4>
                         <dl className="space-y-2">
                           <div>
-                            <dt className="text-xs text-gray-500 font-semibold uppercase">Company Name</dt>
-                            <dd className="text-base font-bold text-gray-900">{offer.company || offer.customer.companyName}</dd>
+                            <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Company Name</dt>
+                            <dd className="text-base font-bold text-[#546A7A]">{offer.company || offer.customer.companyName}</dd>
                           </div>
                           <div>
-                            <dt className="text-xs text-gray-500 font-semibold uppercase">Location</dt>
-                            <dd className="text-base font-medium text-gray-700 flex items-center gap-1">
-                              <MapPin className="h-4 w-4 text-emerald-600" />
+                            <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Location</dt>
+                            <dd className="text-base font-medium text-[#5D6E73] flex items-center gap-1">
+                              <MapPin className="h-4 w-4 text-[#4F6A64]" />
                               {offer.location || offer.customer.location || 'N/A'}
                             </dd>
                           </div>
                           {offer.department && (
                             <div>
-                              <dt className="text-xs text-gray-500 font-semibold uppercase">Department</dt>
-                              <dd className="text-base font-medium text-gray-700">{offer.department}</dd>
+                              <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Department</dt>
+                              <dd className="text-base font-medium text-[#5D6E73]">{offer.department}</dd>
                             </div>
                           )}
                           <div>
-                            <dt className="text-xs text-gray-500 font-semibold uppercase">Zone</dt>
+                            <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Zone</dt>
                             <dd className="text-base font-medium">
-                              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300 border">
+                              <Badge className="bg-[#82A094]/20 text-[#4F6A64] border-[#82A094] border">
                                 {offer.zone?.name}
                               </Badge>
                             </dd>
@@ -270,31 +270,31 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                       </div>
 
                       {/* Contact Person */}
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-                        <h4 className="font-bold text-blue-700 mb-3 flex items-center gap-2">
+                      <div className="bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-lg p-4 border border-[#96AEC2]/30">
+                        <h4 className="font-bold text-[#546A7A] mb-3 flex items-center gap-2">
                           <User className="h-4 w-4" />
                           Contact Person
                         </h4>
                         <dl className="space-y-2">
                           <div>
-                            <dt className="text-xs text-gray-500 font-semibold uppercase">Name</dt>
-                            <dd className="text-base font-bold text-gray-900">{offer.contactPersonName || offer.contact?.contactPersonName || 'N/A'}</dd>
+                            <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Name</dt>
+                            <dd className="text-base font-bold text-[#546A7A]">{offer.contactPersonName || offer.contact?.contactPersonName || 'N/A'}</dd>
                           </div>
                           {(offer.contactNumber || offer.contact?.contactNumber) && (
                             <div>
-                              <dt className="text-xs text-gray-500 font-semibold uppercase">Phone</dt>
-                              <dd className="text-base font-medium text-gray-700 flex items-center gap-1">
-                                <Phone className="h-4 w-4 text-blue-600" />
+                              <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Phone</dt>
+                              <dd className="text-base font-medium text-[#5D6E73] flex items-center gap-1">
+                                <Phone className="h-4 w-4 text-[#546A7A]" />
                                 {offer.contactNumber || offer.contact?.contactNumber}
                               </dd>
                             </div>
                           )}
                           {(offer.email || offer.contact?.email) && (
                             <div>
-                              <dt className="text-xs text-gray-500 font-semibold uppercase">Email</dt>
+                              <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Email</dt>
                               <dd className="text-base font-medium flex items-center gap-1">
-                                <Mail className="h-4 w-4 text-blue-600" />
-                                <a href={`mailto:${offer.email || offer.contact?.email}`} className="text-blue-600 hover:underline">
+                                <Mail className="h-4 w-4 text-[#546A7A]" />
+                                <a href={`mailto:${offer.email || offer.contact?.email}`} className="text-[#546A7A] hover:underline">
                                   {offer.email || offer.contact?.email}
                                 </a>
                               </dd>
@@ -302,8 +302,8 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                           )}
                           {offer.contact?.designation && (
                             <div>
-                              <dt className="text-xs text-gray-500 font-semibold uppercase">Designation</dt>
-                              <dd className="text-base font-medium text-gray-700">{offer.contact.designation}</dd>
+                              <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Designation</dt>
+                              <dd className="text-base font-medium text-[#5D6E73]">{offer.contact.designation}</dd>
                             </div>
                           )}
                         </dl>
@@ -313,8 +313,8 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                 </div>
 
                 {/* Financial Information */}
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4">
+                <div className="bg-white rounded-lg border border-[#92A2A5] overflow-hidden">
+                  <div className="bg-gradient-to-r from-[#546A7A] to-[#9E3B47] text-white p-4">
                     <h3 className="font-bold text-lg flex items-center gap-2">
                       <DollarSign className="h-5 w-5" />
                       Financial Information
@@ -322,44 +322,44 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   </div>
                   <div className="p-4 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white shadow-lg">
-                        <div className="text-sm font-semibold text-blue-100 mb-1">Offer Value</div>
+                      <div className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-lg p-4 text-white shadow-lg">
+                        <div className="text-sm font-semibold text-[#96AEC2] mb-1">Offer Value</div>
                         <div className="text-2xl font-bold">{offer.offerValue ? `₹${(offer.offerValue / 100000).toFixed(2)}L` : 'TBD'}</div>
                       </div>
-                      <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg p-4 text-white shadow-lg">
-                        <div className="text-sm font-semibold text-green-100 mb-1">PO Value</div>
+                      <div className="bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-lg p-4 text-white shadow-lg">
+                        <div className="text-sm font-semibold text-[#A2B9AF] mb-1">PO Value</div>
                         <div className="text-2xl font-bold">{offer.poValue ? `₹${(offer.poValue / 100000).toFixed(2)}L` : '-'}</div>
                       </div>
-                      <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg p-4 text-white shadow-lg">
-                        <div className="text-sm font-semibold text-purple-100 mb-1">Win Probability</div>
+                      <div className="bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] rounded-lg p-4 text-white shadow-lg">
+                        <div className="text-sm font-semibold text-[#6F8A9D] mb-1">Win Probability</div>
                         <div className="text-2xl font-bold">{offer.probabilityPercentage ? `${offer.probabilityPercentage}%` : '-'}</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Offer Month</dt>
-                        <dd className="text-base font-bold text-gray-900 flex items-center gap-1">
-                          <Calendar className="h-4 w-4 text-blue-600" />
+                      <div className="bg-[#AEBFC3]/10 rounded-lg p-3 border border-[#92A2A5]">
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Offer Month</dt>
+                        <dd className="text-base font-bold text-[#546A7A] flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-[#546A7A]" />
                           {offer.offerMonth || '-'}
                         </dd>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">PO Expected Month</dt>
-                        <dd className="text-base font-bold text-gray-900 flex items-center gap-1">
-                          <Calendar className="h-4 w-4 text-green-600" />
+                      <div className="bg-[#AEBFC3]/10 rounded-lg p-3 border border-[#92A2A5]">
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">PO Expected Month</dt>
+                        <dd className="text-base font-bold text-[#546A7A] flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-[#4F6A64]" />
                           {offer.poExpectedMonth || '-'}
                         </dd>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">PO Number</dt>
-                        <dd className="text-base font-bold text-gray-900">{offer.poNumber || '-'}</dd>
+                      <div className="bg-[#AEBFC3]/10 rounded-lg p-3 border border-[#92A2A5]">
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">PO Number</dt>
+                        <dd className="text-base font-bold text-[#546A7A]">{offer.poNumber || '-'}</dd>
                       </div>
                     </div>
                     {offer.poDate && (
-                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">PO Date</dt>
-                        <dd className="text-base font-bold text-gray-900 flex items-center gap-1">
-                          <Calendar className="h-4 w-4 text-purple-600" />
+                      <div className="bg-[#AEBFC3]/10 rounded-lg p-3 border border-[#92A2A5]">
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">PO Date</dt>
+                        <dd className="text-base font-bold text-[#546A7A] flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-[#546A7A]" />
                           {format(new Date(offer.poDate), 'MMM dd, yyyy')}
                         </dd>
                       </div>
@@ -368,8 +368,8 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                 </div>
 
                 {/* Offer Details */}
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-4">
+                <div className="bg-white rounded-lg border border-[#92A2A5] overflow-hidden">
+                  <div className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white p-4">
                     <h3 className="font-bold text-lg flex items-center gap-2">
                       <FileText className="h-5 w-5" />
                       Offer Details
@@ -378,11 +378,11 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   <div className="p-4 space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Title</dt>
-                        <dd className="text-base font-medium text-gray-900">{offer.title || 'N/A'}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Title</dt>
+                        <dd className="text-base font-medium text-[#546A7A]">{offer.title || 'N/A'}</dd>
                       </div>
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Product Type</dt>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Product Type</dt>
                         <dd>
                           <Badge style={{ backgroundColor: productColor, color: 'white' }}>
                             {offer.productType || 'N/A'}
@@ -390,30 +390,30 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Lead</dt>
-                        <dd className="text-base font-medium text-gray-900">{offer.lead || 'N/A'}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Lead</dt>
+                        <dd className="text-base font-medium text-[#546A7A]">{offer.lead || 'N/A'}</dd>
                       </div>
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Priority</dt>
-                        <dd className="text-base font-medium text-gray-900">{offer.priority}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Priority</dt>
+                        <dd className="text-base font-medium text-[#546A7A]">{offer.priority}</dd>
                       </div>
                     </div>
                     {offer.description && (
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Description</dt>
-                        <dd className="text-base font-medium text-gray-700 bg-gray-50 p-3 rounded border border-gray-200">{offer.description}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Description</dt>
+                        <dd className="text-base font-medium text-[#5D6E73] bg-[#AEBFC3]/10 p-3 rounded border border-[#92A2A5]">{offer.description}</dd>
                       </div>
                     )}
                     {offer.machineSerialNumber && (
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Machine Serial Number</dt>
-                        <dd className="text-base font-medium text-gray-900">{offer.machineSerialNumber}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Machine Serial Number</dt>
+                        <dd className="text-base font-medium text-[#546A7A]">{offer.machineSerialNumber}</dd>
                       </div>
                     )}
                     {offer.remarks && (
                       <div>
-                        <dt className="text-xs text-gray-500 font-semibold uppercase mb-1">Remarks</dt>
-                        <dd className="text-base font-medium text-gray-700 bg-gray-50 p-3 rounded border border-gray-200">{offer.remarks}</dd>
+                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">Remarks</dt>
+                        <dd className="text-base font-medium text-[#5D6E73] bg-[#AEBFC3]/10 p-3 rounded border border-[#92A2A5]">{offer.remarks}</dd>
                       </div>
                     )}
                   </div>
@@ -432,17 +432,17 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <div className="font-medium">{part.sparePart.name}</div>
-                              <div className="text-sm text-gray-500">{part.sparePart.partNumber}</div>
+                              <div className="text-sm text-[#AEBFC3]0">{part.sparePart.partNumber}</div>
                             </div>
                             <div className="text-right">
                               <div className="font-semibold">₹{part.totalPrice.toLocaleString()}</div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-[#AEBFC3]0">
                                 {part.quantity} × ₹{part.unitPrice.toLocaleString()}
                               </div>
                             </div>
                           </div>
                           {part.notes && (
-                            <div className="text-sm text-gray-600 mt-2">{part.notes}</div>
+                            <div className="text-sm text-[#5D6E73] mt-2">{part.notes}</div>
                           )}
                         </div>
                       ))}
@@ -462,17 +462,17 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         <div key={asset.id} className="border rounded-lg p-4">
                           <div className="font-medium">Machine ID: {asset.asset.machineId || asset.asset.serialNo || 'N/A'}</div>
                           {asset.asset.serialNo && (
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Serial No: {asset.asset.serialNo}
                             </div>
                           )}
                           {asset.asset.model && (
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Model: {asset.asset.model}
                             </div>
                           )}
                           {asset.asset.customer && (
-                            <div className="text-sm text-gray-500 mt-1">
+                            <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Customer: {asset.asset.customer.companyName}
                             </div>
                           )}
@@ -491,12 +491,12 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         <div key={remark.id} className="border rounded-lg p-4">
                           <div className="flex justify-between items-start mb-2">
                             <Badge>{remark.stage}</Badge>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-[#AEBFC3]0">
                               {format(new Date(remark.createdAt), 'MMM dd, yyyy HH:mm')}
                             </div>
                           </div>
-                          <div className="text-sm text-gray-700 mt-2">{remark.remarks}</div>
-                          <div className="text-xs text-gray-500 mt-2">
+                          <div className="text-sm text-[#5D6E73] mt-2">{remark.remarks}</div>
+                          <div className="text-xs text-[#AEBFC3]0 mt-2">
                             By: {remark.createdBy.name}
                           </div>
                         </div>
@@ -510,15 +510,15 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   <h3 className="font-semibold text-lg mb-4">Assignment & Tracking</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <div className="text-sm text-gray-500">Zone</div>
+                      <div className="text-sm text-[#AEBFC3]0">Zone</div>
                       <div className="font-medium">{offer.zone.name}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500">Created By</div>
+                      <div className="text-sm text-[#AEBFC3]0">Created By</div>
                       <div className="font-medium">{offer.createdBy.name}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500">Created At</div>
+                      <div className="text-sm text-[#AEBFC3]0">Created At</div>
                       <div className="font-medium">
                         {format(new Date(offer.createdAt), 'MMM dd, yyyy HH:mm')}
                       </div>
@@ -530,14 +530,14 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                 {offer.remarks && (
                   <div className="border-t pt-4">
                     <h3 className="font-semibold text-lg mb-4">Remarks</h3>
-                    <div className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
+                    <div className="text-sm text-[#5D6E73] bg-[#AEBFC3]/10 p-4 rounded-lg">
                       {offer.remarks}
                     </div>
                   </div>
                 )}
               </>
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#AEBFC3]0">
                 No offer details found
               </div>
             )}

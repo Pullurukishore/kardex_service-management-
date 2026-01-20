@@ -275,17 +275,17 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
 
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith('image/')) {
-      return <FileImage className="h-8 w-8 text-blue-500" />;
+      return <FileImage className="h-8 w-8 text-[#6F8A9D]" />;
     } else if (fileType === 'application/pdf') {
-      return <FileText className="h-8 w-8 text-red-500" />;
+      return <FileText className="h-8 w-8 text-[#E17F70]" />;
     } else if (fileType.includes('word')) {
-      return <File className="h-8 w-8 text-blue-600" />;
+      return <File className="h-8 w-8 text-[#546A7A]" />;
     } else if (fileType.includes('excel') || fileType.includes('sheet')) {
-      return <File className="h-8 w-8 text-green-600" />;
+      return <File className="h-8 w-8 text-[#4F6A64]" />;
     } else if (fileType.includes('zip') || fileType.includes('rar')) {
-      return <FileArchive className="h-8 w-8 text-orange-500" />;
+      return <FileArchive className="h-8 w-8 text-[#CE9F6B]" />;
     } else {
-      return <File className="h-8 w-8 text-gray-500" />;
+      return <File className="h-8 w-8 text-[#AEBFC3]0" />;
     }
   };
 
@@ -323,13 +323,13 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <div className="border-2 border-dashed border-[#92A2A5] rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 mx-auto text-[#979796] mb-4" />
             <h3 className="text-lg font-semibold mb-2">Upload Reports</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-[#5D6E73] mb-4">
               Upload PDFs, images, documents, or other files related to this ticket
             </p>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-[#AEBFC3]0 mb-4">
               Supported formats: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX, TXT, ZIP (Max 10MB each)
             </p>
             <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
@@ -367,7 +367,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
                             {getFileIcon(file.type)}
                             <div>
                               <p className="font-medium text-sm">{file.name}</p>
-                              <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                              <p className="text-xs text-[#AEBFC3]0">{formatFileSize(file.size)}</p>
                             </div>
                           </div>
                           <Button
@@ -484,7 +484,7 @@ export function TicketReports({ ticketId }: TicketReportsProps) {
                       {report.fileName}
                     </h4>
                     
-                    <div className="space-y-1 text-xs text-gray-500">
+                    <div className="space-y-1 text-xs text-[#AEBFC3]0">
                       <p>{formatFileSize(report.fileSize)}</p>
                       <p>Uploaded by {report.uploadedBy}</p>
                       <p>{formatDate(report.uploadedAt)}</p>

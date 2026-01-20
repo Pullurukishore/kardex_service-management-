@@ -99,30 +99,30 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return 'text-green-600 bg-green-50 border-green-200'
+        return 'text-[#4F6A64] bg-[#A2B9AF]/10 border-[#A2B9AF]'
       case 'INACTIVE':
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+        return 'text-[#5D6E73] bg-[#AEBFC3]/10 border-[#92A2A5]'
       case 'DISCONTINUED':
-        return 'text-red-600 bg-red-50 border-red-200'
+        return 'text-[#9E3B47] bg-[#E17F70]/10 border-[#E17F70]'
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+        return 'text-[#5D6E73] bg-[#AEBFC3]/10 border-[#92A2A5]'
     }
   }
 
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Hardware':
-        return 'text-blue-700 bg-blue-100'
+        return 'text-[#546A7A] bg-[#96AEC2]/20'
       case 'Software':
-        return 'text-purple-700 bg-purple-100'
+        return 'text-[#546A7A] bg-[#6F8A9D]/20'
       case 'Consumables':
-        return 'text-orange-700 bg-orange-100'
+        return 'text-[#976E44] bg-[#CE9F6B]/20'
       case 'Tools':
-        return 'text-green-700 bg-green-100'
+        return 'text-[#4F6A64] bg-[#A2B9AF]/20'
       case 'Accessories':
-        return 'text-indigo-700 bg-indigo-100'
+        return 'text-[#546A7A] bg-[#546A7A]/20'
       default:
-        return 'text-gray-700 bg-gray-100'
+        return 'text-[#5D6E73] bg-[#AEBFC3]/20'
     }
   }
 
@@ -159,18 +159,18 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
   const totalCategories = useMemo(() => new Set(spareParts.map(p => p.category).filter(Boolean)).size, [spareParts])
 
   return (
-    <div className="space-y-8 p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div className="space-y-8 p-6 bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/20 min-h-screen">
       {/* Header Section with Stats */}
       <div className="space-y-6">
         <div className="flex justify-between items-start">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl shadow-lg">
                 <Package className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Spare Parts</h1>
-                <p className="text-gray-600 mt-1">Browse spare parts inventory and pricing for SSP offers</p>
+                <h1 className="text-3xl font-bold text-[#546A7A]">Spare Parts</h1>
+                <p className="text-[#5D6E73] mt-1">Browse spare parts inventory and pricing for SSP offers</p>
               </div>
             </div>
           </div>
@@ -184,57 +184,57 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#6F8A9D] shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Parts</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{pagination.total}</p>
+                  <p className="text-sm font-medium text-[#5D6E73]">Total Parts</p>
+                  <p className="text-2xl font-bold text-[#546A7A] mt-1">{pagination.total}</p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Package className="h-6 w-6 text-blue-600" />
+                <div className="p-3 bg-[#96AEC2]/20 rounded-lg">
+                  <Package className="h-6 w-6 text-[#546A7A]" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#82A094] shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Parts</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{totalActive}</p>
+                  <p className="text-sm font-medium text-[#5D6E73]">Active Parts</p>
+                  <p className="text-2xl font-bold text-[#546A7A] mt-1">{totalActive}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-green-600" />
+                <div className="p-3 bg-[#A2B9AF]/20 rounded-lg">
+                  <Sparkles className="h-6 w-6 text-[#4F6A64]" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-orange-500 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#CE9F6B] shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Avg. Price</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{avgPrice}</p>
+                  <p className="text-sm font-medium text-[#5D6E73]">Avg. Price</p>
+                  <p className="text-2xl font-bold text-[#546A7A] mt-1">{avgPrice}</p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-orange-600" />
+                <div className="p-3 bg-[#CE9F6B]/20 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-[#976E44]" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-[#6F8A9D] shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Categories</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{totalCategories}</p>
+                  <p className="text-sm font-medium text-[#5D6E73]">Categories</p>
+                  <p className="text-2xl font-bold text-[#546A7A] mt-1">{totalCategories}</p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <Tag className="h-6 w-6 text-purple-600" />
+                <div className="p-3 bg-[#6F8A9D]/20 rounded-lg">
+                  <Tag className="h-6 w-6 text-[#546A7A]" />
                 </div>
               </div>
             </CardContent>
@@ -244,10 +244,10 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
 
       {/* Filters */}
       <Card className="shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+        <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-white border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-blue-600" />
+              <Filter className="h-5 w-5 text-[#546A7A]" />
               <CardTitle className="text-lg">Search & Filters</CardTitle>
             </div>
           </div>
@@ -256,24 +256,24 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Search */}
             <div className="space-y-2">
-              <Label htmlFor="search" className="text-sm font-semibold text-gray-700">Search Parts</Label>
+              <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73]">Search Parts</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                 <Input
                   id="search"
                   placeholder="Search by name or part number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-10 h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]"
                 />
               </div>
             </div>
 
             {/* Status Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">Status</Label>
+              <Label className="text-sm font-semibold text-[#5D6E73]">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -282,9 +282,9 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                       <div className="flex items-center gap-2">
                         {status !== 'All Status' && (
                           <div className={`w-2 h-2 rounded-full ${
-                            status === 'ACTIVE' ? 'bg-green-500' :
-                            status === 'INACTIVE' ? 'bg-gray-500' :
-                            status === 'DISCONTINUED' ? 'bg-red-500' : ''
+                            status === 'ACTIVE' ? 'bg-[#A2B9AF]/100' :
+                            status === 'INACTIVE' ? 'bg-[#AEBFC3]/100' :
+                            status === 'DISCONTINUED' ? 'bg-[#E17F70]/100' : ''
                           }`} />
                         )}
                         {status}
@@ -297,9 +297,9 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">Category</Label>
+              <Label className="text-sm font-semibold text-[#5D6E73]">Category</Label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -313,11 +313,11 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
 
           <div className="flex justify-between items-center mt-6 pt-4 border-t">
             <div className="flex items-center gap-3">
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${showAll ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
+              <div className={`px-3 py-1 rounded-full text-sm font-medium ${showAll ? 'bg-[#A2B9AF]/10 text-[#4F6A64]' : 'bg-[#96AEC2]/10 text-[#546A7A]'}`}>
                 {showAll ? `Showing all ${spareParts.length} parts` : `Showing ${((pagination.page - 1) * pageSize) + 1}-${Math.min(pagination.page * pageSize, pagination.total)} of ${pagination.total} parts`}
               </div>
               <div className="flex items-center gap-2">
-                <Label className="text-sm text-gray-600">Per page:</Label>
+                <Label className="text-sm text-[#5D6E73]">Per page:</Label>
                 <Select value={showAll ? '9999' : pageSize.toString()} onValueChange={(val) => handlePageSizeChange(Number(val))}>
                   <SelectTrigger className="h-9 w-28">
                     <SelectValue />
@@ -332,7 +332,7 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex gap-1 border-2 border-gray-200 rounded-lg p-1 bg-white">
+              <div className="flex gap-1 border-2 border-[#92A2A5] rounded-lg p-1 bg-white">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
@@ -366,9 +366,9 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
         <Card className="shadow-lg border-0">
           <CardContent className="py-20">
             <div className="flex flex-col items-center justify-center">
-              <Loader2 className="h-16 w-16 animate-spin text-blue-600 mb-4" />
-              <p className="text-xl font-semibold text-gray-700">Loading spare parts...</p>
-              <p className="text-sm text-gray-500 mt-2">Please wait while we fetch the data</p>
+              <Loader2 className="h-16 w-16 animate-spin text-[#546A7A] mb-4" />
+              <p className="text-xl font-semibold text-[#5D6E73]">Loading spare parts...</p>
+              <p className="text-sm text-[#AEBFC3]0 mt-2">Please wait while we fetch the data</p>
             </div>
           </CardContent>
         </Card>
@@ -376,11 +376,11 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
         <Card className="shadow-lg border-0">
           <CardContent className="py-20">
             <div className="flex flex-col items-center justify-center">
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl mb-6">
-                <Package className="h-20 w-20 text-blue-400" />
+              <div className="p-6 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-2xl mb-6">
+                <Package className="h-20 w-20 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No spare parts found</h3>
-              <p className="text-gray-600 mb-2">Try adjusting your filters</p>
+              <h3 className="text-2xl font-bold text-[#546A7A] mb-2">No spare parts found</h3>
+              <p className="text-[#5D6E73] mb-2">Try adjusting your filters</p>
             </div>
           </CardContent>
         </Card>
@@ -388,10 +388,10 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {spareParts.map((part: any) => (
-              <Card key={part.id} className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 hover:border-blue-400 bg-white">
+              <Card key={part.id} className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 hover:border-[#6F8A9D] bg-white">
                 <CardContent className="p-0">
                   {/* Image Section */}
-                  <div className="relative h-52 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 overflow-hidden">
+                  <div className="relative h-52 bg-gradient-to-br from-[#AEBFC3]/10 via-gray-100 to-gray-200 overflow-hidden">
                     {part.imageUrl ? (
                       <img
                         src={part.imageUrl}
@@ -400,7 +400,7 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="h-24 w-24 text-gray-300" />
+                        <Package className="h-24 w-24 text-[#92A2A5]" />
                       </div>
                     )}
 
@@ -408,9 +408,9 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                     <div className="absolute top-3 right-3">
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border-2 shadow-lg backdrop-blur-sm ${getStatusColor(part.status)}`}>
                         <div className={`w-2 h-2 rounded-full ${
-                          part.status === 'ACTIVE' ? 'bg-green-600' :
-                          part.status === 'INACTIVE' ? 'bg-gray-600' :
-                          'bg-red-600'
+                          part.status === 'ACTIVE' ? 'bg-[#4F6A64]' :
+                          part.status === 'INACTIVE' ? 'bg-[#5D6E73]' :
+                          'bg-[#9E3B47]'
                         }`} />
                         {part.status}
                       </div>
@@ -420,10 +420,10 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                   {/* Content Section */}
                   <div className="p-5 space-y-3">
                     <div>
-                      <h3 className="font-bold text-gray-900 text-lg line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                      <h3 className="font-bold text-[#546A7A] text-lg line-clamp-2 group-hover:text-[#546A7A] transition-colors leading-tight">
                         {part.name}
                       </h3>
-                      <p className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded mt-2 inline-block">
+                      <p className="text-xs text-[#AEBFC3]0 font-mono bg-[#AEBFC3]/20 px-2 py-1 rounded mt-2 inline-block">
                         #{part.partNumber}
                       </p>
                     </div>
@@ -436,24 +436,24 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                     )}
 
                     {part.description && part.description !== part.name && (
-                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{part.description}</p>
+                      <p className="text-sm text-[#5D6E73] line-clamp-2 leading-relaxed">{part.description}</p>
                     )}
 
-                    <div className="pt-3 border-t-2 border-gray-100">
+                    <div className="pt-3 border-t-2 border-[#AEBFC3]/30">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-600">Price</span>
+                        <span className="text-sm font-medium text-[#5D6E73]">Price</span>
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                          <span className="text-2xl font-bold text-blue-600">
+                          <DollarSign className="h-5 w-5 text-[#4F6A64]" />
+                          <span className="text-2xl font-bold text-[#546A7A]">
                             {formatCurrency(Number(part.basePrice))}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+                    <div className="flex items-center justify-between text-xs text-[#AEBFC3]0 pt-2">
                       <span className="flex items-center gap-1">
-                        <div className="w-1 h-1 rounded-full bg-gray-400" />
+                        <div className="w-1 h-1 rounded-full bg-[#979796]" />
                         Added {new Date(part.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
                     </div>
@@ -468,7 +468,7 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
             <Card className="shadow-lg border-0 mt-6">
               <CardContent className="py-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-[#5D6E73]">
                     Page {pagination.page} of {pagination.pages}
                   </div>
                   <div className="flex items-center gap-2">
@@ -498,10 +498,10 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
         </>
       ) : (
         <Card className="shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+          <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-white border-b">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-600" />
+                <Package className="h-5 w-5 text-[#546A7A]" />
                 Spare Parts Inventory
               </CardTitle>
             </div>
@@ -509,34 +509,34 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-gray-100 to-gray-50 border-b-2 border-gray-200">
+                <thead className="bg-gradient-to-r from-[#AEBFC3]/20 to-[#AEBFC3]/10 border-b-2 border-[#92A2A5]">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Image</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Part Details</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Base Price</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Created</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Image</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Part Details</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Base Price</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-[#5D6E73] uppercase tracking-wider">Created</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 bg-white">
                   {spareParts.map((part: any) => (
-                    <tr key={part.id} className="hover:bg-blue-50 transition-colors">
+                    <tr key={part.id} className="hover:bg-[#96AEC2]/10 transition-colors">
                       <td className="px-6 py-4">
                         {part.imageUrl ? (
-                          <img src={part.imageUrl} alt={part.name} className="w-16 h-16 object-cover rounded-xl border-2 border-gray-200 shadow-sm" />
+                          <img src={part.imageUrl} alt={part.name} className="w-16 h-16 object-cover rounded-xl border-2 border-[#92A2A5] shadow-sm" />
                         ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow-sm">
-                            <Package className="h-8 w-8 text-gray-400" />
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#AEBFC3]/20 to-gray-200 rounded-xl border-2 border-[#92A2A5] flex items-center justify-center shadow-sm">
+                            <Package className="h-8 w-8 text-[#979796]" />
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="space-y-1">
-                          <p className="text-sm font-semibold text-gray-900">{part.name}</p>
-                          <p className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded inline-block">#{part.partNumber}</p>
+                          <p className="text-sm font-semibold text-[#546A7A]">{part.name}</p>
+                          <p className="text-xs text-[#AEBFC3]0 font-mono bg-[#AEBFC3]/20 px-2 py-0.5 rounded inline-block">#{part.partNumber}</p>
                           {part.description && (
-                            <p className="text-xs text-gray-500 mt-1 max-w-xs truncate">{part.description}</p>
+                            <p className="text-xs text-[#AEBFC3]0 mt-1 max-w-xs truncate">{part.description}</p>
                           )}
                         </div>
                       </td>
@@ -549,21 +549,21 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4 text-green-600" />
-                          <span className="text-sm font-bold text-gray-900">{formatCurrency(Number(part.basePrice))}</span>
+                          <DollarSign className="h-4 w-4 text-[#4F6A64]" />
+                          <span className="text-sm font-bold text-[#546A7A]">{formatCurrency(Number(part.basePrice))}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border-2 shadow-sm ${getStatusColor(part.status)}`}>
                           <div className={`w-2 h-2 rounded-full ${
-                            part.status === 'ACTIVE' ? 'bg-green-600' :
-                            part.status === 'INACTIVE' ? 'bg-gray-600' :
-                            'bg-red-600'
+                            part.status === 'ACTIVE' ? 'bg-[#4F6A64]' :
+                            part.status === 'INACTIVE' ? 'bg-[#5D6E73]' :
+                            'bg-[#9E3B47]'
                           }`} />
                           {part.status}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-[#5D6E73]">
                         {new Date(part.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </td>
                     </tr>
@@ -576,7 +576,7 @@ export default function SparePartsList({ defaultView = 'list' }: SparePartsListP
           {!showAll && pagination.pages > 1 && (
             <CardContent className="border-t py-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-[#5D6E73]">
                   Page {pagination.page} of {pagination.pages} • {pagination.total} total parts
                 </div>
                 <div className="flex items-center gap-2">

@@ -25,13 +25,13 @@ interface ProductUserZoneResponse {
 
 // Zone colors
 const zoneColors: Record<string, { bg: string; text: string; light: string; border: string }> = {
-  WEST: { bg: 'bg-blue-600', text: 'text-blue-600', light: 'bg-blue-50', border: 'border-blue-200' },
-  SOUTH: { bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-emerald-50', border: 'border-emerald-200' },
-  NORTH: { bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-50', border: 'border-amber-200' },
-  EAST: { bg: 'bg-purple-600', text: 'text-purple-600', light: 'bg-purple-50', border: 'border-purple-200' },
+  WEST: { bg: 'bg-[#6F8A9D]', text: 'text-[#546A7A]', light: 'bg-[#96AEC2]/10', border: 'border-[#96AEC2]' },
+  SOUTH: { bg: 'bg-[#4F6A64]', text: 'text-[#4F6A64]', light: 'bg-[#82A094]/10', border: 'border-[#82A094]/50' },
+  NORTH: { bg: 'bg-[#CE9F6B]/100', text: 'text-[#976E44]', light: 'bg-[#CE9F6B]/10', border: 'border-[#CE9F6B]/50' },
+  EAST: { bg: 'bg-[#546A7A]', text: 'text-[#546A7A]', light: 'bg-[#6F8A9D]/10', border: 'border-[#6F8A9D]' },
 }
 
-const getZoneColor = (name: string) => zoneColors[name.toUpperCase()] || { bg: 'bg-slate-600', text: 'text-slate-600', light: 'bg-slate-50', border: 'border-slate-200' }
+const getZoneColor = (name: string) => zoneColors[name.toUpperCase()] || { bg: 'bg-[#5D6E73]', text: 'text-[#5D6E73]', light: 'bg-[#AEBFC3]/10', border: 'border-[#92A2A5]' }
 
 interface Props {
   year: number
@@ -92,8 +92,8 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <p className="text-sm text-slate-600">Loading data...</p>
+        <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
+        <p className="text-sm text-[#5D6E73]">Loading data...</p>
       </div>
     )
   }
@@ -105,26 +105,26 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
   return (
     <div className="space-y-4">
       {/* Header Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#546A7A] rounded-xl shadow-sm border border-[#92A2A5] dark:border-[#5D6E73]">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
             <Package className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-800 dark:text-white">Product × User × Zone</h2>
-            <p className="text-xs text-slate-500">{year} • {data.productTypes.length} Products</p>
+            <h2 className="text-sm font-bold text-[#546A7A] dark:text-white">Product × User × Zone</h2>
+            <p className="text-xs text-[#757777]">{year} • {data.productTypes.length} Products</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+          <div className="flex rounded-lg bg-[#AEBFC3]/20 dark:bg-[#546A7A] p-0.5">
             <button
               onClick={() => setViewMode('product')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'product' 
-                  ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white dark:bg-[#5D6E73] text-[#546A7A] shadow-sm' 
+                  : 'text-[#757777] hover:text-[#5D6E73]'
               }`}
             >
               By Product
@@ -133,8 +133,8 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
               onClick={() => setViewMode('user')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'user' 
-                  ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white dark:bg-[#5D6E73] text-[#546A7A] shadow-sm' 
+                  : 'text-[#757777] hover:text-[#5D6E73]'
               }`}
             >
               By User
@@ -156,19 +156,19 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
                 className={`p-3 rounded-xl border-2 transition-all text-left ${
                   isActive 
                     ? `${color.light} ${color.border} ring-2 ring-offset-1 ring-${zone.zoneName.toLowerCase()}-400`
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                    : 'bg-white dark:bg-[#546A7A] border-[#92A2A5] dark:border-[#5D6E73] hover:border-[#92A2A5]'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <div className={`w-2 h-2 rounded-full ${color.bg}`}></div>
-                  <span className={`text-xs font-bold uppercase ${isActive ? color.text : 'text-slate-600'}`}>
+                  <span className={`text-xs font-bold uppercase ${isActive ? color.text : 'text-[#5D6E73]'}`}>
                     {zone.zoneName}
                   </span>
                 </div>
-                <p className={`text-lg font-bold ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>
+                <p className={`text-lg font-bold ${isActive ? 'text-[#546A7A]' : 'text-[#5D6E73]'}`}>
                   {formatCrore(zone.zoneTotalValue)}
                 </p>
-                <p className="text-[10px] text-slate-500">{zone.users.length} Users</p>
+                <p className="text-[10px] text-[#757777]">{zone.users.length} Users</p>
               </button>
             )
           })}
@@ -193,41 +193,41 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800">
-                      <th className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-300 sticky left-0 bg-slate-50 dark:bg-slate-800 z-10">Product</th>
+                    <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]">
+                      <th className="px-3 py-2 text-left font-bold text-[#5D6E73] dark:text-[#92A2A5] sticky left-0 bg-[#AEBFC3]/10 dark:bg-[#546A7A] z-10">Product</th>
                       {activeZone.users.map(user => (
-                        <th key={user.id} className="px-2 py-2 text-right font-medium text-slate-600 dark:text-slate-400 min-w-[70px]">
+                        <th key={user.id} className="px-2 py-2 text-right font-medium text-[#5D6E73] dark:text-[#979796] min-w-[70px]">
                           {user.name.split(' ')[0]}
                         </th>
                       ))}
-                      <th className="px-3 py-2 text-right font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700">Total</th>
+                      <th className="px-3 py-2 text-right font-bold text-[#546A7A] dark:text-white bg-[#AEBFC3]/20 dark:bg-[#5D6E73]">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {activeZone.productMatrix.map((product, idx) => (
-                      <tr key={product.productType} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30'}>
-                        <td className="px-3 py-2 font-medium text-slate-700 dark:text-slate-300 sticky left-0 bg-inherit z-10">
+                      <tr key={product.productType} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/30'}>
+                        <td className="px-3 py-2 font-medium text-[#5D6E73] dark:text-[#92A2A5] sticky left-0 bg-inherit z-10">
                           {product.productLabel}
                         </td>
                         {activeZone.users.map(user => {
                           const value = product.userValues[user.id] || 0
                           return (
-                            <td key={user.id} className={`px-2 py-2 text-right font-mono ${value > 0 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'}`}>
+                            <td key={user.id} className={`px-2 py-2 text-right font-mono ${value > 0 ? 'text-[#5D6E73] dark:text-[#92A2A5]' : 'text-[#92A2A5] dark:text-[#5D6E73]'}`}>
                               {formatValue(value)}
                             </td>
                           )
                         })}
-                        <td className="px-3 py-2 text-right font-mono font-bold text-slate-800 dark:text-white bg-slate-100/50 dark:bg-slate-700/50">
+                        <td className="px-3 py-2 text-right font-mono font-bold text-[#546A7A] dark:text-white bg-[#AEBFC3]/20/50 dark:bg-[#5D6E73]/50">
                           {formatValue(product.total)}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-slate-200 dark:bg-slate-700 font-bold">
-                      <td className="px-3 py-2 text-slate-800 dark:text-white sticky left-0 bg-slate-200 dark:bg-slate-700 z-10">Total</td>
+                    <tr className="bg-[#92A2A5]/30 dark:bg-[#5D6E73] font-bold">
+                      <td className="px-3 py-2 text-[#546A7A] dark:text-white sticky left-0 bg-[#92A2A5]/30 dark:bg-[#5D6E73] z-10">Total</td>
                       {activeZone.users.map(user => (
-                        <td key={user.id} className="px-2 py-2 text-right font-mono text-slate-800 dark:text-white">
+                        <td key={user.id} className="px-2 py-2 text-right font-mono text-[#546A7A] dark:text-white">
                           {formatValue(activeZone.userTotals[user.id] || 0)}
                         </td>
                       ))}
@@ -249,30 +249,30 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
                     .sort((a, b) => b.value - a.value)
                   
                   return (
-                    <div key={user.id} className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <div key={user.id} className="p-3 rounded-lg bg-[#AEBFC3]/10 dark:bg-[#546A7A] border border-[#92A2A5] dark:border-[#5D6E73]">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <div className={`w-7 h-7 rounded-full ${getZoneColor(activeZone.zoneName).bg} flex items-center justify-center`}>
                             <span className="text-xs font-bold text-white">{user.name.charAt(0)}</span>
                           </div>
-                          <span className="font-semibold text-sm text-slate-800 dark:text-white">{user.name}</span>
+                          <span className="font-semibold text-sm text-[#546A7A] dark:text-white">{user.name}</span>
                         </div>
-                        <span className="text-sm font-bold text-slate-800 dark:text-white">{formatCrore(userTotal)}</span>
+                        <span className="text-sm font-bold text-[#546A7A] dark:text-white">{formatCrore(userTotal)}</span>
                       </div>
                       {userProducts.length > 0 ? (
                         <div className="space-y-1">
                           {userProducts.slice(0, 4).map(p => (
                             <div key={p.label} className="flex justify-between text-xs">
-                              <span className="text-slate-600 dark:text-slate-400 truncate max-w-[60%]">{p.label}</span>
-                              <span className="font-mono text-slate-700 dark:text-slate-300">{formatValue(p.value)}</span>
+                              <span className="text-[#5D6E73] dark:text-[#979796] truncate max-w-[60%]">{p.label}</span>
+                              <span className="font-mono text-[#5D6E73] dark:text-[#92A2A5]">{formatValue(p.value)}</span>
                             </div>
                           ))}
                           {userProducts.length > 4 && (
-                            <p className="text-[10px] text-slate-500">+{userProducts.length - 4} more</p>
+                            <p className="text-[10px] text-[#757777]">+{userProducts.length - 4} more</p>
                           )}
                         </div>
                       ) : (
-                        <p className="text-xs text-slate-400 italic">No products</p>
+                        <p className="text-xs text-[#979796] italic">No products</p>
                       )}
                     </div>
                   )
@@ -286,24 +286,24 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
       {/* Product Summary - All Zones */}
       {!zoneId && (
         <Card className="border-0 shadow-lg overflow-hidden">
-          <CardHeader className="py-2 px-4 bg-gradient-to-r from-yellow-400 to-amber-500">
+          <CardHeader className="py-2 px-4 bg-gradient-to-r from-yellow-400 to-[#CE9F6B]">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-slate-800" />
-              <CardTitle className="text-sm font-bold text-slate-800">All Zones Summary</CardTitle>
+              <TrendingUp className="h-4 w-4 text-[#546A7A]" />
+              <CardTitle className="text-sm font-bold text-[#546A7A]">All Zones Summary</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800">
-                    <th className="px-3 py-2 text-left font-bold text-slate-700">Product</th>
+                  <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]">
+                    <th className="px-3 py-2 text-left font-bold text-[#5D6E73]">Product</th>
                     {data.zones.map(zone => (
                       <th key={zone.zoneId} className={`px-3 py-2 text-right font-bold ${getZoneColor(zone.zoneName).text}`}>
                         {zone.zoneName}
                       </th>
                     ))}
-                    <th className="px-3 py-2 text-right font-bold text-slate-800 bg-yellow-100">Total</th>
+                    <th className="px-3 py-2 text-right font-bold text-[#546A7A] bg-[#CE9F6B]/20">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -314,18 +314,18 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
                     }, 0)
                     
                     return (
-                      <tr key={product.key} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
-                        <td className="px-3 py-2 font-medium text-slate-700">{product.label}</td>
+                      <tr key={product.key} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/50'}>
+                        <td className="px-3 py-2 font-medium text-[#5D6E73]">{product.label}</td>
                         {data.zones.map(zone => {
                           const row = zone.productMatrix.find(p => p.productType === product.key)
                           const value = row?.total || 0
                           return (
-                            <td key={zone.zoneId} className={`px-3 py-2 text-right font-mono ${value > 0 ? 'text-slate-700' : 'text-slate-300'}`}>
+                            <td key={zone.zoneId} className={`px-3 py-2 text-right font-mono ${value > 0 ? 'text-[#5D6E73]' : 'text-[#92A2A5]'}`}>
                               {formatValue(value)}
                             </td>
                           )
                         })}
-                        <td className="px-3 py-2 text-right font-mono font-bold text-slate-800 bg-yellow-50">
+                        <td className="px-3 py-2 text-right font-mono font-bold text-[#546A7A] bg-[#EEC1BF]/10">
                           {formatValue(productTotal)}
                         </td>
                       </tr>
@@ -333,14 +333,14 @@ export default function ProductUserZoneTab({ year, minProbability = 0, zoneId, u
                   })}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-slate-800 text-white font-bold">
+                  <tr className="bg-[#546A7A] text-white font-bold">
                     <td className="px-3 py-2">Grand Total</td>
                     {data.zones.map(zone => (
                       <td key={zone.zoneId} className="px-3 py-2 text-right font-mono">
                         {formatValue(zone.zoneTotalValue)}
                       </td>
                     ))}
-                    <td className="px-3 py-2 text-right font-mono bg-yellow-500 text-slate-900">
+                    <td className="px-3 py-2 text-right font-mono bg-[#EEC1BF]/100 text-[#546A7A]">
                       {formatValue(data.zones.reduce((sum, z) => sum + z.zoneTotalValue, 0))}
                     </td>
                   </tr>

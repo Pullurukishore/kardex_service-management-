@@ -51,9 +51,9 @@ export function DashboardClientWrapper({ children, userRole }: DashboardClientWr
     <div className="min-h-screen bg-white">
       {/* Animated background elements - more subtle */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none print:hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#507295]/3 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-blue-200/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-indigo-200/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#6F8A9D]/3 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-[#96AEC2]/30/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-[#6F8A9D]/30/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
       </div>
 
       {/* Mobile overlay - only show if sidebar is enabled */}

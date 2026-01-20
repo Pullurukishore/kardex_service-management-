@@ -207,18 +207,18 @@ export default function TicketDetailPage() {
 
   if (loading || !ticket) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-emerald-50/30 to-[#A2B9AF]/10/20">
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="text-center space-y-4">
             <div className="relative mx-auto w-16 h-16">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 opacity-20 animate-ping" />
-              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#82A094] to-[#82A094] opacity-20 animate-ping" />
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[#82A094] to-[#82A094] flex items-center justify-center shadow-lg shadow-[#82A094]/25">
                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
               </div>
             </div>
             <div>
-              <p className="text-lg font-semibold text-slate-800">{loading ? 'Loading ticket details...' : 'Ticket not found'}</p>
-              <p className="text-sm text-slate-500 mt-1">Please wait while we fetch the information</p>
+              <p className="text-lg font-semibold text-[#546A7A]">{loading ? 'Loading ticket details...' : 'Ticket not found'}</p>
+              <p className="text-sm text-[#757777] mt-1">Please wait while we fetch the information</p>
             </div>
           </div>
         </div>
@@ -227,14 +227,14 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-emerald-50/30 to-[#A2B9AF]/10/20">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Premium Header with Glassmorphism */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl shadow-2xl shadow-emerald-500/20 p-6 md:p-8">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] via-[#82A094] to-cyan-600 rounded-2xl shadow-2xl shadow-[#82A094]/20 p-6 md:p-8">
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-teal-400/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#96AEC2]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-[#A2B9AF]/10 rounded-full blur-2xl" />
           
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -279,14 +279,14 @@ export default function TicketDetailPage() {
                         <Zap className="h-4 w-4 mr-2" />
                         Change Status
                       </Button>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#546A7A] text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-50">
                         Accept or reject assignment first
                       </div>
                     </div>
                   ) : (
                     <Button 
                       onClick={() => setIsStatusDialogOpen(true)}
-                      className="relative overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white hover:from-amber-400 hover:via-orange-400 hover:to-rose-400 border-0 shadow-xl shadow-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 font-semibold"
+                      className="relative overflow-hidden bg-gradient-to-r from-[#CE9F6B] via-[#CE9F6B] to-[#E17F70] text-white hover:from-[#CE9F6B] hover:via-orange-400 hover:to-rose-400 border-0 shadow-xl shadow-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 font-semibold"
                       size="default"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-shimmer" />
@@ -322,9 +322,9 @@ export default function TicketDetailPage() {
 
         {/* Assignment Response Banner - Show if pending and user is assigned */}
         {ticket.assignmentStatus === 'PENDING' && ticket.assignedToId === user?.id && (
-          <div className="relative overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl shadow-xl shadow-amber-500/20 p-6">
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#CE9F6B] via-[#CE9F6B] to-[#976E44] rounded-2xl shadow-xl shadow-amber-500/20 p-6">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-yellow-400/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#CE9F6B]/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
             
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -343,7 +343,7 @@ export default function TicketDetailPage() {
                     <Button
                       onClick={() => handleRespondToAssignment('ACCEPT')}
                       disabled={isRespondingToAssignment}
-                      className="bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transition-all font-bold px-6"
+                      className="bg-[#A2B9AF]/100 hover:bg-[#4F6A64] text-white shadow-lg hover:shadow-xl transition-all font-bold px-6"
                     >
                       {isRespondingToAssignment ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -355,7 +355,7 @@ export default function TicketDetailPage() {
                     <Button
                       onClick={() => setShowRejectDialog(true)}
                       disabled={isRespondingToAssignment}
-                      className="bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl transition-all font-bold px-6"
+                      className="bg-[#E17F70]/100 hover:bg-[#9E3B47] text-white shadow-lg hover:shadow-xl transition-all font-bold px-6"
                     >
                       <XCircle className="h-4 w-4 mr-2" />
                       Reject
@@ -374,7 +374,7 @@ export default function TicketDetailPage() {
                       <Button
                         onClick={() => handleRespondToAssignment('REJECT', rejectNotes)}
                         disabled={isRespondingToAssignment}
-                        className="bg-red-600 hover:bg-red-700 text-white shadow-lg font-bold flex-1"
+                        className="bg-[#9E3B47] hover:bg-[#75242D] text-white shadow-lg font-bold flex-1"
                       >
                         {isRespondingToAssignment ? (
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -406,10 +406,10 @@ export default function TicketDetailPage() {
           {/* Left Column - Main Ticket Info */}
           <div className="space-y-4 md:space-y-6">
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow duration-200">
-              <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-teal-50/50 rounded-t-lg border-b p-4 md:p-6">
+              <CardHeader className="pb-3 bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10/50 rounded-t-lg border-b p-4 md:p-6">
                 <div className="space-y-3">
                   <div className="flex flex-col space-y-2">
-                    <CardTitle className="text-lg md:text-xl break-words text-emerald-900">{ticket.title}</CardTitle>
+                    <CardTitle className="text-lg md:text-xl break-words text-[#4F6A64]">{ticket.title}</CardTitle>
                     <div className="flex flex-wrap items-center gap-2">
                       <StatusBadge status={ticket.status} />
                       <PriorityBadge priority={ticket.priority} />
@@ -487,10 +487,10 @@ export default function TicketDetailPage() {
           </Card>
 
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-t-lg border-b">
+            <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10/50 rounded-t-lg border-b">
               <div className="flex items-center space-x-2">
-                <Activity className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-blue-900">Activity</CardTitle>
+                <Activity className="h-5 w-5 text-[#546A7A]" />
+                <CardTitle className="text-[#546A7A]">Activity</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="overflow-hidden">
@@ -504,9 +504,9 @@ export default function TicketDetailPage() {
         {/* Right Column - Sidebar Content */}
         <div className="space-y-4 md:space-y-6">
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-t-lg border-b p-4 md:p-6">
+            <CardHeader className="bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10/50 rounded-t-lg border-b p-4 md:p-6">
               <div className="flex flex-col space-y-3">
-                <CardTitle className="text-amber-900 text-base md:text-lg">Details</CardTitle>
+                <CardTitle className="text-[#976E44] text-base md:text-lg">Details</CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <Button 
                     variant={activeTab === 'details' ? 'default' : 'outline'} 
@@ -575,8 +575,8 @@ export default function TicketDetailPage() {
           </Card>
 
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50/50 rounded-t-lg border-b">
-              <CardTitle className="text-emerald-900">Assignment</CardTitle>
+            <CardHeader className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10/50 rounded-t-lg border-b">
+              <CardTitle className="text-[#4F6A64]">Assignment</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -587,13 +587,13 @@ export default function TicketDetailPage() {
                     {ticket.assignedTo && (ticket.assignedTo.role === 'ZONE_USER' || ticket.assignedTo.role === 'ZONE_MANAGER') ? (
                       <>
                         <Avatar className="h-5 w-5 mr-2">
-                          <AvatarFallback className={`${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          <AvatarFallback className={`${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-[#CE9F6B]/20 text-[#976E44]' : 'bg-[#82A094]/20 text-[#4F6A64]'}`}>
                             {ticket.assignedTo.name?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                           <span>{ticket.assignedTo.name || 'No name'}</span>
-                          <span className={`text-xs font-medium ${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'text-amber-600' : 'text-emerald-600'}`}>
+                          <span className={`text-xs font-medium ${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'text-[#976E44]' : 'text-[#4F6A64]'}`}>
                             {ticket.assignedTo.role === 'ZONE_MANAGER' ? 'Zone Manager' : 'Zone User'}
                           </span>
                           {ticket.assignedTo.phone && (
@@ -636,15 +636,15 @@ export default function TicketDetailPage() {
                   }}
                   disabled={!ticket || (ticket.assignmentStatus === 'PENDING' && ticket.assignedToId === user?.id)}
                   variant="outline"
-                  className="w-full justify-start h-12 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-emerald-200 hover:border-emerald-300 text-emerald-700 hover:text-emerald-800 transition-all duration-200 shadow-sm hover:shadow-md group"
+                  className="w-full justify-start h-12 bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 hover:from-emerald-100 hover:to-[#A2B9AF]/20 border-[#A2B9AF]/40 hover:border-emerald-300 text-[#4F6A64] hover:text-[#4F6A64] transition-all duration-200 shadow-sm hover:shadow-md group"
                 >
                   <div className="flex items-center">
-                    <div className="p-1.5 rounded-full bg-emerald-100 group-hover:bg-emerald-200 mr-3 transition-colors">
+                    <div className="p-1.5 rounded-full bg-[#82A094]/20 group-hover:bg-[#A2B9AF]/40 mr-3 transition-colors">
                       <UserPlus className="h-4 w-4" />
                     </div>
                     <div className="text-left">
                       <div className="font-medium">Assign to Zone User</div>
-                      <div className="text-xs text-emerald-600 opacity-80">Delegate to zone coordinator</div>
+                      <div className="text-xs text-[#4F6A64] opacity-80">Delegate to zone coordinator</div>
                     </div>
                   </div>
                 </Button>
@@ -653,18 +653,18 @@ export default function TicketDetailPage() {
           </Card>
 
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50/50 rounded-t-lg border-b">
-              <CardTitle className="text-purple-900">Status History</CardTitle>
+            <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#EEC1BF]/10/50 rounded-t-lg border-b">
+              <CardTitle className="text-[#546A7A]">Status History</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {ticket.statusHistory?.length ? (
                   <div className="space-y-3">
                     {ticket.statusHistory.map((history, index) => (
-                      <div key={history.id} className="flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-b-0">
+                      <div key={history.id} className="flex items-start space-x-3 pb-3 border-b border-[#AEBFC3]/30 last:border-b-0">
                         <div className="flex-shrink-0 h-8 w-8 rounded-full bg-background flex items-center justify-center border">
                           {index === 0 ? (
-                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <CheckCircle className="h-4 w-4 text-[#82A094]" />
                           ) : (
                             <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                           )}

@@ -564,14 +564,14 @@ export default function ActivityScheduleForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8 w-full">
       {/* SECTION 1: Service Person Selection */}
-      <div className="space-y-4 pb-8 border-b-2 border-blue-200">
+      <div className="space-y-4 pb-8 border-b-2 border-[#96AEC2]">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+          <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl">
             <User className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Service Person Assignment</h3>
-            <p className="text-sm text-gray-500 mt-1">Select one or more service persons to assign this activity</p>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">Service Person Assignment</h3>
+            <p className="text-sm text-[#AEBFC3]0 mt-1">Select one or more service persons to assign this activity</p>
           </div>
         </div>
         
@@ -582,19 +582,19 @@ export default function ActivityScheduleForm({
           </Label>
           
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-blue-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#6F8A9D]" />
             <Input
               type="text"
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-10 h-11 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg transition-all"
+              className="pl-12 pr-10 h-11 border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-[#96AEC2]/50 rounded-lg transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#979796] hover:text-[#E17F70] transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -602,12 +602,12 @@ export default function ActivityScheduleForm({
           </div>
 
           {(formData.servicePersonIds as number[]).length > 0 && (
-            <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
-              <div className="w-full text-xs text-blue-600 font-medium mb-2">
+            <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-xl border-2 border-[#96AEC2]">
+              <div className="w-full text-xs text-[#546A7A] font-medium mb-2">
                 {(formData.servicePersonIds as number[]).length} selected
               </div>
               {selectedServicePersons.map(sp => (
-                <div key={sp.id} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md hover:shadow-lg transition-shadow">
+                <div key={sp.id} className="flex items-center gap-2 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white px-4 py-2 rounded-full text-sm font-medium shadow-md hover:shadow-lg transition-shadow">
                   <span>{sp.name || 'Unknown'}</span>
                   <button
                     type="button"
@@ -622,7 +622,7 @@ export default function ActivityScheduleForm({
           )}
 
           {/* Count indicator */}
-          <div className="flex items-center justify-between text-xs text-gray-500 px-1">
+          <div className="flex items-center justify-between text-xs text-[#AEBFC3]0 px-1">
             <span>
               {servicePersons.filter(sp => 
                 (sp.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -631,13 +631,13 @@ export default function ActivityScheduleForm({
               {searchQuery && ' (filtered)'}
             </span>
             {servicePersons.length > 30 && !searchQuery && (
-              <span className="text-blue-500">💡 Use search to find quickly</span>
+              <span className="text-[#6F8A9D]">💡 Use search to find quickly</span>
             )}
           </div>
 
-          <div className="border-2 border-gray-200 rounded-xl p-4 max-h-[400px] overflow-y-auto space-y-2 bg-gradient-to-b from-white to-gray-50 shadow-sm">
+          <div className="border-2 border-[#92A2A5] rounded-xl p-4 max-h-[400px] overflow-y-auto space-y-2 bg-gradient-to-b from-white to-[#AEBFC3]/10 shadow-sm">
             {loading ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-[#AEBFC3]0">
                 <Loader className="h-5 w-5 animate-spin mx-auto mb-2" />
                 <p className="text-sm">Loading service persons...</p>
               </div>
@@ -645,7 +645,7 @@ export default function ActivityScheduleForm({
               (sp.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
               sp.email.toLowerCase().includes(searchQuery.toLowerCase())
             ).length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-[#979796]">
                 <p className="text-sm">{searchQuery ? '🔍 No matching service persons found' : '👥 No service persons found'}</p>
               </div>
             ) : (
@@ -655,20 +655,20 @@ export default function ActivityScheduleForm({
                   sp.email.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .map(sp => (
-                  <label key={sp.id} className="flex items-center gap-3 p-4 hover:bg-blue-100 hover:bg-opacity-50 rounded-lg cursor-pointer transition-all border border-transparent hover:border-blue-300">
+                  <label key={sp.id} className="flex items-center gap-3 p-4 hover:bg-[#96AEC2]/20 hover:bg-opacity-50 rounded-lg cursor-pointer transition-all border border-transparent hover:border-[#96AEC2]">
                     <input
                       type="checkbox"
                       checked={(formData.servicePersonIds as number[]).includes(sp.id)}
                       onChange={() => handleServicePersonToggle(sp.id)}
-                      className="w-5 h-5 rounded border-2 border-gray-300 cursor-pointer accent-blue-600"
+                      className="w-5 h-5 rounded border-2 border-[#92A2A5] cursor-pointer accent-blue-600"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm text-gray-900">{sp.name || 'Unknown'}</div>
-                      <div className="text-xs text-gray-500 truncate">{sp.email}</div>
-                      {sp.phone && <div className="text-xs text-gray-400 mt-1">📱 {sp.phone}</div>}
+                      <div className="font-semibold text-sm text-[#546A7A]">{sp.name || 'Unknown'}</div>
+                      <div className="text-xs text-[#AEBFC3]0 truncate">{sp.email}</div>
+                      {sp.phone && <div className="text-xs text-[#979796] mt-1">📱 {sp.phone}</div>}
                     </div>
                     {(formData.servicePersonIds as number[]).includes(sp.id) && (
-                      <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                      <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-full flex items-center justify-center shadow-md">
                         <span className="text-white text-sm font-bold">✓</span>
                       </div>
                     )}
@@ -680,19 +680,19 @@ export default function ActivityScheduleForm({
       </div>
 
       {/* SECTION 2: Activity Details */}
-      <div className="space-y-4 pb-8 border-b-2 border-purple-200">
+      <div className="space-y-4 pb-8 border-b-2 border-[#6F8A9D]">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+          <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] rounded-xl">
             <Calendar className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Activity Details</h3>
-            <p className="text-sm text-gray-500 mt-1">Provide information about the activity to be scheduled</p>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-[#546A7A] to-[#9E3B47] bg-clip-text text-transparent">Activity Details</h3>
+            <p className="text-sm text-[#AEBFC3]0 mt-1">Provide information about the activity to be scheduled</p>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="description" className="text-gray-700 font-semibold">Description</Label>
+          <Label htmlFor="description" className="text-[#5D6E73] font-semibold">Description</Label>
           <Textarea
             id="description"
             name="description"
@@ -700,15 +700,15 @@ export default function ActivityScheduleForm({
             value={formData.description}
             onChange={handleInputChange}
             rows={3}
-            className="border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 rounded-lg transition-all resize-none"
+            className="border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-200 rounded-lg transition-all resize-none"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="activityType" className="text-gray-700 font-semibold">Activity Type *</Label>
+            <Label htmlFor="activityType" className="text-[#5D6E73] font-semibold">Activity Type *</Label>
             <Select value={formData.activityType} onValueChange={(value) => handleSelectChange('activityType', value)}>
-              <SelectTrigger id="activityType" className="border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
+              <SelectTrigger id="activityType" className="border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -722,9 +722,9 @@ export default function ActivityScheduleForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="priority" className="text-gray-700 font-semibold">Priority *</Label>
+            <Label htmlFor="priority" className="text-[#5D6E73] font-semibold">Priority *</Label>
             <Select value={formData.priority} onValueChange={(value) => handleSelectChange('priority', value)}>
-              <SelectTrigger id="priority" className="border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
+              <SelectTrigger id="priority" className="border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -741,17 +741,17 @@ export default function ActivityScheduleForm({
         {/* Related Ticket - only shown for TICKET_WORK activity type */}
         {formData.activityType === 'TICKET_WORK' && (
           <div className="space-y-2">
-            <Label htmlFor="ticketId" className="text-gray-700 font-semibold flex items-center gap-2">
+            <Label htmlFor="ticketId" className="text-[#5D6E73] font-semibold flex items-center gap-2">
               <AlertCircle className="h-4 w-4" />
               Related Ticket *
             </Label>
             <Select value={formData.ticketId} onValueChange={(value) => handleSelectChange('ticketId', value)}>
-              <SelectTrigger id="ticketId" className="border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
+              <SelectTrigger id="ticketId" className="border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-200 h-11 rounded-lg transition-all">
                 <SelectValue placeholder="Select a ticket (required for Ticket Work)" />
               </SelectTrigger>
               <SelectContent>
                 {tickets.length === 0 ? (
-                  <div className="py-4 px-2 text-center text-gray-500 text-sm">
+                  <div className="py-4 px-2 text-center text-[#AEBFC3]0 text-sm">
                     No assigned tickets found
                   </div>
                 ) : (
@@ -759,13 +759,13 @@ export default function ActivityScheduleForm({
                     <SelectItem key={ticket.id} value={ticket.id.toString()}>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">#{ticket.ticketNumber ?? ticket.id}</span>
-                        <span className="text-gray-600">-</span>
+                        <span className="text-[#5D6E73]">-</span>
                         <span className="truncate max-w-[200px]">{ticket.title}</span>
                         <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${
-                          ticket.status === 'ASSIGNED' ? 'bg-blue-100 text-blue-700' :
-                          ticket.status === 'OPEN' ? 'bg-yellow-100 text-yellow-700' :
-                          ticket.status === 'IN_PROGRESS' ? 'bg-purple-100 text-purple-700' :
-                          'bg-gray-100 text-gray-600'
+                          ticket.status === 'ASSIGNED' ? 'bg-[#96AEC2]/20 text-[#546A7A]' :
+                          ticket.status === 'OPEN' ? 'bg-[#CE9F6B]/20 text-[#976E44]' :
+                          ticket.status === 'IN_PROGRESS' ? 'bg-[#6F8A9D]/20 text-[#546A7A]' :
+                          'bg-[#AEBFC3]/20 text-[#5D6E73]'
                         }`}>
                           {ticket.status.replace(/_/g, ' ')}
                         </span>
@@ -780,20 +780,20 @@ export default function ActivityScheduleForm({
       </div>
 
       {/* SECTION 3: Scheduling Details */}
-      <div className="space-y-4 pb-8 border-b-2 border-green-200">
+      <div className="space-y-4 pb-8 border-b-2 border-[#A2B9AF]">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
+          <div className="p-3 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl">
             <Calendar className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Scheduling Details</h3>
-            <p className="text-sm text-gray-500 mt-1">Set when and where the activity should take place</p>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] bg-clip-text text-transparent">Scheduling Details</h3>
+            <p className="text-sm text-[#AEBFC3]0 mt-1">Set when and where the activity should take place</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="scheduledDate" className="text-gray-700 font-semibold flex items-center gap-2">
+            <Label htmlFor="scheduledDate" className="text-[#5D6E73] font-semibold flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Scheduled Date & Time *
             </Label>
@@ -804,12 +804,12 @@ export default function ActivityScheduleForm({
               value={formData.scheduledDate}
               onChange={handleInputChange}
               required
-              className="border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 h-11 rounded-lg transition-all"
+              className="border-2 border-[#92A2A5] focus:border-[#82A094] focus:ring-2 focus:ring-[#A2B9AF]/50 h-11 rounded-lg transition-all"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="estimatedDuration" className="text-gray-700 font-semibold flex items-center gap-2">
+            <Label htmlFor="estimatedDuration" className="text-[#5D6E73] font-semibold flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Estimated Duration (hours)
             </Label>
@@ -821,13 +821,13 @@ export default function ActivityScheduleForm({
               step="0.5"
               value={formData.estimatedDuration}
               onChange={handleInputChange}
-              className="border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 h-11 rounded-lg transition-all"
+              className="border-2 border-[#92A2A5] focus:border-[#82A094] focus:ring-2 focus:ring-[#A2B9AF]/50 h-11 rounded-lg transition-all"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location" className="text-gray-700 font-semibold flex items-center gap-2">
+          <Label htmlFor="location" className="text-[#5D6E73] font-semibold flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Location
           </Label>
@@ -837,7 +837,7 @@ export default function ActivityScheduleForm({
             placeholder="e.g., Customer Office, Bangalore"
             value={formData.location}
             onChange={handleInputChange}
-            className="border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 h-11 rounded-lg transition-all"
+            className="border-2 border-[#92A2A5] focus:border-[#82A094] focus:ring-2 focus:ring-[#A2B9AF]/50 h-11 rounded-lg transition-all"
           />
         </div>
       </div>
@@ -845,52 +845,52 @@ export default function ActivityScheduleForm({
       {/* SECTION 4: Zone & Customer Information - Only show for non-TICKET_WORK or when no ticket is selected */}
       {formData.activityType === 'TICKET_WORK' && selectedTicket ? (
         // Show read-only ticket info when a ticket is selected
-        <div className="space-y-4 pb-8 border-b-2 border-orange-200">
+        <div className="space-y-4 pb-8 border-b-2 border-[#CE9F6B]">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl">
+            <div className="p-3 bg-gradient-to-br from-[#CE9F6B] to-[#CE9F6B] rounded-xl">
               <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Ticket Information</h3>
-              <p className="text-sm text-gray-500 mt-1">Auto-populated from selected ticket</p>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-[#976E44] to-[#976E44] bg-clip-text text-transparent">Ticket Information</h3>
+              <p className="text-sm text-[#AEBFC3]0 mt-1">Auto-populated from selected ticket</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Zone */}
-            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200">
-              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+            <div className="p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border-2 border-[#CE9F6B]">
+              <div className="flex items-center gap-2 text-[#976E44] text-xs font-medium mb-1">
                 <MapPin className="h-3 w-3" />
                 Zone
               </div>
-              <div className="font-semibold text-gray-900">
+              <div className="font-semibold text-[#546A7A]">
                 {selectedTicket.zone?.name || 'Not assigned'}
               </div>
             </div>
 
             {/* Customer */}
-            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200">
-              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+            <div className="p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border-2 border-[#CE9F6B]">
+              <div className="flex items-center gap-2 text-[#976E44] text-xs font-medium mb-1">
                 <Building2 className="h-3 w-3" />
                 Customer
               </div>
-              <div className="font-semibold text-gray-900">
+              <div className="font-semibold text-[#546A7A]">
                 {selectedTicket.customer?.companyName || 'Not assigned'}
               </div>
               {selectedTicket.customer?.address && (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-[#AEBFC3]0 mt-1">
                   📍 {selectedTicket.customer.address}
                 </div>
               )}
             </div>
 
             {/* Asset */}
-            <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border-2 border-orange-200 md:col-span-2">
-              <div className="flex items-center gap-2 text-orange-600 text-xs font-medium mb-1">
+            <div className="p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border-2 border-[#CE9F6B] md:col-span-2">
+              <div className="flex items-center gap-2 text-[#976E44] text-xs font-medium mb-1">
                 <Settings className="h-3 w-3" />
                 Asset
               </div>
-              <div className="font-semibold text-gray-900">
+              <div className="font-semibold text-[#546A7A]">
                 {selectedTicket.asset ? (
                   <span>
                     {selectedTicket.asset.model || 'Unknown Model'}
@@ -903,20 +903,20 @@ export default function ActivityScheduleForm({
         </div>
       ) : (
         // Show editable dropdowns for non-TICKET_WORK activities
-        <div className="space-y-4 pb-8 border-b-2 border-orange-200">
+        <div className="space-y-4 pb-8 border-b-2 border-[#CE9F6B]">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl">
+            <div className="p-3 bg-gradient-to-br from-[#CE9F6B] to-[#CE9F6B] rounded-xl">
               <Building2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Zone & Customer Information</h3>
-              <p className="text-sm text-gray-500 mt-1">Select the zone and customer for this activity</p>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-[#976E44] to-[#976E44] bg-clip-text text-transparent">Zone & Customer Information</h3>
+              <p className="text-sm text-[#AEBFC3]0 mt-1">Select the zone and customer for this activity</p>
             </div>
           </div>
 
           {(isAdmin || isZone || isExpert || isEditing) && (
             <div className="space-y-2">
-              <Label htmlFor="zoneId" className="text-gray-700 font-semibold flex items-center gap-2">
+              <Label htmlFor="zoneId" className="text-[#5D6E73] font-semibold flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 Zone {isAdmin && '*'}
               </Label>
@@ -925,7 +925,7 @@ export default function ActivityScheduleForm({
                 onValueChange={(value) => handleSelectChange('zoneId', value)}
                 disabled={loading}
               >
-                <SelectTrigger id="zoneId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
+                <SelectTrigger id="zoneId" className="border-2 border-[#92A2A5] focus:border-[#CE9F6B] focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
                   <SelectValue placeholder={loading ? 'Loading zones...' : 'Select a zone'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -940,7 +940,7 @@ export default function ActivityScheduleForm({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="customerId" className="text-gray-700 font-semibold flex items-center gap-2">
+            <Label htmlFor="customerId" className="text-[#5D6E73] font-semibold flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Customer
             </Label>
@@ -949,7 +949,7 @@ export default function ActivityScheduleForm({
               onValueChange={(value) => handleSelectChange('customerId', value)}
               disabled={customersLoading || (!isAdmin && !isEditing && !formData.zoneId)}
             >
-              <SelectTrigger id="customerId" className="border-2 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
+              <SelectTrigger id="customerId" className="border-2 border-[#92A2A5] focus:border-[#CE9F6B] focus:ring-2 focus:ring-orange-200 h-11 rounded-lg transition-all disabled:opacity-50">
                 <SelectValue placeholder={
                   customersLoading ? 'Loading customers...' : 
                   (!isAdmin && !isEditing && !formData.zoneId) ? 'Select a zone first' :
@@ -970,16 +970,16 @@ export default function ActivityScheduleForm({
 
       {/* SECTION 5: Assets - Only show for non-TICKET_WORK activities */}
       {formData.activityType !== 'TICKET_WORK' && (
-        <div className="space-y-4 pb-8 border-b-2 border-red-200">
+        <div className="space-y-4 pb-8 border-b-2 border-[#E17F70]">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl">
+            <div className="p-3 bg-gradient-to-br from-[#E17F70] to-[#E17F70] rounded-xl">
               <Settings className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold bg-gradient-to-r from-[#9E3B47] to-[#9E3B47] bg-clip-text text-transparent">
                 Assets
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-[#AEBFC3]0 mt-1">
                 Select assets for this activity
               </p>
             </div>
@@ -988,21 +988,21 @@ export default function ActivityScheduleForm({
           {/* Show asset selection only when customer is selected */}
           {formData.customerId && (
             <div className="space-y-2">
-              <Label className="text-gray-700 font-semibold flex items-center gap-2">
+              <Label className="text-[#5D6E73] font-semibold flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 Assets (Select multiple)
               </Label>
-              <div className="space-y-2 max-h-48 overflow-y-auto border-2 border-gray-200 rounded-lg p-4 bg-gradient-to-b from-white to-gray-50">
+              <div className="space-y-2 max-h-48 overflow-y-auto border-2 border-[#92A2A5] rounded-lg p-4 bg-gradient-to-b from-white to-[#AEBFC3]/10">
                 {assetsLoading ? (
                   <div className="flex items-center gap-2 justify-center py-4">
                     <Loader className="h-4 w-4 animate-spin" />
                     <span className="text-sm">Loading assets...</span>
                   </div>
                 ) : assets.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No assets found for this customer</p>
+                  <p className="text-sm text-[#AEBFC3]0 text-center py-4">No assets found for this customer</p>
                 ) : (
                   assets.map(asset => (
-                    <label key={asset.id} className="flex items-center gap-3 p-2 hover:bg-red-50 rounded cursor-pointer transition-colors">
+                    <label key={asset.id} className="flex items-center gap-3 p-2 hover:bg-[#E17F70]/10 rounded cursor-pointer transition-colors">
                       <Checkbox
                         id={`asset-${asset.id}`}
                         checked={formData.assetIds?.includes(asset.id.toString()) || formData.assetIds?.includes(asset.id)}
@@ -1035,19 +1035,19 @@ export default function ActivityScheduleForm({
       )}
 
       {/* SECTION 6: Additional Notes */}
-      <div className="space-y-4 pb-8 border-b-2 border-indigo-200">
+      <div className="space-y-4 pb-8 border-b-2 border-[#546A7A]">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl">
+          <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl">
             <AlertCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Additional Notes</h3>
-            <p className="text-sm text-gray-500 mt-1">Add any extra notes or instructions</p>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">Additional Notes</h3>
+            <p className="text-sm text-[#AEBFC3]0 mt-1">Add any extra notes or instructions</p>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes" className="text-gray-700 font-semibold">Notes</Label>
+          <Label htmlFor="notes" className="text-[#5D6E73] font-semibold">Notes</Label>
           <Textarea
             id="notes"
             name="notes"
@@ -1055,17 +1055,17 @@ export default function ActivityScheduleForm({
             value={formData.notes}
             onChange={handleInputChange}
             rows={3}
-            className="border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-lg transition-all resize-none"
+            className="border-2 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-2 focus:ring-indigo-200 rounded-lg transition-all resize-none"
           />
         </div>
       </div>
 
       {/* Submit Buttons */}
-      <div className="flex gap-4 pt-8 border-t-2 border-gray-200">
+      <div className="flex gap-4 pt-8 border-t-2 border-[#92A2A5]">
         <Button
           type="submit"
           disabled={submitting || loading}
-          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold h-12 rounded-lg shadow-lg hover:shadow-xl transition-all"
+          className="flex-1 bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white font-semibold h-12 rounded-lg shadow-lg hover:shadow-xl transition-all"
         >
           {submitting ? (
             <>
@@ -1082,7 +1082,7 @@ export default function ActivityScheduleForm({
             variant="outline"
             onClick={onCancel}
             disabled={submitting}
-            className="px-8 h-12 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 font-semibold rounded-lg transition-all"
+            className="px-8 h-12 border-2 border-[#92A2A5] hover:border-[#979796] hover:bg-[#AEBFC3]/10 font-semibold rounded-lg transition-all"
           >
             ✕ Cancel
           </Button>

@@ -107,16 +107,16 @@ export default function ExpertTicketsPage() {
   // Show loading state while auth is being checked
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-fuchsia-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-purple-50/30 to-fuchsia-50/20">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="relative mx-auto w-16 h-16">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 opacity-20 animate-ping" />
-              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47] opacity-20 animate-ping" />
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47] flex items-center justify-center shadow-lg shadow-[#6F8A9D]/25">
                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
               </div>
             </div>
-            <p className="text-gray-600 font-medium mt-4">Loading...</p>
+            <p className="text-[#5D6E73] font-medium mt-4">Loading...</p>
           </div>
         </div>
       </div>
@@ -210,91 +210,91 @@ export default function ExpertTicketsPage() {
     switch (status) {
       // Open/New
       case 'OPEN':
-        return 'bg-blue-500 text-white'
+        return 'bg-[#96AEC2]/100 text-white'
       // Assignment
       case 'ASSIGNED':
-        return 'bg-teal-500 text-white'
+        return 'bg-[#82A094]/100 text-white'
       // In Progress
       case 'IN_PROGRESS':
-        return 'bg-indigo-500 text-white'
+        return 'bg-[#546A7A]/100 text-white'
       // Onsite Visit stages
       case 'ONSITE_VISIT_PLANNED':
-        return 'bg-cyan-500 text-white'
+        return 'bg-[#96AEC2]/100 text-white'
       case 'ONSITE_VISIT':
-        return 'bg-emerald-500 text-white'
+        return 'bg-[#82A094]/100 text-white'
       case 'ONSITE_VISIT_STARTED':
         return 'bg-sky-500 text-white'
       case 'ONSITE_VISIT_REACHED':
-        return 'bg-violet-500 text-white'
+        return 'bg-[#6F8A9D] text-white'
       case 'ONSITE_VISIT_IN_PROGRESS':
-        return 'bg-amber-500 text-white'
+        return 'bg-[#CE9F6B]/100 text-white'
       case 'ONSITE_VISIT_RESOLVED':
         return 'bg-lime-500 text-white'
       case 'ONSITE_VISIT_PENDING':
-        return 'bg-orange-400 text-white'
+        return 'bg-[#CE9F6B] text-white'
       case 'ONSITE_VISIT_COMPLETED':
-        return 'bg-green-600 text-white'
+        return 'bg-[#4F6A64] text-white'
       // Spare Parts stages
       case 'SPARE_PARTS_NEEDED':
-        return 'bg-rose-500 text-white'
+        return 'bg-[#EEC1BF]/100 text-white'
       case 'SPARE_PARTS_BOOKED':
-        return 'bg-fuchsia-500 text-white'
+        return 'bg-[#E17F70] text-white'
       case 'SPARE_PARTS_DELIVERED':
-        return 'bg-emerald-600 text-white'
+        return 'bg-[#4F6A64] text-white'
       // PO stages
       case 'PO_NEEDED':
-        return 'bg-orange-600 text-white'
+        return 'bg-[#976E44] text-white'
       case 'PO_REACHED':
-        return 'bg-purple-500 text-white'
+        return 'bg-[#6F8A9D]/100 text-white'
       case 'PO_RECEIVED':
-        return 'bg-teal-600 text-white'
+        return 'bg-[#4F6A64] text-white'
       // Closure stages
       case 'CLOSED_PENDING':
-        return 'bg-yellow-500 text-white'
+        return 'bg-[#EEC1BF]/100 text-white'
       case 'CLOSED':
-        return 'bg-slate-500 text-white'
+        return 'bg-[#AEBFC3]/100 text-white'
       case 'CANCELLED':
-        return 'bg-red-500 text-white'
+        return 'bg-[#E17F70]/100 text-white'
       case 'RESOLVED':
-        return 'bg-green-500 text-white'
+        return 'bg-[#A2B9AF]/100 text-white'
       // Other
       case 'REOPENED':
-        return 'bg-purple-600 text-white'
+        return 'bg-[#546A7A] text-white'
       case 'ON_HOLD':
-        return 'bg-gray-500 text-white'
+        return 'bg-[#AEBFC3]/100 text-white'
       case 'ESCALATED':
-        return 'bg-red-600 text-white'
+        return 'bg-[#9E3B47] text-white'
       case 'WAITING_CUSTOMER':
-        return 'bg-amber-400 text-white'
+        return 'bg-[#CE9F6B] text-white'
       case 'PENDING':
-        return 'bg-yellow-400 text-white'
+        return 'bg-[#CE9F6B] text-white'
       default:
-        return 'bg-slate-400 text-white'
+        return 'bg-[#92A2A5] text-white'
     }
   }
 
   const getPriorityStyle = (priority: string) => {
     switch (priority) {
       case 'CRITICAL':
-        return 'bg-red-100 text-red-700 border-red-300'
+        return 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]'
       case 'HIGH':
-        return 'bg-orange-100 text-orange-700 border-orange-300'
+        return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]'
       case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-300'
+        return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]'
       case 'LOW':
-        return 'bg-green-100 text-green-700 border-green-300'
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]'
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-300'
+        return 'bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]'
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-fuchsia-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-purple-50/30 to-fuchsia-50/20">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Premium Header with Glassmorphism */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-600 rounded-2xl shadow-2xl shadow-purple-500/20 p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] via-fuchsia-600 to-[#9E3B47] rounded-2xl shadow-2xl shadow-[#6F8A9D]/20 p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-pink-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#EEC1BF]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
           <div className="relative z-10 flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
@@ -302,33 +302,33 @@ export default function ExpertTicketsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold">My Assigned Tickets</h1>
-                <p className="text-purple-100 mt-1">Tickets assigned to you as Expert Helpdesk</p>
+                <p className="text-[#6F8A9D] mt-1">Tickets assigned to you as Expert Helpdesk</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="grid grid-cols-5 gap-3">
                 <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-purple-100 text-xs font-medium">Total</p>
+                  <p className="text-[#6F8A9D] text-xs font-medium">Total</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-purple-100 text-xs font-medium">Open</p>
+                  <p className="text-[#6F8A9D] text-xs font-medium">Open</p>
                   <p className="text-2xl font-bold">{stats.open}</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-purple-100 text-xs font-medium">In Progress</p>
+                  <p className="text-[#6F8A9D] text-xs font-medium">In Progress</p>
                   <p className="text-2xl font-bold">{stats.inProgress}</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-purple-100 text-xs font-medium">Closed</p>
+                  <p className="text-[#6F8A9D] text-xs font-medium">Closed</p>
                   <p className="text-2xl font-bold">{stats.closed}</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-purple-100 text-xs font-medium">Critical</p>
+                  <p className="text-[#6F8A9D] text-xs font-medium">Critical</p>
                   <p className="text-2xl font-bold">{stats.critical}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/expert/tickets/create')} className="bg-white text-purple-700 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={() => router.push('/expert/tickets/create')} className="bg-white text-[#546A7A] hover:bg-[#6F8A9D]/10 shadow-lg hover:shadow-xl transition-all">
                 <Plus className="h-4 w-4 mr-2" />
                 New Ticket
               </Button>
@@ -340,17 +340,17 @@ export default function ExpertTicketsPage() {
 
         {/* Filters */}
         <Card className="border-0 shadow-lg bg-white" style={{backgroundColor: 'white'}}>
-          <CardHeader className="bg-white border-b border-slate-200" style={{backgroundColor: 'white'}}>
+          <CardHeader className="bg-white border-b border-[#92A2A5]" style={{backgroundColor: 'white'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-purple-600" />
+                <Filter className="h-5 w-5 text-[#546A7A]" />
                 <CardTitle className="text-lg">Search & Filter</CardTitle>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </div>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#546A7A] hover:text-[#546A7A] hover:bg-[#6F8A9D]/10">
                   <X className="h-4 w-4 mr-1" />
                   Clear All
                 </Button>
@@ -361,31 +361,31 @@ export default function ExpertTicketsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label htmlFor="search" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Search className="h-4 w-4 text-purple-600" />
+                <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Search className="h-4 w-4 text-[#546A7A]" />
                   Search Tickets
                 </Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                   <Input
                     id="search"
                     placeholder="Search by ticket #, title..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     disabled={loading}
-                    className="pl-10 h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="pl-10 h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-fuchsia-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#9E3B47]" />
                   Status
                 </Label>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-fuchsia-500 focus:ring-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-fuchsia-500 focus:ring-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -398,12 +398,12 @@ export default function ExpertTicketsPage() {
 
               {/* Priority Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-pink-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Flag className="h-4 w-4 text-[#9E3B47]" />
                   Priority
                 </Label>
                 <Select value={selectedPriority} onValueChange={setSelectedPriority} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -422,8 +422,8 @@ export default function ExpertTicketsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-purple-700 via-fuchsia-700 to-purple-800 text-white">
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('id')}>
+                <tr className="bg-gradient-to-r from-[#546A7A] via-fuchsia-700 to-purple-800 text-white">
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('id')}>
                     <div className="flex items-center gap-1.5">
                       Ticket #
                       {sortField === 'id' && (
@@ -431,7 +431,7 @@ export default function ExpertTicketsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('title')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('title')}>
                     <div className="flex items-center gap-1.5">
                       <Ticket className="h-3.5 w-3.5 text-pink-300" />
                       Title
@@ -440,16 +440,16 @@ export default function ExpertTicketsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('customer')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('customer')}>
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-purple-300" />
+                      <Building2 className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Customer
                       {sortField === 'customer' && (
                         <span className="text-pink-300">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('status')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('status')}>
                     <div className="flex items-center gap-1.5">
                       <TrendingUp className="h-3.5 w-3.5 text-fuchsia-300" />
                       Status
@@ -458,16 +458,16 @@ export default function ExpertTicketsPage() {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('priority')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('priority')}>
                     <div className="flex items-center gap-1.5">
-                      <Flag className="h-3.5 w-3.5 text-amber-300" />
+                      <Flag className="h-3.5 w-3.5 text-[#EEC1BF]" />
                       Priority
                       {sortField === 'priority' && (
                         <span className="text-pink-300">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('zone')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('zone')}>
                     <div className="flex items-center gap-1.5">
                       <Users className="h-3.5 w-3.5 text-cyan-300" />
                       Zone
@@ -478,11 +478,11 @@ export default function ExpertTicketsPage() {
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-1.5">
-                      <Flag className="h-3.5 w-3.5 text-green-300" />
+                      <Flag className="h-3.5 w-3.5 text-[#82A094]" />
                       Response
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-purple-600/50 transition-colors" onClick={() => handleSort('createdAt')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('createdAt')}>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5 text-pink-300" />
                       Created
@@ -497,32 +497,32 @@ export default function ExpertTicketsPage() {
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-purple-50/30">
+                    <td colSpan={9} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="relative">
-                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center shadow-lg">
+                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] flex items-center justify-center shadow-lg">
                             <Loader2 className="h-8 w-8 animate-spin text-white" />
                           </div>
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Loading tickets...</p>
-                          <p className="text-sm text-gray-500 mt-1">Please wait while we fetch the data</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">Loading tickets...</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Please wait while we fetch the data</p>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : tickets.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-purple-50/30">
+                    <td colSpan={9} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <Ticket className="h-8 w-8 text-gray-500" />
+                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#AEBFC3]/40 to-[#AEBFC3]/60 flex items-center justify-center">
+                          <Ticket className="h-8 w-8 text-[#AEBFC3]0" />
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">No tickets found</p>
-                          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or create a new ticket</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">No tickets found</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Try adjusting your filters or create a new ticket</p>
                         </div>
-                        <Button onClick={() => router.push('/expert/tickets/create')} className="mt-4 bg-gradient-to-r from-purple-600 to-fuchsia-600">
+                        <Button onClick={() => router.push('/expert/tickets/create')} className="mt-4 bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47]">
                           <Plus className="h-4 w-4 mr-2" />
                           Create Your First Ticket
                         </Button>
@@ -534,36 +534,36 @@ export default function ExpertTicketsPage() {
                   <tr 
                     key={ticket.id} 
                     className={`
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}
-                      hover:bg-gradient-to-r hover:from-purple-50 hover:to-fuchsia-50/50 
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/50'}
+                      hover:bg-gradient-to-r hover:from-[#96AEC2]/10 hover:to-fuchsia-50/50 
                       transition-all duration-200 group
                     `}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Link href={`/expert/tickets/${ticket.id}/list`} className="font-mono font-bold text-purple-600 hover:text-purple-700 text-sm hover:underline">
+                        <Link href={`/expert/tickets/${ticket.id}/list`} className="font-mono font-bold text-[#546A7A] hover:text-[#546A7A] text-sm hover:underline">
                           #{ticket.ticketNumber ?? ticket.id}
                         </Link>
                         {ticket.status === 'OPEN' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded">NEW</span>
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#96AEC2]/20 text-[#546A7A] rounded">NEW</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="min-w-0">
-                        <Link href={`/expert/tickets/${ticket.id}/list`} className="font-semibold text-gray-900 hover:text-purple-600 text-sm truncate max-w-[200px] block hover:underline">
+                        <Link href={`/expert/tickets/${ticket.id}/list`} className="font-semibold text-[#546A7A] hover:text-[#546A7A] text-sm truncate max-w-[200px] block hover:underline">
                           {ticket.title}
                         </Link>
-                        {ticket.description && <p className="text-xs text-gray-400 truncate max-w-[200px]">{ticket.description}</p>}
+                        {ticket.description && <p className="text-xs text-[#979796] truncate max-w-[200px]">{ticket.description}</p>}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
                           {(ticket.customer?.companyName || 'U')?.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 text-sm truncate max-w-[120px]">{ticket.customer?.companyName || 'N/A'}</p>
+                          <p className="font-semibold text-[#546A7A] text-sm truncate max-w-[120px]">{ticket.customer?.companyName || 'N/A'}</p>
                         </div>
                       </div>
                     </td>
@@ -585,43 +585,43 @@ export default function ExpertTicketsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
-                        <div className="h-2 w-2 rounded-full bg-purple-500 flex-shrink-0"></div>
-                        <span className="text-gray-700 text-sm font-medium">{ticket.zone?.name || 'N/A'}</span>
+                        <div className="h-2 w-2 rounded-full bg-[#6F8A9D]/100 flex-shrink-0"></div>
+                        <span className="text-[#5D6E73] text-sm font-medium">{ticket.zone?.name || 'N/A'}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {ticket.assignmentStatus === 'PENDING' ? (
-                        <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
+                        <Badge className="bg-[#CE9F6B]/20 text-[#976E44] border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
                           Pending
                         </Badge>
                       ) : ticket.assignmentStatus === 'ACCEPTED' ? (
-                        <Badge className="bg-green-100 text-green-700 border-green-300 text-[10px] px-2 py-0.5">
+                        <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094] text-[10px] px-2 py-0.5">
                           ✓ Accepted
                         </Badge>
                       ) : ticket.assignmentStatus === 'REJECTED' ? (
-                        <Badge className="bg-red-100 text-red-700 border-red-300 text-[10px] px-2 py-0.5">
+                        <Badge className="bg-[#E17F70]/20 text-[#75242D] border-[#E17F70] text-[10px] px-2 py-0.5">
                           ✗ Rejected
                         </Badge>
                       ) : (
-                        <span className="text-gray-400 text-xs">-</span>
+                        <span className="text-[#979796] text-xs">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-gray-500 text-sm">{ticket.createdAt ? format(new Date(ticket.createdAt), 'dd MMM') : '-'}</span>
+                      <span className="text-[#AEBFC3]0 text-sm">{ticket.createdAt ? format(new Date(ticket.createdAt), 'dd MMM') : '-'}</span>
                     </td>
                     <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-200 rounded-lg">
-                            <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-[#92A2A5]/30 rounded-lg">
+                            <MoreHorizontal className="h-4 w-4 text-[#5D6E73]" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-slate-200">
+                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-[#92A2A5]">
                           <DropdownMenuItem 
                             onClick={() => router.push(`/expert/tickets/${ticket.id}/list`)}
                             className="cursor-pointer rounded-lg"
                           >
-                            <Eye className="h-4 w-4 mr-2 text-blue-600" />
+                            <Eye className="h-4 w-4 mr-2 text-[#546A7A]" />
                             View Details
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -636,10 +636,10 @@ export default function ExpertTicketsPage() {
           
           {/* Pagination */}
           {!loading && tickets.length > 0 && (
-            <div className="bg-gradient-to-r from-slate-50 via-purple-50 to-fuchsia-50/30 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-purple-50 to-fuchsia-50/30 px-6 py-4 border-t border-[#92A2A5]">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700 font-medium">
-                  Showing <span className="font-bold text-slate-900">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
+                <div className="text-sm text-[#5D6E73] font-medium">
+                  Showing <span className="font-bold text-[#546A7A]">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -647,19 +647,19 @@ export default function ExpertTicketsPage() {
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                     disabled={pagination.page === 1}
-                    className="hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#6F8A9D]/10 hover:border-[#6F8A9D] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm text-gray-700 font-medium px-3">
-                    Page <span className="font-bold text-slate-900">{pagination.page}</span> of <span className="font-semibold">{pagination.totalPages}</span>
+                  <span className="text-sm text-[#5D6E73] font-medium px-3">
+                    Page <span className="font-bold text-[#546A7A]">{pagination.page}</span> of <span className="font-semibold">{pagination.totalPages}</span>
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
                     disabled={pagination.page === pagination.totalPages}
-                    className="hover:bg-purple-50 hover:border-purple-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#6F8A9D]/10 hover:border-[#6F8A9D] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>

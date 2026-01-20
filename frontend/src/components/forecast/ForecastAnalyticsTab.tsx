@@ -17,13 +17,13 @@ interface Props {
 }
 
 const zoneColors: Record<string, { bg: string; gradient: string; text: string; border: string }> = {
-  WEST: { bg: 'bg-blue-500', gradient: 'from-blue-500 to-indigo-600', text: 'text-blue-600', border: 'border-blue-500' },
-  SOUTH: { bg: 'bg-emerald-500', gradient: 'from-emerald-500 to-teal-600', text: 'text-emerald-600', border: 'border-emerald-500' },
-  NORTH: { bg: 'bg-amber-500', gradient: 'from-amber-500 to-orange-600', text: 'text-amber-600', border: 'border-amber-500' },
-  EAST: { bg: 'bg-purple-500', gradient: 'from-purple-500 to-pink-600', text: 'text-purple-600', border: 'border-purple-500' },
+  WEST: { bg: 'bg-[#96AEC2]/100', gradient: 'from-[#6F8A9D] to-[#546A7A]', text: 'text-[#546A7A]', border: 'border-[#6F8A9D]' },
+  SOUTH: { bg: 'bg-[#82A094]/100', gradient: 'from-[#82A094] to-[#4F6A64]', text: 'text-[#4F6A64]', border: 'border-[#82A094]' },
+  NORTH: { bg: 'bg-[#CE9F6B]/100', gradient: 'from-[#CE9F6B] to-[#976E44]', text: 'text-[#976E44]', border: 'border-[#CE9F6B]' },
+  EAST: { bg: 'bg-[#6F8A9D]/100', gradient: 'from-[#6F8A9D] to-[#9E3B47]', text: 'text-[#546A7A]', border: 'border-[#6F8A9D]' },
 }
 
-const getZoneColor = (name: string) => zoneColors[name?.toUpperCase()] || { bg: 'bg-slate-500', gradient: 'from-slate-500 to-slate-600', text: 'text-slate-600', border: 'border-slate-500' }
+const getZoneColor = (name: string) => zoneColors[name?.toUpperCase()] || { bg: 'bg-[#AEBFC3]/100', gradient: 'from-[#757777] to-[#5D6E73]', text: 'text-[#5D6E73]', border: 'border-slate-500' }
 
 export default function ForecastAnalyticsTab({ year }: Props) {
   const [loading, setLoading] = useState(true)
@@ -84,10 +84,10 @@ export default function ForecastAnalyticsTab({ year }: Props) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-          <BarChart3 className="absolute inset-0 m-auto h-8 w-8 text-violet-500" />
+          <div className="w-20 h-20 border-4 border-[#6F8A9D]/50 border-t-violet-600 rounded-full animate-spin" />
+          <BarChart3 className="absolute inset-0 m-auto h-8 w-8 text-[#6F8A9D]" />
         </div>
-        <p className="text-slate-600 font-semibold animate-pulse">Analyzing Forecast Data...</p>
+        <p className="text-[#5D6E73] font-semibold animate-pulse">Analyzing Forecast Data...</p>
       </div>
     )
   }
@@ -176,9 +176,9 @@ export default function ForecastAnalyticsTab({ year }: Props) {
   return (
     <div className="space-y-8">
       {/* ===== ANALYTICS HEADER ===== */}
-      <div className="relative overflow-hidden p-6 bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 rounded-3xl border border-white/10 shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-indigo-500/20 to-transparent rounded-full blur-3xl" />
+      <div className="relative overflow-hidden p-6 bg-gradient-to-br from-violet-900 via-purple-900 to-[#546A7A] rounded-3xl border border-white/10 shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#6F8A9D]/20 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-[#6F8A9D]/20 to-transparent rounded-full blur-3xl" />
         <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
@@ -193,7 +193,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
             <Badge className="bg-white/10 text-white border-white/20 px-4 py-2 text-sm">
               <FileText className="h-4 w-4 mr-2" /> {totalOffers} Offers
             </Badge>
-            <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-2 text-sm">
+            <Badge className="bg-[#82A094]/100/20 text-[#82A094] border-[#82A094]/30 px-4 py-2 text-sm">
               <TrendingUp className="h-4 w-4 mr-2" /> {formatCurrency(totalWon)} Won
             </Badge>
           </div>
@@ -202,7 +202,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
 
       {/* ===== EXECUTIVE SUMMARY - BIG METRICS ===== */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card className="col-span-1 border-0 bg-gradient-to-br from-blue-500 to-indigo-600 shadow-xl shadow-blue-500/20 rounded-2xl">
+        <Card className="col-span-1 border-0 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] shadow-xl shadow-[#6F8A9D]/20 rounded-2xl">
           <CardContent className="p-5 text-white">
             <div className="flex items-center justify-between mb-3">
               <IndianRupee className="h-5 w-5 opacity-80" />
@@ -213,7 +213,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1 border-0 bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl shadow-emerald-500/20 rounded-2xl">
+        <Card className="col-span-1 border-0 bg-gradient-to-br from-[#82A094] to-[#4F6A64] shadow-xl shadow-[#82A094]/20 rounded-2xl">
           <CardContent className="p-5 text-white">
             <div className="flex items-center justify-between mb-3">
               <Trophy className="h-5 w-5 opacity-80" />
@@ -224,7 +224,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1 border-0 bg-gradient-to-br from-amber-500 to-orange-600 shadow-xl shadow-amber-500/20 rounded-2xl">
+        <Card className="col-span-1 border-0 bg-gradient-to-br from-[#CE9F6B] to-[#976E44] shadow-xl shadow-amber-500/20 rounded-2xl">
           <CardContent className="p-5 text-white">
             <div className="flex items-center justify-between mb-3">
               <Activity className="h-5 w-5 opacity-80" />
@@ -235,7 +235,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1 border-0 bg-gradient-to-br from-purple-500 to-pink-600 shadow-xl shadow-purple-500/20 rounded-2xl">
+        <Card className="col-span-1 border-0 bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] shadow-xl shadow-[#6F8A9D]/20 rounded-2xl">
           <CardContent className="p-5 text-white">
             <div className="flex items-center justify-between mb-3">
               <Target className="h-5 w-5 opacity-80" />
@@ -246,7 +246,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
           </CardContent>
         </Card>
 
-        <Card className={`col-span-1 border-0 shadow-xl rounded-2xl ${targetGap <= 0 ? 'bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/20' : 'bg-gradient-to-br from-rose-500 to-red-600 shadow-rose-500/20'}`}>
+        <Card className={`col-span-1 border-0 shadow-xl rounded-2xl ${targetGap <= 0 ? 'bg-gradient-to-br from-[#82A094] to-[#4F6A64] shadow-[#82A094]/20' : 'bg-gradient-to-br from-[#E17F70] to-red-600 shadow-rose-500/20'}`}>
           <CardContent className="p-5 text-white">
             <div className="flex items-center justify-between mb-3">
               {targetGap <= 0 ? <Star className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
@@ -260,66 +260,66 @@ export default function ForecastAnalyticsTab({ year }: Props) {
 
       {/* ===== KEY PERFORMANCE INDICATORS ===== */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-lg rounded-2xl">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-lg rounded-2xl">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <Percent className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-[#96AEC2]/20 dark:bg-[#546A7A]/30 rounded-lg">
+                <Percent className="h-5 w-5 text-[#546A7A]" />
               </div>
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Hit Rate</span>
+              <span className="text-sm font-bold text-[#5D6E73] dark:text-[#979796]">Hit Rate</span>
             </div>
-            <p className="text-4xl font-black text-blue-600">{overallHitRate.toFixed(1)}%</p>
-            <p className="text-xs text-slate-500 mt-1">Won Value / Offers Value</p>
+            <p className="text-4xl font-black text-[#546A7A]">{overallHitRate.toFixed(1)}%</p>
+            <p className="text-xs text-[#757777] mt-1">Won Value / Offers Value</p>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-lg rounded-2xl">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-lg rounded-2xl">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                <Award className="h-5 w-5 text-emerald-600" />
+              <div className="p-2 bg-[#82A094]/20 dark:bg-[#4F6A64]/30 rounded-lg">
+                <Award className="h-5 w-5 text-[#4F6A64]" />
               </div>
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Achievement</span>
+              <span className="text-sm font-bold text-[#5D6E73] dark:text-[#979796]">Achievement</span>
             </div>
-            <p className={`text-4xl font-black ${targetAchievement >= 100 ? 'text-emerald-600' : targetAchievement >= 75 ? 'text-amber-600' : 'text-rose-600'}`}>
+            <p className={`text-4xl font-black ${targetAchievement >= 100 ? 'text-[#4F6A64]' : targetAchievement >= 75 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
               {targetAchievement.toFixed(1)}%
             </p>
-            <p className="text-xs text-slate-500 mt-1">Target Completion</p>
+            <p className="text-xs text-[#757777] mt-1">Target Completion</p>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-lg rounded-2xl">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-lg rounded-2xl">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                <IndianRupee className="h-5 w-5 text-purple-600" />
+              <div className="p-2 bg-[#6F8A9D]/20 dark:bg-[#546A7A]/30 rounded-lg">
+                <IndianRupee className="h-5 w-5 text-[#546A7A]" />
               </div>
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Avg Offer</span>
+              <span className="text-sm font-bold text-[#5D6E73] dark:text-[#979796]">Avg Offer</span>
             </div>
-            <p className="text-3xl font-black text-purple-600">{formatCurrency(avgOfferValue)}</p>
-            <p className="text-xs text-slate-500 mt-1">Average Offer Value</p>
+            <p className="text-3xl font-black text-[#546A7A]">{formatCurrency(avgOfferValue)}</p>
+            <p className="text-xs text-[#757777] mt-1">Average Offer Value</p>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-lg rounded-2xl">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-lg rounded-2xl">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                <Flame className="h-5 w-5 text-amber-600" />
+              <div className="p-2 bg-[#CE9F6B]/20 dark:bg-[#976E44]/30 rounded-lg">
+                <Flame className="h-5 w-5 text-[#976E44]" />
               </div>
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Best Month</span>
+              <span className="text-sm font-bold text-[#5D6E73] dark:text-[#979796]">Best Month</span>
             </div>
-            <p className="text-3xl font-black text-amber-600">{bestPerformingMonth?.month}</p>
-            <p className="text-xs text-slate-500 mt-1">{formatCurrency(bestPerformingMonth?.orders || 0)} orders</p>
+            <p className="text-3xl font-black text-[#976E44]">{bestPerformingMonth?.month}</p>
+            <p className="text-xs text-[#757777] mt-1">{formatCurrency(bestPerformingMonth?.orders || 0)} orders</p>
           </CardContent>
         </Card>
       </div>
 
       {/* ===== ZONE LEADERBOARD ===== */}
-      <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 py-4 px-6">
+      <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-[#5D6E73] via-slate-800 to-[#5D6E73] py-4 px-6">
           <CardTitle className="text-lg font-bold text-white flex items-center gap-3">
-            <Crown className="h-5 w-5 text-amber-400" />
+            <Crown className="h-5 w-5 text-[#CE9F6B]" />
             Zone Leaderboard - Performance Rankings
           </CardTitle>
         </CardHeader>
@@ -331,31 +331,31 @@ export default function ForecastAnalyticsTab({ year }: Props) {
               const hitRate = zone.offersValue > 0 ? (zone.ordersReceived / zone.offersValue) * 100 : 0
               
               return (
-                <div key={zone.zoneId} className="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-lg ${idx === 0 ? 'bg-gradient-to-br from-amber-400 to-amber-600' : idx === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-500' : idx === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600' : 'bg-slate-400'}`}>
+                <div key={zone.zoneId} className="flex items-center gap-4 p-4 hover:bg-[#AEBFC3]/10 dark:hover:bg-[#546A7A]/50 transition-colors">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-lg ${idx === 0 ? 'bg-gradient-to-br from-[#CE9F6B] to-[#976E44]' : idx === 1 ? 'bg-gradient-to-br from-slate-300 to-[#AEBFC3]/100' : idx === 2 ? 'bg-gradient-to-br from-orange-400 to-[#976E44]' : 'bg-[#92A2A5]'}`}>
                     {idx === 0 ? <Crown className="h-5 w-5" /> : idx + 1}
                   </div>
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color.gradient} flex items-center justify-center text-white text-xl font-black shadow-lg`}>
                     {zone.zoneName.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-800 dark:text-white text-lg">{zone.zoneName}</p>
-                    <div className="flex gap-4 text-xs text-slate-500">
+                    <p className="font-bold text-[#546A7A] dark:text-white text-lg">{zone.zoneName}</p>
+                    <div className="flex gap-4 text-xs text-[#757777]">
                       <span>{zone.noOfOffers} offers</span>
                       <span>•</span>
                       <span>Hit Rate: {hitRate.toFixed(1)}%</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-black text-slate-800 dark:text-white">{formatCurrency(zone.ordersReceived)}</p>
-                    <p className={`text-sm font-bold ${achievement >= 100 ? 'text-emerald-600' : achievement >= 75 ? 'text-amber-600' : 'text-rose-600'}`}>
+                    <p className="text-xl font-black text-[#546A7A] dark:text-white">{formatCurrency(zone.ordersReceived)}</p>
+                    <p className={`text-sm font-bold ${achievement >= 100 ? 'text-[#4F6A64]' : achievement >= 75 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
                       {achievement.toFixed(1)}% of target
                     </p>
                   </div>
                   <div className="w-32">
-                    <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-3 bg-[#AEBFC3]/20 dark:bg-[#5D6E73] rounded-full overflow-hidden">
                       <div 
-                        className={`h-full rounded-full transition-all duration-700 bg-gradient-to-r ${achievement >= 100 ? 'from-emerald-500 to-green-500' : achievement >= 75 ? 'from-amber-500 to-orange-500' : 'from-rose-500 to-red-500'}`}
+                        className={`h-full rounded-full transition-all duration-700 bg-gradient-to-r ${achievement >= 100 ? 'from-[#82A094] to-[#82A094]' : achievement >= 75 ? 'from-[#CE9F6B] to-[#CE9F6B]' : 'from-[#E17F70] to-[#E17F70]'}`}
                         style={{ width: `${Math.min(achievement, 100)}%` }}
                       />
                     </div>
@@ -370,8 +370,8 @@ export default function ForecastAnalyticsTab({ year }: Props) {
       {/* ===== QUARTERLY & MONTHLY ANALYSIS ===== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Quarterly Performance */}
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 py-4 px-6">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] py-4 px-6">
             <CardTitle className="text-base font-bold text-white flex items-center gap-2">
               <Calendar className="h-5 w-5" /> Quarterly Forecast Analysis
             </CardTitle>
@@ -379,27 +379,27 @@ export default function ForecastAnalyticsTab({ year }: Props) {
           <CardContent className="p-5">
             <div className="space-y-4">
               {quarterlyData.map((q: any, idx: number) => (
-                <div key={q.name} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div key={q.name} className="p-4 bg-[#AEBFC3]/10 dark:bg-[#546A7A] rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black ${idx === 0 ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : idx === 1 ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : idx === 2 ? 'bg-gradient-to-br from-amber-500 to-orange-600' : 'bg-gradient-to-br from-purple-500 to-pink-600'}`}>
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-black ${idx === 0 ? 'bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]' : idx === 1 ? 'bg-gradient-to-br from-[#82A094] to-[#4F6A64]' : idx === 2 ? 'bg-gradient-to-br from-[#CE9F6B] to-[#976E44]' : 'bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47]'}`}>
                         {q.name}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-800 dark:text-white">{q.name} Forecast</p>
-                        <p className="text-xs text-slate-500">{q.months?.join(', ')}</p>
+                        <p className="font-bold text-[#546A7A] dark:text-white">{q.name} Forecast</p>
+                        <p className="text-xs text-[#757777]">{q.months?.join(', ')}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-black text-slate-800 dark:text-white">{formatCurrency(q.forecast)}</p>
-                      <p className={`text-sm font-bold ${q.deviation >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      <p className="text-xl font-black text-[#546A7A] dark:text-white">{formatCurrency(q.forecast)}</p>
+                      <p className={`text-sm font-bold ${q.deviation >= 0 ? 'text-[#4F6A64]' : 'text-[#9E3B47]'}`}>
                         {q.deviation >= 0 ? '+' : ''}{q.deviation?.toFixed(0)}% vs BU
                       </p>
                     </div>
                   </div>
-                  <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-2">
+                  <div className="h-2 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-full overflow-hidden mt-2">
                     <div 
-                      className={`h-full rounded-full transition-all duration-500 ${q.deviation >= 0 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 'bg-gradient-to-r from-rose-500 to-red-500'}`}
+                      className={`h-full rounded-full transition-all duration-500 ${q.deviation >= 0 ? 'bg-gradient-to-r from-[#82A094] to-[#82A094]' : 'bg-gradient-to-r from-[#E17F70] to-[#E17F70]'}`}
                       style={{ width: `${Math.min(Math.max((q.forecast / (q.bu || 1)) * 100, 0), 150) * (100/150)}%` }}
                     />
                   </div>
@@ -410,8 +410,8 @@ export default function ForecastAnalyticsTab({ year }: Props) {
         </Card>
 
         {/* Monthly Trend */}
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-emerald-600 to-teal-600 py-4 px-6">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] py-4 px-6">
             <CardTitle className="text-base font-bold text-white flex items-center gap-2">
               <Activity className="h-5 w-5" /> Monthly Orders Trend
             </CardTitle>
@@ -427,12 +427,12 @@ export default function ForecastAnalyticsTab({ year }: Props) {
                   <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
                     <div className="w-full flex-1 flex items-end">
                       <div 
-                        className={`w-full rounded-t-md transition-all duration-500 ${isBest ? 'bg-gradient-to-t from-amber-500 to-amber-400' : 'bg-gradient-to-t from-emerald-500 to-teal-400'}`}
+                        className={`w-full rounded-t-md transition-all duration-500 ${isBest ? 'bg-gradient-to-t from-[#CE9F6B] to-amber-400' : 'bg-gradient-to-t from-[#82A094] to-teal-400'}`}
                         style={{ height: `${Math.max(heightPercent, 5)}%` }}
                         title={formatCurrency(m.orders)}
                       />
                     </div>
-                    <span className={`text-[9px] font-bold ${isBest ? 'text-amber-600' : 'text-slate-500'}`}>{m.month}</span>
+                    <span className={`text-[9px] font-bold ${isBest ? 'text-[#976E44]' : 'text-[#757777]'}`}>{m.month}</span>
                   </div>
                 )
               })}
@@ -444,8 +444,8 @@ export default function ForecastAnalyticsTab({ year }: Props) {
       {/* ===== TOP PRODUCTS & USERS ===== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Top Products */}
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 px-6">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#9E3B47] py-4 px-6">
             <CardTitle className="text-base font-bold text-white flex items-center gap-2">
               <Package className="h-5 w-5" /> Top Products by Value
             </CardTitle>
@@ -456,16 +456,16 @@ export default function ForecastAnalyticsTab({ year }: Props) {
                 const percent = totalProductValue > 0 ? (value / totalProductValue) * 100 : 0
                 return (
                   <div key={product} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold ${idx === 0 ? 'bg-amber-500' : idx === 1 ? 'bg-slate-400' : idx === 2 ? 'bg-orange-500' : 'bg-slate-300'}`}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold ${idx === 0 ? 'bg-[#CE9F6B]/100' : idx === 1 ? 'bg-[#92A2A5]' : idx === 2 ? 'bg-[#CE9F6B]/100' : 'bg-[#92A2A5]'}`}>
                       {idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between mb-1">
-                        <span className="font-semibold text-slate-700 dark:text-slate-300 text-sm truncate">{product.replace(/_/g, ' ')}</span>
-                        <span className="font-bold text-slate-800 dark:text-white text-sm">{formatCurrency(value)}</span>
+                        <span className="font-semibold text-[#5D6E73] dark:text-[#92A2A5] text-sm truncate">{product.replace(/_/g, ' ')}</span>
+                        <span className="font-bold text-[#546A7A] dark:text-white text-sm">{formatCurrency(value)}</span>
                       </div>
-                      <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: `${percent}%` }} />
+                      <div className="h-1.5 bg-[#AEBFC3]/20 dark:bg-[#5D6E73] rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#E17F70] rounded-full" style={{ width: `${percent}%` }} />
                       </div>
                     </div>
                   </div>
@@ -476,8 +476,8 @@ export default function ForecastAnalyticsTab({ year }: Props) {
         </Card>
 
         {/* Top Users */}
-        <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 py-4 px-6">
+        <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] py-4 px-6">
             <CardTitle className="text-base font-bold text-white flex items-center gap-2">
               <UserCheck className="h-5 w-5" /> Top Performers
             </CardTitle>
@@ -487,15 +487,15 @@ export default function ForecastAnalyticsTab({ year }: Props) {
               {topUsers.slice(0, 6).map((user, idx) => {
                 const color = getZoneColor(user.zone)
                 return (
-                  <div key={user.name} className="flex items-center gap-3 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold ${idx === 0 ? 'bg-amber-500' : idx === 1 ? 'bg-slate-400' : idx === 2 ? 'bg-orange-500' : 'bg-slate-300'}`}>
+                  <div key={user.name} className="flex items-center gap-3 p-2 bg-[#AEBFC3]/10 dark:bg-[#546A7A] rounded-lg">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold ${idx === 0 ? 'bg-[#CE9F6B]/100' : idx === 1 ? 'bg-[#92A2A5]' : idx === 2 ? 'bg-[#CE9F6B]/100' : 'bg-[#92A2A5]'}`}>
                       {idx === 0 ? <Medal className="h-4 w-4" /> : idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-700 dark:text-slate-300 text-sm truncate">{user.name}</p>
+                      <p className="font-semibold text-[#5D6E73] dark:text-[#92A2A5] text-sm truncate">{user.name}</p>
                       <p className={`text-[10px] ${color.text}`}>{user.zone}</p>
                     </div>
-                    <span className="font-bold text-slate-800 dark:text-white">{formatCurrency(user.value)}</span>
+                    <span className="font-bold text-[#546A7A] dark:text-white">{formatCurrency(user.value)}</span>
                   </div>
                 )
               })}
@@ -505,8 +505,8 @@ export default function ForecastAnalyticsTab({ year }: Props) {
       </div>
 
       {/* ===== PRODUCT DISTRIBUTION ===== */}
-      <Card className="border border-slate-200 dark:border-slate-700 shadow-xl rounded-2xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-orange-600 to-red-600 py-4 px-6">
+      <Card className="border border-[#92A2A5] dark:border-[#5D6E73] shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-[#976E44] to-red-600 py-4 px-6">
           <CardTitle className="text-base font-bold text-white flex items-center gap-2">
             <PieChart className="h-5 w-5" /> Product Type Distribution
           </CardTitle>
@@ -518,7 +518,7 @@ export default function ForecastAnalyticsTab({ year }: Props) {
               .sort(([,a], [,b]) => b - a)
               .slice(0, 10)
               .map(([product, value], idx) => {
-                const colors = ['from-blue-500 to-indigo-600', 'from-emerald-500 to-teal-600', 'from-amber-500 to-orange-600', 'from-purple-500 to-pink-600', 'from-rose-500 to-red-600']
+                const colors = ['from-[#6F8A9D] to-[#546A7A]', 'from-[#82A094] to-[#4F6A64]', 'from-[#CE9F6B] to-[#976E44]', 'from-[#6F8A9D] to-[#9E3B47]', 'from-[#E17F70] to-red-600']
                 return (
                   <div key={product} className={`p-4 rounded-xl bg-gradient-to-br ${colors[idx % colors.length]} text-white`}>
                     <p className="text-xs font-semibold opacity-80 truncate">{product.replace(/_/g, ' ')}</p>
@@ -531,45 +531,45 @@ export default function ForecastAnalyticsTab({ year }: Props) {
       </Card>
 
       {/* ===== SUMMARY FOOTER ===== */}
-      <Card className="border-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 shadow-2xl rounded-2xl">
+      <Card className="border-0 bg-gradient-to-r from-[#5D6E73] via-slate-800 to-[#5D6E73] shadow-2xl rounded-2xl">
         <CardContent className="p-6">
           <div className="flex flex-wrap items-center justify-center gap-8">
             <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 text-blue-400" />
+              <FileText className="h-5 w-5 text-[#6F8A9D]" />
               <div>
-                <p className="text-slate-400 text-xs uppercase">Total Offers</p>
+                <p className="text-[#979796] text-xs uppercase">Total Offers</p>
                 <p className="text-white font-black text-lg">{formatNumber(totalOffers)}</p>
               </div>
             </div>
-            <div className="w-px h-10 bg-slate-700" />
+            <div className="w-px h-10 bg-[#5D6E73]" />
             <div className="flex items-center gap-3">
-              <IndianRupee className="h-5 w-5 text-emerald-400" />
+              <IndianRupee className="h-5 w-5 text-[#82A094]" />
               <div>
-                <p className="text-slate-400 text-xs uppercase">Total Won</p>
-                <p className="text-emerald-400 font-black text-lg">{formatCurrency(totalWon)}</p>
+                <p className="text-[#979796] text-xs uppercase">Total Won</p>
+                <p className="text-[#82A094] font-black text-lg">{formatCurrency(totalWon)}</p>
               </div>
             </div>
-            <div className="w-px h-10 bg-slate-700" />
+            <div className="w-px h-10 bg-[#5D6E73]" />
             <div className="flex items-center gap-3">
-              <Target className="h-5 w-5 text-purple-400" />
+              <Target className="h-5 w-5 text-[#6F8A9D]" />
               <div>
-                <p className="text-slate-400 text-xs uppercase">Target</p>
+                <p className="text-[#979796] text-xs uppercase">Target</p>
                 <p className="text-white font-black text-lg">{formatCurrency(totalTarget)}</p>
               </div>
             </div>
-            <div className="w-px h-10 bg-slate-700" />
+            <div className="w-px h-10 bg-[#5D6E73]" />
             <div className="flex items-center gap-3">
-              <Percent className="h-5 w-5 text-amber-400" />
+              <Percent className="h-5 w-5 text-[#CE9F6B]" />
               <div>
-                <p className="text-slate-400 text-xs uppercase">Hit Rate</p>
-                <p className="text-amber-400 font-black text-lg">{overallHitRate.toFixed(1)}%</p>
+                <p className="text-[#979796] text-xs uppercase">Hit Rate</p>
+                <p className="text-[#CE9F6B] font-black text-lg">{overallHitRate.toFixed(1)}%</p>
               </div>
             </div>
-            <div className="w-px h-10 bg-slate-700" />
+            <div className="w-px h-10 bg-[#5D6E73]" />
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-pink-400" />
               <div>
-                <p className="text-slate-400 text-xs uppercase">Zones</p>
+                <p className="text-[#979796] text-xs uppercase">Zones</p>
                 <p className="text-white font-black text-lg">{zones.length}</p>
               </div>
             </div>

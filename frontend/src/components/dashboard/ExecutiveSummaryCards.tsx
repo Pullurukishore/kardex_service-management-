@@ -38,9 +38,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       isPositive: (Number(dashboardData?.stats?.openTickets?.change ?? 0)) <= 0,
       icon: Ticket,
       description: 'Tickets awaiting action',
-      gradient: 'from-blue-500 to-cyan-500',
-      bgGradient: 'from-blue-50 to-cyan-50',
-      iconBg: 'bg-blue-500',
+      gradient: 'from-[#6F8A9D] to-[#6F8A9D]',
+      bgGradient: 'from-[#96AEC2]/10 to-[#96AEC2]/10',
+      iconBg: 'bg-[#96AEC2]/100',
       category: 'status'
     },
     {
@@ -49,12 +49,12 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       description: 'Needs assignment',
       critical: dashboardData?.stats?.unassignedTickets?.critical || false,
       gradient: dashboardData?.stats?.unassignedTickets?.critical 
-        ? 'from-rose-500 to-orange-500' 
-        : 'from-slate-500 to-gray-500',
+        ? 'from-[#E17F70] to-[#CE9F6B]' 
+        : 'from-[#AEBFC3]/100 to-gray-500',
       bgGradient: dashboardData?.stats?.unassignedTickets?.critical 
-        ? 'from-rose-50 to-orange-50' 
-        : 'from-slate-50 to-gray-50',
-      iconBg: dashboardData?.stats?.unassignedTickets?.critical ? 'bg-rose-500' : 'bg-slate-500',
+        ? 'from-[#EEC1BF]/10 to-[#EEC1BF]/10' 
+        : 'from-[#AEBFC3]/10 to-[#AEBFC3]/10',
+      iconBg: dashboardData?.stats?.unassignedTickets?.critical ? 'bg-[#EEC1BF]/100' : 'bg-[#AEBFC3]/100',
       icon: AlertTriangle,
       category: 'status'
     },
@@ -64,9 +64,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       description: 'Being worked on',
       change: Number(dashboardData?.stats?.inProgressTickets?.change ?? 0),
       isPositive: true,
-      gradient: 'from-amber-500 to-orange-500',
-      bgGradient: 'from-amber-50 to-orange-50',
-      iconBg: 'bg-amber-500',
+      gradient: 'from-[#CE9F6B] to-[#CE9F6B]',
+      bgGradient: 'from-[#EEC1BF]/10 to-[#EEC1BF]/10',
+      iconBg: 'bg-[#CE9F6B]/100',
       icon: Loader2,
       category: 'status'
     },
@@ -76,9 +76,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: Number(dashboardData?.stats?.monthlyTickets?.change ?? 0),
       isPositive: true,
       icon: Target,
-      gradient: 'from-violet-500 to-purple-500',
-      bgGradient: 'from-violet-50 to-purple-50',
-      iconBg: 'bg-violet-500',
+      gradient: 'from-[#6F8A9D] to-[#6F8A9D]',
+      bgGradient: 'from-[#6F8A9D]/10 to-[#6F8A9D]/10',
+      iconBg: 'bg-[#6F8A9D]',
       description: 'Created this month',
       category: 'volume'
     }
@@ -95,9 +95,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       description: 'Avg time to first response',
       change: Number(dashboardData?.stats?.avgResponseTime?.change ?? 0),
       isPositive: dashboardData?.stats?.avgResponseTime?.isPositive !== false,
-      gradient: 'from-emerald-500 to-teal-500',
-      bgGradient: 'from-emerald-50 to-teal-50',
-      iconBg: 'bg-emerald-500',
+      gradient: 'from-[#82A094] to-[#82A094]',
+      bgGradient: 'from-[#A2B9AF]/10 to-[#82A094]/10',
+      iconBg: 'bg-[#82A094]/100',
       icon: Clock,
       category: 'time'
     },
@@ -111,9 +111,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       description: 'Avg time to resolve',
       change: Number(dashboardData?.stats?.avgResolutionTime?.change ?? 0),
       isPositive: dashboardData?.stats?.avgResolutionTime?.isPositive !== false,
-      gradient: 'from-teal-500 to-cyan-500',
-      bgGradient: 'from-teal-50 to-cyan-50',
-      iconBg: 'bg-teal-500',
+      gradient: 'from-[#82A094] to-[#6F8A9D]',
+      bgGradient: 'from-[#82A094]/10 to-[#96AEC2]/10',
+      iconBg: 'bg-[#82A094]/100',
       icon: Timer,
       category: 'time'
     },
@@ -125,9 +125,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       ),
       change: Number(dashboardData?.stats?.avgDowntime?.change ?? 0),
       isPositive: dashboardData?.stats?.avgDowntime?.isPositive ?? false,
-      gradient: 'from-rose-500 to-pink-500',
-      bgGradient: 'from-rose-50 to-pink-50',
-      iconBg: 'bg-rose-500',
+      gradient: 'from-[#E17F70] to-[#E17F70]',
+      bgGradient: 'from-[#EEC1BF]/10 to-[#EEC1BF]/10',
+      iconBg: 'bg-[#EEC1BF]/100',
       icon: Cpu,
       description: 'Avg equipment downtime',
       category: 'time'
@@ -142,9 +142,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: dashboardData?.stats?.avgTravelTime?.change || 0,
       isPositive: dashboardData?.stats?.avgTravelTime?.isPositive !== false,
       icon: Navigation,
-      gradient: "from-indigo-500 to-blue-500",
-      bgGradient: "from-indigo-50 to-blue-50",
-      iconBg: 'bg-indigo-500',
+      gradient: "from-[#6F8A9D] to-[#6F8A9D]",
+      bgGradient: "from-[#6F8A9D]/10 to-[#96AEC2]/10",
+      iconBg: 'bg-[#546A7A]/100',
       description: 'Avg technician travel',
       category: 'time'
     },
@@ -158,9 +158,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: dashboardData?.stats?.avgOnsiteResolutionTime?.change || 0,
       isPositive: dashboardData?.stats?.avgOnsiteResolutionTime?.isPositive !== false,
       icon: Wrench,
-      gradient: "from-orange-500 to-amber-500",
-      bgGradient: "from-orange-50 to-amber-50",
-      iconBg: 'bg-orange-500',
+      gradient: "from-[#CE9F6B] to-[#CE9F6B]",
+      bgGradient: "from-[#EEC1BF]/10 to-[#EEC1BF]/10",
+      iconBg: 'bg-[#CE9F6B]/100',
       description: 'Avg onsite work duration',
       category: 'time'
     }
@@ -175,9 +175,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: dashboardData?.stats?.kpis?.activeCustomers?.change || 0,
       isPositive: true,
       icon: Building2,
-      gradient: "from-purple-500 to-violet-500",
-      bgGradient: "from-purple-50 to-violet-50",
-      iconBg: 'bg-purple-500',
+      gradient: "from-[#6F8A9D] to-[#6F8A9D]/100",
+      bgGradient: "from-[#6F8A9D]/10 to-[#6F8A9D]/10",
+      iconBg: 'bg-[#6F8A9D]/100',
       description: 'Customers with active tickets',
       category: 'resources'
     },
@@ -188,9 +188,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: dashboardData?.stats?.kpis?.activeServicePersons?.change || 0,
       isPositive: true,
       icon: Users,
-      gradient: "from-cyan-500 to-blue-500",
-      bgGradient: "from-cyan-50 to-blue-50",
-      iconBg: 'bg-cyan-500',
+      gradient: "from-[#6F8A9D] to-[#6F8A9D]",
+      bgGradient: "from-[#96AEC2]/10 to-[#96AEC2]/10",
+      iconBg: 'bg-[#96AEC2]/100',
       description: 'Technicians on active tickets',
       category: 'resources'
     },
@@ -200,8 +200,8 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       valueLabel: "zones",
       subtitle: `${dashboardData?.stats?.kpis?.activeServicePersons?.value || 0} active technicians`,
       icon: MapPin,
-      gradient: "from-lime-500 to-green-500",
-      bgGradient: "from-lime-50 to-green-50",
+      gradient: "from-lime-500 to-[#82A094]",
+      bgGradient: "from-lime-50 to-[#A2B9AF]/10",
       iconBg: 'bg-lime-500',
       description: 'Geographic coverage areas',
       category: 'resources'
@@ -212,9 +212,9 @@ const getMetricsConfig = (dashboardData: Partial<DashboardData>) => {
       change: Number(dashboardData?.stats?.activeMachines?.change ?? 0),
       isPositive: true,
       icon: Cpu,
-      gradient: 'from-fuchsia-500 to-pink-500',
-      bgGradient: 'from-fuchsia-50 to-pink-50',
-      iconBg: 'bg-fuchsia-500',
+      gradient: 'from-[#E17F70] to-[#E17F70]',
+      bgGradient: 'from-fuchsia-50 to-[#EEC1BF]/10',
+      iconBg: 'bg-[#E17F70]',
       description: 'Equipment in operation',
       category: 'resources'
     }
@@ -235,7 +235,7 @@ const SectionHeader = ({ icon: Icon, title, iconGradient, badge }: {
       <div className={`p-2 rounded-xl bg-gradient-to-br ${iconGradient} shadow-lg`}>
         <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
       </div>
-      <span className="text-slate-800">{title}</span>
+      <span className="text-[#546A7A]">{title}</span>
     </h3>
     {badge && (
       <Badge className={`${badge.color} px-3 py-1 text-xs font-semibold`}>
@@ -246,47 +246,47 @@ const SectionHeader = ({ icon: Icon, title, iconGradient, badge }: {
   </div>
 );
 
-// Metric Card Component
+// Metric Card Component - Premium white design with colorful accents
 const MetricCard = ({ metric, index }: { metric: any; index: number }) => (
   <Card 
-    className={`relative overflow-hidden bg-gradient-to-br ${metric.bgGradient} border-0 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 group`}
+    className={`relative overflow-hidden bg-white/95 backdrop-blur-sm border border-[#96AEC2]/20 shadow-lg hover:shadow-xl hover:shadow-[#96AEC2]/15 transition-all duration-500 transform hover:-translate-y-1 hover:border-[#6F8A9D]/30 group rounded-2xl`}
     style={{ animationDelay: `${index * 50}ms` }}
   >
     {/* Shimmer effect on hover */}
-    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+    
+    {/* Top accent line */}
+    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${metric.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
     
     {/* Background decoration */}
-    <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-white/30 blur-2xl" />
-    <div className="absolute -bottom-8 -left-8 w-20 h-20 rounded-full bg-white/20 blur-2xl" />
+    <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full bg-gradient-to-br ${metric.gradient} opacity-5 blur-2xl group-hover:opacity-10 transition-opacity`} />
     
     <CardContent className="relative z-10 p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-2 min-w-0 flex-1">
           {/* Title */}
-          <p className="text-xs sm:text-sm font-semibold text-slate-600 leading-tight">
+          <p className="text-xs sm:text-sm font-semibold text-[#5D6E73] leading-tight">
             {metric.title}
           </p>
           
           {/* Main Value */}
           <div className="flex items-baseline gap-2">
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-bold text-[#546A7A] tracking-tight">
               {metric.value}
             </p>
             {metric.valueLabel && (
-              <span className="text-xs font-medium text-slate-500">{metric.valueLabel}</span>
+              <span className="text-xs font-medium text-[#92A2A5]">{metric.valueLabel}</span>
             )}
           </div>
           
           {/* Description or Subtitle */}
-          <p className="text-xs text-slate-500 leading-tight">
+          <p className="text-xs text-[#92A2A5] leading-tight">
             {metric.subtitle || metric.description}
           </p>
           
-
-
           {/* Critical Badge for Unassigned */}
           {metric.critical && (
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold">
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E17F70]/10 text-[#9E3B47] text-xs font-semibold border border-[#E17F70]/20">
               <AlertTriangle className="w-3 h-3" />
               Needs Attention
             </div>
@@ -295,13 +295,13 @@ const MetricCard = ({ metric, index }: { metric: any; index: number }) => (
         
         {/* Icon Badge */}
         <div className="relative flex-shrink-0">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${metric.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+          <div className={`p-3 rounded-xl bg-gradient-to-br ${metric.gradient} shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300`}>
             {metric.icon && React.createElement(metric.icon, { 
               className: "w-5 h-5 sm:w-6 sm:h-6 text-white" 
             })}
           </div>
           {/* Glow effect */}
-          <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${metric.gradient} blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300`} />
+          <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${metric.gradient} blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300`} />
         </div>
       </div>
     </CardContent>
@@ -318,8 +318,8 @@ export default function ExecutiveSummaryCards({ dashboardData }: ExecutiveSummar
         <SectionHeader 
           icon={Ticket} 
           title="Ticket Overview" 
-          iconGradient="from-blue-500 to-cyan-500"
-          badge={{ label: 'Live', color: 'bg-blue-100 text-blue-700 border border-blue-200' }}
+          iconGradient="from-[#6F8A9D] to-[#6F8A9D]"
+          badge={{ label: 'Live', color: 'bg-[#96AEC2]/20 text-[#546A7A] border border-[#96AEC2]' }}
         />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {ticketMetrics.map((metric, i) => (
@@ -333,8 +333,8 @@ export default function ExecutiveSummaryCards({ dashboardData }: ExecutiveSummar
         <SectionHeader 
           icon={Clock} 
           title="Time Analytics" 
-          iconGradient="from-emerald-500 to-teal-500"
-          badge={{ label: 'Business Hours', color: 'bg-emerald-100 text-emerald-700 border border-emerald-200' }}
+          iconGradient="from-[#82A094] to-[#82A094]"
+          badge={{ label: 'Business Hours', color: 'bg-[#82A094]/20 text-[#4F6A64] border border-[#82A094]/50' }}
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {timeMetrics.map((metric, i) => (
@@ -348,8 +348,8 @@ export default function ExecutiveSummaryCards({ dashboardData }: ExecutiveSummar
         <SectionHeader 
           icon={Users} 
           title="Resources & Assets" 
-          iconGradient="from-purple-500 to-violet-500"
-          badge={{ label: 'Capacity', color: 'bg-purple-100 text-purple-700 border border-purple-200' }}
+          iconGradient="from-[#6F8A9D] to-[#6F8A9D]/100"
+          badge={{ label: 'Capacity', color: 'bg-[#6F8A9D]/20 text-[#546A7A] border border-[#6F8A9D]' }}
         />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {resourceMetrics.map((metric, i) => (

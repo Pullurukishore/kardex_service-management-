@@ -49,19 +49,19 @@ export default function ComparisonMetrics({
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50 border-0 shadow-lg">
+    <Card className="bg-gradient-to-br from-white to-[#AEBFC3]/10 border-0 shadow-lg">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-xl font-bold flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-lg">
                 <Activity className="w-5 h-5 text-white" />
               </div>
               {title}
             </CardTitle>
             <CardDescription className="mt-2 text-base">{description}</CardDescription>
           </div>
-          <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
+          <Badge className="bg-[#96AEC2]/20 text-[#546A7A] flex items-center gap-1">
             <Calendar className="w-3 h-3" />
             {periodLabel}
           </Badge>
@@ -85,14 +85,14 @@ export default function ComparisonMetrics({
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-slate-800 mb-1">{metric.label}</h4>
+                    <h4 className="font-semibold text-[#546A7A] mb-1">{metric.label}</h4>
                     <div className="flex items-baseline gap-3">
-                      <span className="text-3xl font-bold text-slate-900">
+                      <span className="text-3xl font-bold text-[#546A7A]">
                         {formatValue(metric.current, metric.unit, metric.isPercentage)}
                       </span>
                       <div className="flex items-center gap-2">
-                        <ArrowRight className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-500">
+                        <ArrowRight className="w-4 h-4 text-[#979796]" />
+                        <span className="text-sm text-[#757777]">
                           from {formatValue(metric.previous, metric.unit, metric.isPercentage)}
                         </span>
                       </div>
@@ -101,7 +101,7 @@ export default function ComparisonMetrics({
                   
                   <div className="flex flex-col items-end gap-2">
                     <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                      isPositive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      isPositive ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' : 'bg-[#E17F70]/20 text-[#75242D]'
                     }`}>
                       {isPositive ? (
                         <TrendingUp className="w-4 h-4" />
@@ -117,8 +117,8 @@ export default function ComparisonMetrics({
                       <Badge 
                         className={`text-xs ${
                           isOnTarget 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-orange-100 text-orange-800'
+                            ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+                            : 'bg-[#CE9F6B]/20 text-[#976E44]'
                         }`}
                         variant="outline"
                       >
@@ -132,7 +132,7 @@ export default function ComparisonMetrics({
                 {/* Progress bar for target achievement */}
                 {metric.target !== undefined && (
                   <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-slate-500">
+                    <div className="flex justify-between text-xs text-[#757777]">
                       <span>Progress to target</span>
                       <span>
                         {metric.lowerIsBetter 

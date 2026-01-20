@@ -17,10 +17,10 @@ const ZoneForecastDashboard = dynamic(
 // Loading skeleton for the dashboard
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 animate-pulse">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50 dark:from-[#5D6E73] dark:via-slate-900 dark:to-[#5D6E73] animate-pulse">
       <div className="max-w-[1900px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
         {/* Header skeleton */}
-        <div className="rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 p-6 md:p-8 shadow-2xl">
+        <div className="rounded-3xl bg-gradient-to-br from-slate-800 to-[#5D6E73] p-6 md:p-8 shadow-2xl">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl">
               <BarChart3 className="h-7 w-7 text-white/50" />
@@ -33,25 +33,25 @@ function DashboardSkeleton() {
         </div>
 
         {/* Tabs skeleton */}
-        <div className="flex gap-2 p-1.5 bg-white/80 dark:bg-slate-800/80 rounded-2xl shadow-lg">
+        <div className="flex gap-2 p-1.5 bg-white/80 dark:bg-[#546A7A]/80 rounded-2xl shadow-lg">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-12 w-32 bg-slate-200 dark:bg-slate-700 rounded-xl" />
+            <div key={i} className="h-12 w-32 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-xl" />
           ))}
         </div>
 
         {/* Cards skeleton */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-32 bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200/60" />
+            <div key={i} className="h-32 bg-white dark:bg-[#546A7A] rounded-2xl shadow-lg border border-[#92A2A5]/60" />
           ))}
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200/60 p-6">
-          <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded-lg mb-4" />
+        <div className="bg-white dark:bg-[#546A7A] rounded-2xl shadow-xl border border-[#92A2A5]/60 p-6">
+          <div className="h-6 w-48 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-lg mb-4" />
           <div className="space-y-3">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-12 bg-slate-100 dark:bg-slate-800 rounded-lg" />
+              <div key={i} className="h-12 bg-[#AEBFC3]/20 dark:bg-[#546A7A] rounded-lg" />
             ))}
           </div>
         </div>
@@ -89,10 +89,10 @@ export default function ZoneManagerForecastPage() {
           <ZoneForecastDashboard zoneId={userZoneId} zoneName={zoneName} />
         ) : (
           <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-xl">
-              <BarChart3 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No Zone Assigned</h2>
-              <p className="text-slate-600 dark:text-slate-400">Please contact an administrator to be assigned to a zone.</p>
+            <div className="text-center p-8 bg-white dark:bg-[#546A7A] rounded-2xl shadow-xl">
+              <BarChart3 className="h-12 w-12 text-[#979796] mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-[#546A7A] dark:text-white mb-2">No Zone Assigned</h2>
+              <p className="text-[#5D6E73] dark:text-[#979796]">Please contact an administrator to be assigned to a zone.</p>
             </div>
           </div>
         )}

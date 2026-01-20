@@ -33,17 +33,17 @@ export default async function ManageExpertHelpdeskPage({ searchParams }: ManageE
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#6F8A9D] via-cyan-600 to-blue-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Manage Expert Helpdesk</h1>
-            <p className="text-blue-100">
+            <p className="text-[#96AEC2]">
               Manage expert helpdesk users and support team access
             </p>
           </div>
           <Link href="/admin/manage-expert-helpdesk/new">
-            <Button className="bg-white text-blue-600 hover:bg-blue-50 shadow-lg">
+            <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/10 shadow-lg">
               <Plus className="mr-2 h-4 w-4" />
               Add Expert
             </Button>
@@ -58,7 +58,7 @@ export default async function ManageExpertHelpdeskPage({ searchParams }: ManageE
           description="Manage expert helpdesk users and support team access"
           action={
             <Link href="/admin/manage-expert-helpdesk/new">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+              <Button className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white shadow-lg">
                 <Plus className="mr-2 h-4 w-4" /> Add
               </Button>
             </Link>

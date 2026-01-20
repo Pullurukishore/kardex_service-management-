@@ -70,10 +70,10 @@ export default function PinGuard({ children }: PinGuardProps) {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/20 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking access...</p>
+          <div className="w-8 h-8 border-4 border-[#546A7A] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#5D6E73]">Checking access...</p>
         </div>
       </div>
     );

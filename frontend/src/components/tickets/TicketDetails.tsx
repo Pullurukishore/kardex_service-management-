@@ -53,7 +53,7 @@ export function TicketDetails({ ticket, onStatusChange }: TicketDetailsProps) {
                     <span className="text-muted-foreground">Phone:</span>
                     <a 
                       href={`tel:${contactPerson.phone}`}
-                      className="text-blue-600 hover:text-blue-800 font-mono hover:underline"
+                      className="text-[#546A7A] hover:text-[#546A7A] font-mono hover:underline"
                     >
                       📞 {contactPerson.phone}
                     </a>
@@ -65,7 +65,7 @@ export function TicketDetails({ ticket, onStatusChange }: TicketDetailsProps) {
                     <span className="text-muted-foreground">Email:</span>
                     <a 
                       href={`mailto:${contactPerson.email}`}
-                      className="text-blue-600 hover:text-blue-800 break-all hover:underline"
+                      className="text-[#546A7A] hover:text-[#546A7A] break-all hover:underline"
                     >
                       ✉️ {contactPerson.email}
                     </a>
@@ -90,7 +90,7 @@ export function TicketDetails({ ticket, onStatusChange }: TicketDetailsProps) {
             <CardTitle>Error Details</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-red-50 p-4 rounded-md">
+            <div className="bg-[#E17F70]/10 p-4 rounded-md">
               <pre className="whitespace-pre-wrap text-sm">{ticket.errorDetails}</pre>
             </div>
           </CardContent>
@@ -104,12 +104,12 @@ export function TicketDetails({ ticket, onStatusChange }: TicketDetailsProps) {
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-start">
-              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600">1</span>
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#96AEC2]/20 flex items-center justify-center">
+                <span className="text-[#546A7A]">1</span>
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-900">Ticket Created</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm font-medium text-[#546A7A]">Ticket Created</div>
+                <div className="text-sm text-[#AEBFC3]0">
                   {format(new Date(ticket.createdAt), 'MMM d, yyyy hh:mm a')}
                 </div>
               </div>
@@ -117,12 +117,12 @@ export function TicketDetails({ ticket, onStatusChange }: TicketDetailsProps) {
 
             {ticket.status === TicketStatus.CLOSED_PENDING && (
               <div className="flex items-start">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <span className="text-green-600">✓</span>
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#A2B9AF]/20 flex items-center justify-center">
+                  <span className="text-[#4F6A64]">✓</span>
                 </div>
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-gray-900">Pending Closure</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm font-medium text-[#546A7A]">Pending Closure</div>
+                  <div className="text-sm text-[#AEBFC3]0">
                     {format(new Date(ticket.updatedAt), 'MMM d, yyyy hh:mm a')}
                   </div>
                 </div>

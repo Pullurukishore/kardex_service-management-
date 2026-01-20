@@ -65,16 +65,16 @@ export default function TrendLineChart({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-slate-200">
-          <p className="font-semibold text-slate-900">{formatDate(label)}</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-[#92A2A5]">
+          <p className="font-semibold text-[#546A7A]">{formatDate(label)}</p>
+          <p className="text-2xl font-bold text-[#546A7A] mt-1">
             {payload[0].value} tickets
           </p>
           {stats.peak === payload[0].value && (
-            <Badge className="mt-2 bg-green-100 text-green-800">Peak Day</Badge>
+            <Badge className="mt-2 bg-[#A2B9AF]/20 text-[#4F6A64]">Peak Day</Badge>
           )}
           {stats.low === payload[0].value && data.length > 2 && (
-            <Badge className="mt-2 bg-blue-100 text-blue-800">Lowest Day</Badge>
+            <Badge className="mt-2 bg-[#96AEC2]/20 text-[#546A7A]">Lowest Day</Badge>
           )}
         </div>
       );
@@ -93,20 +93,20 @@ export default function TrendLineChart({
           {showComparison && (
             <div className="flex flex-col items-end gap-2">
               <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
-                stats.isPositive ? 'bg-green-50' : 'bg-red-50'
+                stats.isPositive ? 'bg-[#A2B9AF]/10' : 'bg-[#E17F70]/10'
               }`}>
                 {stats.isPositive ? (
-                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <TrendingUp className="w-4 h-4 text-[#4F6A64]" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-600" />
+                  <TrendingDown className="w-4 h-4 text-[#9E3B47]" />
                 )}
                 <span className={`text-sm font-semibold ${
-                  stats.isPositive ? 'text-green-700' : 'text-red-700'
+                  stats.isPositive ? 'text-[#4F6A64]' : 'text-[#75242D]'
                 }`}>
                   {Math.abs(stats.trend)}%
                 </span>
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-[#757777]">
                 Avg: {stats.avg} tickets/day
               </div>
             </div>

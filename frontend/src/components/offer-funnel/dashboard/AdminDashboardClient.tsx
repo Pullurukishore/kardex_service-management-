@@ -40,13 +40,13 @@ export default function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      OPEN: 'bg-blue-100 text-blue-800',
-      IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
-      WON: 'bg-green-100 text-green-800',
-      LOST: 'bg-red-100 text-red-800',
-      ON_HOLD: 'bg-gray-100 text-gray-800',
+      OPEN: 'bg-[#96AEC2]/20 text-[#546A7A]',
+      IN_PROGRESS: 'bg-[#CE9F6B]/20 text-[#976E44]',
+      WON: 'bg-[#A2B9AF]/20 text-[#4F6A64]',
+      LOST: 'bg-[#E17F70]/20 text-[#75242D]',
+      ON_HOLD: 'bg-[#AEBFC3]/20 text-[#546A7A]',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-[#AEBFC3]/20 text-[#546A7A]';
   };
 
   return (
@@ -83,19 +83,19 @@ export default function AdminDashboardClient({
         </CardHeader>
         <CardContent>
           {initialRecentOffers.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">No offers yet</p>
+            <p className="text-center text-[#AEBFC3]0 py-8">No offers yet</p>
           ) : (
             <div className="space-y-4">
               {initialRecentOffers.map((offer) => (
                 <a
                   key={offer.id}
                   href={`/admin/offers/${offer.id}`}
-                  className="block border rounded-lg p-4 hover:bg-gray-50 transition"
+                  className="block border rounded-lg p-4 hover:bg-[#AEBFC3]/10 transition"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-[#546A7A]">
                           {offer.title}
                         </h3>
                         <span
@@ -106,19 +106,19 @@ export default function AdminDashboardClient({
                           {offer.status.replace('_', ' ')}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-[#5D6E73] mt-1">
                         {offer.customer?.companyName || 'Unknown Customer'} • {offer.zone?.name || 'No Zone'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#AEBFC3]0 mt-1">
                         {offer.offerNumber} • {formatDate(offer.createdAt)}
                       </p>
                     </div>
                     {offer.estimatedValue != null && (
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-[#546A7A]">
                           {formatCurrency(offer.estimatedValue)}
                         </p>
-                        <p className="text-xs text-gray-500">Estimated Value</p>
+                        <p className="text-xs text-[#AEBFC3]0">Estimated Value</p>
                       </div>
                     )}
                   </div>

@@ -15,12 +15,12 @@ export function DashboardErrorFallback() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#AEBFC3]/10 px-4">
       <div className="max-w-md w-full text-center">
-        <h1 className="text-xl font-semibold text-slate-900 mb-2">
+        <h1 className="text-xl font-semibold text-[#546A7A] mb-2">
           Unable to load dashboard
         </h1>
-        <p className="text-sm text-slate-600 mb-6">
+        <p className="text-sm text-[#5D6E73] mb-6">
           We could not connect to the server or verify your session. Please check the backend
           service and try again.
         </p>

@@ -188,43 +188,43 @@ export default function AssetDetailPage() {
   const getStatusBadgeStyles = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
       case 'MAINTENANCE':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#CE9F6B]/20 text-[#976E44]';
       case 'INACTIVE':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#AEBFC3]/20 text-[#546A7A]';
       default:
-        return 'bg-red-100 text-red-800';
+        return 'bg-[#E17F70]/20 text-[#75242D]';
     }
   };
 
   const getPriorityBadgeStyles = (priority: string) => {
     switch (priority) {
       case 'CRITICAL':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[#E17F70]/20 text-[#75242D]';
       case 'HIGH':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-[#CE9F6B]/20 text-[#976E44]';
       case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#CE9F6B]/20 text-[#976E44]';
       case 'LOW':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#AEBFC3]/20 text-[#546A7A]';
     }
   };
 
   const getTicketStatusBadgeStyles = (status: string) => {
     switch (status) {
       case 'OPEN':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[#96AEC2]/20 text-[#546A7A]';
       case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#CE9F6B]/20 text-[#976E44]';
       case 'CLOSED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
       case 'CANCELLED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#AEBFC3]/20 text-[#546A7A]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#AEBFC3]/20 text-[#546A7A]';
     }
   };
 
@@ -270,7 +270,7 @@ export default function AssetDetailPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{asset.machineId}</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-[#546A7A] truncate">{asset.machineId}</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
               Asset Details • ID: {asset.id}
             </p>
@@ -280,7 +280,7 @@ export default function AssetDetailPage() {
           <Button 
             variant="outline" 
             onClick={() => router.push(`/admin/assets/${id}/edit`)}
-            className="bg-white hover:bg-gray-50 flex-1 sm:flex-none"
+            className="bg-white hover:bg-[#AEBFC3]/10 flex-1 sm:flex-none"
           >
             <Pencil className="mr-2 h-4 w-4" /> 
             <span className="hidden sm:inline">Edit</span>
@@ -290,7 +290,7 @@ export default function AssetDetailPage() {
             variant="destructive" 
             onClick={handleDelete}
             disabled={deleting}
-            className="bg-red-600 hover:bg-red-700 flex-1 sm:flex-none"
+            className="bg-[#9E3B47] hover:bg-[#75242D] flex-1 sm:flex-none"
           >
             {deleting ? (
               <>
@@ -309,14 +309,14 @@ export default function AssetDetailPage() {
         </div>
       </div>
 
-      <div className={`rounded-lg border p-4 ${asset.status === 'ACTIVE' ? 'bg-green-50 border-green-200' : asset.status === 'MAINTENANCE' ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200'}`}>
+      <div className={`rounded-lg border p-4 ${asset.status === 'ACTIVE' ? 'bg-[#A2B9AF]/10 border-[#A2B9AF]' : asset.status === 'MAINTENANCE' ? 'bg-[#EEC1BF]/10 border-[#CE9F6B]' : 'bg-[#AEBFC3]/10 border-[#92A2A5]'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-full ${asset.status === 'ACTIVE' ? 'bg-green-100' : asset.status === 'MAINTENANCE' ? 'bg-yellow-100' : 'bg-gray-100'}`}>
-              <Activity className={`h-5 w-5 ${asset.status === 'ACTIVE' ? 'text-green-600' : asset.status === 'MAINTENANCE' ? 'text-yellow-600' : 'text-gray-600'}`} />
+            <div className={`p-2 rounded-full ${asset.status === 'ACTIVE' ? 'bg-[#A2B9AF]/20' : asset.status === 'MAINTENANCE' ? 'bg-[#CE9F6B]/20' : 'bg-[#AEBFC3]/20'}`}>
+              <Activity className={`h-5 w-5 ${asset.status === 'ACTIVE' ? 'text-[#4F6A64]' : asset.status === 'MAINTENANCE' ? 'text-[#976E44]' : 'text-[#5D6E73]'}`} />
             </div>
             <div>
-              <h3 className="font-medium text-gray-900">
+              <h3 className="font-medium text-[#546A7A]">
                 Asset Status: {asset.status}
               </h3>
               <p className="text-sm text-muted-foreground">
@@ -336,19 +336,19 @@ export default function AssetDetailPage() {
         {/* Main Asset Info */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="border-0 shadow-lg">
-            <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+            <CardHeader className="border-b bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] shadow-sm">
                     <HardDrive className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl text-gray-900">{asset.machineId}</CardTitle>
+                    <CardTitle className="text-xl text-[#546A7A]">{asset.machineId}</CardTitle>
                     <CardDescription className="mt-1 flex items-center text-base">
                       <Building2 className="h-4 w-4 mr-1" />
                       <Link 
                         href={`/admin/customers/${asset.customer.id}`}
-                        className="hover:underline hover:text-blue-600"
+                        className="hover:underline hover:text-[#546A7A]"
                       >
                         {asset.customer.companyName}
                       </Link>
@@ -360,36 +360,36 @@ export default function AssetDetailPage() {
             <CardContent className="pt-4 sm:pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 <div className="space-y-6">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                      <HardDrive className="h-4 w-4 mr-2 text-blue-600" />
+                  <div className="bg-[#AEBFC3]/10 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-[#5D6E73] mb-3 flex items-center">
+                      <HardDrive className="h-4 w-4 mr-2 text-[#546A7A]" />
                       Asset Information
                     </h3>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Machine ID:</span>
-                        <span className="font-medium text-gray-900">{asset.machineId}</span>
+                        <span className="text-[#5D6E73]">Machine ID:</span>
+                        <span className="font-medium text-[#546A7A]">{asset.machineId}</span>
                       </div>
                       {asset.model && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Model:</span>
-                          <span className="font-medium text-gray-900">{asset.model}</span>
+                          <span className="text-[#5D6E73]">Model:</span>
+                          <span className="font-medium text-[#546A7A]">{asset.model}</span>
                         </div>
                       )}
                       {asset.serialNo && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Serial Number:</span>
-                          <span className="font-medium text-gray-900">{asset.serialNo}</span>
+                          <span className="text-[#5D6E73]">Serial Number:</span>
+                          <span className="font-medium text-[#546A7A]">{asset.serialNo}</span>
                         </div>
                       )}
                       {asset.location && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Location:</span>
-                          <span className="font-medium text-gray-900">{asset.location}</span>
+                          <span className="text-[#5D6E73]">Location:</span>
+                          <span className="font-medium text-[#546A7A]">{asset.location}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Status:</span>
+                        <span className="text-[#5D6E73]">Status:</span>
                         <Badge className={getStatusBadgeStyles(asset.status)}>
                           {asset.status}
                         </Badge>
@@ -399,43 +399,43 @@ export default function AssetDetailPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-green-600" />
+                  <div className="bg-[#A2B9AF]/10 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-[#5D6E73] mb-3 flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-[#4F6A64]" />
                       Dates & Warranty
                     </h3>
                     <div className="space-y-3 text-sm">
                       {asset.purchaseDate && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Purchase Date:</span>
-                          <span className="font-medium text-gray-900">{format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}</span>
+                          <span className="text-[#5D6E73]">Purchase Date:</span>
+                          <span className="font-medium text-[#546A7A]">{format(new Date(asset.purchaseDate), 'MMM dd, yyyy')}</span>
                         </div>
                       )}
                       {asset.warrantyStart && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Warranty Start:</span>
-                          <span className="font-medium text-gray-900">{format(new Date(asset.warrantyStart), 'MMM dd, yyyy')}</span>
+                          <span className="text-[#5D6E73]">Warranty Start:</span>
+                          <span className="font-medium text-[#546A7A]">{format(new Date(asset.warrantyStart), 'MMM dd, yyyy')}</span>
                         </div>
                       )}
                       {asset.warrantyEnd && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Warranty End:</span>
-                          <span className="font-medium text-gray-900">{format(new Date(asset.warrantyEnd), 'MMM dd, yyyy')}</span>
+                          <span className="text-[#5D6E73]">Warranty End:</span>
+                          <span className="font-medium text-[#546A7A]">{format(new Date(asset.warrantyEnd), 'MMM dd, yyyy')}</span>
                         </div>
                       )}
                       {asset.amcEnd && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">AMC End:</span>
-                          <span className="font-medium text-gray-900">{format(new Date(asset.amcEnd), 'MMM dd, yyyy')}</span>
+                          <span className="text-[#5D6E73]">AMC End:</span>
+                          <span className="font-medium text-[#546A7A]">{format(new Date(asset.amcEnd), 'MMM dd, yyyy')}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Created:</span>
-                        <span className="font-medium text-gray-900">{format(new Date(asset.createdAt), 'MMM dd, yyyy')}</span>
+                        <span className="text-[#5D6E73]">Created:</span>
+                        <span className="font-medium text-[#546A7A]">{format(new Date(asset.createdAt), 'MMM dd, yyyy')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Last Updated:</span>
-                        <span className="font-medium text-gray-900">{format(new Date(asset.updatedAt), 'MMM dd, yyyy')}</span>
+                        <span className="text-[#5D6E73]">Last Updated:</span>
+                        <span className="font-medium text-[#546A7A]">{format(new Date(asset.updatedAt), 'MMM dd, yyyy')}</span>
                       </div>
                     </div>
                   </div>
@@ -446,19 +446,19 @@ export default function AssetDetailPage() {
 
           {/* Recent Tickets */}
           <Card className="border-0 shadow-lg">
-            <CardHeader className="border-b bg-gradient-to-r from-orange-50 to-red-50">
+            <CardHeader className="border-b bg-gradient-to-r from-[#EEC1BF]/10 to-red-50">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center text-lg">
-                  <Ticket className="h-5 w-5 mr-2 text-orange-600" />
+                  <Ticket className="h-5 w-5 mr-2 text-[#976E44]" />
                   Recent Tickets
                 </CardTitle>
                 <div className="flex items-center space-x-2">
-                  <Badge className="bg-orange-100 text-orange-800">
+                  <Badge className="bg-[#CE9F6B]/20 text-[#976E44]">
                     {asset._count.tickets} total
                   </Badge>
                   <Button 
                     size="sm" 
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    className="bg-[#976E44] hover:bg-[#976E44] text-white"
                     onClick={() => router.push(`/admin/tickets/create?assetId=${asset.id}`)}
                   >
                     <Ticket className="h-4 w-4 mr-1" />
@@ -487,7 +487,7 @@ export default function AssetDetailPage() {
                           {ticket.priority}
                         </Badge>
                       </div>
-                      <div className="text-xs text-gray-600 space-y-1">
+                      <div className="text-xs text-[#5D6E73] space-y-1">
                         <div>Assigned: {ticket.assignedTo ? ticket.assignedTo.name || ticket.assignedTo.email : 'Unassigned'}</div>
                         <div>Created: {format(new Date(ticket.createdAt), 'MMM dd, yyyy')}</div>
                       </div>
@@ -558,42 +558,42 @@ export default function AssetDetailPage() {
         <div className="space-y-6">
           {/* Quick Stats */}
           <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#EEC1BF]/10">
               <CardTitle className="text-lg flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-purple-600" />
+                <TrendingUp className="h-5 w-5 mr-2 text-[#546A7A]" />
                 Quick Stats
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
-              <div className="bg-orange-50 rounded-lg p-4">
+              <div className="bg-[#CE9F6B]/10 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-orange-100 rounded-lg">
-                      <Ticket className="h-5 w-5 text-orange-600" />
+                    <div className="p-2 bg-[#CE9F6B]/20 rounded-lg">
+                      <Ticket className="h-5 w-5 text-[#976E44]" />
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-900">Total Tickets</span>
-                      <p className="text-xs text-gray-600">All time</p>
+                      <span className="text-sm font-medium text-[#546A7A]">Total Tickets</span>
+                      <p className="text-xs text-[#5D6E73]">All time</p>
                     </div>
                   </div>
-                  <Badge className="bg-orange-100 text-orange-800 text-lg font-bold px-3 py-1">
+                  <Badge className="bg-[#CE9F6B]/20 text-[#976E44] text-lg font-bold px-3 py-1">
                     {asset._count.tickets}
                   </Badge>
                 </div>
               </div>
               
-              <div className="bg-blue-50 rounded-lg p-4">
+              <div className="bg-[#96AEC2]/10 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Clock className="h-5 w-5 text-blue-600" />
+                    <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                      <Clock className="h-5 w-5 text-[#546A7A]" />
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-900">Service History</span>
-                      <p className="text-xs text-gray-600">Records</p>
+                      <span className="text-sm font-medium text-[#546A7A]">Service History</span>
+                      <p className="text-xs text-[#5D6E73]">Records</p>
                     </div>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800 text-lg font-bold px-3 py-1">
+                  <Badge className="bg-[#96AEC2]/20 text-[#546A7A] text-lg font-bold px-3 py-1">
                     {asset.serviceHistory?.length || 0}
                   </Badge>
                 </div>
@@ -603,9 +603,9 @@ export default function AssetDetailPage() {
 
           {/* Service History */}
           <Card className="border-0 shadow-lg">
-            <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">
+            <CardHeader className="border-b bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10">
               <CardTitle className="flex items-center text-lg">
-                <Shield className="h-5 w-5 mr-2 text-green-600" />
+                <Shield className="h-5 w-5 mr-2 text-[#4F6A64]" />
                 Service History
               </CardTitle>
             </CardHeader>
@@ -613,15 +613,15 @@ export default function AssetDetailPage() {
               {asset.serviceHistory && asset.serviceHistory.length > 0 ? (
                 <div className="space-y-3 sm:space-y-4">
                   {asset.serviceHistory.slice(0, 5).map((service) => (
-                    <div key={service.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                    <div key={service.id} className="border border-[#92A2A5] rounded-lg p-3 sm:p-4">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1">
-                        <h4 className="font-medium text-gray-900 text-sm sm:text-base">{service.serviceType}</h4>
-                        <span className="text-xs text-gray-500 flex-shrink-0">
+                        <h4 className="font-medium text-[#546A7A] text-sm sm:text-base">{service.serviceType}</h4>
+                        <span className="text-xs text-[#AEBFC3]0 flex-shrink-0">
                           {format(new Date(service.performedAt), 'MMM dd, yyyy')}
                         </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-gray-600 mb-2">{service.description}</p>
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs text-gray-500 gap-1">
+                      <p className="text-xs sm:text-sm text-[#5D6E73] mb-2">{service.description}</p>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs text-[#AEBFC3]0 gap-1">
                         <span className="truncate">By: {service.performedBy.name || service.performedBy.email}</span>
                         {service.duration && <span className="flex-shrink-0">{service.duration} min</span>}
                       </div>

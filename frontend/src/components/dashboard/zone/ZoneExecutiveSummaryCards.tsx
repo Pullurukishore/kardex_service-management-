@@ -76,8 +76,8 @@ export default function ZoneExecutiveSummaryCards({
       isPositive: false,
       icon: Ticket,
       description: 'Currently open tickets',
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'from-[#6F8A9D] to-[#546A7A]',
+      bgColor: 'bg-[#96AEC2]/10'
     },
     {
       title: 'Unassigned',
@@ -85,11 +85,11 @@ export default function ZoneExecutiveSummaryCards({
       description: 'Tickets waiting for assignment',
       critical: stats?.unassignedTickets?.critical || false,
       color: stats?.unassignedTickets?.critical 
-        ? 'from-amber-500 to-amber-600' 
-        : 'from-slate-500 to-slate-600',
+        ? 'from-[#CE9F6B] to-[#976E44]' 
+        : 'from-[#757777] to-[#5D6E73]',
       bgColor: stats?.unassignedTickets?.critical 
-        ? 'bg-amber-50' 
-        : 'bg-slate-50',
+        ? 'bg-[#CE9F6B]/10' 
+        : 'bg-[#AEBFC3]/10',
       icon: AlertTriangle
     },
     {
@@ -98,8 +98,8 @@ export default function ZoneExecutiveSummaryCards({
       description: 'Tickets being worked on',
       change: Number(stats?.inProgressTickets?.change ?? 0),
       isPositive: (Number(stats?.inProgressTickets?.change ?? 0)) >= 0,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'from-[#6F8A9D] to-[#546A7A]',
+      bgColor: 'bg-[#6F8A9D]/10',
       icon: RefreshCw
     },
     {
@@ -111,8 +111,8 @@ export default function ZoneExecutiveSummaryCards({
       description: 'Time to first response',
       change: Number(stats?.avgResponseTime?.change ?? 0),
       isPositive: stats?.avgResponseTime?.isPositive !== false,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-50',
+      color: 'from-[#82A094] to-[#4F6A64]',
+      bgColor: 'bg-[#A2B9AF]/10',
       icon: Clock
     },
     {
@@ -124,8 +124,8 @@ export default function ZoneExecutiveSummaryCards({
       description: 'Time to ticket resolution',
       change: Number(stats?.avgResolutionTime?.change ?? 0),
       isPositive: stats?.avgResolutionTime?.isPositive !== false,
-      color: 'from-teal-500 to-teal-600',
-      bgColor: 'bg-teal-50',
+      color: 'from-[#82A094] to-[#4F6A64]',
+      bgColor: 'bg-[#82A094]/10',
       icon: Timer
     },
     {
@@ -136,8 +136,8 @@ export default function ZoneExecutiveSummaryCards({
       ),
       change: Number(stats?.avgDowntime?.change ?? 0),
       isPositive: stats?.avgDowntime?.isPositive ?? false,
-      color: 'from-rose-500 to-pink-600',
-      bgColor: 'bg-rose-50',
+      color: 'from-[#E17F70] to-[#9E3B47]',
+      bgColor: 'bg-[#EEC1BF]/10',
       icon: Timer,
       description: 'Average machine downtime'
     },
@@ -147,8 +147,8 @@ export default function ZoneExecutiveSummaryCards({
       change: Number(stats?.monthlyTickets?.change ?? 0),
       isPositive: true,
       icon: FileText,
-      color: 'from-indigo-500 to-blue-600',
-      bgColor: 'bg-indigo-50',
+      color: 'from-[#6F8A9D] to-[#546A7A]',
+      bgColor: 'bg-[#546A7A]/10',
       description: 'Tickets created this month'
     },
     {
@@ -157,8 +157,8 @@ export default function ZoneExecutiveSummaryCards({
       change: Number(stats?.activeMachines?.change ?? 0),
       isPositive: true,
       icon: Cpu,
-      color: 'from-violet-500 to-purple-600',
-      bgColor: 'bg-violet-50',
+      color: 'from-[#6F8A9D] to-[#546A7A]',
+      bgColor: 'bg-[#6F8A9D]/10',
       description: 'Machines in operation'
     }
   ];
@@ -167,13 +167,13 @@ export default function ZoneExecutiveSummaryCards({
     <div className="mb-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-lg">
             <Award className="w-6 h-6 text-white" />
           </div>
           Zone Executive Summary
         </h2>
         <div className="flex items-center gap-3">
-          <Badge className="bg-green-100 text-green-800 px-3 py-1">
+          <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] px-3 py-1">
             <Database className="w-4 h-4 mr-1" />
             Live Data
           </Badge>
@@ -188,12 +188,12 @@ export default function ZoneExecutiveSummaryCards({
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-slate-600 flex items-center gap-1">
+                  <p className="text-sm font-medium text-[#5D6E73] flex items-center gap-1">
                     <metric.icon className="w-4 h-4" />
                     {metric.title}
                   </p>
-                  <p className="text-3xl font-bold text-slate-900">{metric.value}</p>
-                  <p className="text-xs text-slate-500">{metric.description}</p>
+                  <p className="text-3xl font-bold text-[#546A7A]">{metric.value}</p>
+                  <p className="text-xs text-[#757777]">{metric.description}</p>
 
                 </div>
                 <div className={`p-3 rounded-xl bg-gradient-to-r ${metric.color} shadow-lg`}>

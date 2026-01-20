@@ -311,11 +311,11 @@ export default function ServicePersonReportsClient({
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Modern Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white">
+      <div className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-xl p-8 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-2">My Performance Reports</h1>
-            <p className="text-blue-100 text-lg">Track your attendance, activities, and performance metrics</p>
+            <p className="text-[#96AEC2] text-lg">Track your attendance, activities, and performance metrics</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export default function ServicePersonReportsClient({
       </div>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-lg">
+        <TabsList className="grid w-full grid-cols-3 bg-[#AEBFC3]/20 p-1 rounded-lg">
           <TabsTrigger value="overview" className="rounded-md">Overview</TabsTrigger>
           <TabsTrigger value="attendance" className="rounded-md">Attendance Details</TabsTrigger>
           <TabsTrigger value="activities" className="rounded-md">Activity Timeline</TabsTrigger>
@@ -356,56 +356,56 @@ export default function ServicePersonReportsClient({
         <TabsContent value="overview" className="space-y-8 mt-8">
           {/* Key Performance Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">Total Hours Worked</CardTitle>
-                <Clock className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-sm font-medium text-[#546A7A]">Total Hours Worked</CardTitle>
+                <Clock className="h-5 w-5 text-[#546A7A]" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-blue-900">{safeReportData.summary.totalHours.toFixed(1)}h</div>
-                <p className="text-xs text-blue-600 mt-1">
+                <div className="text-3xl font-bold text-[#546A7A]">{safeReportData.summary.totalHours.toFixed(1)}h</div>
+                <p className="text-xs text-[#546A7A] mt-1">
                   Avg {safeReportData.summary.averageHoursPerDay.toFixed(1)}h per day
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-800">Working Days</CardTitle>
-                <CalendarDays className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-sm font-medium text-[#4F6A64]">Working Days</CardTitle>
+                <CalendarDays className="h-5 w-5 text-[#4F6A64]" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-900">{safeReportData.summary.totalWorkingDays}</div>
-                <p className="text-xs text-green-600 mt-1">
+                <div className="text-3xl font-bold text-[#4F6A64]">{safeReportData.summary.totalWorkingDays}</div>
+                <p className="text-xs text-[#4F6A64] mt-1">
                   {safeReportData.summary.absentDays} absent days
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-[#6F8A9D]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-purple-800">Activities Logged</CardTitle>
-                <Activity className="h-5 w-5 text-purple-600" />
+                <CardTitle className="text-sm font-medium text-[#546A7A]">Activities Logged</CardTitle>
+                <Activity className="h-5 w-5 text-[#546A7A]" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-purple-900">{safeReportData.summary.activitiesLogged}</div>
-                <p className="text-xs text-purple-600 mt-1">
+                <div className="text-3xl font-bold text-[#546A7A]">{safeReportData.summary.activitiesLogged}</div>
+                <p className="text-xs text-[#546A7A] mt-1">
                   Across {safeReportData.summary.totalWorkingDays} working days
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-orange-800">Performance Score</CardTitle>
-                <Award className="h-5 w-5 text-orange-600" />
+                <CardTitle className="text-sm font-medium text-[#976E44]">Performance Score</CardTitle>
+                <Award className="h-5 w-5 text-[#976E44]" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-orange-900">
+                <div className="text-3xl font-bold text-[#976E44]">
                   {safeReportData.summary.totalWorkingDays > 0 ? 
                     Math.round((safeReportData.summary.activitiesLogged / safeReportData.summary.totalWorkingDays) * 10) : 0}%
                 </div>
-                <p className="text-xs text-orange-600 mt-1">
+                <p className="text-xs text-[#976E44] mt-1">
                   {safeReportData.summary.activitiesLogged > safeReportData.summary.totalWorkingDays ? 'Excellent' : 'Good'} productivity
                 </p>
               </CardContent>
@@ -414,24 +414,24 @@ export default function ServicePersonReportsClient({
 
           {/* Flags and Issues */}
           {safeReportData.flags.length > 0 && (
-            <Card className="border-yellow-200 bg-yellow-50">
+            <Card className="border-[#CE9F6B] bg-[#EEC1BF]/10">
               <CardHeader>
-                <CardTitle className="text-yellow-800 flex items-center gap-2">
+                <CardTitle className="text-[#976E44] flex items-center gap-2">
                   <AlertCircle className="h-5 w-5" />
                   Attention Required
                 </CardTitle>
-                <CardDescription className="text-yellow-700">
+                <CardDescription className="text-[#976E44]">
                   Issues identified in your attendance and activity patterns
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {safeReportData.flags.map((flag: Flag, index: number) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-yellow-200">
+                    <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-[#CE9F6B]">
                       <div className={`p-2 rounded-full ${
-                        flag.type === 'LATE' ? 'bg-yellow-100 text-yellow-600' :
-                        flag.type === 'AUTO_CHECKOUT' ? 'bg-blue-100 text-blue-600' :
-                        'bg-red-100 text-red-600'
+                        flag.type === 'LATE' ? 'bg-[#CE9F6B]/20 text-[#976E44]' :
+                        flag.type === 'AUTO_CHECKOUT' ? 'bg-[#96AEC2]/20 text-[#546A7A]' :
+                        'bg-[#E17F70]/20 text-[#9E3B47]'
                       }`}>
                         {flag.type === 'LATE' ? <Clock className="h-4 w-4" /> :
                          flag.type === 'AUTO_CHECKOUT' ? <Target className="h-4 w-4" /> :
@@ -439,7 +439,7 @@ export default function ServicePersonReportsClient({
                       </div>
                       <div>
                         <div className="font-medium text-sm">{flag.message}</div>
-                        <div className="text-xs text-gray-500">{flag.count} occurrences</div>
+                        <div className="text-xs text-[#AEBFC3]0">{flag.count} occurrences</div>
                       </div>
                     </div>
                   ))}
@@ -454,7 +454,7 @@ export default function ServicePersonReportsClient({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
+                  <BarChart3 className="h-5 w-5 text-[#546A7A]" />
                   Daily Hours Trend
                 </CardTitle>
                 <CardDescription>Your daily working hours over the selected period</CardDescription>
@@ -480,38 +480,38 @@ export default function ServicePersonReportsClient({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-purple-600" />
+                  <Activity className="h-5 w-5 text-[#546A7A]" />
                   Activity Summary
                 </CardTitle>
                 <CardDescription>Your activity logging patterns</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#6F8A9D]/10 rounded-lg">
                     <div>
-                      <div className="font-semibold text-purple-900">Total Activities</div>
-                      <div className="text-2xl font-bold text-purple-700">{safeReportData.summary.activitiesLogged}</div>
+                      <div className="font-semibold text-[#546A7A]">Total Activities</div>
+                      <div className="text-2xl font-bold text-[#546A7A]">{safeReportData.summary.activitiesLogged}</div>
                     </div>
-                    <Activity className="h-8 w-8 text-purple-600" />
+                    <Activity className="h-8 w-8 text-[#546A7A]" />
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#A2B9AF]/10 rounded-lg">
                     <div>
-                      <div className="font-semibold text-green-900">Average per Day</div>
-                      <div className="text-2xl font-bold text-green-700">
+                      <div className="font-semibold text-[#4F6A64]">Average per Day</div>
+                      <div className="text-2xl font-bold text-[#4F6A64]">
                         {safeReportData.summary.totalWorkingDays > 0 ? 
                           (safeReportData.summary.activitiesLogged / safeReportData.summary.totalWorkingDays).toFixed(1) : '0.0'}
                       </div>
                     </div>
-                    <Target className="h-8 w-8 text-green-600" />
+                    <Target className="h-8 w-8 text-[#4F6A64]" />
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-[#96AEC2]/10 rounded-lg">
                     <div>
-                      <div className="font-semibold text-blue-900">Productivity Score</div>
-                      <div className="text-2xl font-bold text-blue-700">
+                      <div className="font-semibold text-[#546A7A]">Productivity Score</div>
+                      <div className="text-2xl font-bold text-[#546A7A]">
                         {safeReportData.summary.activitiesLogged > 0 ? 'High' : 'Low'}
                       </div>
                     </div>
-                    <Award className="h-8 w-8 text-blue-600" />
+                    <Award className="h-8 w-8 text-[#546A7A]" />
                   </div>
                 </div>
               </CardContent>
@@ -524,7 +524,7 @@ export default function ServicePersonReportsClient({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-[#546A7A]" />
                 Daily Attendance Records
               </CardTitle>
               <CardDescription>Detailed breakdown of your daily attendance</CardDescription>
@@ -533,9 +533,9 @@ export default function ServicePersonReportsClient({
               <div className="space-y-4">
                 {safeReportData.dayWiseBreakdown.map((day: DayWiseBreakdown, index: number) => (
                   <div key={index} className={`p-4 rounded-lg border-2 ${
-                    day.attendanceStatus === 'ABSENT' ? 'bg-red-50 border-red-200' :
-                    day.attendanceStatus === 'CHECKED_IN' ? 'bg-green-50 border-green-200' :
-                    'bg-blue-50 border-blue-200'
+                    day.attendanceStatus === 'ABSENT' ? 'bg-[#E17F70]/10 border-[#E17F70]' :
+                    day.attendanceStatus === 'CHECKED_IN' ? 'bg-[#A2B9AF]/10 border-[#A2B9AF]' :
+                    'bg-[#96AEC2]/10 border-[#96AEC2]'
                   }`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -554,7 +554,7 @@ export default function ServicePersonReportsClient({
                         <div className="text-2xl font-bold">
                           {day.totalHours > 0 ? `${day.totalHours.toFixed(1)}h` : 'N/A'}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[#AEBFC3]0">
                           {day.activityCount} activities
                         </div>
                       </div>
@@ -563,12 +563,12 @@ export default function ServicePersonReportsClient({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-green-600" />
+                          <Clock className="h-4 w-4 text-[#4F6A64]" />
                           <span className="font-medium">Check-in:</span>
                           <span>{day.checkInTime ? format(new Date(day.checkInTime), 'HH:mm') : 'Not checked in'}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-red-600" />
+                          <Clock className="h-4 w-4 text-[#9E3B47]" />
                           <span className="font-medium">Check-out:</span>
                           <span>{day.checkOutTime ? format(new Date(day.checkOutTime), 'HH:mm') : 'Not checked out'}</span>
                         </div>
@@ -579,8 +579,8 @@ export default function ServicePersonReportsClient({
                           <div className="font-medium text-sm">Issues:</div>
                           {day.flags.map((flag: Flag, flagIndex: number) => (
                             <div key={flagIndex} className="flex items-center gap-2">
-                              <AlertCircle className="h-3 w-3 text-yellow-600" />
-                              <span className="text-sm text-yellow-700">{flag.message}</span>
+                              <AlertCircle className="h-3 w-3 text-[#976E44]" />
+                              <span className="text-sm text-[#976E44]">{flag.message}</span>
                             </div>
                           ))}
                         </div>
@@ -598,7 +598,7 @@ export default function ServicePersonReportsClient({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-purple-600" />
+                <Activity className="h-5 w-5 text-[#546A7A]" />
                 Activity Timeline
               </CardTitle>
               <CardDescription>Chronological view of all your logged activities</CardDescription>
@@ -608,16 +608,16 @@ export default function ServicePersonReportsClient({
                 {safeReportData.dayWiseBreakdown
                   .filter(day => day.activities.length > 0)
                   .map((day, dayIndex) => (
-                    <div key={dayIndex} className="border-l-4 border-purple-200 pl-6 pb-6">
+                    <div key={dayIndex} className="border-l-4 border-[#6F8A9D] pl-6 pb-6">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-purple-100 p-2 rounded-full">
-                          <Calendar className="h-4 w-4 text-purple-600" />
+                        <div className="bg-[#6F8A9D]/20 p-2 rounded-full">
+                          <Calendar className="h-4 w-4 text-[#546A7A]" />
                         </div>
                         <div>
                           <div className="font-semibold text-lg">
                             {format(new Date(day.date), 'EEEE, MMM dd, yyyy')}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-[#AEBFC3]0">
                             {day.activities.length} activities logged
                           </div>
                         </div>
@@ -625,15 +625,15 @@ export default function ServicePersonReportsClient({
                       
                       <div className="space-y-3 ml-10">
                         {day.activities.map((activity, actIndex) => (
-                          <div key={actIndex} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                          <div key={actIndex} className="bg-white border border-[#92A2A5] rounded-lg p-4 shadow-sm">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-3">
-                                <div className="bg-blue-100 p-2 rounded-full">
-                                  <FileText className="h-4 w-4 text-blue-600" />
+                                <div className="bg-[#96AEC2]/20 p-2 rounded-full">
+                                  <FileText className="h-4 w-4 text-[#546A7A]" />
                                 </div>
                                 <div>
                                   <div className="font-medium">{activity.title}</div>
-                                  <div className="text-sm text-gray-500">
+                                  <div className="text-sm text-[#AEBFC3]0">
                                     {activity.activityType.replace('_', ' ')}
                                   </div>
                                 </div>
@@ -645,24 +645,24 @@ export default function ServicePersonReportsClient({
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 text-sm">
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-green-600" />
+                                <Clock className="h-4 w-4 text-[#4F6A64]" />
                                 <span>Start: {format(new Date(activity.startTime), 'HH:mm')}</span>
                               </div>
                               {activity.endTime && (
                                 <div className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-red-600" />
+                                  <Clock className="h-4 w-4 text-[#9E3B47]" />
                                   <span>End: {format(new Date(activity.endTime), 'HH:mm')}</span>
                                 </div>
                               )}
                               {activity.location && (
                                 <div className="flex items-center gap-2">
-                                  <MapPin className="h-4 w-4 text-blue-600" />
+                                  <MapPin className="h-4 w-4 text-[#546A7A]" />
                                   <span className="truncate">{activity.location}</span>
                                 </div>
                               )}
                               {activity.ticket && (
                                 <div className="flex items-center gap-2">
-                                  <Ticket className="h-4 w-4 text-purple-600" />
+                                  <Ticket className="h-4 w-4 text-[#546A7A]" />
                                   <span className="truncate">
                                     Ticket #{activity.ticketId}: {activity.ticket.title}
                                   </span>
@@ -677,9 +677,9 @@ export default function ServicePersonReportsClient({
                 
                 {safeReportData.dayWiseBreakdown.filter(day => day.activities.length > 0).length === 0 && (
                   <div className="text-center py-12">
-                    <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <div className="text-lg font-medium text-gray-500">No activities logged</div>
-                    <div className="text-sm text-gray-400">Start logging activities to see them here</div>
+                    <Activity className="h-12 w-12 text-[#979796] mx-auto mb-4" />
+                    <div className="text-lg font-medium text-[#AEBFC3]0">No activities logged</div>
+                    <div className="text-sm text-[#979796]">Start logging activities to see them here</div>
                   </div>
                 )}
               </div>

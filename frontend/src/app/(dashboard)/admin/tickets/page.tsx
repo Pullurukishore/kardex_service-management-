@@ -204,8 +204,8 @@ export default function AdminTicketsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading...</p>
+          <div className="w-12 h-12 border-4 border-[#9E3B47] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#5D6E73] font-medium">Loading...</p>
         </div>
       </div>
     )
@@ -270,128 +270,131 @@ export default function AdminTicketsPage() {
     critical: tickets.filter(t => t.priority === 'CRITICAL').length,
   }
 
+  // Kardex Company Colors for status
   const getStatusStyle = (status: string) => {
     switch (status) {
-      // Open/New
+      // Open/New - Blue 1
       case 'OPEN':
-        return 'bg-blue-500 text-white'
-      // Assignment
+        return 'bg-[#96AEC2] text-white'
+      // Assignment - Blue 2
       case 'ASSIGNED':
-        return 'bg-teal-500 text-white'
-      // In Progress
+        return 'bg-[#6F8A9D] text-white'
+      // In Progress - Blue 3
       case 'IN_PROGRESS':
-        return 'bg-indigo-500 text-white'
-      // Onsite Visit stages
+        return 'bg-[#546A7A] text-white'
+      // Onsite Visit stages - Green palette
       case 'ONSITE_VISIT_PLANNED':
-        return 'bg-cyan-500 text-white'
+        return 'bg-[#A2B9AF] text-white'
       case 'ONSITE_VISIT':
-        return 'bg-emerald-500 text-white'
+        return 'bg-[#82A094] text-white'
       case 'ONSITE_VISIT_STARTED':
-        return 'bg-sky-500 text-white'
+        return 'bg-[#A2B9AF] text-white'
       case 'ONSITE_VISIT_REACHED':
-        return 'bg-violet-500 text-white'
+        return 'bg-[#82A094] text-white'
       case 'ONSITE_VISIT_IN_PROGRESS':
-        return 'bg-amber-500 text-white'
+        return 'bg-[#EEC18F] text-white'
       case 'ONSITE_VISIT_RESOLVED':
-        return 'bg-lime-500 text-white'
+        return 'bg-[#4F6A64] text-white'
       case 'ONSITE_VISIT_PENDING':
-        return 'bg-orange-400 text-white'
+        return 'bg-[#CE9F6B] text-white'
       case 'ONSITE_VISIT_COMPLETED':
-        return 'bg-green-600 text-white'
-      // Spare Parts stages
+        return 'bg-[#4F6A64] text-white'
+      // Spare Parts stages - Sand palette
       case 'SPARE_PARTS_NEEDED':
-        return 'bg-rose-500 text-white'
+        return 'bg-[#E17F70] text-white'
       case 'SPARE_PARTS_BOOKED':
-        return 'bg-fuchsia-500 text-white'
+        return 'bg-[#CE9F6B] text-white'
       case 'SPARE_PARTS_DELIVERED':
-        return 'bg-emerald-600 text-white'
-      // PO stages
+        return 'bg-[#82A094] text-white'
+      // PO stages - Sand/Blue palette
       case 'PO_NEEDED':
-        return 'bg-orange-600 text-white'
+        return 'bg-[#976E44] text-white'
       case 'PO_REACHED':
-        return 'bg-purple-500 text-white'
+        return 'bg-[#6F8A9D] text-white'
       case 'PO_RECEIVED':
-        return 'bg-teal-600 text-white'
-      // Closure stages
+        return 'bg-[#546A7A] text-white'
+      // Closure stages - Grey/Silver palette
       case 'CLOSED_PENDING':
-        return 'bg-yellow-500 text-white'
+        return 'bg-[#EEC18F] text-white'
       case 'CLOSED':
-        return 'bg-slate-500 text-white'
+        return 'bg-[#979796] text-white'
       case 'CANCELLED':
-        return 'bg-red-500 text-white'
+        return 'bg-[#9E3B47] text-white'
       case 'RESOLVED':
-        return 'bg-green-500 text-white'
-      // Other
+        return 'bg-[#82A094] text-white'
+      // Other - Grey palette
       case 'REOPENED':
-        return 'bg-purple-600 text-white'
+        return 'bg-[#6F8A9D] text-white'
       case 'ON_HOLD':
-        return 'bg-gray-500 text-white'
+        return 'bg-[#757777] text-white'
       case 'ESCALATED':
-        return 'bg-red-600 text-white'
+        return 'bg-[#E17F70] text-white'
       case 'WAITING_CUSTOMER':
-        return 'bg-amber-400 text-white'
+        return 'bg-[#CE9F6B] text-white'
       case 'PENDING':
-        return 'bg-yellow-400 text-white'
+        return 'bg-[#EEC18F] text-white'
       default:
-        return 'bg-slate-400 text-white'
+        return 'bg-[#979796] text-white'
     }
   }
 
+  // Kardex Company Colors for priority
   const getPriorityStyle = (priority: string) => {
     switch (priority) {
       case 'CRITICAL':
-        return 'bg-red-100 text-red-700 border-red-300'
+        return 'bg-[#9E3B47]/20 text-[#75242D] border-[#9E3B47]'
       case 'HIGH':
-        return 'bg-orange-100 text-orange-700 border-orange-300'
+        return 'bg-[#E17F70]/20 text-[#9E3B47] border-[#E17F70]'
       case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-300'
+        return 'bg-[#EEC18F]/20 text-[#976E44] border-[#EEC18F]'
       case 'LOW':
-        return 'bg-green-100 text-green-700 border-green-300'
+        return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]'
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-300'
+        return 'bg-[#979796]/20 text-[#757777] border-[#979796]'
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Compact Header with Stats */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-orange-600 to-rose-700 rounded-2xl shadow-xl p-6 text-white">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        {/* Compact Header with Stats - Vibrant Coral & Blue Gradient */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#9E3B47] via-[#E17F70] to-[#6F8A9D] rounded-2xl shadow-xl p-6 text-white">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#546A7A]/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
           <div className="relative z-10 flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
+              <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl ring-2 ring-white/40 shadow-lg">
                 <Ticket className="h-8 w-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">Support Tickets</h1>
-                <p className="text-red-100 mt-1">Manage and track all support tickets</p>
+                <h1 className="text-3xl font-bold drop-shadow-md">Support Tickets</h1>
+                <p className="text-white/90 mt-1">Manage and track all support tickets</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="grid grid-cols-5 gap-3">
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-red-100 text-xs font-medium">Total</p>
+                <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-xs font-medium">Total</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-red-100 text-xs font-medium">Open</p>
+                <div className="bg-[#CE9F6B]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-xs font-medium">Open</p>
                   <p className="text-2xl font-bold">{stats.open}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-red-100 text-xs font-medium">In Progress</p>
+                <div className="bg-[#6F8A9D]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-xs font-medium">In Progress</p>
                   <p className="text-2xl font-bold">{stats.inProgress}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-red-100 text-xs font-medium">Closed</p>
+                <div className="bg-[#82A094]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-xs font-medium">Closed</p>
                   <p className="text-2xl font-bold">{stats.closed}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-red-100 text-xs font-medium">Critical</p>
+                <div className="bg-[#75242D]/50 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-xs font-medium">Critical</p>
                   <p className="text-2xl font-bold">{stats.critical}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/admin/tickets/create')} className="bg-white text-red-700 hover:bg-red-50 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={() => router.push('/admin/tickets/create')} className="bg-white text-[#9E3B47] hover:bg-[#EEC1BF] hover:text-[#75242D] shadow-lg hover:shadow-xl transition-all font-semibold">
                 <Plus className="h-4 w-4 mr-2" />
                 New Ticket
               </Button>
@@ -399,12 +402,12 @@ export default function AdminTicketsPage() {
           </div>
         </div>
 
-        {/* View Tabs */}
+        {/* View Tabs - Kardex Colors */}
         <div className="flex gap-2 flex-wrap">
           <Button
             variant={selectedView === 'All' ? 'default' : 'outline'}
             onClick={() => setSelectedView('All')}
-            className={selectedView === 'All' ? 'bg-red-600 hover:bg-red-700' : 'hover:bg-red-50'}
+            className={selectedView === 'All' ? 'bg-[#546A7A] hover:bg-[#5D6E73]' : 'hover:bg-[#96AEC2]/10'}
           >
             <AlertCircle className="mr-2 h-4 w-4" />
             All
@@ -412,7 +415,7 @@ export default function AdminTicketsPage() {
           <Button
             variant={selectedView === 'Unassigned' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Unassigned')}
-            className={selectedView === 'Unassigned' ? 'bg-orange-600 hover:bg-orange-700' : 'hover:bg-orange-50'}
+            className={selectedView === 'Unassigned' ? 'bg-[#CE9F6B] hover:bg-[#976E44]' : 'hover:bg-[#EEC18F]/10'}
           >
             <Clock className="mr-2 h-4 w-4" />
             Unassigned
@@ -420,7 +423,7 @@ export default function AdminTicketsPage() {
           <Button
             variant={selectedView === 'Assigned to Zone' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Zone')}
-            className={selectedView === 'Assigned to Zone' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50'}
+            className={selectedView === 'Assigned to Zone' ? 'bg-[#96AEC2] hover:bg-[#6F8A9D]' : 'hover:bg-[#96AEC2]/10'}
           >
             <Users className="mr-2 h-4 w-4" />
             Zone Users
@@ -428,7 +431,7 @@ export default function AdminTicketsPage() {
           <Button
             variant={selectedView === 'Assigned to Service Person' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Service Person')}
-            className={selectedView === 'Assigned to Service Person' ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-50'}
+            className={selectedView === 'Assigned to Service Person' ? 'bg-[#82A094] hover:bg-[#4F6A64]' : 'hover:bg-[#A2B9AF]/10'}
           >
             <Wrench className="mr-2 h-4 w-4" />
             Service Person
@@ -436,7 +439,7 @@ export default function AdminTicketsPage() {
           <Button
             variant={selectedView === 'Assigned to Zone Manager' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Zone Manager')}
-            className={selectedView === 'Assigned to Zone Manager' ? 'bg-purple-600 hover:bg-purple-700' : 'hover:bg-purple-50'}
+            className={selectedView === 'Assigned to Zone Manager' ? 'bg-[#6F8A9D] hover:bg-[#546A7A]' : 'hover:bg-[#6F8A9D]/10'}
           >
             <Shield className="mr-2 h-4 w-4" />
             Zone Manager
@@ -444,7 +447,7 @@ export default function AdminTicketsPage() {
           <Button
             variant={selectedView === 'Assigned to Expert Helpdesk' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Expert Helpdesk')}
-            className={selectedView === 'Assigned to Expert Helpdesk' ? 'bg-cyan-600 hover:bg-cyan-700' : 'hover:bg-cyan-50'}
+            className={selectedView === 'Assigned to Expert Helpdesk' ? 'bg-[#92A2A5] hover:bg-[#757777]' : 'hover:bg-[#92A2A5]/10'}
           >
             <Headphones className="mr-2 h-4 w-4" />
             Expert Helpdesk
@@ -453,17 +456,17 @@ export default function AdminTicketsPage() {
 
         {/* Filters */}
         <Card className="border-0 shadow-lg bg-white" style={{backgroundColor: 'white'}}>
-          <CardHeader className="bg-white border-b border-slate-200" style={{backgroundColor: 'white'}}>
+          <CardHeader className="bg-white border-b border-[#92A2A5]" style={{backgroundColor: 'white'}}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-red-600" />
+                <Filter className="h-5 w-5 text-[#9E3B47]" />
                 <CardTitle className="text-lg">Search & Filter</CardTitle>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="ml-2">Active</Badge>
                 )}
               </div>
               {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#9E3B47] hover:text-[#75242D] hover:bg-[#E17F70]/10">
                   <X className="h-4 w-4 mr-1" />
                   Clear All
                 </Button>
@@ -474,31 +477,31 @@ export default function AdminTicketsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Search */}
               <div className="space-y-2">
-                <Label htmlFor="search" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Search className="h-4 w-4 text-red-600" />
+                <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Search className="h-4 w-4 text-[#9E3B47]" />
                   Search Tickets
                 </Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                   <Input
                     id="search"
                     placeholder="Search by ticket #, title..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     disabled={loading}
-                    className="pl-10 h-11 border-gray-200 focus:border-red-500 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="pl-10 h-11 border-[#92A2A5] focus:border-[#9E3B47] focus:ring-[#E17F70] disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Zone Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-orange-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[#976E44]" />
                   Zone
                 </Label>
                 <Select value={selectedZone} onValueChange={setSelectedZone} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -512,12 +515,12 @@ export default function AdminTicketsPage() {
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-purple-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#546A7A]" />
                   Status
                 </Label>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -530,12 +533,12 @@ export default function AdminTicketsPage() {
 
               {/* Priority Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-pink-600" />
+                <Label className="text-sm font-semibold text-[#5D6E73] flex items-center gap-2">
+                  <Flag className="h-4 w-4 text-[#9E3B47]" />
                   Priority
                 </Label>
                 <Select value={selectedPriority} onValueChange={setSelectedPriority} disabled={loading}>
-                  <SelectTrigger className="h-11 border-gray-200 focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectTrigger className="h-11 border-[#92A2A5] focus:border-pink-500 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -554,81 +557,81 @@ export default function AdminTicketsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white">
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('id')}>
+                <tr className="bg-gradient-to-r from-[#75242D] via-[#9E3B47] to-[#546A7A] text-white">
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('id')}>
                     <div className="flex items-center gap-1.5">
                       Ticket #
                       {sortField === 'id' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('title')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('title')}>
                     <div className="flex items-center gap-1.5">
-                      <Ticket className="h-3.5 w-3.5 text-red-400" />
+                      <Ticket className="h-3.5 w-3.5 text-[#E17F70]" />
                       Title
                       {sortField === 'title' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('customer')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('customer')}>
                     <div className="flex items-center gap-1.5">
-                      <Building2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <Building2 className="h-3.5 w-3.5 text-[#A2B9AF]" />
                       Customer
                       {sortField === 'customer' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('zone')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('zone')}>
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-blue-400" />
+                      <MapPin className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Zone
                       {sortField === 'zone' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('status')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('status')}>
                     <div className="flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5 text-purple-400" />
+                      <TrendingUp className="h-3.5 w-3.5 text-[#6F8A9D]" />
                       Status
                       {sortField === 'status' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('priority')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('priority')}>
                     <div className="flex items-center gap-1.5">
-                      <Flag className="h-3.5 w-3.5 text-amber-400" />
+                      <Flag className="h-3.5 w-3.5 text-[#CE9F6B]" />
                       Priority
                       {sortField === 'priority' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('assignedTo')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('assignedTo')}>
                     <div className="flex items-center gap-1.5">
                       <Users className="h-3.5 w-3.5 text-cyan-400" />
                       Assigned
                       {sortField === 'assignedTo' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle className="h-3.5 w-3.5 text-green-400" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#82A094]" />
                       Response
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-600/50 transition-colors" onClick={() => handleSort('createdAt')}>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#5D6E73]/50 transition-colors" onClick={() => handleSort('createdAt')}>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5 text-pink-400" />
                       Created
                       {sortField === 'createdAt' && (
-                        <span className="text-red-400">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                        <span className="text-[#E17F70]">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                       )}
                     </div>
                   </th>
@@ -638,32 +641,32 @@ export default function AdminTicketsPage() {
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-red-50/30">
+                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-red-50/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="relative">
-                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shadow-lg">
+                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#E17F70] to-[#976E44] flex items-center justify-center shadow-lg">
                             <Loader2 className="h-8 w-8 animate-spin text-white" />
                           </div>
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Loading tickets...</p>
-                          <p className="text-sm text-gray-500 mt-1">Please wait while we fetch the data</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">Loading tickets...</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Please wait while we fetch the data</p>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : tickets.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-slate-50 to-red-50/30">
+                    <td colSpan={10} className="px-6 py-16 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-red-50/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <Ticket className="h-8 w-8 text-gray-500" />
+                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#AEBFC3]/40 to-[#AEBFC3]/60 flex items-center justify-center">
+                          <Ticket className="h-8 w-8 text-[#AEBFC3]0" />
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">No tickets found</p>
-                          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or create a new ticket</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">No tickets found</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Try adjusting your filters or create a new ticket</p>
                         </div>
-                        <Button onClick={() => router.push('/admin/tickets/create')} className="mt-4 bg-gradient-to-r from-red-600 to-orange-600">
+                        <Button onClick={() => router.push('/admin/tickets/create')} className="mt-4 bg-gradient-to-r from-[#9E3B47] to-[#976E44]">
                           <Plus className="h-4 w-4 mr-2" />
                           Create Your First Ticket
                         </Button>
@@ -675,43 +678,43 @@ export default function AdminTicketsPage() {
                   <tr 
                     key={ticket.id} 
                     className={`
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}
-                      hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50/50 
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/50'}
+                      hover:bg-gradient-to-r hover:from-[#E17F70]/10 hover:to-[#EEC1BF]/10/50 
                       transition-all duration-200 group
                     `}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Link href={`/admin/tickets/${ticket.id}/list`} className="font-mono font-bold text-red-600 hover:text-red-700 text-sm hover:underline">
+                        <Link href={`/admin/tickets/${ticket.id}/list`} className="font-mono font-bold text-[#9E3B47] hover:text-[#75242D] text-sm hover:underline">
                           #{ticket.ticketNumber ?? ticket.id}
                         </Link>
                         {ticket.status === 'OPEN' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded">NEW</span>
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#96AEC2]/20 text-[#546A7A] rounded">NEW</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="min-w-0">
-                        <Link href={`/admin/tickets/${ticket.id}/list`} className="font-semibold text-gray-900 hover:text-red-600 text-sm truncate max-w-[200px] block hover:underline">
+                        <Link href={`/admin/tickets/${ticket.id}/list`} className="font-semibold text-[#546A7A] hover:text-[#9E3B47] text-sm truncate max-w-[200px] block hover:underline">
                           {ticket.title}
                         </Link>
-                        {ticket.description && <p className="text-xs text-gray-400 truncate max-w-[200px]">{ticket.description}</p>}
+                        {ticket.description && <p className="text-xs text-[#979796] truncate max-w-[200px]">{ticket.description}</p>}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#82A094] to-[#82A094] flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
                           {(ticket.customer?.companyName || 'U')?.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 text-sm truncate max-w-[120px]">{ticket.customer?.companyName || 'N/A'}</p>
+                          <p className="font-semibold text-[#546A7A] text-sm truncate max-w-[120px]">{ticket.customer?.companyName || 'N/A'}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
-                        <div className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0"></div>
-                        <span className="text-gray-700 text-sm font-medium">{ticket.zone?.name || 'N/A'}</span>
+                        <div className="h-2 w-2 rounded-full bg-[#96AEC2]/100 flex-shrink-0"></div>
+                        <span className="text-[#5D6E73] text-sm font-medium">{ticket.zone?.name || 'N/A'}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -734,60 +737,60 @@ export default function AdminTicketsPage() {
                       <div className="flex items-center gap-2">
                         {ticket.assignedTo ? (
                           <>
-                            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-700 font-semibold text-[10px] flex-shrink-0">
+                            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-[#5D6E73] font-semibold text-[10px] flex-shrink-0">
                               {ticket.assignedTo?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
-                            <span className="text-gray-700 text-sm truncate max-w-[80px]">{ticket.assignedTo?.name?.split(' ')[0]}</span>
+                            <span className="text-[#5D6E73] text-sm truncate max-w-[80px]">{ticket.assignedTo?.name?.split(' ')[0]}</span>
                           </>
                         ) : (
-                          <span className="text-gray-400 text-sm italic">Unassigned</span>
+                          <span className="text-[#979796] text-sm italic">Unassigned</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {ticket.assignedTo ? (
                         ticket.assignmentStatus === 'PENDING' ? (
-                          <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
+                          <Badge className="bg-[#CE9F6B]/20 text-[#976E44] border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
                             Pending
                           </Badge>
                         ) : ticket.assignmentStatus === 'ACCEPTED' ? (
-                          <Badge className="bg-green-100 text-green-700 border-green-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094] text-[10px] px-2 py-0.5">
                             ✓ Accepted
                           </Badge>
                         ) : ticket.assignmentStatus === 'REJECTED' ? (
-                          <Badge className="bg-red-100 text-red-700 border-red-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#E17F70]/20 text-[#75242D] border-[#E17F70] text-[10px] px-2 py-0.5">
                             ✗ Rejected
                           </Badge>
                         ) : (
-                          <span className="text-gray-400 text-xs">-</span>
+                          <span className="text-[#979796] text-xs">-</span>
                         )
                       ) : (
-                        <span className="text-gray-400 text-xs">-</span>
+                        <span className="text-[#979796] text-xs">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-gray-500 text-sm">{ticket.createdAt ? format(new Date(ticket.createdAt), 'dd MMM') : '-'}</span>
+                      <span className="text-[#AEBFC3]0 text-sm">{ticket.createdAt ? format(new Date(ticket.createdAt), 'dd MMM') : '-'}</span>
                     </td>
                     <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-200 rounded-lg">
-                            <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-[#92A2A5]/30 rounded-lg">
+                            <MoreHorizontal className="h-4 w-4 text-[#5D6E73]" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-slate-200">
+                        <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-xl border-[#92A2A5]">
                           <DropdownMenuItem 
                             onClick={() => router.push(`/admin/tickets/${ticket.id}/list`)}
                             className="cursor-pointer rounded-lg"
                           >
-                            <Eye className="h-4 w-4 mr-2 text-blue-600" />
+                            <Eye className="h-4 w-4 mr-2 text-[#546A7A]" />
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => router.push(`/admin/tickets/${ticket.id}/edit`)}
                             className="cursor-pointer rounded-lg"
                           >
-                            <Edit className="h-4 w-4 mr-2 text-purple-600" />
+                            <Edit className="h-4 w-4 mr-2 text-[#546A7A]" />
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -802,10 +805,10 @@ export default function AdminTicketsPage() {
           
           {/* Pagination */}
           {!loading && tickets.length > 0 && (
-            <div className="bg-gradient-to-r from-slate-50 via-red-50 to-orange-50/30 px-6 py-4 border-t border-slate-200">
+            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-red-50 to-[#EEC1BF]/10/30 px-6 py-4 border-t border-[#92A2A5]">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700 font-medium">
-                  Showing <span className="font-bold text-slate-900">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
+                <div className="text-sm text-[#5D6E73] font-medium">
+                  Showing <span className="font-bold text-[#546A7A]">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -813,19 +816,19 @@ export default function AdminTicketsPage() {
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
                     disabled={pagination.page === 1}
-                    className="hover:bg-red-50 hover:border-red-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#E17F70]/10 hover:border-[#E17F70] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm text-gray-700 font-medium px-3">
-                    Page <span className="font-bold text-slate-900">{pagination.page}</span> of <span className="font-semibold">{pagination.totalPages}</span>
+                  <span className="text-sm text-[#5D6E73] font-medium px-3">
+                    Page <span className="font-bold text-[#546A7A]">{pagination.page}</span> of <span className="font-semibold">{pagination.totalPages}</span>
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
                     disabled={pagination.page === pagination.totalPages}
-                    className="hover:bg-red-50 hover:border-red-300 disabled:opacity-50 rounded-xl transition-all"
+                    className="hover:bg-[#E17F70]/10 hover:border-[#E17F70] disabled:opacity-50 rounded-xl transition-all"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>

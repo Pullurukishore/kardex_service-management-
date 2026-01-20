@@ -30,18 +30,19 @@ export default async function ServiceZonesPage({ searchParams }: ServiceZonesPag
 
   return (
     <div className="space-y-6">
-      {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-green-600 via-teal-600 to-green-800 p-6 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
+      {/* Desktop Header with Gradient - Vibrant Coral & Green */}
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#E17F70] via-[#82A094] to-[#4F6A64] p-6 text-white">
+        <div className="absolute inset-0 bg-black/5"></div>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Service Zones</h1>
-            <p className="text-green-100">
+            <h1 className="text-3xl font-bold mb-2 drop-shadow-md">Service Zones</h1>
+            <p className="text-white/90">
               Manage service zones for organizing customer locations
             </p>
           </div>
           <Link href="/admin/service-zones/new">
-            <Button className="bg-white text-green-600 hover:bg-green-50 shadow-lg">
+            <Button className="bg-white text-[#9E3B47] hover:bg-[#EEC1BF] hover:text-[#75242D] shadow-lg font-semibold">
               <Plus className="mr-2 h-4 w-4" />
               Add Service Zone
             </Button>
@@ -55,11 +56,11 @@ export default async function ServiceZonesPage({ searchParams }: ServiceZonesPag
           title="Service Zones"
           description="Manage service zones for organizing customer locations"
           action={
-            <Link href="/admin/service-zones/new">
-              <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
-                <Plus className="mr-2 h-4 w-4" /> Add
-              </Button>
-            </Link>
+          <Link href="/admin/service-zones/new">
+            <Button className="bg-[#E17F70] hover:bg-[#9E3B47] text-white shadow-lg">
+              <Plus className="mr-2 h-4 w-4" /> Add
+            </Button>
+          </Link>
           }
         />
       </div>

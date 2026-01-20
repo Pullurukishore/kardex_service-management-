@@ -434,12 +434,12 @@ export default function NewOfferPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-white" />
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Form Data</h3>
-            <p className="text-gray-500">Preparing offer creation form...</p>
+            <h3 className="text-lg font-semibold text-[#546A7A] mb-2">Loading Form Data</h3>
+            <p className="text-[#AEBFC3]0">Preparing offer creation form...</p>
           </div>
         </div>
       </div>
@@ -447,7 +447,7 @@ export default function NewOfferPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/10">
       <div className="container mx-auto px-4 py-8">
         {/* Premium Gradient Header */}
         <div className="mb-8">
@@ -461,7 +461,7 @@ export default function NewOfferPage() {
             Back
           </Button>
 
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-6 shadow-xl mb-6">
+          <div className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] rounded-2xl p-6 shadow-xl mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -469,7 +469,7 @@ export default function NewOfferPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-white">Create New Offer</h1>
-                  <p className="text-blue-100 mt-1">Quick setup with essential details • Add more info later</p>
+                  <p className="text-[#96AEC2] mt-1">Quick setup with essential details • Add more info later</p>
                 </div>
               </div>
               <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm">
@@ -480,13 +480,13 @@ export default function NewOfferPage() {
           </div>
 
           {/* Quick Info Card */}
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100 flex items-start gap-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Target className="h-5 w-5 text-blue-600" />
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#96AEC2]/30 flex items-start gap-4">
+            <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+              <Target className="h-5 w-5 text-[#546A7A]" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900">Initial Offer Setup</h3>
-              <p className="text-sm text-gray-600 mt-1">
+              <h3 className="font-semibold text-[#546A7A]">Initial Offer Setup</h3>
+              <p className="text-sm text-[#5D6E73] mt-1">
                 Start by selecting Zone → Customer → Contact → Asset(s) → Product Type. 
                 You can add financial details, quotes, and documents after the offer is created.
               </p>
@@ -497,27 +497,27 @@ export default function NewOfferPage() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Customer & Contact Information */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-xl border-b border-green-100">
+          <CardHeader className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 rounded-t-xl border-b border-[#A2B9AF]/20">
             <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Building2 className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-[#A2B9AF]/20 rounded-lg">
+                <Building2 className="h-5 w-5 text-[#4F6A64]" />
               </div>
               Customer & Contact Information
             </CardTitle>
-            <CardDescription className="text-slate-600 ml-12">Select customer and contact person</CardDescription>
+            <CardDescription className="text-[#5D6E73] ml-12">Select customer and contact person</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Zone Selection - Locked to Zone Manager's Zone */}
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="zoneId" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-orange-600" />
+                  <MapPin className="h-4 w-4 text-[#976E44]" />
                   Your Zone
                 </Label>
-                <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 rounded-lg shadow-sm">
+                <div className="p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 border-2 border-[#CE9F6B] rounded-lg shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-lg font-bold text-orange-900">
+                      <p className="text-lg font-bold text-[#976E44]">
                         {
                           (zones.length > 0 && zones[0]?.name)
                           || ((user as any)?.zones?.[0]?.name)
@@ -525,7 +525,7 @@ export default function NewOfferPage() {
                           || ((loadingZones) ? 'Loading...' : 'Your Zone')
                         }
                       </p>
-                      <p className="text-xs text-orange-600 mt-1 font-medium">Your assigned zone cannot be changed</p>
+                      <p className="text-xs text-[#976E44] mt-1 font-medium">Your assigned zone cannot be changed</p>
                     </div>
                     <div className="text-2xl">🔒</div>
                   </div>
@@ -535,16 +535,16 @@ export default function NewOfferPage() {
               {/* Customer Selection */}
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="customerId" className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-green-500" />
+                  <Building2 className="h-4 w-4 text-[#82A094]" />
                   Customer *
-                  {loadingCustomers && <Loader2 className="h-3 w-3 animate-spin text-green-500" />}
+                  {loadingCustomers && <Loader2 className="h-3 w-3 animate-spin text-[#82A094]" />}
                 </Label>
                 <Select 
                   value={formData.customerId} 
                   onValueChange={(value) => handleInputChange('customerId', value)}
                   disabled={!formData.zoneId || loadingCustomers}
                 >
-                  <SelectTrigger className="focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <SelectTrigger className="focus:ring-2 focus:ring-[#82A094] focus:border-[#82A094]">
                     <SelectValue placeholder={
                       !formData.zoneId 
                         ? "Select a service zone first" 
@@ -558,7 +558,7 @@ export default function NewOfferPage() {
                   <SelectContent className="max-h-80">
                     <div className="sticky top-0 bg-white border-b p-2 z-10">
                       <div className="relative">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
                         <Input
                           placeholder="Search customers..."
                           value={customerSearch}
@@ -572,7 +572,7 @@ export default function NewOfferPage() {
                               e.stopPropagation();
                               setCustomerSearch('');
                             }}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#979796] hover:text-[#5D6E73]"
                           >
                             <X className="h-3 w-3" />
                           </button>
@@ -584,11 +584,11 @@ export default function NewOfferPage() {
                         filteredCustomers.map((customer) => (
                           <SelectItem key={customer.id} value={customer.id.toString()}>
                             <div className="flex items-center space-x-2">
-                              <Building2 className="h-3 w-3 text-green-500" />
+                              <Building2 className="h-3 w-3 text-[#82A094]" />
                               <div className="flex flex-col">
                                 <span className="font-medium">{customer.companyName}</span>
                                 {customer.location && (
-                                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                                  <span className="text-xs text-[#AEBFC3]0 flex items-center gap-1">
                                     <MapPin className="h-3 w-3" />
                                     {customer.location}
                                   </span>
@@ -598,7 +598,7 @@ export default function NewOfferPage() {
                           </SelectItem>
                         ))
                       ) : (
-                        <div className="p-2 text-sm text-gray-500 text-center">
+                        <div className="p-2 text-sm text-[#AEBFC3]0 text-center">
                           {customerSearch ? 'No customers found matching your search' : 'No customers available'}
                         </div>
                       )}
@@ -610,7 +610,7 @@ export default function NewOfferPage() {
               {/* Contact Selection with Add Button */}
               <div className="space-y-2">
                 <Label htmlFor="contactId" className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-purple-500" />
+                  <Users className="h-4 w-4 text-[#6F8A9D]" />
                   Contact Person *
                 </Label>
                 <div className="flex gap-2">
@@ -619,7 +619,7 @@ export default function NewOfferPage() {
                     onValueChange={(value) => handleInputChange('contactId', value)}
                     disabled={!formData.customerId || contacts.length === 0}
                   >
-                    <SelectTrigger className="flex-1 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <SelectTrigger className="flex-1 focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D]">
                       <SelectValue placeholder={
                         !formData.customerId 
                           ? 'Select a customer first' 
@@ -631,7 +631,7 @@ export default function NewOfferPage() {
                     <SelectContent className="max-h-80">
                       <div className="sticky top-0 bg-white border-b p-2 z-10">
                         <div className="relative">
-                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
                           <Input
                             placeholder="Search contacts..."
                             value={contactSearch}
@@ -645,7 +645,7 @@ export default function NewOfferPage() {
                                 e.stopPropagation();
                                 setContactSearch('');
                               }}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#979796] hover:text-[#5D6E73]"
                             >
                               <X className="h-3 w-3" />
                             </button>
@@ -657,10 +657,10 @@ export default function NewOfferPage() {
                           filteredContacts.map((contact) => (
                             <SelectItem key={contact.id} value={contact.id.toString()}>
                               <div className="flex items-center space-x-2">
-                                <Users className="h-3 w-3 text-purple-500" />
+                                <Users className="h-3 w-3 text-[#6F8A9D]" />
                                 <div className="flex flex-col">
                                   <span className="font-medium">{contact.name || contact.contactPersonName}</span>
-                                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                  <div className="flex items-center space-x-2 text-xs text-[#AEBFC3]0">
                                     {(contact.phone || contact.contactNumber) && <span>{contact.phone || contact.contactNumber}</span>}
                                     {contact.email && <span>{contact.email}</span>}
                                   </div>
@@ -669,7 +669,7 @@ export default function NewOfferPage() {
                             </SelectItem>
                           ))
                         ) : (
-                          <div className="p-2 text-sm text-gray-500 text-center">
+                          <div className="p-2 text-sm text-[#AEBFC3]0 text-center">
                             {contactSearch ? 'No contacts found matching your search' : 'No contacts available'}
                           </div>
                         )}
@@ -682,7 +682,7 @@ export default function NewOfferPage() {
                     size="sm"
                     onClick={() => setIsAddContactOpen(true)}
                     disabled={!formData.customerId}
-                    className="flex-shrink-0 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300"
+                    className="flex-shrink-0 border-[#6F8A9D] text-[#546A7A] hover:bg-[#6F8A9D]/10 hover:border-[#6F8A9D]"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New
@@ -693,7 +693,7 @@ export default function NewOfferPage() {
               {/* Asset Selection with Add Button - Multiple Selection */}
               <div className="space-y-2">
                 <Label htmlFor="assetIds" className="flex items-center gap-2">
-                  <HardDrive className="h-4 w-4 text-indigo-500" />
+                  <HardDrive className="h-4 w-4 text-[#546A7A]" />
                   Assets *
                 </Label>
                 <div className="flex gap-2">
@@ -704,7 +704,7 @@ export default function NewOfferPage() {
                         {formData.assetIds.map((assetId) => {
                           const asset = assets.find(a => a.id === parseInt(assetId));
                           return (
-                            <div key={assetId} className="flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md text-sm">
+                            <div key={assetId} className="flex items-center gap-1 bg-[#546A7A]/10 text-[#546A7A] px-2 py-1 rounded-md text-sm">
                               <HardDrive className="h-3 w-3" />
                               <span>{asset?.serialNo || asset?.machineId || 'Unknown'}{asset?.model ? ` - ${asset.model}` : ''}</span>
                               <button
@@ -713,7 +713,7 @@ export default function NewOfferPage() {
                                   const newAssetIds = formData.assetIds.filter(id => id !== assetId);
                                   handleInputChange('assetIds', newAssetIds);
                                 }}
-                                className="ml-1 text-indigo-500 hover:text-indigo-700"
+                                className="ml-1 text-[#546A7A] hover:text-[#546A7A]"
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -733,7 +733,7 @@ export default function NewOfferPage() {
                       }}
                       disabled={!formData.customerId}
                     >
-                      <SelectTrigger className="focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                      <SelectTrigger className="focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D]">
                         <SelectValue placeholder={
                           !formData.customerId 
                             ? 'Select a customer first' 
@@ -747,7 +747,7 @@ export default function NewOfferPage() {
                       <SelectContent className="max-h-80">
                         <div className="sticky top-0 bg-white border-b p-2 z-10">
                           <div className="relative">
-                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
                             <Input
                               placeholder="Search assets..."
                               value={assetSearch}
@@ -761,7 +761,7 @@ export default function NewOfferPage() {
                                   e.stopPropagation();
                                   setAssetSearch('');
                                 }}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#979796] hover:text-[#5D6E73]"
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -775,10 +775,10 @@ export default function NewOfferPage() {
                               .map((asset) => (
                                 <SelectItem key={asset.id} value={asset.id.toString()}>
                                   <div className="flex items-center space-x-2">
-                                    <HardDrive className="h-3 w-3 text-indigo-500" />
+                                    <HardDrive className="h-3 w-3 text-[#546A7A]" />
                                     <div className="flex flex-col">
                                       <span className="font-medium">{asset.serialNo || asset.machineId || 'Unknown'}</span>
-                                      <span className="text-xs text-gray-500">
+                                      <span className="text-xs text-[#AEBFC3]0">
                                         {asset.model ? `Model: ${asset.model}` : 'No model info'}
                                       </span>
                                     </div>
@@ -786,7 +786,7 @@ export default function NewOfferPage() {
                                 </SelectItem>
                               ))
                           ) : assets.length > 0 ? (
-                            <div className="p-2 text-sm text-gray-500 text-center">
+                            <div className="p-2 text-sm text-[#AEBFC3]0 text-center">
                               {formData.assetIds.length === assets.length 
                                 ? 'All assets selected' 
                                 : 'No assets found matching your search'}
@@ -803,7 +803,7 @@ export default function NewOfferPage() {
                     size="sm"
                     onClick={() => setIsAddAssetOpen(true)}
                     disabled={!formData.customerId}
-                    className="flex-shrink-0 border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300"
+                    className="flex-shrink-0 border-[#546A7A] text-[#546A7A] hover:bg-[#546A7A]/10 hover:border-indigo-300"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New
@@ -816,24 +816,24 @@ export default function NewOfferPage() {
 
         {/* Essential Information */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl border-b border-blue-100">
+          <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-t-xl border-b border-[#96AEC2]/30">
             <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FileText className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                <FileText className="h-5 w-5 text-[#546A7A]" />
               </div>
               Essential Information
             </CardTitle>
-            <CardDescription className="text-slate-600 ml-12">Basic details for initial offer stage</CardDescription>
+            <CardDescription className="text-[#5D6E73] ml-12">Basic details for initial offer stage</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="productType" className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-blue-500" />
+                  <Package className="h-4 w-4 text-[#6F8A9D]" />
                   Product Type *
                 </Label>
                 <Select value={formData.productType} onValueChange={(value) => handleInputChange('productType', value)}>
-                  <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
+                  <SelectTrigger className="focus:ring-2 focus:ring-[#96AEC2]">
                     <SelectValue placeholder="Select product type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -852,11 +852,11 @@ export default function NewOfferPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="lead" className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <TrendingUp className="h-4 w-4 text-[#82A094]" />
                   Lead Status *
                 </Label>
                 <Select value={formData.lead} onValueChange={(value) => handleInputChange('lead', value)}>
-                  <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
+                  <SelectTrigger className="focus:ring-2 focus:ring-[#96AEC2]">
                     <SelectValue placeholder="Select lead status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -872,14 +872,14 @@ export default function NewOfferPage() {
         {/* Spare Parts Section - Only for SPP */}
         {formData.productType === 'SPP' && (
           <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 rounded-t-xl border-b border-orange-100">
+            <CardHeader className="bg-gradient-to-r from-[#EEC1BF]/10 to-red-50 rounded-t-xl border-b border-[#EEC1BF]/20">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Target className="h-5 w-5 text-orange-600" />
+                <div className="p-2 bg-[#CE9F6B]/20 rounded-lg">
+                  <Target className="h-5 w-5 text-[#976E44]" />
                 </div>
                 Spare Parts Information
               </CardTitle>
-              <CardDescription className="text-slate-600 ml-12">Add spare parts details for SPP product type</CardDescription>
+              <CardDescription className="text-[#5D6E73] ml-12">Add spare parts details for SPP product type</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -890,7 +890,7 @@ export default function NewOfferPage() {
                     {formData.spareParts.map((part, index) => {
                       const sparePart = spareParts.find(sp => sp.id === parseInt(part.name)) || {};
                       return (
-                        <div key={index} className="p-4 border border-orange-200 rounded-lg bg-orange-50/50">
+                        <div key={index} className="p-4 border border-[#CE9F6B] rounded-lg bg-[#CE9F6B]/10/50">
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex items-center gap-3">
                               {sparePart.imageUrl && (
@@ -901,8 +901,8 @@ export default function NewOfferPage() {
                                 />
                               )}
                               <div>
-                                <h4 className="font-medium text-orange-800">{sparePart.name}</h4>
-                                <p className="text-sm text-orange-600">#{sparePart.partNumber}</p>
+                                <h4 className="font-medium text-[#976E44]">{sparePart.name}</h4>
+                                <p className="text-sm text-[#976E44]">#{sparePart.partNumber}</p>
                               </div>
                             </div>
                             <Button
@@ -913,7 +913,7 @@ export default function NewOfferPage() {
                                 const newParts = formData.spareParts.filter((_, i) => i !== index);
                                 handleInputChange('spareParts', newParts);
                               }}
-                              className="text-red-600 border-red-200 hover:bg-red-50"
+                              className="text-[#9E3B47] border-[#E17F70] hover:bg-[#E17F70]/10"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -921,7 +921,7 @@ export default function NewOfferPage() {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
                               <Label className="flex items-center gap-1 text-sm">
-                                <Package className="h-3 w-3 text-gray-500" />
+                                <Package className="h-3 w-3 text-[#AEBFC3]0" />
                                 Quantity
                               </Label>
                               <div className="flex items-center gap-2">
@@ -940,7 +940,7 @@ export default function NewOfferPage() {
                                       handleInputChange('spareParts', newParts);
                                     }
                                   }}
-                                  className="h-10 w-10 p-0 text-lg font-bold border-orange-200 hover:bg-orange-50"
+                                  className="h-10 w-10 p-0 text-lg font-bold border-[#CE9F6B] hover:bg-[#CE9F6B]/10"
                                 >
                                   −
                                 </Button>
@@ -982,28 +982,28 @@ export default function NewOfferPage() {
                                     newParts[index].total = (unitPrice * newQty).toString();
                                     handleInputChange('spareParts', newParts);
                                   }}
-                                  className="h-10 w-10 p-0 text-lg font-bold border-orange-200 hover:bg-orange-50 text-orange-600"
+                                  className="h-10 w-10 p-0 text-lg font-bold border-[#CE9F6B] hover:bg-[#CE9F6B]/10 text-[#976E44]"
                                 >
                                   +
                                 </Button>
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <Label className="flex items-center gap-1 text-sm text-gray-600">
-                                <DollarSign className="h-3 w-3 text-gray-400" />
+                              <Label className="flex items-center gap-1 text-sm text-[#5D6E73]">
+                                <DollarSign className="h-3 w-3 text-[#979796]" />
                                 Unit Price (₹)
-                                <span className="text-xs text-gray-400 ml-1">(Fixed)</span>
+                                <span className="text-xs text-[#979796] ml-1">(Fixed)</span>
                               </Label>
-                              <div className="h-10 px-3 py-2 bg-gray-100 border border-gray-200 rounded-md flex items-center text-gray-700 font-medium">
+                              <div className="h-10 px-3 py-2 bg-[#AEBFC3]/20 border border-[#92A2A5] rounded-md flex items-center text-[#5D6E73] font-medium">
                                 ₹{parseFloat(part.price || '0').toLocaleString('en-IN')}
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <Label className="flex items-center gap-1 text-sm text-orange-700 font-medium">
-                                <TrendingUp className="h-3 w-3 text-orange-500" />
+                              <Label className="flex items-center gap-1 text-sm text-[#976E44] font-medium">
+                                <TrendingUp className="h-3 w-3 text-[#CE9F6B]" />
                                 Line Total
                               </Label>
-                              <div className="h-10 px-3 py-2 bg-orange-100 border border-orange-200 rounded-md flex items-center text-orange-800 font-bold">
+                              <div className="h-10 px-3 py-2 bg-[#CE9F6B]/20 border border-[#CE9F6B] rounded-md flex items-center text-[#976E44] font-bold">
                                 ₹{parseFloat(part.total || '0').toLocaleString('en-IN')}
                               </div>
                             </div>
@@ -1061,7 +1061,7 @@ export default function NewOfferPage() {
                                 )}
                                 <div className="flex flex-col">
                                   <span className="font-medium">{sparePart.name}</span>
-                                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                  <div className="flex items-center space-x-2 text-xs text-[#AEBFC3]0">
                                     <span>#{sparePart.partNumber}</span>
                                     <span>•</span>
                                     <span>₹{sparePart.basePrice}</span>
@@ -1079,7 +1079,7 @@ export default function NewOfferPage() {
                         }
                       </div>
                       {spareParts.filter(sp => !formData.spareParts.find(p => p.name === sp.id.toString())).length === 0 && (
-                        <div className="p-4 text-sm text-gray-500 text-center">
+                        <div className="p-4 text-sm text-[#AEBFC3]0 text-center">
                           {formData.spareParts.length === spareParts.length 
                             ? 'All available spare parts have been added' 
                             : 'No spare parts available'}
@@ -1090,8 +1090,8 @@ export default function NewOfferPage() {
                 </div>
                 
                 {formData.spareParts.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <Target className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <div className="text-center py-8 text-[#AEBFC3]0">
+                    <Target className="h-12 w-12 mx-auto mb-3 text-[#92A2A5]" />
                     <p>No spare parts selected yet. Use the dropdown above to add spare parts.</p>
                     <p className="text-xs mt-2">Spare parts are managed by admin and include predefined pricing.</p>
                   </div>
@@ -1102,21 +1102,21 @@ export default function NewOfferPage() {
         )}
 
           {/* Form Actions */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-lg border border-[#92A2A5]/60 p-6 backdrop-blur-sm">
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => router.back()} 
                 disabled={loading}
-                className="px-8 py-3 text-base font-medium border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all duration-200"
+                className="px-8 py-3 text-base font-medium border-[#92A2A5] hover:border-slate-400 hover:bg-[#AEBFC3]/10 transition-all duration-200"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit" 
                 disabled={loading}
-                className="px-8 py-3 text-base font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                className="px-8 py-3 text-base font-medium bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
               >
                 {loading ? (
                   <>
@@ -1139,7 +1139,7 @@ export default function NewOfferPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
+              <Users className="h-5 w-5 text-[#546A7A]" />
               Add New Contact
             </DialogTitle>
             <DialogDescription>
@@ -1214,7 +1214,7 @@ export default function NewOfferPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <HardDrive className="h-5 w-5 text-purple-600" />
+              <HardDrive className="h-5 w-5 text-[#546A7A]" />
               Add New Asset
             </DialogTitle>
             <DialogDescription>

@@ -91,7 +91,7 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
       <div className="flex items-center space-x-3">
         <Link 
           href="/admin/manage-expert-helpdesk"
-          className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+          className="flex items-center space-x-2 text-[#5D6E73] hover:text-[#546A7A] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Expert Helpdesk</span>
@@ -99,28 +99,28 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
       </div>
 
       {/* Expert Info Card */}
-      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+      <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-xl p-6 border border-[#96AEC2]">
         <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="h-16 w-16 bg-gradient-to-br from-[#6F8A9D] to-cyan-600 rounded-full flex items-center justify-center shadow-lg">
             <Zap className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{expert.name || 'Expert'}</h3>
-            <p className="text-gray-600">{expert.email}</p>
+            <h3 className="text-xl font-bold text-[#546A7A]">{expert.name || 'Expert'}</h3>
+            <p className="text-[#5D6E73]">{expert.email}</p>
           </div>
         </div>
       </div>
 
       {/* Change Password Form */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-xl border border-[#92A2A5] shadow-sm">
+        <div className="p-6 border-b border-[#92A2A5]">
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Lock className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 bg-[#96AEC2]/20 rounded-lg flex items-center justify-center">
+              <Lock className="h-5 w-5 text-[#546A7A]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Change Password</h2>
-              <p className="text-sm text-gray-600">Update the password for this expert helpdesk user</p>
+              <h2 className="text-lg font-bold text-[#546A7A]">Change Password</h2>
+              <p className="text-sm text-[#5D6E73]">Update the password for this expert helpdesk user</p>
             </div>
           </div>
         </div>
@@ -130,8 +130,8 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
           {message && (
             <div className={`p-4 rounded-lg border ${
               message.type === 'success' 
-                ? 'bg-green-50 border-green-200 text-green-800' 
-                : 'bg-red-50 border-red-200 text-red-800'
+                ? 'bg-[#A2B9AF]/10 border-[#A2B9AF] text-[#4F6A64]' 
+                : 'bg-[#E17F70]/10 border-[#E17F70] text-[#75242D]'
             }`}>
               <p className="text-sm font-medium">{message.text}</p>
             </div>
@@ -139,7 +139,7 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
 
           {/* New Password Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#546A7A] mb-2">
               New Password
             </label>
             <div className="relative">
@@ -148,13 +148,13 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                 placeholder="Enter new password (minimum 6 characters)"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-[#92A2A5] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#96AEC2] focus:border-transparent"
                 disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AEBFC3]0 hover:text-[#5D6E73] transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -164,13 +164,13 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
               </button>
             </div>
             {formData.newPassword && formData.newPassword.length < 6 && (
-              <p className="text-xs text-red-600 mt-1">Password must be at least 6 characters</p>
+              <p className="text-xs text-[#9E3B47] mt-1">Password must be at least 6 characters</p>
             )}
           </div>
 
           {/* Confirm Password Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-[#546A7A] mb-2">
               Confirm Password
             </label>
             <div className="relative">
@@ -179,13 +179,13 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 placeholder="Confirm new password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-[#92A2A5] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#96AEC2] focus:border-transparent"
                 disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AEBFC3]0 hover:text-[#5D6E73] transition-colors"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -195,22 +195,22 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
               </button>
             </div>
             {formData.confirmPassword && formData.newPassword !== formData.confirmPassword && (
-              <p className="text-xs text-red-600 mt-1">Passwords do not match</p>
+              <p className="text-xs text-[#9E3B47] mt-1">Passwords do not match</p>
             )}
           </div>
 
           {/* Password Requirements */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm font-medium text-blue-900 mb-2">Password Requirements:</p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li className={`flex items-center space-x-2 ${formData.newPassword.length >= 6 ? 'text-green-700' : ''}`}>
-                <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${formData.newPassword.length >= 6 ? 'bg-green-500 border-green-500' : 'border-blue-300'}`}>
+          <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-4">
+            <p className="text-sm font-medium text-[#546A7A] mb-2">Password Requirements:</p>
+            <ul className="text-xs text-[#546A7A] space-y-1">
+              <li className={`flex items-center space-x-2 ${formData.newPassword.length >= 6 ? 'text-[#4F6A64]' : ''}`}>
+                <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${formData.newPassword.length >= 6 ? 'bg-[#A2B9AF]/100 border-[#82A094]' : 'border-[#96AEC2]'}`}>
                   {formData.newPassword.length >= 6 && <span className="text-white text-xs">✓</span>}
                 </span>
                 <span>Minimum 6 characters</span>
               </li>
-              <li className={`flex items-center space-x-2 ${formData.newPassword === formData.confirmPassword && formData.newPassword ? 'text-green-700' : ''}`}>
-                <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${formData.newPassword === formData.confirmPassword && formData.newPassword ? 'bg-green-500 border-green-500' : 'border-blue-300'}`}>
+              <li className={`flex items-center space-x-2 ${formData.newPassword === formData.confirmPassword && formData.newPassword ? 'text-[#4F6A64]' : ''}`}>
+                <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${formData.newPassword === formData.confirmPassword && formData.newPassword ? 'bg-[#A2B9AF]/100 border-[#82A094]' : 'border-[#96AEC2]'}`}>
                   {formData.newPassword === formData.confirmPassword && formData.newPassword && <span className="text-white text-xs">✓</span>}
                 </span>
                 <span>Passwords match</span>
@@ -223,7 +223,7 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
             <button
               type="submit"
               disabled={loading || !formData.newPassword || !formData.confirmPassword || formData.newPassword !== formData.confirmPassword}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 rounded-lg font-medium hover:from-blue-700 hover:to-cyan-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="flex-1 bg-gradient-to-r from-[#546A7A] to-cyan-600 text-white py-2 rounded-lg font-medium hover:from-[#546A7A] hover:to-[#546A7A] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               <Save className="h-4 w-4" />
               <span>{loading ? 'Changing Password...' : 'Change Password'}</span>
@@ -232,7 +232,7 @@ export default function ChangePasswordClient({ expert }: ChangePasswordClientPro
               type="button"
               onClick={handleCancel}
               disabled={loading}
-              className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="flex-1 bg-[#AEBFC3]/20 text-[#5D6E73] py-2 rounded-lg font-medium hover:bg-[#92A2A5]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               <X className="h-4 w-4" />
               <span>Cancel</span>

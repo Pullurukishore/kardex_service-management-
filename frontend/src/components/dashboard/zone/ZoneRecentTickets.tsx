@@ -55,13 +55,13 @@ const getPriorityColor = (priority: string): string => {
   switch (priority.toLowerCase()) {
     case 'critical':
     case 'high':
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]';
     case 'medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
     case 'low':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]';
   }
 };
 
@@ -69,15 +69,15 @@ const getPriorityColor = (priority: string): string => {
 const getActivityIcon = (type: string) => {
   switch (type.toLowerCase()) {
     case 'ticket_created':
-      return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      return <AlertTriangle className="h-4 w-4 text-[#E17F70]" />;
     case 'ticket_resolved':
-      return <CheckCircle className="h-4 w-4 text-green-500" />;
+      return <CheckCircle className="h-4 w-4 text-[#82A094]" />;
     case 'ticket_assigned':
-      return <User className="h-4 w-4 text-blue-500" />;
+      return <User className="h-4 w-4 text-[#6F8A9D]" />;
     case 'maintenance':
-      return <RefreshCw className="h-4 w-4 text-purple-500" />;
+      return <RefreshCw className="h-4 w-4 text-[#6F8A9D]" />;
     default:
-      return <Activity className="h-4 w-4 text-gray-500" />;
+      return <Activity className="h-4 w-4 text-[#AEBFC3]0" />;
   }
 };
 
@@ -91,7 +91,7 @@ export default function ZoneRecentTickets({
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-500" />
+            <Clock className="h-5 w-5 text-[#6F8A9D]" />
             Recent Activities
           </CardTitle>
         </CardHeader>
@@ -106,7 +106,7 @@ export default function ZoneRecentTickets({
               recentActivities.slice(0, 8).map((activity: any) => (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg border bg-[#AEBFC3]/10 hover:bg-[#AEBFC3]/20 transition-colors"
                 >
                   <div className="flex-shrink-0 mt-0.5">
                     {getActivityIcon(activity.type)}
@@ -114,7 +114,7 @@ export default function ZoneRecentTickets({
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-[#546A7A] truncate">
                         {activity.description}
                       </p>
                       <Badge 
@@ -150,7 +150,7 @@ export default function ZoneRecentTickets({
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
+            <AlertTriangle className="h-5 w-5 text-[#CE9F6B]" />
             Top Issues
           </CardTitle>
         </CardHeader>
@@ -165,19 +165,19 @@ export default function ZoneRecentTickets({
               topIssues.slice(0, 8).map((issue: any, index: number) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-lg border bg-[#AEBFC3]/10 hover:bg-[#AEBFC3]/20 transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-100 to-red-100 flex items-center justify-center">
-                        <span className="text-xs font-bold text-orange-600">
+                        <span className="text-xs font-bold text-[#976E44]">
                           {index + 1}
                         </span>
                       </div>
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-[#546A7A] truncate">
                         {issue.title}
                       </p>
                       
@@ -203,7 +203,7 @@ export default function ZoneRecentTickets({
                   
                   <div className="flex-shrink-0 ml-3">
                     <div className="text-right">
-                      <div className="text-lg font-bold text-orange-600">
+                      <div className="text-lg font-bold text-[#976E44]">
                         {issue.count}
                       </div>
                       <div className="text-xs text-muted-foreground">

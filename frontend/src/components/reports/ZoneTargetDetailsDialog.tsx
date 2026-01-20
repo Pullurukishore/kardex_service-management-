@@ -104,10 +104,10 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
   };
 
   const getAchievementColor = (achievement: number) => {
-    if (achievement >= 100) return 'bg-green-100 text-green-800';
-    if (achievement >= 80) return 'bg-blue-100 text-blue-800';
-    if (achievement >= 50) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (achievement >= 100) return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
+    if (achievement >= 80) return 'bg-[#96AEC2]/20 text-[#546A7A]';
+    if (achievement >= 50) return 'bg-[#CE9F6B]/20 text-[#976E44]';
+    return 'bg-[#E17F70]/20 text-[#75242D]';
   };
 
   return (
@@ -115,7 +115,7 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-            <MapPin className="h-6 w-6 text-blue-600" />
+            <MapPin className="h-6 w-6 text-[#546A7A]" />
             Zone Target Details
           </DialogTitle>
         </DialogHeader>
@@ -124,25 +124,25 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
           <div className="px-6 py-4 space-y-6">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
               </div>
             ) : targets.length > 0 && summary ? (
               <>
                 {/* Zone Header */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100">
+                <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 p-6 rounded-lg border border-[#96AEC2]/30">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-gray-600">Zone</div>
-                      <div className="font-bold text-2xl text-gray-900">
+                      <div className="text-sm font-medium text-[#5D6E73]">Zone</div>
+                      <div className="font-bold text-2xl text-[#546A7A]">
                         {zone?.name || 'Zone'}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-[#AEBFC3]0 mt-1">
                         📅 Period: {targetPeriod} ({periodType})
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <div className="text-sm font-medium text-gray-600 mb-2">Overall Achievement</div>
+                        <div className="text-sm font-medium text-[#5D6E73] mb-2">Overall Achievement</div>
                         <Badge className={getAchievementColor(summary.totalAchievement || 0)}>
                           {(summary.totalAchievement || 0).toFixed(2)}%
                         </Badge>
@@ -153,22 +153,22 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="text-sm font-medium text-gray-600 mb-2">Target Value</div>
-                    <div className="text-2xl font-bold text-blue-600" title={formatINRFull(summary.totalTargetValue)}>
+                  <div className="bg-white rounded-lg border border-[#92A2A5] p-4">
+                    <div className="text-sm font-medium text-[#5D6E73] mb-2">Target Value</div>
+                    <div className="text-2xl font-bold text-[#546A7A]" title={formatINRFull(summary.totalTargetValue)}>
                       {formatCrLakh(summary.totalTargetValue)}
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="text-sm font-medium text-gray-600 mb-2">Actual Value</div>
-                    <div className="text-2xl font-bold text-green-600" title={formatINRFull(summary.totalActualValue)}>
+                  <div className="bg-white rounded-lg border border-[#92A2A5] p-4">
+                    <div className="text-sm font-medium text-[#5D6E73] mb-2">Actual Value</div>
+                    <div className="text-2xl font-bold text-[#4F6A64]" title={formatINRFull(summary.totalActualValue)}>
                       {formatCrLakh(summary.totalActualValue)}
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="text-sm font-medium text-gray-600 mb-2">Variance</div>
+                  <div className="bg-white rounded-lg border border-[#92A2A5] p-4">
+                    <div className="text-sm font-medium text-[#5D6E73] mb-2">Variance</div>
                     <div className={`text-2xl font-bold flex items-center gap-1 ${
-                      (summary.totalActualValue - summary.totalTargetValue) >= 0 ? 'text-green-600' : 'text-red-600'
+                      (summary.totalActualValue - summary.totalTargetValue) >= 0 ? 'text-[#4F6A64]' : 'text-[#9E3B47]'
                     }`}>
                       {(summary.totalActualValue - summary.totalTargetValue) >= 0 ? (
                         <TrendingUp className="h-5 w-5" />
@@ -180,9 +180,9 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
                       </span>
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="text-sm font-medium text-gray-600 mb-2">Total Targets</div>
-                    <div className="text-2xl font-bold text-purple-600">
+                  <div className="bg-white rounded-lg border border-[#92A2A5] p-4">
+                    <div className="text-sm font-medium text-[#5D6E73] mb-2">Total Targets</div>
+                    <div className="text-2xl font-bold text-[#546A7A]">
                       {summary.totalTargets}
                     </div>
                   </div>
@@ -191,21 +191,21 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
                 {/* Product Type Breakdown - Cards */}
                 <div>
                   <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
-                    <Package className="h-5 w-5 text-blue-600" />
+                    <Package className="h-5 w-5 text-[#546A7A]" />
                     Product Type Breakdown
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {targets.map((target, idx) => (
                       <div
                         key={`${target.productType}-${idx}`}
-                        className="bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all p-4"
+                        className="bg-white rounded-lg border border-[#92A2A5] hover:border-[#96AEC2] hover:shadow-md transition-all p-4"
                       >
                         {/* Product Type Header */}
                         <div className="flex items-center justify-between mb-4">
                           <Badge variant="outline" className="text-sm">
                             {target.productType || 'All Products'}
                           </Badge>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[#AEBFC3]0">
                             {target.actualOfferCount || 0} offers
                           </div>
                         </div>
@@ -213,17 +213,17 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
                         {/* Metrics Grid */}
                         <div className="grid grid-cols-2 gap-3 mb-3">
                           {/* Target */}
-                          <div className="bg-blue-50 rounded p-2">
-                            <div className="text-xs text-blue-700 font-medium mb-1">Target</div>
-                            <div className="text-sm font-bold text-blue-900" title={formatINRFull(target.targetValue)}>
+                          <div className="bg-[#96AEC2]/10 rounded p-2">
+                            <div className="text-xs text-[#546A7A] font-medium mb-1">Target</div>
+                            <div className="text-sm font-bold text-[#546A7A]" title={formatINRFull(target.targetValue)}>
                               {formatCrLakh(target.targetValue)}
                             </div>
                           </div>
 
                           {/* Actual */}
-                          <div className="bg-green-50 rounded p-2">
-                            <div className="text-xs text-green-700 font-medium mb-1">Actual</div>
-                            <div className="text-sm font-bold text-green-900" title={formatINRFull(target.actualValue)}>
+                          <div className="bg-[#A2B9AF]/10 rounded p-2">
+                            <div className="text-xs text-[#4F6A64] font-medium mb-1">Actual</div>
+                            <div className="text-sm font-bold text-[#4F6A64]" title={formatINRFull(target.actualValue)}>
                               {formatCrLakh(target.actualValue)}
                             </div>
                           </div>
@@ -232,8 +232,8 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
                         {/* Achievement and Variance */}
                         <div className="grid grid-cols-2 gap-3">
                           {/* Achievement */}
-                          <div className="bg-purple-50 rounded p-2">
-                            <div className="text-xs text-purple-700 font-medium mb-1">Achievement</div>
+                          <div className="bg-[#6F8A9D]/10 rounded p-2">
+                            <div className="text-xs text-[#546A7A] font-medium mb-1">Achievement</div>
                             <Badge className={`${getAchievementColor(target.achievement)} text-xs`}>
                               {target.achievement.toFixed(2)}%
                             </Badge>
@@ -241,13 +241,13 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
 
                           {/* Variance */}
                           <div className={`rounded p-2 ${
-                            target.variance >= 0 ? 'bg-emerald-50' : 'bg-red-50'
+                            target.variance >= 0 ? 'bg-[#82A094]/10' : 'bg-[#E17F70]/10'
                           }`}>
                             <div className={`text-xs font-medium mb-1 ${
-                              target.variance >= 0 ? 'text-emerald-700' : 'text-red-700'
+                              target.variance >= 0 ? 'text-[#4F6A64]' : 'text-[#75242D]'
                             }`}>Variance</div>
                             <div className={`text-xs font-bold flex items-center gap-1 ${
-                              target.variance >= 0 ? 'text-emerald-900' : 'text-red-900'
+                              target.variance >= 0 ? 'text-[#4F6A64]' : 'text-[#75242D]'
                             }`}>
                               {target.variance >= 0 ? (
                                 <TrendingUp className="h-3 w-3" />
@@ -265,7 +265,7 @@ const ZoneTargetDetailsDialog: React.FC<ZoneTargetDetailsDialogProps> = ({
 
               </>
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#AEBFC3]0">
                 No target details found for this zone
               </div>
             )}

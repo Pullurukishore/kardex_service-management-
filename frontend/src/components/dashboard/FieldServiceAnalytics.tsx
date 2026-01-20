@@ -33,8 +33,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
       change: dashboardData?.stats?.kpis?.slaCompliance?.change || 0,
       isPositive: (dashboardData?.stats?.kpis?.slaCompliance?.value || 0) >= 90,
       icon: Timer,
-      gradient: "from-green-500 via-emerald-500 to-teal-600",
-      bgGradient: "from-green-50 via-emerald-50/50 to-teal-50",
+      gradient: "from-[#82A094] via-emerald-500 to-[#4F6A64]",
+      bgGradient: "from-[#A2B9AF]/10 via-[#A2B9AF]/50 to-[#82A094]/10",
     },
     {
       title: "Service Coverage",
@@ -45,8 +45,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
         ? Math.round(((dashboardData?.stats?.kpis?.activeServicePersons?.value || 0) / (dashboardData?.adminStats?.totalServiceZones || 1)) * 100)
         : 0,
       icon: MapPin,
-      gradient: "from-emerald-500 via-green-500 to-lime-600",
-      bgGradient: "from-emerald-50 via-green-50/50 to-lime-50",
+      gradient: "from-[#82A094] via-[#82A094] to-lime-600",
+      bgGradient: "from-[#A2B9AF]/10 via-green-50/50 to-lime-50",
     },
     {
       title: "Avg Travel Time",
@@ -58,8 +58,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
       change: dashboardData?.stats?.avgTravelTime?.change || 0,
       isPositive: dashboardData?.stats?.avgTravelTime?.isPositive !== false,
       icon: Navigation,
-      gradient: "from-purple-500 via-violet-500 to-indigo-600",
-      bgGradient: "from-purple-50 via-violet-50/50 to-indigo-50",
+      gradient: "from-[#6F8A9D] via-violet-500 to-[#546A7A]",
+      bgGradient: "from-[#6F8A9D]/10 via-violet-50/50 to-[#6F8A9D]/10",
     },
     {
       title: "Avg Onsite Resolution Time",
@@ -71,8 +71,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
       change: dashboardData?.stats?.avgOnsiteResolutionTime?.change || 0,
       isPositive: dashboardData?.stats?.avgOnsiteResolutionTime?.isPositive !== false,
       icon: Clock,
-      gradient: "from-orange-500 via-amber-500 to-yellow-600",
-      bgGradient: "from-orange-50 via-amber-50/50 to-yellow-50",
+      gradient: "from-[#CE9F6B] via-[#CE9F6B] to-yellow-600",
+      bgGradient: "from-[#EEC1BF]/10 via-amber-50/50 to-yellow-50",
     }
   ];
 
@@ -82,7 +82,7 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
           <div className="relative">
-            <div className="p-2 sm:p-2.5 bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 rounded-xl shadow-lg">
+            <div className="p-2 sm:p-2.5 bg-gradient-to-br from-[#546A7A] via-cyan-600 to-[#4F6A64] rounded-xl shadow-lg">
               <Wrench className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div className="absolute inset-0 rounded-xl border-2 border-cyan-300 animate-ping opacity-20" />
@@ -91,7 +91,7 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
             Field Service Analytics (FSA)
           </span>
         </h2>
-        <Badge className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border border-blue-200/50 px-3 py-1.5 text-xs sm:text-sm font-semibold">
+        <Badge className="bg-gradient-to-r from-[#96AEC2]/20 to-[#96AEC2]/20 text-[#546A7A] border border-[#96AEC2]/50 px-3 py-1.5 text-xs sm:text-sm font-semibold">
           <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
           Real-time Metrics
         </Badge>
@@ -120,8 +120,8 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
                 {metric.change !== undefined && (
                   <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${
                     metric.isPositive 
-                      ? 'bg-green-100/80 text-green-700' 
-                      : 'bg-red-100/80 text-red-700'
+                      ? 'bg-[#A2B9AF]/20/80 text-[#4F6A64]' 
+                      : 'bg-[#E17F70]/20/80 text-[#75242D]'
                   }`}>
                     {metric.isPositive ? 
                       <TrendingUp className="w-3.5 h-3.5" /> : 
@@ -136,21 +136,21 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
               
               {/* Content */}
               <div className="space-y-3">
-                <h3 className="text-sm sm:text-base font-bold text-slate-800">{metric.title}</h3>
+                <h3 className="text-sm sm:text-base font-bold text-[#546A7A]">{metric.title}</h3>
                 <div className="flex items-baseline gap-2">
-                  <p className="text-3xl sm:text-4xl font-bold text-slate-900 group-hover:scale-[1.02] transition-transform duration-300">
+                  <p className="text-3xl sm:text-4xl font-bold text-[#546A7A] group-hover:scale-[1.02] transition-transform duration-300">
                     {metric.value}
                   </p>
                   {(metric as any).valueLabel && (
-                    <span className="text-sm font-medium text-slate-600">{(metric as any).valueLabel}</span>
+                    <span className="text-sm font-medium text-[#5D6E73]">{(metric as any).valueLabel}</span>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">{metric.subtitle}</p>
+                <p className="text-xs sm:text-sm text-[#5D6E73] line-clamp-2">{metric.subtitle}</p>
                 
                 {/* Utilization Progress (for Service Coverage) */}
                 {(metric as any).utilization !== undefined && (
                   <div className="space-y-2 pt-2">
-                    <div className="flex justify-between text-xs text-slate-500">
+                    <div className="flex justify-between text-xs text-[#757777]">
                       <span className="font-medium">Coverage Efficiency</span>
                       <span className="font-semibold">{(metric as any).utilization}%</span>
                     </div>
@@ -169,7 +169,7 @@ export default function FieldServiceAnalytics({ dashboardData }: FieldServiceAna
               </div>
 
               {/* Live indicator */}
-              <div className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs text-slate-400">
+              <div className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs text-[#979796]">
                 <Activity className="w-3 h-3" />
                 <span className="font-medium">Live</span>
               </div>

@@ -515,16 +515,16 @@ export function StatusChangeDialog({
     }
   };
 
-  // Get category color for styling
+  // Get category color for styling - Kardex Colors
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Basic': return 'border-blue-200 bg-blue-50';
-      case 'Onsite': return 'border-amber-200 bg-amber-50';
-      case 'Purchase': return 'border-purple-200 bg-purple-50';
-      case 'Parts': return 'border-emerald-200 bg-emerald-50';
-      case 'Completion': return 'border-green-200 bg-green-50';
-      case 'Special': return 'border-red-200 bg-red-50';
-      default: return 'border-gray-200 bg-gray-50';
+      case 'Basic': return 'border-[#96AEC2]/30 bg-[#96AEC2]/10';    // Blue 1
+      case 'Onsite': return 'border-[#EEC18F]/30 bg-[#EEC18F]/10';   // Sand 1
+      case 'Purchase': return 'border-[#6F8A9D]/30 bg-[#6F8A9D]/10'; // Blue 2
+      case 'Parts': return 'border-[#82A094]/30 bg-[#82A094]/10';    // Green 2
+      case 'Completion': return 'border-[#A2B9AF]/30 bg-[#A2B9AF]/10'; // Green 1
+      case 'Special': return 'border-[#E17F70]/30 bg-[#E17F70]/10';   // Red 1
+      default: return 'border-[#979796]/30 bg-[#979796]/10';          // Grey 3
     }
   };
 
@@ -720,21 +720,22 @@ export function StatusChangeDialog({
     }
   };
 
+  // Kardex company colors for status
   const getStatusColor = (status: TicketStatusType) => {
     switch (status) {
       case TicketStatus.RESOLVED:
       case TicketStatus.CLOSED:
-        return 'text-green-600';
+        return 'text-[#82A094]';        // Green 2
       case TicketStatus.CANCELLED:
-        return 'text-red-600';
+        return 'text-[#E17F70]';        // Red 1
       case TicketStatus.ESCALATED:
-        return 'text-orange-600';
+        return 'text-[#CE9F6B]';        // Sand 2
       case TicketStatus.ON_HOLD:
-        return 'text-yellow-600';
+        return 'text-[#EEC18F]';        // Sand 1
       case TicketStatus.IN_PROGRESS:
-        return 'text-blue-600';
+        return 'text-[#96AEC2]';        // Blue 1
       default:
-        return 'text-gray-600';
+        return 'text-[#757777]';        // Silver 1
     }
   };
 
@@ -746,11 +747,11 @@ export function StatusChangeDialog({
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-xl font-bold flex items-center gap-3 text-white">
               <div className="p-2 bg-white/10 rounded-lg">
-                <Zap className="h-5 w-5 text-amber-400" />
+                <Zap className="h-5 w-5 text-[#CE9F6B]" />
               </div>
               Update Ticket Status
             </DialogTitle>
-            <DialogDescription className="text-slate-300 text-sm">
+            <DialogDescription className="text-[#92A2A5] text-sm">
               Select a new status for this ticket
             </DialogDescription>
           </DialogHeader>
@@ -758,9 +759,9 @@ export function StatusChangeDialog({
 
         <div className="space-y-5 p-6">
           {/* Current Status - Compact */}
-          <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-4 p-4 bg-[#AEBFC3]/10 rounded-xl border border-[#92A2A5]">
             <div className="flex-1">
-              <p className="text-xs font-medium text-slate-500 mb-1.5">Current Status</p>
+              <p className="text-xs font-medium text-[#757777] mb-1.5">Current Status</p>
               <div className="flex items-center gap-2">
                 <div className={`${getStatusColor(currentStatus)}`}>
                   {getStatusIcon(currentStatus)}
@@ -768,21 +769,21 @@ export function StatusChangeDialog({
                 <StatusBadge status={currentStatus} />
               </div>
             </div>
-            <div className="p-2 bg-slate-200 rounded-full">
-              <ArrowRight className="h-4 w-4 text-slate-600" />
+            <div className="p-2 bg-[#92A2A5]/30 rounded-full">
+              <ArrowRight className="h-4 w-4 text-[#5D6E73]" />
             </div>
           </div>
 
           {/* New Status Selection - Simple Scrollable List */}
           <div className="space-y-3">
-            <Label className="text-sm font-semibold flex items-center gap-2 text-slate-700">
-              <FileText className="h-4 w-4 text-blue-600" />
+            <Label className="text-sm font-semibold flex items-center gap-2 text-[#5D6E73]">
+              <FileText className="h-4 w-4 text-[#546A7A]" />
               Select New Status
             </Label>
             
             {/* Simple scrollable status list */}
             <div 
-              className="border-2 border-slate-200 rounded-xl overflow-hidden"
+              className="border-2 border-[#92A2A5] rounded-xl overflow-hidden"
               style={{ maxHeight: '300px', overflowY: 'auto' }}
             >
               {['Basic', 'Onsite', 'Purchase', 'Parts', 'Completion', 'Special'].map(category => {
@@ -793,7 +794,7 @@ export function StatusChangeDialog({
                   <div key={category}>
                     {/* Category Header - Sticky */}
                     <div 
-                      className="px-4 py-2 text-xs font-bold uppercase tracking-wide bg-slate-100 border-b border-slate-200 sticky top-0 z-10"
+                      className="px-4 py-2 text-xs font-bold uppercase tracking-wide bg-[#AEBFC3]/20 border-b border-[#92A2A5] sticky top-0 z-10"
                       style={{ backgroundColor: '#f1f5f9' }}
                     >
                       {getCategoryIcon(category)} {category} Status
@@ -805,13 +806,13 @@ export function StatusChangeDialog({
                         key={option.value}
                         onClick={() => !isSubmitting && setSelectedStatus(option.value)}
                         className={`
-                          flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-slate-100 last:border-b-0
+                          flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-[#AEBFC3]/30 last:border-b-0
                           transition-all duration-150
                           ${selectedStatus === option.value 
-                            ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                            : 'hover:bg-slate-50 border-l-4 border-l-transparent'
+                            ? 'bg-[#96AEC2]/10 border-l-4 border-l-[#6F8A9D]' 
+                            : 'hover:bg-[#AEBFC3]/10 border-l-4 border-l-transparent'
                           }
-                          ${option.isDestructive ? 'hover:bg-red-50' : ''}
+                          ${option.isDestructive ? 'hover:bg-[#E17F70]/10' : ''}
                           ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
                       >
@@ -819,8 +820,8 @@ export function StatusChangeDialog({
                         <div className={`
                           w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
                           ${selectedStatus === option.value 
-                            ? 'border-blue-500 bg-blue-500' 
-                            : 'border-slate-300 bg-white'
+                            ? 'border-[#6F8A9D] bg-[#96AEC2]/100' 
+                            : 'border-[#92A2A5] bg-white'
                           }
                         `}>
                           {selectedStatus === option.value && (
@@ -831,17 +832,17 @@ export function StatusChangeDialog({
                         {/* Status info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className={`font-medium text-sm ${option.isDestructive ? 'text-red-700' : 'text-slate-800'}`}>
+                            <span className={`font-medium text-sm ${option.isDestructive ? 'text-[#75242D]' : 'text-[#546A7A]'}`}>
                               {option.shortLabel}
                             </span>
                             {option.isDestructive && (
-                              <span className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded font-bold">!</span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-[#E17F70]/20 text-[#9E3B47] rounded font-bold">!</span>
                             )}
                             {option.requiresComment && (
-                              <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded">Note</span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-[#CE9F6B]/20 text-[#976E44] rounded">Note</span>
                             )}
                           </div>
-                          <span className="text-xs text-slate-500">{option.description}</span>
+                          <span className="text-xs text-[#757777]">{option.description}</span>
                         </div>
                       </div>
                     ))}
@@ -866,7 +867,7 @@ export function StatusChangeDialog({
                         {selectedOption.category}
                       </Badge>
                       {selectedStatus === TicketStatus.ONSITE_VISIT_REACHED && (
-                        <Badge variant="secondary" className="text-xs px-2 py-0 h-5 bg-blue-100 text-blue-700">
+                        <Badge variant="secondary" className="text-xs px-2 py-0 h-5 bg-[#96AEC2]/20 text-[#546A7A]">
                           Auto-Transition
                         </Badge>
                       )}
@@ -875,8 +876,8 @@ export function StatusChangeDialog({
                       {selectedOption.description}
                     </p>
                     {selectedStatus === TicketStatus.ONSITE_VISIT_REACHED && (
-                      <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
-                        <p className="text-xs text-blue-700 font-medium flex items-center gap-1">
+                      <div className="mt-2 p-2 bg-[#96AEC2]/10 border border-[#96AEC2] rounded-md">
+                        <p className="text-xs text-[#546A7A] font-medium flex items-center gap-1">
                           <ArrowRight className="h-3 w-3" />
                           Will automatically change to "Visit In Progress" after reaching site
                         </p>
@@ -898,18 +899,18 @@ export function StatusChangeDialog({
             <div className="space-y-3">
               {/* Enhanced Location Capture Dialog */}
               {enhancedLocationState.showLocationCapture && (
-                <Card className="border-2 border-blue-200 bg-blue-50">
+                <Card className="border-2 border-[#96AEC2] bg-[#96AEC2]/10">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-blue-600" />
-                        <p className="font-medium text-blue-900">Location Required for Onsite Visit</p>
+                        <MapPin className="h-4 w-4 text-[#546A7A]" />
+                        <p className="font-medium text-[#546A7A]">Location Required for Onsite Visit</p>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: false }))}
-                        className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
+                        className="h-6 w-6 p-0 text-[#546A7A] hover:text-[#546A7A]"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -934,32 +935,32 @@ export function StatusChangeDialog({
 
               {/* Enhanced Location Status */}
               {enhancedLocationState.capturedLocation && (
-                <Card className="border-2 border-green-200 bg-green-50">
+                <Card className="border-2 border-[#A2B9AF] bg-[#A2B9AF]/10">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-800">Location Ready for Onsite Visit</span>
+                        <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
+                        <span className="text-sm font-medium text-[#4F6A64]">Location Ready for Onsite Visit</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {enhancedLocationState.capturedLocation.source === 'manual' ? (
-                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                          <Badge variant="secondary" className="text-xs bg-[#96AEC2]/20 text-[#546A7A]">
                             <MapPin className="h-3 w-3 mr-1" />
                             Manual
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                          <Badge variant="secondary" className="text-xs bg-[#A2B9AF]/20 text-[#4F6A64]">
                             <Navigation className="h-3 w-3 mr-1" />
                             GPS ±{Math.round(enhancedLocationState.capturedLocation.accuracy)}m
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <div className="text-sm text-green-700">
+                    <div className="text-sm text-[#4F6A64]">
                       {enhancedLocationState.capturedLocation.address || 
                        `${enhancedLocationState.capturedLocation.latitude.toFixed(6)}, ${enhancedLocationState.capturedLocation.longitude.toFixed(6)}`}
                     </div>
-                    <div className="text-xs text-green-600 mt-1">
+                    <div className="text-xs text-[#4F6A64] mt-1">
                       Captured: {new Date(enhancedLocationState.capturedLocation.timestamp).toLocaleTimeString()}
                     </div>
                     <Button
@@ -967,7 +968,7 @@ export function StatusChangeDialog({
                       variant="outline"
                       size="sm"
                       onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true }))}
-                      className="mt-2 text-xs text-green-700 border-green-300 hover:bg-green-100"
+                      className="mt-2 text-xs text-[#4F6A64] border-[#82A094] hover:bg-[#A2B9AF]/20"
                     >
                       <Navigation className="h-3 w-3 mr-1" />
                       Recapture Location
@@ -978,15 +979,15 @@ export function StatusChangeDialog({
 
               {/* Show capture button if no location captured */}
               {!enhancedLocationState.capturedLocation && !enhancedLocationState.showLocationCapture && (
-                <Card className="border-2 border-blue-200 bg-blue-50">
+                <Card className="border-2 border-[#96AEC2] bg-[#96AEC2]/10">
                   <CardContent className="p-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-blue-600" />
-                        <p className="font-medium text-blue-900">Location Required</p>
+                        <MapPin className="h-4 w-4 text-[#546A7A]" />
+                        <p className="font-medium text-[#546A7A]">Location Required</p>
                         <Badge variant="secondary" className="text-xs">Onsite Visit</Badge>
                       </div>
-                      <p className="text-sm text-blue-700">
+                      <p className="text-sm text-[#546A7A]">
                         Enhanced GPS validation is required for onsite visit tracking. High accuracy location ensures proper service verification.
                       </p>
                       <Button
@@ -994,7 +995,7 @@ export function StatusChangeDialog({
                         variant="outline"
                         size="sm"
                         onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true }))}
-                        className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                        className="text-[#546A7A] border-[#96AEC2] hover:bg-[#96AEC2]/20"
                       >
                         <MapPin className="h-3 w-3 mr-1" />
                         Capture Location
@@ -1083,12 +1084,12 @@ export function StatusChangeDialog({
         </div>
 
         {/* Action Buttons - Sticky Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-[#92A2A5] bg-[#AEBFC3]/10 rounded-b-lg">
           <Button 
             variant="outline" 
             onClick={handleClose}
             disabled={isSubmitting}
-            className="px-6 h-11 font-medium border-slate-300 hover:bg-slate-100"
+            className="px-6 h-11 font-medium border-[#92A2A5] hover:bg-[#AEBFC3]/20"
           >
             Cancel
           </Button>
@@ -1102,8 +1103,8 @@ export function StatusChangeDialog({
             variant={selectedOption?.isDestructive ? 'destructive' : 'default'}
             className={`px-6 h-11 font-semibold shadow-md transition-all ${
               selectedOption?.isDestructive 
-                ? 'bg-red-600 hover:bg-red-700' 
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                ? 'bg-[#9E3B47] hover:bg-[#75242D]' 
+                : 'bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A]'
             }`}
           >
             {isSubmitting ? (

@@ -3,57 +3,81 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Ticket, Package, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Ticket, Package, ArrowLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SubModuleCard {
   id: 'tickets' | 'offers';
   title: string;
-  subtitle: string;
+  description: string;
   icon: React.ReactNode;
-  gradient: string;
+  color: string;
+  features: string[];
 }
-
-const subModules: SubModuleCard[] = [
-  {
-    id: 'tickets',
-    title: 'Tickets',
-    subtitle: 'Service requests & field visits',
-    icon: <Ticket className="w-8 h-8" />,
-    gradient: 'from-cyan-400 via-blue-500 to-indigo-600',
-  },
-  {
-    id: 'offers',
-    title: 'Offers',
-    subtitle: 'Sales funnel & targets',
-    icon: <Package className="w-8 h-8" />,
-    gradient: 'from-emerald-400 via-green-500 to-teal-600',
-  }
-];
 
 export default function FSMSelectPage() {
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+
+  const subModules: SubModuleCard[] = [
+    {
+      id: 'tickets',
+      title: 'Tickets',
+      description: 'Manage service requests, field visits, and customer support tickets',
+      icon: <Ticket className="w-8 h-8" />,
+      color: '#E17F70',
+      features: ['Dashboard', 'Tickets', 'Customers', 'Zones'],
+    },
+    {
+      id: 'offers',
+      title: 'Offers',
+      description: 'Track sales funnel, manage targets, and monitor performance metrics',
+      icon: <Package className="w-8 h-8" />,
+      color: '#CE9F6B',
+      features: ['Offers', 'Targets', 'Reports', 'Forecast'],
+    }
+  ];
+
+  const getRoleDashboardPath = (subModuleId: string) => {
+    const role = user?.role;
+    if (subModuleId === 'tickets') {
+      switch (role) {
+        case 'ADMIN': return '/admin/dashboard';
+        case 'ZONE_USER': return '/zone/dashboard';
+        case 'ZONE_MANAGER': return '/zone/dashboard';
+        case 'EXPERT_HELPDESK': return '/expert/dashboard';
+        case 'SERVICE_PERSON': return '/service-person/dashboard';
+        default: return '/admin/dashboard';
+      }
+    } else {
+      switch (role) {
+        case 'ADMIN': return '/admin/offers';
+        case 'ZONE_USER': return '/zone/offers';
+        case 'ZONE_MANAGER': return '/zone-manager/offers';
+        case 'EXPERT_HELPDESK': return '/expert/offers';
+        default: return '/admin/offers';
+      }
+    }
+  };
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const selectedMod = localStorage.getItem('selectedModule');
-    if (selectedMod !== 'fsm') {
-      router.push('/module-select');
+    if (selectedMod !== 'fsm') { router.push('/module-select'); return; }
+    if (user?.role === 'EXTERNAL_USER') {
+      localStorage.setItem('selectedSubModule', 'tickets');
+      router.push('/external/tickets');
     }
-  }, [router]);
+  }, [router, user]);
 
   const handleSubModuleSelect = (subModuleId: string) => {
     setSelectedModule(subModuleId);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedSubModule', subModuleId);
-    }
-    setTimeout(() => {
-      if (subModuleId === 'tickets') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/admin/offers');
-      }
-    }, 400);
+    if (typeof window !== 'undefined') localStorage.setItem('selectedSubModule', subModuleId);
+    setTimeout(() => router.push(getRoleDashboardPath(subModuleId)), 400);
   };
 
   const handleBack = () => {
@@ -61,47 +85,40 @@ export default function FSMSelectPage() {
     router.push('/module-select');
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-6 overflow-hidden relative">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-cyan-500/8 via-blue-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/8 via-green-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(100,100,200,0.03),transparent_70%)]" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-6 overflow-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E17F70]/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#CE9F6B]/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#82A094]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#E17F70]/50 to-transparent"></div>
       </div>
 
-      <div className="w-full max-w-2xl relative z-10">
+      <div className="w-full max-w-xl relative z-10">
         {/* Back Button */}
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 text-white/40 hover:text-white/70 mb-12 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Back</span>
+        <button onClick={handleBack} className="group flex items-center gap-3 text-white/50 hover:text-[#E17F70] mb-8 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-[#E17F70]/50 transition-all">
+            <ArrowLeft className="w-5 h-5" />
+          </div>
+          <span className="text-sm font-medium">Back to Modules</span>
         </button>
 
-        {/* Logo & Header */}
-        <div className="text-center mb-16">
-          <div className="mb-8">
-            <Image 
-              src="/kardex.png" 
-              alt="Kardex" 
-              width={160} 
-              height={64} 
-              className="mx-auto brightness-0 invert opacity-90" 
-              priority 
-            />
+        {/* Header */}
+        <div className="text-center mb-10">
+          <Image src="/kardex.png" alt="Kardex" width={180} height={72} className="mx-auto mb-6 brightness-0 invert" priority />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E17F70]/10 border border-[#E17F70]/25 mb-4">
+            <Sparkles className="w-4 h-4 text-[#E17F70]" />
+            <span className="text-sm font-semibold text-[#E17F70]">Field Service Management</span>
           </div>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
-            <span className="text-white/50 text-xs font-medium tracking-wide">Field Service Management</span>
-          </div>
-          <h1 className="text-2xl font-medium text-white/90 tracking-wide">
-            Select Workspace
-          </h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Select Your Workspace</h1>
+          <p className="text-white/50">Choose your area of focus</p>
         </div>
 
-        {/* Sub-Module Cards */}
-        <div className="flex flex-col gap-4">
+        {/* Cards */}
+        <div className="space-y-4">
           {subModules.map((module) => (
             <button
               key={module.id}
@@ -110,61 +127,52 @@ export default function FSMSelectPage() {
               onMouseLeave={() => setHoveredModule(null)}
               disabled={selectedModule !== null}
               className={`
-                relative group flex items-center gap-6 p-6 rounded-2xl
-                bg-white/[0.03] backdrop-blur-sm
-                border border-white/[0.06]
-                transition-all duration-300 ease-out
-                ${hoveredModule === module.id ? 'bg-white/[0.06] border-white/[0.12] translate-x-1' : ''}
-                ${selectedModule === module.id ? 'opacity-60 scale-[0.99]' : ''}
-                ${selectedModule && selectedModule !== module.id ? 'opacity-30' : ''}
-                disabled:cursor-not-allowed
+                relative w-full flex items-center gap-5 p-6 rounded-2xl
+                bg-white/5 backdrop-blur-sm border border-white/10
+                transition-all duration-300 text-left
+                ${hoveredModule === module.id ? 'bg-white/10 scale-[1.02]' : ''}
+                ${selectedModule === module.id ? 'opacity-60 scale-[0.98]' : ''}
+                ${selectedModule && selectedModule !== module.id ? 'opacity-40' : ''}
               `}
+              style={{
+                borderColor: hoveredModule === module.id ? `${module.color}50` : undefined,
+                boxShadow: hoveredModule === module.id ? `0 15px 50px ${module.color}25` : undefined
+              }}
             >
+              {/* Left accent bar */}
+              <div className={`absolute left-0 top-4 bottom-4 w-1 rounded-full transition-opacity ${hoveredModule === module.id ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundColor: module.color }} />
+              
               {/* Icon */}
-              <div className={`
-                relative w-16 h-16 rounded-xl flex items-center justify-center
-                bg-gradient-to-br ${module.gradient}
-                shadow-lg transition-all duration-300
-                ${hoveredModule === module.id ? 'scale-110 shadow-xl' : ''}
-              `}>
-                <div className="text-white">
-                  {module.icon}
-                </div>
-                {/* Glow effect */}
-                <div className={`
-                  absolute inset-0 rounded-xl bg-gradient-to-br ${module.gradient}
-                  blur-xl opacity-0 transition-opacity duration-300
-                  ${hoveredModule === module.id ? 'opacity-40' : ''}
-                `} />
+              <div 
+                className={`w-16 h-16 rounded-xl flex items-center justify-center text-white transition-all ${hoveredModule === module.id ? 'scale-110' : ''}`}
+                style={{ background: `linear-gradient(135deg, ${module.color}, ${module.color}99)`, boxShadow: `0 8px 25px ${module.color}50` }}
+              >
+                {module.icon}
               </div>
 
               {/* Content */}
-              <div className="flex-1 text-left">
-                <h2 className="text-xl font-semibold text-white/95">
-                  {module.title}
-                </h2>
-                <p className="text-sm text-white/40 mt-0.5">
-                  {module.subtitle}
-                </p>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white mb-1">{module.title}</h2>
+                <p className="text-sm text-white/50 mb-3">{module.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {module.features.map((f, i) => (
+                    <span key={i} className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: `${module.color}20`, color: module.color }}>{f}</span>
+                  ))}
+                </div>
               </div>
 
               {/* Arrow */}
-              <div className={`
-                w-10 h-10 rounded-xl flex items-center justify-center
-                bg-white/[0.04] border border-white/[0.06]
-                transition-all duration-300
-                ${hoveredModule === module.id ? 'bg-white/[0.08] border-white/[0.12]' : ''}
-              `}>
-                <ChevronRight className={`
-                  w-5 h-5 text-white/40 transition-all duration-300
-                  ${hoveredModule === module.id ? 'text-white/80 translate-x-0.5' : ''}
-                `} />
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-all ${hoveredModule === module.id ? 'border-transparent' : 'border-white/10'}`}
+                style={{ backgroundColor: hoveredModule === module.id ? module.color : 'transparent' }}>
+                <ChevronRight className={`w-6 h-6 transition-all ${hoveredModule === module.id ? 'text-white translate-x-0.5' : 'text-white/40'}`} />
               </div>
 
               {/* Loading */}
               {selectedModule === module.id && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 backdrop-blur-sm">
-                  <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-[#1a1a2e]/80">
+                  <div className="flex gap-2">
+                    {[0, 1, 2].map(i => <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: module.color, animationDelay: `${i * 0.15}s` }} />)}
+                  </div>
                 </div>
               )}
             </button>
@@ -172,10 +180,8 @@ export default function FSMSelectPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-16">
-          <p className="text-white/20 text-xs">
-            © {new Date().getFullYear()} Kardex
-          </p>
+        <div className="text-center mt-10">
+          <p className="text-white/30 text-sm">© {new Date().getFullYear()} Kardex Remstar. All rights reserved.</p>
         </div>
       </div>
     </div>

@@ -35,8 +35,8 @@ export function CustomerSatisfactionReport({ reportData }: CustomerSatisfactionR
         </CardHeader>
         <CardContent className="space-y-3 sm:space-y-4">
           <div className="text-center mb-4">
-            <div className="text-3xl sm:text-4xl font-bold text-amber-600 mb-2">{averageRating}</div>
-            <div className="flex justify-center text-amber-400">
+            <div className="text-3xl sm:text-4xl font-bold text-[#976E44] mb-2">{averageRating}</div>
+            <div className="flex justify-center text-[#CE9F6B]">
               {[...Array(5)].map((_, i) => (
                 <span key={i} className="text-lg sm:text-xl">
                   {i < Math.floor(parseFloat(averageRating)) ? '★' : '☆'}
@@ -49,9 +49,9 @@ export function CustomerSatisfactionReport({ reportData }: CustomerSatisfactionR
           {Object.entries(ratingDistribution || {}).map(([rating, count]) => {
             const percentage = totalRatings > 0 ? ((count / totalRatings) * 100).toFixed(1) : '0.0';
             return (
-              <div key={rating} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={rating} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#AEBFC3]/10 transition-colors">
                 <div className="flex items-center space-x-2 sm:space-x-3">
-                  <div className="flex text-amber-400 flex-shrink-0">
+                  <div className="flex text-[#CE9F6B] flex-shrink-0">
                     {Array.from({ length: parseInt(rating) }, (_, i) => (
                       <span key={i} className="text-sm sm:text-base">★</span>
                     ))}
@@ -75,16 +75,16 @@ export function CustomerSatisfactionReport({ reportData }: CustomerSatisfactionR
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <div className="text-center p-3 rounded-lg bg-green-50">
-              <div className="text-xl sm:text-2xl font-bold text-green-600">{totalRatings}</div>
+            <div className="text-center p-3 rounded-lg bg-[#A2B9AF]/10">
+              <div className="text-xl sm:text-2xl font-bold text-[#4F6A64]">{totalRatings}</div>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">Total Ratings</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-blue-50">
-              <div className="text-xl sm:text-2xl font-bold text-blue-600">{averageRating}</div>
+            <div className="text-center p-3 rounded-lg bg-[#96AEC2]/10">
+              <div className="text-xl sm:text-2xl font-bold text-[#546A7A]">{averageRating}</div>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">Average Rating</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-yellow-50">
-              <div className="text-xl sm:text-2xl font-bold text-yellow-600">
+            <div className="text-center p-3 rounded-lg bg-[#EEC1BF]/10">
+              <div className="text-xl sm:text-2xl font-bold text-[#976E44]">
                 {totalRatings > 0 ? Math.round((Object.entries(ratingDistribution || {}).filter(([rating]) => parseInt(rating) >= 4).reduce((sum, [_, count]) => sum + count, 0) / totalRatings) * 100) : 0}%
               </div>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">Satisfied (4+ stars)</div>

@@ -94,63 +94,63 @@ export default function ActivityScheduleDetailPageShared() {
     switch (status) {
       case 'PENDING':
         return {
-          gradient: 'from-amber-500 to-orange-500',
-          bg: 'bg-gradient-to-r from-amber-50 to-orange-50',
-          borderColor: 'border-amber-200',
-          textColor: 'text-amber-700',
+          gradient: 'from-[#CE9F6B] to-[#CE9F6B]',
+          bg: 'bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10',
+          borderColor: 'border-[#CE9F6B]/50',
+          textColor: 'text-[#976E44]',
           icon: <AlertCircle className="h-4 w-4" />,
           label: 'Pending',
-          iconBg: 'bg-amber-500'
+          iconBg: 'bg-[#CE9F6B]/100'
         };
       case 'ACCEPTED':
         return {
-          gradient: 'from-blue-500 to-indigo-500',
-          bg: 'bg-gradient-to-r from-blue-50 to-indigo-50',
-          borderColor: 'border-blue-200',
-          textColor: 'text-blue-700',
+          gradient: 'from-[#6F8A9D] to-[#6F8A9D]',
+          bg: 'bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10',
+          borderColor: 'border-[#96AEC2]',
+          textColor: 'text-[#546A7A]',
           icon: <CheckCircle className="h-4 w-4" />,
           label: 'Accepted',
-          iconBg: 'bg-blue-500'
+          iconBg: 'bg-[#96AEC2]/100'
         };
       case 'COMPLETED':
         return {
-          gradient: 'from-emerald-500 to-teal-500',
-          bg: 'bg-gradient-to-r from-emerald-50 to-teal-50',
-          borderColor: 'border-emerald-200',
-          textColor: 'text-emerald-700',
+          gradient: 'from-[#82A094] to-[#82A094]',
+          bg: 'bg-gradient-to-r from-[#A2B9AF]/10 to-[#82A094]/10',
+          borderColor: 'border-[#82A094]/50',
+          textColor: 'text-[#4F6A64]',
           icon: <CheckCheck className="h-4 w-4" />,
           label: 'Completed',
-          iconBg: 'bg-emerald-500'
+          iconBg: 'bg-[#82A094]/100'
         };
       case 'REJECTED':
         return {
-          gradient: 'from-rose-500 to-red-500',
-          bg: 'bg-gradient-to-r from-rose-50 to-red-50',
-          borderColor: 'border-rose-200',
-          textColor: 'text-rose-700',
+          gradient: 'from-[#E17F70] to-[#E17F70]',
+          bg: 'bg-gradient-to-r from-[#EEC1BF]/10 to-[#E17F70]/10',
+          borderColor: 'border-[#EEC1BF]/50',
+          textColor: 'text-[#9E3B47]',
           icon: <XCircle className="h-4 w-4" />,
           label: 'Rejected',
-          iconBg: 'bg-rose-500'
+          iconBg: 'bg-[#EEC1BF]/100'
         };
       case 'CANCELLED':
         return {
-          gradient: 'from-gray-500 to-slate-500',
-          bg: 'bg-gradient-to-r from-gray-50 to-slate-50',
-          borderColor: 'border-gray-300',
-          textColor: 'text-gray-600',
+          gradient: 'from-[#AEBFC3]/100 to-[#AEBFC3]/100',
+          bg: 'bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/10',
+          borderColor: 'border-[#92A2A5]',
+          textColor: 'text-[#5D6E73]',
           icon: <X className="h-4 w-4" />,
           label: 'Cancelled',
-          iconBg: 'bg-gray-500'
+          iconBg: 'bg-[#AEBFC3]/100'
         };
       default:
         return {
-          gradient: 'from-gray-500 to-slate-500',
-          bg: 'bg-gray-50',
-          borderColor: 'border-gray-200',
-          textColor: 'text-gray-600',
+          gradient: 'from-[#AEBFC3]/100 to-[#AEBFC3]/100',
+          bg: 'bg-[#AEBFC3]/10',
+          borderColor: 'border-[#92A2A5]',
+          textColor: 'text-[#5D6E73]',
           icon: null,
           label: status,
-          iconBg: 'bg-gray-500'
+          iconBg: 'bg-[#AEBFC3]/100'
         };
     }
   };
@@ -159,42 +159,42 @@ export default function ActivityScheduleDetailPageShared() {
     switch (priority) {
       case 'URGENT':
         return { 
-          gradient: 'from-rose-500 to-red-600', 
-          bg: 'bg-gradient-to-r from-rose-50 to-red-50', 
-          text: 'text-rose-700', 
-          border: 'border-rose-200',
+          gradient: 'from-[#E17F70] to-red-600', 
+          bg: 'bg-gradient-to-r from-[#EEC1BF]/10 to-[#E17F70]/10', 
+          text: 'text-[#9E3B47]', 
+          border: 'border-[#EEC1BF]/50',
           icon: <Zap className="h-3.5 w-3.5" />
         };
       case 'HIGH':
         return { 
-          gradient: 'from-orange-500 to-amber-500', 
-          bg: 'bg-gradient-to-r from-orange-50 to-amber-50', 
-          text: 'text-orange-700', 
-          border: 'border-orange-200',
+          gradient: 'from-[#CE9F6B] to-[#CE9F6B]', 
+          bg: 'bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10', 
+          text: 'text-[#976E44]', 
+          border: 'border-[#CE9F6B]',
           icon: <Target className="h-3.5 w-3.5" />
         };
       case 'MEDIUM':
         return { 
-          gradient: 'from-blue-500 to-indigo-500', 
-          bg: 'bg-gradient-to-r from-blue-50 to-indigo-50', 
-          text: 'text-blue-700', 
-          border: 'border-blue-200',
+          gradient: 'from-[#6F8A9D] to-[#6F8A9D]', 
+          bg: 'bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10', 
+          text: 'text-[#546A7A]', 
+          border: 'border-[#96AEC2]',
           icon: <Activity className="h-3.5 w-3.5" />
         };
       case 'LOW':
         return { 
-          gradient: 'from-emerald-500 to-green-500', 
-          bg: 'bg-gradient-to-r from-emerald-50 to-green-50', 
-          text: 'text-emerald-700', 
-          border: 'border-emerald-200',
+          gradient: 'from-[#82A094] to-[#82A094]', 
+          bg: 'bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10', 
+          text: 'text-[#4F6A64]', 
+          border: 'border-[#82A094]/50',
           icon: <CheckCircle className="h-3.5 w-3.5" />
         };
       default:
         return { 
-          gradient: 'from-gray-500 to-slate-500', 
-          bg: 'bg-gray-50', 
-          text: 'text-gray-600', 
-          border: 'border-gray-200',
+          gradient: 'from-[#AEBFC3]/100 to-[#AEBFC3]/100', 
+          bg: 'bg-[#AEBFC3]/10', 
+          text: 'text-[#5D6E73]', 
+          border: 'border-[#92A2A5]',
           icon: null
         };
     }
@@ -307,20 +307,20 @@ export default function ActivityScheduleDetailPageShared() {
   const getStageStyle = (stage: string, isTicketStatus?: boolean) => {
     // Ticket status styles with icons
     const ticketStatusStyles: Record<string, { bg: string; text: string; icon: string }> = {
-      'ONSITE_VISIT_STARTED': { bg: 'from-blue-100 to-sky-100', text: 'text-blue-700', icon: '🚗' },
-      'ONSITE_VISIT_REACHED': { bg: 'from-green-100 to-emerald-100', text: 'text-green-700', icon: '📍' },
-      'ONSITE_VISIT_IN_PROGRESS': { bg: 'from-orange-100 to-amber-100', text: 'text-orange-700', icon: '🔧' },
-      'ONSITE_VISIT_RESOLVED': { bg: 'from-emerald-100 to-teal-100', text: 'text-emerald-700', icon: '✅' },
-      'ONSITE_VISIT_COMPLETED': { bg: 'from-purple-100 to-violet-100', text: 'text-purple-700', icon: '🎉' },
-      'IN_PROGRESS': { bg: 'from-yellow-100 to-amber-100', text: 'text-yellow-700', icon: '⚡' },
-      'PARTS_ORDERED': { bg: 'from-cyan-100 to-blue-100', text: 'text-cyan-700', icon: '📦' },
-      'PARTS_RECEIVED': { bg: 'from-teal-100 to-cyan-100', text: 'text-teal-700', icon: '✔️' },
-      'RESOLVED': { bg: 'from-green-100 to-emerald-100', text: 'text-green-700', icon: '🎯' },
-      'CLOSED': { bg: 'from-slate-100 to-gray-100', text: 'text-slate-700', icon: '🔒' },
+      'ONSITE_VISIT_STARTED': { bg: 'from-[#96AEC2]/20 to-sky-100', text: 'text-[#546A7A]', icon: '🚗' },
+      'ONSITE_VISIT_REACHED': { bg: 'from-[#A2B9AF]/20 to-[#A2B9AF]/20', text: 'text-[#4F6A64]', icon: '📍' },
+      'ONSITE_VISIT_IN_PROGRESS': { bg: 'from-orange-100 to-[#EEC1BF]/20', text: 'text-[#976E44]', icon: '🔧' },
+      'ONSITE_VISIT_RESOLVED': { bg: 'from-emerald-100 to-[#82A094]/20', text: 'text-[#4F6A64]', icon: '✅' },
+      'ONSITE_VISIT_COMPLETED': { bg: 'from-[#6F8A9D]/20 to-violet-100', text: 'text-[#546A7A]', icon: '🎉' },
+      'IN_PROGRESS': { bg: 'from-yellow-100 to-[#EEC1BF]/20', text: 'text-[#976E44]', icon: '⚡' },
+      'PARTS_ORDERED': { bg: 'from-cyan-100 to-[#96AEC2]/20', text: 'text-[#546A7A]', icon: '📦' },
+      'PARTS_RECEIVED': { bg: 'from-teal-100 to-[#96AEC2]/20', text: 'text-[#4F6A64]', icon: '✔️' },
+      'RESOLVED': { bg: 'from-[#A2B9AF]/20 to-[#A2B9AF]/20', text: 'text-[#4F6A64]', icon: '🎯' },
+      'CLOSED': { bg: 'from-[#AEBFC3]/20 to-[#AEBFC3]/20', text: 'text-[#5D6E73]', icon: '🔒' },
     };
 
     // Default style
-    const defaultStyle = { bg: 'from-gray-100 to-slate-100', text: 'text-gray-700', icon: '📋' };
+    const defaultStyle = { bg: 'from-[#AEBFC3]/20 to-[#AEBFC3]/20', text: 'text-[#5D6E73]', icon: '📋' };
 
     if (isTicketStatus) {
       return ticketStatusStyles[stage] || defaultStyle;
@@ -370,10 +370,10 @@ export default function ActivityScheduleDetailPageShared() {
   // Loading State with vibrant design
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex items-center justify-center overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[#546A7A] via-[#546A7A] to-[#546A7A] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#6F8A9D]/20 rounded-full blur-3xl animate-pulse" />
         </div>
         
         <div className="relative text-center space-y-6">
@@ -386,7 +386,7 @@ export default function ActivityScheduleDetailPageShared() {
           </div>
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-white">Loading Schedule</h3>
-            <p className="text-blue-100 text-sm">Fetching details...</p>
+            <p className="text-[#96AEC2] text-sm">Fetching details...</p>
           </div>
         </div>
       </div>
@@ -396,7 +396,7 @@ export default function ActivityScheduleDetailPageShared() {
   // Not Found State
   if (!schedule) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/20 to-slate-200 p-4 md:p-8">
         <div className="max-w-lg mx-auto mt-20">
           <Card className="shadow-xl border-0 overflow-hidden">
             <div className="bg-gradient-to-r from-gray-700 to-slate-800 p-8 text-center">
@@ -404,12 +404,12 @@ export default function ActivityScheduleDetailPageShared() {
                 <AlertCircle className="h-10 w-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-white">Schedule Not Found</h3>
-              <p className="text-gray-200 mt-2">The schedule you're looking for doesn't exist.</p>
+              <p className="text-[#AEBFC3] mt-2">The schedule you're looking for doesn't exist.</p>
             </div>
             <CardContent className="p-6 text-center bg-white">
               <Button 
                 onClick={() => router.push(`${getBasePath()}/activity-scheduling`)}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-lg"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Schedules
@@ -436,7 +436,7 @@ export default function ActivityScheduleDetailPageShared() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10/30 to-[#6F8A9D]/10/50">
       {/* Vibrant Hero Header */}
       <div className="relative overflow-hidden">
         <div className={`bg-gradient-to-r ${statusConfig.gradient} py-10 px-4 md:px-8`}>
@@ -524,7 +524,7 @@ export default function ActivityScheduleDetailPageShared() {
                 variant="outline"
                 size="sm"
                 onClick={() => router.push(`${getBasePath()}/activity-scheduling`)}
-                className="border-gray-200 hover:bg-gray-50"
+                className="border-[#92A2A5] hover:bg-[#AEBFC3]/10"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to List
@@ -534,7 +534,7 @@ export default function ActivityScheduleDetailPageShared() {
                 variant="outline"
                 size="sm"
                 onClick={fetchScheduleDetail}
-                className="border-gray-200 hover:bg-gray-50"
+                className="border-[#92A2A5] hover:bg-[#AEBFC3]/10"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -545,7 +545,7 @@ export default function ActivityScheduleDetailPageShared() {
                   variant="outline"
                   size="sm"
                   onClick={() => router.push(`${isAdmin ? '/admin' : '/zone'}/tickets/${schedule.ticket.id}`)}
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                  className="border-[#96AEC2] text-[#546A7A] hover:bg-[#96AEC2]/10"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   View Ticket #{schedule.ticket.id}
@@ -558,7 +558,7 @@ export default function ActivityScheduleDetailPageShared() {
               <Button
                 size="sm"
                 onClick={() => router.push(`${getBasePath()}/activity-scheduling/${schedule.id}/edit`)}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md"
+                className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-md"
               >
                 <Edit3 className="h-4 w-4 mr-2" />
                 Edit Schedule
@@ -568,7 +568,7 @@ export default function ActivityScheduleDetailPageShared() {
                 <Button
                   size="sm"
                   onClick={() => setShowCompleteDialog(true)}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
+                  className="bg-gradient-to-r from-[#82A094] to-[#82A094] hover:from-[#4F6A64] hover:to-[#4F6A64] text-white shadow-md"
                 >
                   <CheckCheck className="h-4 w-4 mr-2" />
                   Mark Complete
@@ -580,7 +580,7 @@ export default function ActivityScheduleDetailPageShared() {
                   size="sm"
                   variant="outline"
                   onClick={() => setShowCancelDialog(true)}
-                  className="border-rose-200 text-rose-600 hover:bg-rose-50"
+                  className="border-[#EEC1BF]/50 text-[#9E3B47] hover:bg-[#EEC1BF]/10"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel Schedule
@@ -598,7 +598,7 @@ export default function ActivityScheduleDetailPageShared() {
           <div className="lg:col-span-2 space-y-6">
             {/* Schedule Information */}
             <Card className="shadow-lg border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+              <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white p-6">
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <Calendar className="h-5 w-5" />
@@ -608,72 +608,72 @@ export default function ActivityScheduleDetailPageShared() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                  <div className="p-4 bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-xl border border-[#96AEC2]/30">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-blue-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#96AEC2]/100 rounded-lg text-white">
                         <Calendar className="h-4 w-4" />
                       </div>
-                      <label className="text-sm font-medium text-blue-600">Scheduled Date</label>
+                      <label className="text-sm font-medium text-[#546A7A]">Scheduled Date</label>
                     </div>
-                    <p className="text-gray-900 font-semibold ml-11">{formatDate(schedule.scheduledDate)}</p>
+                    <p className="text-[#546A7A] font-semibold ml-11">{formatDate(schedule.scheduledDate)}</p>
                   </div>
                   
-                  <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                  <div className="p-4 bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-xl border border-[#6F8A9D]/30">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-indigo-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#546A7A]/100 rounded-lg text-white">
                         <Clock className="h-4 w-4" />
                       </div>
-                      <label className="text-sm font-medium text-indigo-600">Scheduled Time</label>
+                      <label className="text-sm font-medium text-[#546A7A]">Scheduled Time</label>
                     </div>
-                    <p className="text-gray-900 font-semibold ml-11">{formatTime(schedule.scheduledDate)}</p>
+                    <p className="text-[#546A7A] font-semibold ml-11">{formatTime(schedule.scheduledDate)}</p>
                   </div>
                   
-                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+                  <div className="p-4 bg-gradient-to-br from-[#6F8A9D]/10 to-[#EEC1BF]/10 rounded-xl border border-[#6F8A9D]/30">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-purple-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#6F8A9D]/100 rounded-lg text-white">
                         <Activity className="h-4 w-4" />
                       </div>
-                      <label className="text-sm font-medium text-purple-600">Activity Type</label>
+                      <label className="text-sm font-medium text-[#546A7A]">Activity Type</label>
                     </div>
-                    <p className="text-gray-900 font-semibold ml-11">{schedule.activityType.replace(/_/g, ' ')}</p>
+                    <p className="text-[#546A7A] font-semibold ml-11">{schedule.activityType.replace(/_/g, ' ')}</p>
                   </div>
                   
-                  <div className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+                  <div className="p-4 bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border border-[#EEC1BF]/30">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-amber-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#CE9F6B]/100 rounded-lg text-white">
                         <Timer className="h-4 w-4" />
                       </div>
-                      <label className="text-sm font-medium text-amber-600">Duration</label>
+                      <label className="text-sm font-medium text-[#976E44]">Duration</label>
                     </div>
-                    <p className="text-gray-900 font-semibold ml-11">
+                    <p className="text-[#546A7A] font-semibold ml-11">
                       {schedule.estimatedDuration ? formatDuration(schedule.estimatedDuration) : '—'}
                     </p>
                   </div>
                 </div>
 
                 {schedule.location && (
-                  <div className="mt-6 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100">
+                  <div className="mt-6 p-4 bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/10 rounded-xl border border-[#A2B9AF]/30">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-emerald-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#82A094]/100 rounded-lg text-white">
                         <MapPin className="h-4 w-4" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-emerald-600 block mb-1">Location</label>
-                        <p className="text-gray-900">{schedule.location}</p>
+                        <label className="text-sm font-medium text-[#4F6A64] block mb-1">Location</label>
+                        <p className="text-[#546A7A]">{schedule.location}</p>
                       </div>
                     </div>
                   </div>
                 )}
 
                 {schedule.notes && (
-                  <div className="mt-6 p-4 bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl border border-gray-200">
+                  <div className="mt-6 p-4 bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/10 rounded-xl border border-[#92A2A5]">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-gray-500 rounded-lg text-white">
+                      <div className="p-2 bg-[#AEBFC3]/100 rounded-lg text-white">
                         <FileText className="h-4 w-4" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-600 block mb-1">Notes</label>
-                        <p className="text-gray-700 whitespace-pre-wrap">{schedule.notes}</p>
+                        <label className="text-sm font-medium text-[#5D6E73] block mb-1">Notes</label>
+                        <p className="text-[#5D6E73] whitespace-pre-wrap">{schedule.notes}</p>
                       </div>
                     </div>
                   </div>
@@ -684,7 +684,7 @@ export default function ActivityScheduleDetailPageShared() {
             {/* Zone, Customer & Assets */}
             {((schedule.zone || schedule.customer) || (displayAssets.length > 0)) && (
               <Card className="shadow-lg border-0 overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-violet-600 to-purple-600 text-white p-6">
+                <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white p-6">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Building2 className="h-5 w-5" />
@@ -696,27 +696,27 @@ export default function ActivityScheduleDetailPageShared() {
                   {(schedule.zone || schedule.customer) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {schedule.zone && (
-                        <div className="p-4 bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl border border-violet-100">
+                        <div className="p-4 bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-xl border border-violet-100">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-violet-500 rounded-lg text-white">
+                            <div className="p-2 bg-[#6F8A9D] rounded-lg text-white">
                               <MapPin className="h-4 w-4" />
                             </div>
-                            <label className="text-sm font-medium text-violet-600">Service Zone</label>
+                            <label className="text-sm font-medium text-[#546A7A]">Service Zone</label>
                           </div>
-                          <p className="text-gray-900 font-semibold ml-11">{schedule.zone.name}</p>
+                          <p className="text-[#546A7A] font-semibold ml-11">{schedule.zone.name}</p>
                         </div>
                       )}
                       {schedule.customer && (
-                        <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl border border-pink-100">
+                        <div className="p-4 bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border border-[#EEC1BF]/30">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-pink-500 rounded-lg text-white">
+                            <div className="p-2 bg-[#EEC1BF]/100 rounded-lg text-white">
                               <Building2 className="h-4 w-4" />
                             </div>
-                            <label className="text-sm font-medium text-pink-600">Customer</label>
+                            <label className="text-sm font-medium text-[#9E3B47]">Customer</label>
                           </div>
-                          <p className="text-gray-900 font-semibold ml-11">{schedule.customer.companyName}</p>
+                          <p className="text-[#546A7A] font-semibold ml-11">{schedule.customer.companyName}</p>
                           {schedule.customer.address && (
-                            <p className="text-gray-500 text-sm ml-11 mt-1">{schedule.customer.address}</p>
+                            <p className="text-[#AEBFC3]0 text-sm ml-11 mt-1">{schedule.customer.address}</p>
                           )}
                         </div>
                       )}
@@ -725,22 +725,22 @@ export default function ActivityScheduleDetailPageShared() {
 
                   {displayAssets.length > 0 && (
                     <div>
-                      <label className="text-sm font-medium text-gray-600 mb-3 block flex items-center gap-2">
-                        <Layers className="h-4 w-4 text-gray-400" />
+                      <label className="text-sm font-medium text-[#5D6E73] mb-3 block flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-[#979796]" />
                         Linked Assets ({displayAssets.length})
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {displayAssets.map((asset: any) => (
-                          <div key={asset.id} className="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100">
+                          <div key={asset.id} className="p-4 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-xl border border-cyan-100">
                             <div className="flex items-start gap-3">
-                              <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg text-white">
+                              <div className="p-2 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-lg text-white">
                                 <Layers className="h-4 w-4" />
                               </div>
                               <div>
-                                <p className="font-semibold text-gray-900">{asset.model}</p>
-                                <p className="text-sm text-gray-500 font-mono">S/N: {asset.serialNo}</p>
+                                <p className="font-semibold text-[#546A7A]">{asset.model}</p>
+                                <p className="text-sm text-[#AEBFC3]0 font-mono">S/N: {asset.serialNo}</p>
                                 {asset.location && (
-                                  <p className="text-sm text-gray-400 mt-1">{asset.location}</p>
+                                  <p className="text-sm text-[#979796] mt-1">{asset.location}</p>
                                 )}
                               </div>
                             </div>
@@ -756,7 +756,7 @@ export default function ActivityScheduleDetailPageShared() {
             {/* Related Ticket */}
             {schedule.ticket && (
               <Card className="shadow-lg border-0 overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-sky-600 to-blue-600 text-white p-6">
+                <CardHeader className="bg-gradient-to-r from-sky-600 to-[#546A7A] text-white p-6">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <div className="p-2 bg-white/20 rounded-lg">
                       <FileText className="h-5 w-5" />
@@ -768,7 +768,7 @@ export default function ActivityScheduleDetailPageShared() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl font-bold text-gray-900">#{schedule.ticket.id}</span>
+                        <span className="text-2xl font-bold text-[#546A7A]">#{schedule.ticket.id}</span>
                         <Badge className="bg-sky-100 text-sky-700 border-sky-200 border">
                           {schedule.ticket.status}
                         </Badge>
@@ -778,18 +778,18 @@ export default function ActivityScheduleDetailPageShared() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-gray-700 text-lg">{schedule.ticket.title}</p>
+                      <p className="text-[#5D6E73] text-lg">{schedule.ticket.title}</p>
                       
                       {(schedule.ticket.customer || schedule.ticket.contact) && (
-                        <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-gray-500">
+                        <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-[#AEBFC3]0">
                           {schedule.ticket.customer && (
-                            <span className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
+                            <span className="flex items-center gap-2 bg-[#AEBFC3]/20 px-3 py-1.5 rounded-full">
                               <Building2 className="h-4 w-4" />
                               {schedule.ticket.customer.companyName}
                             </span>
                           )}
                           {schedule.ticket.contact && (
-                            <span className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
+                            <span className="flex items-center gap-2 bg-[#AEBFC3]/20 px-3 py-1.5 rounded-full">
                               <User className="h-4 w-4" />
                               {schedule.ticket.contact.name}
                             </span>
@@ -800,7 +800,7 @@ export default function ActivityScheduleDetailPageShared() {
                     
                     <Button
                       onClick={() => router.push(`${isAdmin ? '/admin' : '/zone'}/tickets/${schedule.ticket.id}`)}
-                      className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white"
+                      className="bg-gradient-to-r from-sky-500 to-[#546A7A] hover:from-sky-600 hover:to-[#546A7A] text-white"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View Ticket
@@ -813,7 +813,7 @@ export default function ActivityScheduleDetailPageShared() {
             {/* Field Execution Timeline */}
             {schedule.relatedActivities && schedule.relatedActivities.length > 0 && (
               <Card className="shadow-lg border-0 overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6">
+                <CardHeader className="bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] text-white p-6">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-3 text-xl">
                       <div className="p-2 bg-white/20 rounded-lg">
@@ -830,26 +830,26 @@ export default function ActivityScheduleDetailPageShared() {
                   {schedule.relatedActivities.map((activity: any, actIndex: number) => (
                     <div 
                       key={activity.id} 
-                      className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100"
+                      className="p-6 bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/10 rounded-2xl border border-[#A2B9AF]/30"
                     >
                       {/* Activity Header */}
                       <div className="flex items-start justify-between mb-5">
                         <div className="flex items-center gap-4">
-                          <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white shadow-md">
+                          <div className="p-3 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl text-white shadow-md">
                             <Activity className="h-5 w-5" />
                           </div>
                           <div>
-                            <h4 className="font-bold text-gray-900 text-lg">
+                            <h4 className="font-bold text-[#546A7A] text-lg">
                               {activity.title || activity.activityType?.replace(/_/g, ' ') || 'Activity'}
                             </h4>
-                            <p className="text-sm text-emerald-600">
+                            <p className="text-sm text-[#4F6A64]">
                               {activity.activityType?.replace(/_/g, ' ')}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">{formatDateTime(activity.startTime)}</p>
-                          <div className="flex items-center justify-end gap-2 mt-1 text-sm text-emerald-600">
+                          <p className="text-sm font-medium text-[#546A7A]">{formatDateTime(activity.startTime)}</p>
+                          <div className="flex items-center justify-end gap-2 mt-1 text-sm text-[#4F6A64]">
                             <Timer className="h-4 w-4" />
                             <span className="font-medium">{formatDurationFromTimes(activity.startTime, activity.endTime)}</span>
                           </div>
@@ -858,7 +858,7 @@ export default function ActivityScheduleDetailPageShared() {
 
                       {/* Activity Stages */}
                       {activity.ActivityStage && activity.ActivityStage.length > 0 && (
-                        <div className="mt-5 pl-5 border-l-2 border-emerald-300 space-y-4">
+                        <div className="mt-5 pl-5 border-l-2 border-[#82A094] space-y-4">
                           {activity.ActivityStage.map((stage: any, stageIndex: number) => {
                             const meta = stage.metadata || {};
                             const isTicketStatus = meta.isTicketStatus === true;
@@ -873,54 +873,54 @@ export default function ActivityScheduleDetailPageShared() {
                               <div key={stage.id} className="relative">
                                 <div className={`absolute -left-[29px] top-2 w-4 h-4 rounded-full border-4 border-white shadow-md ${
                                   isTicketStatus 
-                                    ? 'bg-gradient-to-br from-blue-500 to-indigo-500' 
-                                    : 'bg-gradient-to-br from-emerald-400 to-teal-500'
+                                    ? 'bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D]' 
+                                    : 'bg-gradient-to-br from-[#82A094] to-[#82A094]'
                                 }`} />
                                 
                                 <div className={`rounded-xl p-5 shadow-sm ml-2 ${
                                   isTicketStatus 
-                                    ? `bg-gradient-to-br ${stageStyle.bg} border border-blue-200` 
-                                    : 'bg-white border border-emerald-100'
+                                    ? `bg-gradient-to-br ${stageStyle.bg} border border-[#96AEC2]` 
+                                    : 'bg-white border border-[#A2B9AF]/30'
                                 }`}>
                                   <div className="flex flex-wrap items-center gap-3 mb-3">
                                     {isTicketStatus && (
                                       <span className="text-xl">{stageStyle.icon}</span>
                                     )}
-                                    <span className={`font-semibold text-lg ${isTicketStatus ? stageStyle.text : 'text-gray-900'}`}>
+                                    <span className={`font-semibold text-lg ${isTicketStatus ? stageStyle.text : 'text-[#546A7A]'}`}>
                                       {getStageLabel(stage.stage, isTicketStatus)}
                                     </span>
                                     {isTicketStatus && (
-                                      <Badge className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border-blue-200 border text-xs">
+                                      <Badge className="bg-gradient-to-r from-[#96AEC2]/20 to-[#6F8A9D]/20 text-[#546A7A] border-[#96AEC2] border text-xs">
                                         Ticket Status
                                       </Badge>
                                     )}
                                     {!isTicketStatus && locationSource === 'gps' && typeof accuracy === 'number' && (
-                                      <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-green-200 border">
+                                      <Badge className="bg-gradient-to-r from-[#A2B9AF]/20 to-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF] border">
                                         <Navigation className="h-3 w-3 mr-1" />
                                         GPS ±{Math.round(accuracy)}m
                                       </Badge>
                                     )}
                                     {!isTicketStatus && locationSource === 'manual' && (
-                                      <Badge className="bg-gradient-to-r from-blue-100 to-sky-100 text-blue-700 border-blue-200 border">
+                                      <Badge className="bg-gradient-to-r from-[#96AEC2]/20 to-sky-100 text-[#546A7A] border-[#96AEC2] border">
                                         Manual Location
                                       </Badge>
                                     )}
                                   </div>
                                   
-                                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                                  <div className="flex flex-wrap items-center gap-4 text-sm text-[#5D6E73]">
                                     <span className="flex items-center gap-1">
-                                      <Clock className="h-4 w-4 text-gray-400" />
+                                      <Clock className="h-4 w-4 text-[#979796]" />
                                       {formatTime(stage.startTime)}
                                       {stage.endTime && ` → ${formatTime(stage.endTime)}`}
                                     </span>
                                     {formatDurationFromTimes(stage.startTime, stage.endTime) && (
-                                      <span className="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded">
+                                      <span className="flex items-center gap-1 bg-[#AEBFC3]/20 px-2 py-0.5 rounded">
                                         <Timer className="h-3 w-3" />
                                         {formatDurationFromTimes(stage.startTime, stage.endTime)}
                                       </span>
                                     )}
                                     {isTicketStatus && changedBy?.name && (
-                                      <span className="flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded text-blue-700">
+                                      <span className="flex items-center gap-1 bg-[#96AEC2]/10 px-2 py-0.5 rounded text-[#546A7A]">
                                         <User className="h-3 w-3" />
                                         by {changedBy.name}
                                       </span>
@@ -928,21 +928,21 @@ export default function ActivityScheduleDetailPageShared() {
                                   </div>
 
                                   {stage.location && (
-                                    <p className="text-sm text-gray-600 mt-3 flex items-start gap-2 bg-gray-50 p-2 rounded-lg">
-                                      <MapPin className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                    <p className="text-sm text-[#5D6E73] mt-3 flex items-start gap-2 bg-[#AEBFC3]/10 p-2 rounded-lg">
+                                      <MapPin className="h-4 w-4 text-[#979796] mt-0.5 flex-shrink-0" />
                                       {stage.location}
                                     </p>
                                   )}
 
                                   {stage.notes && (
-                                    <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
-                                      <p className="text-sm text-amber-800">{stage.notes}</p>
+                                    <div className="mt-3 p-3 bg-[#CE9F6B]/10 rounded-lg border border-[#EEC1BF]/30">
+                                      <p className="text-sm text-[#976E44]">{stage.notes}</p>
                                     </div>
                                   )}
 
                                   {photos.length > 0 && (
                                     <div className="mt-4">
-                                      <p className="text-sm font-medium text-gray-600 mb-3 flex items-center gap-2">
+                                      <p className="text-sm font-medium text-[#5D6E73] mb-3 flex items-center gap-2">
                                         <Camera className="h-4 w-4" />
                                         Photos ({photos.length})
                                       </p>
@@ -950,7 +950,7 @@ export default function ActivityScheduleDetailPageShared() {
                                         {photos.map((photo: any, photoIndex: number) => (
                                           <div
                                             key={photoIndex}
-                                            className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100 bg-gray-50 cursor-pointer hover:border-emerald-300 hover:shadow-md transition-all group"
+                                            className="relative aspect-square rounded-xl overflow-hidden border-2 border-[#AEBFC3]/30 bg-[#AEBFC3]/10 cursor-pointer hover:border-[#82A094] hover:shadow-md transition-all group"
                                             onClick={() => photo.dataUrl && setSelectedPhoto(photo.dataUrl)}
                                           >
                                             {photo.dataUrl ? (
@@ -962,13 +962,13 @@ export default function ActivityScheduleDetailPageShared() {
                                                 />
                                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                                   <div className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white rounded-full">
-                                                    <ExternalLink className="h-4 w-4 text-gray-700" />
+                                                    <ExternalLink className="h-4 w-4 text-[#5D6E73]" />
                                                   </div>
                                                 </div>
                                               </>
                                             ) : (
                                               <div className="w-full h-full flex items-center justify-center">
-                                                <Camera className="h-8 w-8 text-gray-300" />
+                                                <Camera className="h-8 w-8 text-[#92A2A5]" />
                                               </div>
                                             )}
                                           </div>
@@ -993,7 +993,7 @@ export default function ActivityScheduleDetailPageShared() {
           <div className="space-y-6">
             {/* Service Person */}
             <Card className="shadow-lg border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
+              <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#9E3B47] text-white p-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <User className="h-5 w-5" />
@@ -1003,35 +1003,35 @@ export default function ActivityScheduleDetailPageShared() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <span className="text-2xl font-bold text-white">
                       {schedule.servicePerson.name?.charAt(0).toUpperCase() || 'S'}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900">{schedule.servicePerson.name}</h3>
-                  <p className="text-gray-500 text-sm">Assigned Technician</p>
+                  <h3 className="text-xl font-bold text-[#546A7A]">{schedule.servicePerson.name}</h3>
+                  <p className="text-[#AEBFC3]0 text-sm">Assigned Technician</p>
                 </div>
 
                 <div className="space-y-3">
                   <a
                     href={`mailto:${schedule.servicePerson.email}`}
-                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl hover:shadow-md transition-all border border-purple-100"
+                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#6F8A9D]/10 to-[#EEC1BF]/10 rounded-xl hover:shadow-md transition-all border border-[#6F8A9D]/30"
                   >
-                    <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg text-white">
+                    <div className="p-2 bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] rounded-lg text-white">
                       <Mail className="h-4 w-4" />
                     </div>
-                    <span className="text-gray-700 text-sm truncate">{schedule.servicePerson.email}</span>
+                    <span className="text-[#5D6E73] text-sm truncate">{schedule.servicePerson.email}</span>
                   </a>
                   
                   {schedule.servicePerson.phone && (
                     <a
                       href={`tel:${schedule.servicePerson.phone}`}
-                      className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl hover:shadow-md transition-all border border-purple-100"
+                      className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#6F8A9D]/10 to-[#EEC1BF]/10 rounded-xl hover:shadow-md transition-all border border-[#6F8A9D]/30"
                     >
-                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg text-white">
+                      <div className="p-2 bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] rounded-lg text-white">
                         <Phone className="h-4 w-4" />
                       </div>
-                      <span className="text-gray-700 text-sm">{schedule.servicePerson.phone}</span>
+                      <span className="text-[#5D6E73] text-sm">{schedule.servicePerson.phone}</span>
                     </a>
                   )}
                 </div>
@@ -1040,7 +1040,7 @@ export default function ActivityScheduleDetailPageShared() {
 
             {/* Scheduled By */}
             <Card className="shadow-lg border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-5">
+              <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] text-white p-5">
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <Users className="h-5 w-5" />
                   Scheduled By
@@ -1048,14 +1048,14 @@ export default function ActivityScheduleDetailPageShared() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-full flex items-center justify-center shadow-md">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-full flex items-center justify-center shadow-md">
                     <span className="text-lg font-bold text-white">
                       {schedule.scheduledBy.name?.charAt(0).toUpperCase() || 'A'}
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900">{schedule.scheduledBy.name}</h4>
-                    <a href={`mailto:${schedule.scheduledBy.email}`} className="text-sm text-blue-600 hover:underline">
+                    <h4 className="font-bold text-[#546A7A]">{schedule.scheduledBy.name}</h4>
+                    <a href={`mailto:${schedule.scheduledBy.email}`} className="text-sm text-[#546A7A] hover:underline">
                       {schedule.scheduledBy.email}
                     </a>
                   </div>
@@ -1079,18 +1079,18 @@ export default function ActivityScheduleDetailPageShared() {
                   <div className="relative">
                     <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-gray-600 to-slate-700 rounded-full border-4 border-white shadow-md" />
                     <div>
-                      <p className="font-semibold text-gray-900">Created</p>
-                      <p className="text-sm text-gray-500">{formatDateTime(schedule.createdAt)}</p>
+                      <p className="font-semibold text-[#546A7A]">Created</p>
+                      <p className="text-sm text-[#AEBFC3]0">{formatDateTime(schedule.createdAt)}</p>
                     </div>
                   </div>
 
                   {/* Accepted */}
                   {schedule.acceptedAt && (
                     <div className="relative">
-                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full border-4 border-white shadow-md" />
+                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-full border-4 border-white shadow-md" />
                       <div>
-                        <p className="font-semibold text-gray-900">Accepted</p>
-                        <p className="text-sm text-gray-500">{formatDateTime(schedule.acceptedAt)}</p>
+                        <p className="font-semibold text-[#546A7A]">Accepted</p>
+                        <p className="text-sm text-[#AEBFC3]0">{formatDateTime(schedule.acceptedAt)}</p>
                       </div>
                     </div>
                   )}
@@ -1098,13 +1098,13 @@ export default function ActivityScheduleDetailPageShared() {
                   {/* Rejected */}
                   {schedule.rejectedAt && (
                     <div className="relative">
-                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-rose-500 to-red-500 rounded-full border-4 border-white shadow-md" />
+                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-[#E17F70] to-[#E17F70] rounded-full border-4 border-white shadow-md" />
                       <div>
-                        <p className="font-semibold text-gray-900">Rejected</p>
-                        <p className="text-sm text-gray-500">{formatDateTime(schedule.rejectedAt)}</p>
+                        <p className="font-semibold text-[#546A7A]">Rejected</p>
+                        <p className="text-sm text-[#AEBFC3]0">{formatDateTime(schedule.rejectedAt)}</p>
                         {schedule.rejectionReason && (
-                          <div className="mt-2 p-3 bg-rose-50 rounded-lg border border-rose-200">
-                            <p className="text-sm text-rose-700">{schedule.rejectionReason}</p>
+                          <div className="mt-2 p-3 bg-[#EEC1BF]/10 rounded-lg border border-[#EEC1BF]/50">
+                            <p className="text-sm text-[#9E3B47]">{schedule.rejectionReason}</p>
                           </div>
                         )}
                       </div>
@@ -1114,10 +1114,10 @@ export default function ActivityScheduleDetailPageShared() {
                   {/* Completed */}
                   {schedule.completedAt && (
                     <div className="relative">
-                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full border-4 border-white shadow-md" />
+                      <div className="absolute -left-[22px] w-5 h-5 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-full border-4 border-white shadow-md" />
                       <div>
-                        <p className="font-semibold text-gray-900">Completed</p>
-                        <p className="text-sm text-gray-500">{formatDateTime(schedule.completedAt)}</p>
+                        <p className="font-semibold text-[#546A7A]">Completed</p>
+                        <p className="text-sm text-[#AEBFC3]0">{formatDateTime(schedule.completedAt)}</p>
                       </div>
                     </div>
                   )}
@@ -1131,12 +1131,12 @@ export default function ActivityScheduleDetailPageShared() {
       {/* Complete Dialog */}
       <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-6 text-center">
+          <div className="bg-gradient-to-r from-[#82A094] to-[#82A094] p-6 text-center">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
               <CheckCheck className="h-8 w-8 text-white" />
             </div>
             <DialogTitle className="text-xl text-white">Mark as Completed</DialogTitle>
-            <DialogDescription className="text-emerald-100 mt-2">
+            <DialogDescription className="text-[#A2B9AF] mt-2">
               Confirm that all scheduled activities have been finished.
             </DialogDescription>
           </div>
@@ -1145,14 +1145,14 @@ export default function ActivityScheduleDetailPageShared() {
               variant="outline"
               onClick={() => setShowCompleteDialog(false)}
               disabled={isSubmitting}
-              className="flex-1 border-gray-200"
+              className="flex-1 border-[#92A2A5]"
             >
               Cancel
             </Button>
             <Button
               onClick={handleComplete}
               disabled={isSubmitting}
-              className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+              className="flex-1 bg-gradient-to-r from-[#82A094] to-[#82A094] hover:from-[#4F6A64] hover:to-[#4F6A64] text-white"
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirm Complete'}
             </Button>
@@ -1163,7 +1163,7 @@ export default function ActivityScheduleDetailPageShared() {
       {/* Cancel Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent className="max-w-md p-0 overflow-hidden">
-          <div className="bg-gradient-to-r from-rose-500 to-red-500 p-6 text-center">
+          <div className="bg-gradient-to-r from-[#E17F70] to-[#E17F70] p-6 text-center">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
               <X className="h-8 w-8 text-white" />
             </div>
@@ -1177,7 +1177,7 @@ export default function ActivityScheduleDetailPageShared() {
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="Enter reason for cancellation..."
-              className="min-h-[100px] resize-none border-gray-200"
+              className="min-h-[100px] resize-none border-[#92A2A5]"
             />
             <div className="flex gap-3">
               <Button
@@ -1187,14 +1187,14 @@ export default function ActivityScheduleDetailPageShared() {
                   setCancelReason('');
                 }}
                 disabled={isSubmitting}
-                className="flex-1 border-gray-200"
+                className="flex-1 border-[#92A2A5]"
               >
                 Back
               </Button>
               <Button
                 onClick={handleCancel}
                 disabled={isSubmitting || !cancelReason.trim()}
-                className="flex-1 bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 text-white"
+                className="flex-1 bg-gradient-to-r from-[#E17F70] to-[#E17F70] hover:from-[#9E3B47] hover:to-red-600 text-white"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Cancel Schedule'}
               </Button>

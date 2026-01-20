@@ -24,12 +24,12 @@ export default async function EditExternalUserPage({ params }: EditExternalUserP
     return (
       <div className="space-y-6">
         {/* Desktop Header with Gradient */}
-        <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 p-6 text-white">
+        <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-indigo-800 p-6 text-white">
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">Edit External User</h1>
-              <p className="text-indigo-100">
+              <p className="text-[#6F8A9D]">
                 Update external user information and permissions for {externalUser.name || externalUser.email}
               </p>
             </div>

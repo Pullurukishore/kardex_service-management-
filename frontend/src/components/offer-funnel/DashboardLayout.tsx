@@ -28,7 +28,7 @@ export function DashboardLayout({ children, title, role }: DashboardLayoutProps)
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#546A7A] border-t-transparent"></div>
       </div>
     );
   }
@@ -38,17 +38,17 @@ export function DashboardLayout({ children, title, role }: DashboardLayoutProps)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-[#546A7A]">
                 {title}
               </h1>
               {user.role === 'ZONE_USER' && user.zones && user.zones.length > 0 && (
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+                <span className="rounded-full bg-[#96AEC2]/20 px-3 py-1 text-sm font-medium text-[#546A7A]">
                   {user.zones[0].name}
                 </span>
               )}
@@ -56,8 +56,8 @@ export function DashboardLayout({ children, title, role }: DashboardLayoutProps)
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user.name || user.email}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm font-medium text-[#546A7A]">{user.name || user.email}</p>
+                <p className="text-xs text-[#AEBFC3]0">
                   {user.role === 'ADMIN' ? 'Administrator' : 'Zone User'}
                 </p>
               </div>
@@ -75,13 +75,13 @@ export function DashboardLayout({ children, title, role }: DashboardLayoutProps)
           <div className="flex gap-8 h-12 items-center">
             <a
               href={user.role === 'ADMIN' ? '/admin' : '/zone-user/dashboard'}
-              className="text-sm font-medium text-gray-700 hover:text-blue-600"
+              className="text-sm font-medium text-[#5D6E73] hover:text-[#546A7A]"
             >
               Dashboard
             </a>
             <a
               href={user.role === 'ADMIN' ? '/admin/offers' : '/zone-user/offers'}
-              className="text-sm font-medium text-gray-700 hover:text-blue-600"
+              className="text-sm font-medium text-[#5D6E73] hover:text-[#546A7A]"
             >
               Offers
             </a>

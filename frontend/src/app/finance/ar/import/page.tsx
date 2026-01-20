@@ -52,7 +52,6 @@ export default function ARImportPage() {
     try {
       const previewData = await arApi.previewExcel(selectedFile);
       setPreview(previewData);
-      // Auto-select all rows initially
       const allRows = new Set<number>();
       for (let i = 0; i < (previewData.preview?.length || 0); i++) {
         allRows.add(i);
@@ -64,7 +63,6 @@ export default function ARImportPage() {
       console.error('Preview error:', err);
       setPreview({ totalRows: '?', headers: [], preview: [] });
       
-      // Extract detailed error info
       const errorData = err.response?.data || err;
       setError({
         message: errorData.message || 'Failed to read file',
@@ -170,7 +168,6 @@ export default function ARImportPage() {
     }
   };
 
-  // Pagination
   const totalRows = preview?.preview?.length || 0;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -190,83 +187,91 @@ export default function ARImportPage() {
           const isActive = step === s.key;
           const isPast = (step === 'preview' && s.key === 'upload') || 
                          (step === 'importing' && (s.key === 'upload' || s.key === 'preview'));
-          const isFuture = !isActive && !isPast;
           
           return (
             <div key={s.key} className="flex items-center gap-3">
               <div className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                 isActive 
-                  ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/40' 
+                  ? 'bg-gradient-to-r from-[#82A094]/20 to-[#82A094]/10 border-2 border-[#82A094]/40' 
                   : isPast 
-                    ? 'bg-emerald-500/10 border border-emerald-500/20'
-                    : 'bg-white/5 border border-white/10'
+                    ? 'bg-[#82A094]/10 border border-[#82A094]/20'
+                    : 'bg-white border-2 border-[#AEBFC3]/30'
               }`}>
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
                   isActive 
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-500' 
+                    ? 'bg-gradient-to-br from-[#82A094] to-[#4F6A64]' 
                     : isPast 
-                      ? 'bg-emerald-500/50'
-                      : 'bg-white/10'
+                      ? 'bg-[#82A094]'
+                      : 'bg-[#AEBFC3]/30'
                 }`}>
                   {isPast ? (
                     <CheckCircle className="w-4 h-4 text-white" />
                   ) : (
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-white/40'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#92A2A5]'}`} />
                   )}
                 </div>
                 <span className={`text-sm font-medium ${
-                  isActive ? 'text-white' : isPast ? 'text-emerald-400/70' : 'text-white/40'
+                  isActive ? 'text-[#4F6A64]' : isPast ? 'text-[#82A094]' : 'text-[#92A2A5]'
                 }`}>{s.label}</span>
               </div>
               {index < 2 && (
-                <ArrowRight className={`w-4 h-4 ${isPast ? 'text-emerald-400/50' : 'text-white/20'}`} />
+                <ArrowRight className={`w-4 h-4 ${isPast ? 'text-[#82A094]' : 'text-[#AEBFC3]'}`} />
               )}
             </div>
           );
         })}
       </div>
 
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-emerald-200 to-teal-200 bg-clip-text text-transparent flex items-center gap-2 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
-          Import Invoices
-          <Sparkles className="w-5 h-5 text-emerald-400" />
-        </h1>
-        <p className="text-emerald-200/60 text-sm mt-1 font-medium">
-          {step === 'upload' && 'Upload Excel files to import invoice data'}
-          {step === 'preview' && 'Review all records before importing'}
-          {step === 'importing' && 'Importing your data...'}
-        </p>
+      {/* Premium Header - Green Import Theme */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#4F6A64] via-[#82A094] to-[#A2B9AF] p-6 shadow-xl">
+        {/* Decorative Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-12 w-32 h-32 border-4 border-white rounded-full" />
+          <div className="absolute -bottom-8 right-32 w-48 h-48 border-4 border-white rounded-full" />
+        </div>
+
+        <div className="relative flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
+            <Upload className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              Import Invoices
+              <Sparkles className="w-6 h-6 text-white/80" />
+            </h1>
+            <p className="text-white/80 text-sm mt-1 flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4" />
+              {step === 'upload' && 'Upload Excel files to import invoice data'}
+              {step === 'preview' && 'Review all records before importing'}
+              {step === 'importing' && 'Importing your data...'}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Step 1: Upload Area */}
       {step === 'upload' && (
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-8 hover:border-purple-500/20 transition-all duration-300">
+        <div className="bg-white rounded-2xl border-2 border-[#82A094]/20 p-8 shadow-sm">
           <label 
             className={`flex flex-col items-center justify-center cursor-pointer py-16 border-2 border-dashed rounded-2xl transition-all duration-300 group relative overflow-hidden ${
               dragActive 
-                ? 'border-purple-500 bg-purple-500/10' 
-                : 'border-white/20 hover:border-purple-500/50 hover:bg-purple-500/5'
+                ? 'border-[#82A094] bg-[#82A094]/10' 
+                : 'border-[#AEBFC3]/50 hover:border-[#82A094]/50 hover:bg-[#82A094]/5'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            {/* Animated background gradient on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${dragActive ? 'scale-110 rotate-3' : ''}`}
-              style={{ boxShadow: '0 10px 40px rgba(168, 85, 247, 0.4)' }}
-            >
+            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#82A094] to-[#4F6A64] flex items-center justify-center mb-5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg shadow-[#82A094]/40 ${dragActive ? 'scale-110 rotate-3' : ''}`}>
               <UploadCloud className="w-10 h-10 text-white" />
             </div>
             <div className="text-center relative z-10">
-              <p className="text-white font-semibold text-lg mb-2">
+              <p className="text-[#546A7A] font-semibold text-lg mb-2">
                 {dragActive ? 'Drop your file here' : 'Drop your Excel file here'}
               </p>
-              <p className="text-white/40 text-sm">or click to browse</p>
-              <p className="text-white/25 text-xs mt-3">Supports .xlsx and .xls files</p>
+              <p className="text-[#92A2A5] text-sm">or click to browse</p>
+              <p className="text-[#AEBFC3] text-xs mt-3">Supports .xlsx and .xls files</p>
             </div>
             <input
               ref={fileInputRef}
@@ -283,18 +288,15 @@ export default function ARImportPage() {
       {step === 'preview' && preview && (
         <div className="space-y-6">
           {/* File Info & Actions */}
-          <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+          <div className="bg-white rounded-2xl border-2 border-[#82A094]/20 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <div 
-                  className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center"
-                  style={{ boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3)' }}
-                >
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#82A094] to-[#4F6A64] flex items-center justify-center shadow-lg shadow-[#82A094]/30">
                   <FileCheck className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-white font-semibold">{file?.name}</p>
-                  <p className="text-emerald-400/70 text-sm">
+                  <p className="text-[#546A7A] font-semibold">{file?.name}</p>
+                  <p className="text-[#92A2A5] text-sm">
                     {totalRows} rows found • {selectedRows.size} selected for import
                   </p>
                 </div>
@@ -302,50 +304,50 @@ export default function ARImportPage() {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={handleBackToUpload}
-                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all duration-200 flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-white border-2 border-[#AEBFC3]/40 text-[#5D6E73] hover:bg-[#AEBFC3]/10 transition-all flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back</span>
                 </button>
                 <button 
                   onClick={handleClear}
-                  className="p-2.5 rounded-xl bg-white/5 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200"
+                  className="p-2.5 rounded-xl bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#E17F70]/10 hover:border-[#E17F70]/40 hover:text-[#E17F70] transition-all"
                 >
-                  <X className="w-5 h-5 text-white/60" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* Validation Summary */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-white/5 rounded-xl p-4">
-                <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Total Rows</p>
-                <p className="text-white text-2xl font-bold">{totalRows}</p>
+              <div className="bg-[#AEBFC3]/10 rounded-xl p-4 border border-[#AEBFC3]/20">
+                <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1">Total Rows</p>
+                <p className="text-[#546A7A] text-2xl font-bold">{totalRows}</p>
               </div>
-              <div className="bg-emerald-500/10 rounded-xl p-4">
+              <div className="bg-[#82A094]/10 rounded-xl p-4 border border-[#82A094]/30">
                 <div className="flex items-center gap-2 mb-1">
-                  <CheckCircle className="w-3 h-3 text-emerald-400" />
-                  <p className="text-emerald-400/60 text-xs uppercase tracking-wider">Valid Rows</p>
+                  <CheckCircle className="w-3 h-3 text-[#82A094]" />
+                  <p className="text-[#82A094] text-xs uppercase tracking-wider">Valid Rows</p>
                 </div>
-                <p className="text-emerald-400 text-2xl font-bold">{preview.validRows || totalRows}</p>
+                <p className="text-[#4F6A64] text-2xl font-bold">{preview.validRows || totalRows}</p>
               </div>
-              <div className={`${(preview.invalidRows || 0) > 0 ? 'bg-red-500/10' : 'bg-white/5'} rounded-xl p-4`}>
+              <div className={`${(preview.invalidRows || 0) > 0 ? 'bg-[#E17F70]/10 border-[#E17F70]/30' : 'bg-[#AEBFC3]/10 border-[#AEBFC3]/20'} rounded-xl p-4 border`}>
                 <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="w-3 h-3 text-red-400" />
-                  <p className={`${(preview.invalidRows || 0) > 0 ? 'text-red-400/60' : 'text-white/40'} text-xs uppercase tracking-wider`}>Invalid Rows</p>
+                  <AlertTriangle className="w-3 h-3 text-[#E17F70]" />
+                  <p className={`${(preview.invalidRows || 0) > 0 ? 'text-[#E17F70]' : 'text-[#92A2A5]'} text-xs uppercase tracking-wider`}>Invalid Rows</p>
                 </div>
-                <p className={`${(preview.invalidRows || 0) > 0 ? 'text-red-400' : 'text-white/40'} text-2xl font-bold`}>{preview.invalidRows || 0}</p>
+                <p className={`${(preview.invalidRows || 0) > 0 ? 'text-[#9E3B47]' : 'text-[#92A2A5]'} text-2xl font-bold`}>{preview.invalidRows || 0}</p>
               </div>
             </div>
 
             {/* Missing Columns Warning */}
             {preview.missingColumns && preview.missingColumns.length > 0 && (
-              <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+              <div className="mb-6 p-4 bg-[#CE9F6B]/10 border-2 border-[#CE9F6B]/30 rounded-xl">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-[#CE9F6B] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-amber-400 font-semibold">Missing Required Columns</p>
-                    <p className="text-amber-400/70 text-sm mt-1">
+                    <p className="text-[#976E44] font-semibold">Missing Required Columns</p>
+                    <p className="text-[#976E44]/70 text-sm mt-1">
                       The following columns are missing from your file: {preview.missingColumns.join(', ')}
                     </p>
                   </div>
@@ -356,32 +358,32 @@ export default function ARImportPage() {
             {/* Full Preview Table */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-white font-semibold flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-purple-400" />
+                <h3 className="text-[#546A7A] font-semibold flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-[#6F8A9D]" />
                   Data Preview
                 </h3>
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={toggleAllRows}
-                    className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-sm transition-all"
+                    className="px-3 py-1.5 rounded-lg bg-[#AEBFC3]/10 hover:bg-[#AEBFC3]/20 text-[#5D6E73] text-sm transition-all"
                   >
                     {selectedRows.size === totalRows ? 'Deselect All' : 'Select All'}
                   </button>
-                  <span className="text-white/40 text-sm">
+                  <span className="text-[#92A2A5] text-sm">
                     Showing {startIndex + 1}-{endIndex} of {totalRows}
                   </span>
                 </div>
               </div>
               
-              <div className="overflow-x-auto rounded-xl border border-white/10 max-h-[500px] overflow-y-auto">
+              <div className="overflow-x-auto rounded-xl border-2 border-[#AEBFC3]/30 max-h-[500px] overflow-y-auto">
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 z-10">
-                    <tr className="bg-gradient-to-r from-purple-500/20 via-fuchsia-500/15 to-purple-500/10 backdrop-blur-sm">
-                      <th className="text-left py-3 px-4 text-white/50 font-semibold text-xs uppercase tracking-wider w-12">
+                    <tr className="bg-gradient-to-r from-[#6F8A9D]/10 to-[#82A094]/5 border-b-2 border-[#AEBFC3]/30">
+                      <th className="text-left py-3 px-4 text-[#5D6E73] font-bold text-xs uppercase tracking-wider w-12">
                         #
                       </th>
                       {preview.headers?.map((header: string, i: number) => (
-                        <th key={i} className="text-left py-3 px-4 text-white/50 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">
+                        <th key={i} className="text-left py-3 px-4 text-[#5D6E73] font-bold text-xs uppercase tracking-wider whitespace-nowrap">
                           {header}
                         </th>
                       ))}
@@ -398,31 +400,30 @@ export default function ARImportPage() {
                         <tr 
                           key={globalIndex}
                           onClick={() => toggleRowSelection(globalIndex)}
-                          className={`border-t border-white/5 cursor-pointer transition-all duration-200 ${
+                          className={`border-t border-[#AEBFC3]/20 cursor-pointer transition-all duration-200 ${
                             !isValid 
-                              ? 'bg-red-500/10 hover:bg-red-500/15' 
+                              ? 'bg-[#E17F70]/10 hover:bg-[#E17F70]/15' 
                               : isSelected 
-                                ? 'bg-emerald-500/10 hover:bg-emerald-500/15' 
-                                : 'hover:bg-white/5 opacity-50'
+                                ? 'bg-[#82A094]/10 hover:bg-[#82A094]/15' 
+                                : 'bg-white hover:bg-[#AEBFC3]/10 opacity-60'
                           }`}
                         >
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-2">
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                                 !isValid
-                                  ? 'border-red-500 bg-red-500/30'
+                                  ? 'border-[#9E3B47] bg-[#E17F70]/30'
                                   : isSelected 
-                                    ? 'border-emerald-500 bg-emerald-500' 
-                                    : 'border-white/20 bg-transparent'
+                                    ? 'border-[#82A094] bg-[#82A094]' 
+                                    : 'border-[#AEBFC3] bg-transparent'
                               }`}>
                                 {!isValid ? (
-                                  <AlertTriangle className="w-3 h-3 text-red-400" />
+                                  <AlertTriangle className="w-3 h-3 text-[#9E3B47]" />
                                 ) : isSelected ? (
                                   <CheckCircle className="w-3 h-3 text-white" />
                                 ) : null}
                               </div>
-                              {/* Row number */}
-                              <span className="text-white/30 text-xs">{row._rowNumber || globalIndex + 2}</span>
+                              <span className="text-[#92A2A5] text-xs">{row._rowNumber || globalIndex + 2}</span>
                             </div>
                           </td>
                           {preview.headers?.filter((h: string) => !h.startsWith('_')).map((header: string, j: number) => {
@@ -430,28 +431,27 @@ export default function ARImportPage() {
                             return (
                               <td key={j} className={`py-3 px-4 whitespace-nowrap relative ${
                                 hasError 
-                                  ? 'text-red-400' 
+                                  ? 'text-[#9E3B47]' 
                                   : !isValid
-                                    ? 'text-red-400/70'
+                                    ? 'text-[#9E3B47]/70'
                                     : isSelected 
-                                      ? 'text-white' 
-                                      : 'text-white/50'
+                                      ? 'text-[#546A7A]' 
+                                      : 'text-[#92A2A5]'
                               }`}>
                                 {hasError && (
-                                  <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                  <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#E17F70] animate-pulse" />
                                 )}
-                                {row[header] || <span className={hasError ? 'text-red-400 italic' : 'text-white/25'}>
+                                {row[header] || <span className={hasError ? 'text-[#E17F70] italic' : 'text-[#AEBFC3]'}>
                                   {hasError ? 'Missing' : '-'}
                                 </span>}
                               </td>
                             );
                           })}
-                          {/* Error details column */}
                           {rowErrors.length > 0 && (
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-1" title={rowErrors.map((e: FieldError) => e.message).join(', ')}>
-                                <AlertCircle className="w-4 h-4 text-red-400" />
-                                <span className="text-red-400 text-xs">{rowErrors.length} error{rowErrors.length > 1 ? 's' : ''}</span>
+                                <AlertCircle className="w-4 h-4 text-[#E17F70]" />
+                                <span className="text-[#E17F70] text-xs">{rowErrors.length} error{rowErrors.length > 1 ? 's' : ''}</span>
                               </div>
                             </td>
                           )}
@@ -465,26 +465,25 @@ export default function ARImportPage() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between pt-2">
-                  <div className="text-white/40 text-sm">
+                  <div className="text-[#92A2A5] text-sm">
                     Page {currentPage} of {totalPages}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setCurrentPage(1)}
                       disabled={currentPage === 1}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      className="p-2 rounded-lg bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#AEBFC3]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
-                      <ChevronLeft className="w-4 h-4 text-white/60" />
+                      <ChevronLeft className="w-4 h-4 text-[#5D6E73]" />
                     </button>
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-white/60 text-sm"
+                      className="px-3 py-2 rounded-lg bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#AEBFC3]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-[#5D6E73] text-sm"
                     >
                       Previous
                     </button>
                     
-                    {/* Page Numbers */}
                     <div className="flex items-center gap-1">
                       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                         let pageNum;
@@ -503,8 +502,8 @@ export default function ARImportPage() {
                             onClick={() => setCurrentPage(pageNum)}
                             className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
                               currentPage === pageNum
-                                ? 'bg-emerald-500 text-white'
-                                : 'bg-white/5 hover:bg-white/10 text-white/60'
+                                ? 'bg-[#82A094] text-white'
+                                : 'bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#AEBFC3]/10 text-[#5D6E73]'
                             }`}
                           >
                             {pageNum}
@@ -516,16 +515,16 @@ export default function ARImportPage() {
                     <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-white/60 text-sm"
+                      className="px-3 py-2 rounded-lg bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#AEBFC3]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-[#5D6E73] text-sm"
                     >
                       Next
                     </button>
                     <button
                       onClick={() => setCurrentPage(totalPages)}
                       disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      className="p-2 rounded-lg bg-white border-2 border-[#AEBFC3]/40 hover:bg-[#AEBFC3]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
-                      <ChevronRight className="w-4 h-4 text-white/60" />
+                      <ChevronRight className="w-4 h-4 text-[#5D6E73]" />
                     </button>
                   </div>
                 </div>
@@ -534,15 +533,15 @@ export default function ARImportPage() {
           </div>
 
           {/* Import Confirmation */}
-          <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent rounded-2xl border border-emerald-500/20 p-6">
+          <div className="bg-gradient-to-r from-[#82A094]/15 via-[#82A094]/10 to-transparent rounded-2xl border-2 border-[#82A094]/30 p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
-                  <Upload className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#82A094]/30 to-[#82A094]/10 flex items-center justify-center">
+                  <Upload className="w-6 h-6 text-[#4F6A64]" />
                 </div>
                 <div>
-                  <p className="text-white font-semibold">Ready to Import</p>
-                  <p className="text-emerald-400/70 text-sm">
+                  <p className="text-[#546A7A] font-semibold">Ready to Import</p>
+                  <p className="text-[#82A094] text-sm">
                     {selectedRows.size} of {totalRows} records will be imported
                   </p>
                 </div>
@@ -550,7 +549,7 @@ export default function ARImportPage() {
               <button
                 onClick={handleImport}
                 disabled={selectedRows.size === 0}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 disabled:hover:translate-y-0"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-semibold hover:shadow-lg hover:shadow-[#82A094]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 hover:-translate-y-0.5 disabled:hover:translate-y-0"
               >
                 <Upload className="w-5 h-5" />
                 <span>Confirm Import</span>
@@ -563,40 +562,37 @@ export default function ARImportPage() {
 
       {/* Step 3: Importing */}
       {step === 'importing' && (
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-12 flex flex-col items-center justify-center">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-6"
-            style={{ boxShadow: '0 10px 40px rgba(16, 185, 129, 0.4)' }}
-          >
+        <div className="bg-white rounded-2xl border-2 border-[#82A094]/20 p-12 flex flex-col items-center justify-center shadow-sm">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#82A094] to-[#4F6A64] flex items-center justify-center mb-6 shadow-lg shadow-[#82A094]/40">
             <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin" />
           </div>
-          <h3 className="text-white text-xl font-semibold mb-2">Importing Records...</h3>
-          <p className="text-white/40 text-sm">Please wait while we process your data</p>
+          <h3 className="text-[#546A7A] text-xl font-semibold mb-2">Importing Records...</h3>
+          <p className="text-[#92A2A5] text-sm">Please wait while we process your data</p>
         </div>
       )}
 
       {/* Error */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl overflow-hidden">
+        <div className="bg-[#E17F70]/10 border-2 border-[#E17F70]/30 rounded-xl overflow-hidden">
           <div className="flex items-start gap-4 p-5">
-            <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
-              <XCircle className="w-6 h-6 text-red-400" />
+            <div className="w-12 h-12 rounded-xl bg-[#E17F70]/20 flex items-center justify-center flex-shrink-0">
+              <XCircle className="w-6 h-6 text-[#9E3B47]" />
             </div>
             <div className="flex-1">
-              <p className="text-red-400 font-semibold text-lg">{error.message}</p>
+              <p className="text-[#9E3B47] font-semibold text-lg">{error.message}</p>
               {error.details && (
-                <p className="text-red-400/70 text-sm mt-1">{error.details}</p>
+                <p className="text-[#E17F70] text-sm mt-1">{error.details}</p>
               )}
               
-              {/* Missing Columns */}
               {error.missingColumns && error.missingColumns.length > 0 && (
-                <div className="mt-4 p-4 bg-red-500/10 rounded-lg">
-                  <p className="text-red-400/80 text-sm font-semibold mb-2 flex items-center gap-2">
+                <div className="mt-4 p-4 bg-[#E17F70]/10 rounded-lg">
+                  <p className="text-[#9E3B47] text-sm font-semibold mb-2 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4" />
                     Missing Required Columns:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {error.missingColumns.map((col, i) => (
-                      <span key={i} className="px-3 py-1 bg-red-500/20 text-red-400 text-sm rounded-lg">
+                      <span key={i} className="px-3 py-1 bg-[#E17F70]/20 text-[#9E3B47] text-sm rounded-lg">
                         {col}
                       </span>
                     ))}
@@ -604,19 +600,18 @@ export default function ARImportPage() {
                 </div>
               )}
 
-              {/* Technical Error */}
               {error.error && (
-                <div className="mt-3 p-3 bg-black/20 rounded-lg">
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Technical Details</p>
-                  <p className="text-red-400/60 text-xs font-mono break-all">{error.error}</p>
+                <div className="mt-3 p-3 bg-[#AEBFC3]/10 rounded-lg">
+                  <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1">Technical Details</p>
+                  <p className="text-[#E17F70] text-xs font-mono break-all">{error.error}</p>
                 </div>
               )}
             </div>
             <button 
               onClick={() => setError(null)}
-              className="p-2 rounded-lg hover:bg-red-500/20 transition-all"
+              className="p-2 rounded-lg hover:bg-[#E17F70]/20 transition-all"
             >
-              <X className="w-4 h-4 text-red-400/60" />
+              <X className="w-4 h-4 text-[#E17F70]" />
             </button>
           </div>
         </div>
@@ -624,47 +619,46 @@ export default function ARImportPage() {
 
       {/* Result */}
       {result && (
-        <div className={`p-6 rounded-2xl border relative overflow-hidden ${
+        <div className={`p-6 rounded-2xl border-2 relative overflow-hidden ${
           result.failed === 0 
-            ? 'bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/30' 
-            : 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/30'
+            ? 'bg-gradient-to-r from-[#82A094]/10 via-[#82A094]/5 to-transparent border-[#82A094]/30' 
+            : 'bg-gradient-to-r from-[#CE9F6B]/10 via-[#CE9F6B]/5 to-transparent border-[#CE9F6B]/30'
         }`}>
           <div className="flex items-start gap-5">
             <div 
-              className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+              className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ${
                 result.failed === 0 
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500' 
-                  : 'bg-gradient-to-br from-amber-500 to-orange-500'
+                  ? 'bg-gradient-to-br from-[#82A094] to-[#4F6A64] shadow-[#82A094]/30' 
+                  : 'bg-gradient-to-br from-[#CE9F6B] to-[#976E44] shadow-[#CE9F6B]/30'
               }`}
-              style={{ boxShadow: result.failed === 0 ? '0 8px 25px rgba(16, 185, 129, 0.3)' : '0 8px 25px rgba(251, 191, 36, 0.3)' }}
             >
               <CheckCircle className="w-7 h-7 text-white" />
             </div>
             <div className="flex-1">
               <h3 className={`font-bold text-lg ${
-                result.failed === 0 ? 'text-emerald-400' : 'text-amber-400'
+                result.failed === 0 ? 'text-[#4F6A64]' : 'text-[#976E44]'
               }`}>
                 Import {result.failed === 0 ? 'Completed Successfully!' : 'Partially Completed'}
               </h3>
               <div className="mt-4 grid grid-cols-3 gap-6">
-                <div className="bg-white/5 rounded-xl p-4">
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Total Records</p>
-                  <p className="text-white text-2xl font-bold">{result.total}</p>
+                <div className="bg-white rounded-xl p-4 border border-[#AEBFC3]/30">
+                  <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-1">Total Records</p>
+                  <p className="text-[#546A7A] text-2xl font-bold">{result.total}</p>
                 </div>
-                <div className="bg-emerald-500/10 rounded-xl p-4">
-                  <p className="text-emerald-400/60 text-xs uppercase tracking-wider mb-1">Successful</p>
-                  <p className="text-emerald-400 text-2xl font-bold">{result.success}</p>
+                <div className="bg-[#82A094]/10 rounded-xl p-4 border border-[#82A094]/30">
+                  <p className="text-[#82A094] text-xs uppercase tracking-wider mb-1">Successful</p>
+                  <p className="text-[#4F6A64] text-2xl font-bold">{result.success}</p>
                 </div>
-                <div className="bg-red-500/10 rounded-xl p-4">
-                  <p className="text-red-400/60 text-xs uppercase tracking-wider mb-1">Failed</p>
-                  <p className="text-red-400 text-2xl font-bold">{result.failed}</p>
+                <div className="bg-[#E17F70]/10 rounded-xl p-4 border border-[#E17F70]/30">
+                  <p className="text-[#E17F70] text-xs uppercase tracking-wider mb-1">Failed</p>
+                  <p className="text-[#9E3B47] text-2xl font-bold">{result.failed}</p>
                 </div>
               </div>
               {result.errors?.length > 0 && (
-                <div className="mt-4 p-4 bg-black/20 rounded-xl max-h-32 overflow-y-auto">
-                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Errors</p>
+                <div className="mt-4 p-4 bg-[#AEBFC3]/10 rounded-xl max-h-32 overflow-y-auto">
+                  <p className="text-[#92A2A5] text-xs uppercase tracking-wider mb-2">Errors</p>
                   {result.errors.slice(0, 5).map((err, i) => (
-                    <p key={i} className="text-red-400/80 text-sm">{err}</p>
+                    <p key={i} className="text-[#E17F70] text-sm">{err}</p>
                   ))}
                 </div>
               )}
@@ -675,9 +669,9 @@ export default function ARImportPage() {
 
       {/* Instructions - Show only on upload step */}
       {step === 'upload' && (
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:border-purple-500/20 transition-all duration-300">
-          <h3 className="text-white font-semibold mb-5 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
+        <div className="bg-white rounded-2xl border-2 border-[#CE9F6B]/20 p-6 shadow-sm">
+          <h3 className="text-[#546A7A] font-semibold mb-5 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#CE9F6B]" />
             Expected Columns (SAP Excel Format)
           </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -691,10 +685,10 @@ export default function ARImportPage() {
               { name: 'Tax', required: true, desc: 'Tax Amount' },
               { name: 'Document Date', required: true, desc: 'Invoice Date' },
             ].map((col, i) => (
-              <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
-                <div className={`w-2 h-2 rounded-full ${col.required ? 'bg-purple-400' : 'bg-white/20'}`} />
-                <span className="text-white/70">{col.name}</span>
-                {col.required && <span className="text-purple-400 text-xs font-semibold">Required</span>}
+              <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#CE9F6B]/5 transition-colors">
+                <div className={`w-2 h-2 rounded-full ${col.required ? 'bg-[#CE9F6B]' : 'bg-[#AEBFC3]'}`} />
+                <span className="text-[#5D6E73]">{col.name}</span>
+                {col.required && <span className="text-[#CE9F6B] text-xs font-semibold">Required</span>}
               </div>
             ))}
           </div>

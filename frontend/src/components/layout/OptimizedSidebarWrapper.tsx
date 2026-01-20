@@ -23,11 +23,11 @@ export function OptimizedSidebarWrapper(props: OptimizedSidebarWrapperProps) {
   return (
     <React.Suspense 
       fallback={
-        <div className="w-64 h-screen bg-white border-r border-slate-200 animate-pulse">
-          <div className="h-20 border-b border-slate-200" />
+        <div className="w-64 h-screen bg-white border-r border-[#92A2A5] animate-pulse">
+          <div className="h-20 border-b border-[#92A2A5]" />
           <div className="p-4 space-y-3">
             {Array.from({ length: 6 }, (_, i) => (
-              <div key={i} className="h-10 bg-slate-100 rounded-lg" />
+              <div key={i} className="h-10 bg-[#AEBFC3]/20 rounded-lg" />
             ))}
           </div>
         </div>

@@ -35,22 +35,22 @@ export function LocationDisplay({ notes, className = '', showMapLink = true }: L
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center gap-2">
-        <MapPin className="h-4 w-4 text-blue-600" />
+        <MapPin className="h-4 w-4 text-[#546A7A]" />
         <Badge variant="secondary" className="text-xs">
           Location Tracked
         </Badge>
       </div>
       
-      <div className="bg-blue-50 border border-blue-200 rounded-md p-3 space-y-2">
+      <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-md p-3 space-y-2">
         {location && (
           <div className="flex items-start gap-2">
-            <span className="text-sm font-medium text-blue-900">📍</span>
+            <span className="text-sm font-medium text-[#546A7A]">📍</span>
             <div className="flex-1">
-              <p className="text-sm text-blue-800 font-medium">{location}</p>
+              <p className="text-sm text-[#546A7A] font-medium">{location}</p>
               {showMapLink && coordinates && (
                 <button
                   onClick={handleMapClick}
-                  className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1 mt-1"
+                  className="text-xs text-[#546A7A] hover:text-[#546A7A] underline flex items-center gap-1 mt-1"
                 >
                   <ExternalLink className="h-3 w-3" />
                   View on Map
@@ -62,15 +62,15 @@ export function LocationDisplay({ notes, className = '', showMapLink = true }: L
         
         {time && (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-blue-900">🕒</span>
-            <p className="text-sm text-blue-700">{time}</p>
+            <span className="text-sm font-medium text-[#546A7A]">🕒</span>
+            <p className="text-sm text-[#546A7A]">{time}</p>
           </div>
         )}
         
         {coordinates && (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-blue-900">📍</span>
-            <p className="text-xs text-blue-600 font-mono">{coordinates}</p>
+            <span className="text-sm font-medium text-[#546A7A]">📍</span>
+            <p className="text-xs text-[#546A7A] font-mono">{coordinates}</p>
           </div>
         )}
       </div>

@@ -918,7 +918,7 @@ export default function CleanAttendanceWidget({
 
     if (attendanceData.isCheckedIn) {
       return (
-        <Badge className="bg-green-100 text-green-800 border-green-200">
+        <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]">
           <CheckCircle className="w-3 h-3 mr-1" />
           Checked In
         </Badge>
@@ -929,14 +929,14 @@ export default function CleanAttendanceWidget({
       
       if (hasAttendanceToday) {
         return (
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+          <Badge variant="secondary" className="bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]">
             <Clock className="w-3 h-3 mr-1" />
             Can Re-Check In
           </Badge>
         );
       } else {
         return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-200">
+          <Badge variant="secondary" className="bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]">
             <Clock className="w-3 h-3 mr-1" />
             Ready to Check In
           </Badge>
@@ -957,7 +957,7 @@ export default function CleanAttendanceWidget({
 
     if (!attendanceData) {
       return (
-        <Button disabled className="w-full h-12 rounded-xl text-sm font-semibold bg-gray-100 text-gray-400">
+        <Button disabled className="w-full h-12 rounded-xl text-sm font-semibold bg-[#AEBFC3]/20 text-[#979796]">
           <Loader2 className="w-5 h-5 mr-2 animate-spin" />
           Loading...
         </Button>
@@ -974,7 +974,7 @@ export default function CleanAttendanceWidget({
         <Button
           onClick={handleCheckOut}
           disabled={actionLoading}
-          className="w-full h-14 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
+          className="w-full h-14 bg-gradient-to-r from-[#E17F70] to-[#9E3B47] hover:from-[#9E3B47] hover:to-[#75242D] text-white text-sm font-bold shadow-lg shadow-red-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
         >
           {actionLoading ? (
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -987,14 +987,14 @@ export default function CleanAttendanceWidget({
     } else if (hasAttendanceToday) {
       return (
         <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-blue-700 font-semibold bg-gradient-to-r from-blue-50 to-indigo-50 py-2.5 px-4 rounded-xl border border-blue-200">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#546A7A] font-semibold bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 py-2.5 px-4 rounded-xl border border-[#96AEC2]">
             <CheckCircle className="w-4 h-4" />
             <span>Checked out today • Tap to resume work</span>
           </div>
           <Button
             onClick={handleReCheckIn}
             disabled={actionLoading}
-            className="w-full h-14 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-bold shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
+            className="w-full h-14 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white text-sm font-bold shadow-lg shadow-[#96AEC2]/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
           >
             {actionLoading ? (
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -1010,7 +1010,7 @@ export default function CleanAttendanceWidget({
         <Button
           onClick={handleCheckIn}
           disabled={actionLoading}
-          className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm font-bold shadow-lg shadow-green-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
+          className="w-full h-14 bg-gradient-to-r from-[#82A094] to-[#4F6A64] hover:from-[#4F6A64] hover:to-[#4F6A64] text-white text-sm font-bold shadow-lg shadow-green-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
         >
           {actionLoading ? (
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -1027,7 +1027,7 @@ export default function CleanAttendanceWidget({
     return (
       <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl">
         {/* Premium Loading State */}
-        <div className="bg-gradient-to-r from-[#3d5a78] via-[#507295] to-[#6889ab] p-4 sm:p-6">
+        <div className="bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] p-4 sm:p-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white/20 rounded-xl animate-pulse"></div>
             <div className="space-y-2 flex-1">
@@ -1038,8 +1038,8 @@ export default function CleanAttendanceWidget({
         </div>
         <div className="bg-white p-4 sm:p-6">
           <div className="space-y-3">
-            <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
-            <div className="h-14 bg-gray-100 rounded-xl animate-pulse"></div>
+            <div className="h-12 bg-[#AEBFC3]/20 rounded-xl animate-pulse"></div>
+            <div className="h-14 bg-[#AEBFC3]/20 rounded-xl animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -1053,7 +1053,7 @@ export default function CleanAttendanceWidget({
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 sm:p-5">
+            <div className="bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B] p-4 sm:p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
@@ -1071,14 +1071,14 @@ export default function CleanAttendanceWidget({
             </div>
             
             <div className="p-4 sm:p-5 space-y-4">
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-[#5D6E73] text-sm sm:text-base">
                 {earlyCheckoutData.confirmationData.message}
               </p>
               
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+              <div className="bg-[#CE9F6B]/10 border border-[#CE9F6B]/50 rounded-xl p-4 space-y-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-amber-600" />
-                  <span className="text-amber-800 font-medium">
+                  <Clock className="h-4 w-4 text-[#976E44]" />
+                  <span className="text-[#976E44] font-medium">
                     Current: {new Date(earlyCheckoutData.confirmationData.checkoutTime).toLocaleTimeString('en-US', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -1087,8 +1087,8 @@ export default function CleanAttendanceWidget({
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-amber-600" />
-                  <span className="text-amber-800 font-medium">
+                  <Clock className="h-4 w-4 text-[#976E44]" />
+                  <span className="text-[#976E44] font-medium">
                     Scheduled: {new Date(earlyCheckoutData.confirmationData.scheduledTime).toLocaleTimeString('en-US', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -1108,7 +1108,7 @@ export default function CleanAttendanceWidget({
                 </Button>
                 <Button
                   onClick={() => handleEarlyCheckoutConfirm(true)}
-                  className="flex-1 h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl font-bold"
+                  className="flex-1 h-12 bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B] hover:from-amber-600 hover:to-[#976E44] rounded-xl font-bold"
                   disabled={actionLoading}
                 >
                   {actionLoading ? (
@@ -1125,7 +1125,7 @@ export default function CleanAttendanceWidget({
       {/* Premium Attendance Card */}
       <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden">
         {/* Premium Header */}
-        <div className="relative bg-gradient-to-r from-[#3d5a78] via-[#507295] to-[#6889ab] p-4 sm:p-6 overflow-hidden">
+        <div className="relative bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] p-4 sm:p-6 overflow-hidden">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
@@ -1146,23 +1146,23 @@ export default function CleanAttendanceWidget({
             {/* Status Badge */}
             <div className={`flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm border ${
               attendanceData?.isCheckedIn 
-                ? 'bg-green-500/20 border-green-400/50' 
+                ? 'bg-[#A2B9AF]/100/20 border-green-400/50' 
                 : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                ? 'bg-amber-500/20 border-amber-400/50'
+                ? 'bg-[#CE9F6B]/100/20 border-[#CE9F6B]/50'
                 : 'bg-white/10 border-white/30'
             }`}>
               <div className={`w-2.5 h-2.5 rounded-full ${
                 attendanceData?.isCheckedIn 
-                  ? 'bg-green-400 animate-pulse shadow-lg shadow-green-400/50' 
+                  ? 'bg-[#82A094] animate-pulse shadow-lg shadow-green-400/50' 
                   : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                  ? 'bg-amber-400'
+                  ? 'bg-[#CE9F6B]'
                   : 'bg-white/50'
               }`}></div>
               <span className={`text-xs sm:text-sm font-semibold ${
                 attendanceData?.isCheckedIn 
-                  ? 'text-green-100' 
+                  ? 'text-[#A2B9AF]' 
                   : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                  ? 'text-amber-100'
+                  ? 'text-[#EEC1BF]'
                   : 'text-white/80'
               }`}>
                 {attendanceData?.isCheckedIn 
@@ -1209,19 +1209,19 @@ export default function CleanAttendanceWidget({
         <div className="p-4 sm:p-6 space-y-4">
           {/* Location Capture Status */}
           {locationState.isCapturing && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+            <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 border border-[#96AEC2] rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl flex items-center justify-center">
                   <Navigation className="h-5 w-5 text-white animate-spin" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 text-sm">Capturing Location...</p>
-                  <p className="text-xs text-gray-600">Taking multiple GPS readings for accuracy</p>
+                  <p className="font-semibold text-[#546A7A] text-sm">Capturing Location...</p>
+                  <p className="text-xs text-[#5D6E73]">Taking multiple GPS readings for accuracy</p>
                 </div>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                 </div>
               </div>
             </div>
@@ -1229,24 +1229,24 @@ export default function CleanAttendanceWidget({
 
           {/* Enhanced Location Capture Dialog */}
           {enhancedLocationState.showLocationCapture && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4 sm:p-5 space-y-4">
+            <div className="bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/10 border-2 border-[#96AEC2] rounded-2xl p-4 sm:p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#E17F70] to-[#9E3B47] rounded-xl flex items-center justify-center shadow-lg">
                     <MapPin className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Location Required</h3>
-                    <p className="text-xs text-gray-500">Capture your current location</p>
+                    <h3 className="font-bold text-[#546A7A]">Location Required</h3>
+                    <p className="text-xs text-[#AEBFC3]0">Capture your current location</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: false }))}
-                  className="h-9 w-9 p-0 rounded-full hover:bg-gray-200"
+                  className="h-9 w-9 p-0 rounded-full hover:bg-[#92A2A5]/30"
                 >
-                  <X className="h-4 w-4 text-gray-500" />
+                  <X className="h-4 w-4 text-[#AEBFC3]0" />
                 </Button>
               </div>
               <EnhancedLocationCapture
@@ -1268,20 +1268,20 @@ export default function CleanAttendanceWidget({
 
           {/* Captured Location Status */}
           {enhancedLocationState.capturedLocation && (
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+            <div className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 border border-[#A2B9AF] rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-lg flex items-center justify-center">
                     <CheckCircle className="h-4 w-4 text-white" />
                   </div>
-                  <span className="font-bold text-green-800 text-sm">Location Ready</span>
+                  <span className="font-bold text-[#4F6A64] text-sm">Location Ready</span>
                 </div>
                 <Badge 
                   variant="secondary" 
                   className={`text-xs px-2 py-1 ${
                     enhancedLocationState.capturedLocation.source === 'manual' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-green-100 text-green-800'
+                      ? 'bg-[#96AEC2]/20 text-[#546A7A]' 
+                      : 'bg-[#A2B9AF]/20 text-[#4F6A64]'
                   }`}
                 >
                   {enhancedLocationState.capturedLocation.source === 'manual' ? (
@@ -1298,11 +1298,11 @@ export default function CleanAttendanceWidget({
                 </Badge>
               </div>
               <div className="bg-white/60 rounded-lg p-3 space-y-1">
-                <p className="text-sm text-gray-700 break-words">
+                <p className="text-sm text-[#5D6E73] break-words">
                   📍 {enhancedLocationState.capturedLocation.address || 
                    `${enhancedLocationState.capturedLocation.latitude.toFixed(6)}, ${enhancedLocationState.capturedLocation.longitude.toFixed(6)}`}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#AEBFC3]0">
                   🕒 {new Date(enhancedLocationState.capturedLocation.timestamp).toLocaleTimeString()}
                 </p>
               </div>
@@ -1311,14 +1311,14 @@ export default function CleanAttendanceWidget({
 
           {/* Location Error */}
           {locationState.error && !locationState.isCapturing && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div className="bg-[#E17F70]/10 border border-[#E17F70] rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-red-600" />
+                <div className="w-8 h-8 bg-[#E17F70]/20 rounded-lg flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 text-[#9E3B47]" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-red-800 text-sm">Location Error</p>
-                  <p className="text-xs text-red-600 mt-0.5">{locationState.error}</p>
+                  <p className="font-semibold text-[#75242D] text-sm">Location Error</p>
+                  <p className="text-xs text-[#9E3B47] mt-0.5">{locationState.error}</p>
                 </div>
               </div>
             </div>
@@ -1326,28 +1326,28 @@ export default function CleanAttendanceWidget({
 
           {/* Stored Location Info - when no fresh location */}
           {attendanceData?.attendance && !locationState.isCapturing && !locationState.capturedLocation && !enhancedLocationState.capturedLocation && (
-            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+            <div className="bg-[#AEBFC3]/10 rounded-xl p-4 space-y-3">
               {attendanceData.attendance.checkInAddress && (
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <LogIn className="h-4 w-4 text-green-600" />
+                  <div className="w-8 h-8 bg-[#A2B9AF]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <LogIn className="h-4 w-4 text-[#4F6A64]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 font-medium">Check-in Location</p>
-                    <p className="text-sm text-gray-800 break-words mt-0.5">
+                    <p className="text-xs text-[#AEBFC3]0 font-medium">Check-in Location</p>
+                    <p className="text-sm text-[#546A7A] break-words mt-0.5">
                       {attendanceData.attendance.checkInAddress}
                     </p>
                   </div>
                 </div>
               )}
               {attendanceData.attendance.checkOutAddress && (
-                <div className="flex items-start gap-3 pt-3 border-t border-gray-200">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <LogOut className="h-4 w-4 text-blue-600" />
+                <div className="flex items-start gap-3 pt-3 border-t border-[#92A2A5]">
+                  <div className="w-8 h-8 bg-[#96AEC2]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <LogOut className="h-4 w-4 text-[#546A7A]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 font-medium">Check-out Location</p>
-                    <p className="text-sm text-gray-800 break-words mt-0.5">
+                    <p className="text-xs text-[#AEBFC3]0 font-medium">Check-out Location</p>
+                    <p className="text-sm text-[#546A7A] break-words mt-0.5">
                       {attendanceData.attendance.checkOutAddress}
                     </p>
                   </div>
@@ -1374,9 +1374,9 @@ export default function CleanAttendanceWidget({
                 }));
               }}
               disabled={actionLoading || locationState.isCapturing}
-              className="w-12 h-12 p-0 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all"
+              className="w-12 h-12 p-0 rounded-xl border-2 border-[#92A2A5] hover:border-[#96AEC2] hover:bg-[#96AEC2]/10 transition-all"
             >
-              <RotateCcw className={`w-5 h-5 text-gray-600 ${actionLoading ? 'animate-spin' : ''}`} />
+              <RotateCcw className={`w-5 h-5 text-[#5D6E73] ${actionLoading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>

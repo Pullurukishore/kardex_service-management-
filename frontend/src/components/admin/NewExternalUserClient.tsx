@@ -106,7 +106,7 @@ export default function NewExternalUserClient() {
       <div className="flex items-center space-x-3">
         <Link 
           href="/admin/manage-external"
-          className="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition-colors"
+          className="flex items-center space-x-2 text-[#5D6E73] hover:text-[#546A7A] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Manage External Users</span>
@@ -114,16 +114,16 @@ export default function NewExternalUserClient() {
       </div>
 
       {/* Info Card */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+      <div className="bg-gradient-to-r from-[#6F8A9D]/10 to-[#6F8A9D]/10 rounded-xl p-6 border border-[#546A7A]">
         <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="h-16 w-16 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-full flex items-center justify-center shadow-lg">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Create New User</h3>
-            <p className="text-gray-600">Add a new user with system access</p>
+            <h3 className="text-xl font-bold text-[#546A7A]">Create New User</h3>
+            <p className="text-[#5D6E73]">Add a new user with system access</p>
             <div className="mt-2">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#546A7A]/20 text-[#546A7A] border border-[#546A7A]">
                 <UserPlus className="w-3 h-3 mr-1" />
                 User Role
               </span>
@@ -134,15 +134,15 @@ export default function NewExternalUserClient() {
 
       {/* Desktop Form */}
       <div className="hidden md:block max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-indigo-50">
+        <div className="bg-white rounded-xl shadow-lg border border-[#92A2A5] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#92A2A5] bg-gradient-to-r from-[#AEBFC3]/10 to-[#6F8A9D]/10">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#546A7A] rounded-lg flex items-center justify-center">
                 <UserPlus className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">New External User</h2>
-                <p className="text-sm text-gray-600">Create external user account with customer access</p>
+                <h2 className="text-lg font-semibold text-[#546A7A]">New External User</h2>
+                <p className="text-sm text-[#5D6E73]">Create external user account with customer access</p>
               </div>
             </div>
           </div>
@@ -151,11 +151,11 @@ export default function NewExternalUserClient() {
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -165,8 +165,8 @@ export default function NewExternalUserClient() {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="email" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Mail className="h-4 w-4 text-[#546A7A]" />
                   <span>Email Address *</span>
                 </label>
                 <input
@@ -174,15 +174,15 @@ export default function NewExternalUserClient() {
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   required
                   placeholder="user@company.com"
                 />
               </div>
 
               <div>
-                <label htmlFor="name" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <User className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="name" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <User className="h-4 w-4 text-[#546A7A]" />
                   <span>Full Name *</span>
                 </label>
                 <input
@@ -190,15 +190,15 @@ export default function NewExternalUserClient() {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   required
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label htmlFor="phone" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="phone" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Phone className="h-4 w-4 text-[#546A7A]" />
                   <span>Phone Number</span>
                 </label>
                 <input
@@ -206,14 +206,14 @@ export default function NewExternalUserClient() {
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   placeholder="+1234567890"
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="password" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Password *</span>
                 </label>
                 <div className="relative">
@@ -222,7 +222,7 @@ export default function NewExternalUserClient() {
                     id="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                     required
                     minLength={6}
                     placeholder="Enter secure password"
@@ -230,20 +230,20 @@ export default function NewExternalUserClient() {
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('password')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A] transition-colors"
                   >
                     {showPasswords.password ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
+                <p className="text-xs text-[#AEBFC3]0 mt-2 flex items-center space-x-1">
                   <span>🔐</span>
                   <span>Password must be at least 6 characters long</span>
                 </p>
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Confirm Password *</span>
                 </label>
                 <div className="relative">
@@ -252,26 +252,26 @@ export default function NewExternalUserClient() {
                     id="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                     required
                     placeholder="Confirm your password"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A] transition-colors"
                   >
                     {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-2 flex items-center space-x-1">
+                  <p className="text-xs text-[#E17F70] mt-2 flex items-center space-x-1">
                     <span>❌</span>
                     <span>Passwords do not match</span>
                   </p>
                 )}
                 {formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length >= 6 && (
-                  <p className="text-xs text-green-600 mt-2 flex items-center space-x-1">
+                  <p className="text-xs text-[#4F6A64] mt-2 flex items-center space-x-1">
                     <span>✅</span>
                     <span>Passwords match</span>
                   </p>
@@ -279,10 +279,10 @@ export default function NewExternalUserClient() {
               </div>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div className="bg-[#546A7A]/10 border border-[#546A7A] rounded-lg p-4">
               <div className="flex items-center space-x-2">
-                <UserPlus className="h-5 w-5 text-indigo-600" />
-                <div className="text-sm text-indigo-800">
+                <UserPlus className="h-5 w-5 text-[#546A7A]" />
+                <div className="text-sm text-[#546A7A]">
                   <p className="font-medium">User Access</p>
                   <p className="mt-1">
                     This account will have access to system features and data.
@@ -291,11 +291,11 @@ export default function NewExternalUserClient() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#92A2A5]">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-[#5D6E73] bg-white border border-[#92A2A5] rounded-lg hover:bg-[#AEBFC3]/10 focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
               >
                 <X className="h-4 w-4" />
                 <span>Cancel</span>
@@ -303,7 +303,7 @@ export default function NewExternalUserClient() {
               <button
                 type="submit"
                 disabled={loading || formData.password !== formData.confirmPassword || formData.password.length < 6 || !formData.email || !formData.name}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#546A7A] to-[#546A7A] border border-transparent rounded-lg hover:from-[#546A7A] hover:to-[#546A7A] focus:ring-2 focus:ring-[#6F8A9D] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
               >
                 <Save className="h-4 w-4" />
                 <span>{loading ? 'Creating External User...' : 'Create External User'}</span>
@@ -320,11 +320,11 @@ export default function NewExternalUserClient() {
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -332,10 +332,10 @@ export default function NewExternalUserClient() {
               </div>
             )}
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div className="bg-[#546A7A]/10 border border-[#546A7A] rounded-lg p-4">
               <div className="flex items-center space-x-2">
-                <UserPlus className="h-5 w-5 text-indigo-600" />
-                <div className="text-sm text-indigo-800">
+                <UserPlus className="h-5 w-5 text-[#546A7A]" />
+                <div className="text-sm text-[#546A7A]">
                   <p className="font-medium">User Account</p>
                   <p className="mt-1">System access privileges</p>
                 </div>
@@ -344,8 +344,8 @@ export default function NewExternalUserClient() {
 
             <MobileForm>
               <MobileFormRow>
-                <label htmlFor="mobile-email" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-email" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Mail className="h-4 w-4 text-[#546A7A]" />
                   <span>Email Address *</span>
                 </label>
                 <input
@@ -353,15 +353,15 @@ export default function NewExternalUserClient() {
                   id="mobile-email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                   required
                   placeholder="user@company.com"
                 />
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-name" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <User className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-name" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <User className="h-4 w-4 text-[#546A7A]" />
                   <span>Full Name *</span>
                 </label>
                 <input
@@ -369,15 +369,15 @@ export default function NewExternalUserClient() {
                   id="mobile-name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                   required
                   placeholder="John Doe"
                 />
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-phone" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-phone" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Phone className="h-4 w-4 text-[#546A7A]" />
                   <span>Phone Number</span>
                 </label>
                 <input
@@ -385,14 +385,14 @@ export default function NewExternalUserClient() {
                   id="mobile-phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                   placeholder="+1234567890"
                 />
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-password" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-password" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Password *</span>
                 </label>
                 <div className="relative">
@@ -401,7 +401,7 @@ export default function NewExternalUserClient() {
                     id="mobile-password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                     required
                     minLength={6}
                     placeholder="Enter secure password"
@@ -409,7 +409,7 @@ export default function NewExternalUserClient() {
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('password')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A]"
                   >
                     {showPasswords.password ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -417,8 +417,8 @@ export default function NewExternalUserClient() {
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Lock className="h-4 w-4 text-indigo-600" />
+                <label htmlFor="mobile-confirmPassword" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Lock className="h-4 w-4 text-[#546A7A]" />
                   <span>Confirm Password *</span>
                 </label>
                 <div className="relative">
@@ -427,20 +427,20 @@ export default function NewExternalUserClient() {
                     id="mobile-confirmPassword"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    className="w-full px-4 py-3 pr-12 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-colors"
                     required
                     placeholder="Confirm your password"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-indigo-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#546A7A]"
                   >
                     {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-2">Passwords do not match</p>
+                  <p className="text-xs text-[#E17F70] mt-2">Passwords do not match</p>
                 )}
               </MobileFormRow>
             </MobileForm>
@@ -449,7 +449,7 @@ export default function NewExternalUserClient() {
               <MobileButton
                 type="submit"
                 disabled={loading || formData.password !== formData.confirmPassword || formData.password.length < 6 || !formData.email || !formData.name}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
+                className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-lg"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Creating...' : 'Create External User'}

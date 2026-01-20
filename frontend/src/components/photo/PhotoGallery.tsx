@@ -188,11 +188,11 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   if (loading) {
     return (
-      <Card className={cn("border-2 border-blue-200 bg-blue-50", className)}>
+      <Card className={cn("border-2 border-[#96AEC2] bg-[#96AEC2]/10", className)}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center gap-2 py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-            <span className="text-blue-700">Loading photos...</span>
+            <Loader2 className="h-5 w-5 animate-spin text-[#546A7A]" />
+            <span className="text-[#546A7A]">Loading photos...</span>
           </div>
         </CardContent>
       </Card>
@@ -201,11 +201,11 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   if (error) {
     return (
-      <Card className={cn("border-2 border-red-200 bg-red-50", className)}>
+      <Card className={cn("border-2 border-[#E17F70] bg-[#E17F70]/10", className)}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center gap-2 py-8">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            <span className="text-red-700">{error}</span>
+            <AlertCircle className="h-5 w-5 text-[#9E3B47]" />
+            <span className="text-[#75242D]">{error}</span>
           </div>
         </CardContent>
       </Card>
@@ -214,11 +214,11 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   if (photos.length === 0) {
     return (
-      <Card className={cn("border-2 border-gray-200 bg-gray-50", className)}>
+      <Card className={cn("border-2 border-[#92A2A5] bg-[#AEBFC3]/10", className)}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center gap-2 py-8">
-            <ImageIcon className="h-5 w-5 text-gray-500" />
-            <span className="text-gray-600">No photos available</span>
+            <ImageIcon className="h-5 w-5 text-[#AEBFC3]0" />
+            <span className="text-[#5D6E73]">No photos available</span>
           </div>
         </CardContent>
       </Card>
@@ -226,12 +226,12 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   }
 
   return (
-    <Card className={cn("border-2 border-green-200 bg-green-50", className)}>
+    <Card className={cn("border-2 border-[#A2B9AF] bg-[#A2B9AF]/10", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-green-600" />
-            <CardTitle className="text-green-900">{title}</CardTitle>
+            <ImageIcon className="h-4 w-4 text-[#4F6A64]" />
+            <CardTitle className="text-[#4F6A64]">{title}</CardTitle>
           </div>
           <Badge variant="secondary" className="text-xs">
             {photos.length} Photo{photos.length > 1 ? 's' : ''}
@@ -244,10 +244,10 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
           {photos.map((photo, index) => (
             <div
               key={photo.id}
-              className="group relative bg-white rounded-lg border border-green-200 overflow-hidden hover:shadow-md transition-shadow"
+              className="group relative bg-white rounded-lg border border-[#A2B9AF] overflow-hidden hover:shadow-md transition-shadow"
             >
               {/* Photo Thumbnail */}
-              <div className="relative aspect-video bg-gray-100">
+              <div className="relative aspect-video bg-[#AEBFC3]/20">
                 <img
                   src={getPhotoUrl(photo)}
                   alt={`Verification photo ${index + 1}`}
@@ -283,13 +283,13 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
               {/* Photo Info */}
               <div className="p-3">
-                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
                   <span className="truncate flex-1">Photo {index + 1}</span>
                   <span>{formatFileSize(photo.size)}</span>
                 </div>
                 
                 {showUploadTime && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(photo.createdAt)}</span>
                   </div>

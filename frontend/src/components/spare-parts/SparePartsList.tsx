@@ -114,33 +114,35 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
     }).format(value)
   }
 
+  // Kardex Company Colors for status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
-        return 'text-green-600 bg-green-50 border-green-200'
+        return 'text-[#4F6A64] bg-[#A2B9AF]/20 border-[#A2B9AF]'    // Green
       case 'INACTIVE':
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+        return 'text-[#757777] bg-[#979796]/20 border-[#979796]'    // Grey
       case 'DISCONTINUED':
-        return 'text-red-600 bg-red-50 border-red-200'
+        return 'text-[#9E3B47] bg-[#E17F70]/20 border-[#E17F70]'    // Red
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+        return 'text-[#757777] bg-[#979796]/20 border-[#979796]'
     }
   }
 
+  // Kardex Company Colors for category
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Hardware':
-        return 'text-blue-700 bg-blue-100'
+        return 'text-[#546A7A] bg-[#96AEC2]/20'     // Blue 1
       case 'Software':
-        return 'text-purple-700 bg-purple-100'
+        return 'text-[#6F8A9D] bg-[#6F8A9D]/20'     // Blue 2
       case 'Consumables':
-        return 'text-orange-700 bg-orange-100'
+        return 'text-[#976E44] bg-[#CE9F6B]/20'     // Sand
       case 'Tools':
-        return 'text-green-700 bg-green-100'
+        return 'text-[#4F6A64] bg-[#82A094]/20'     // Green 2
       case 'Accessories':
-        return 'text-indigo-700 bg-indigo-100'
+        return 'text-[#546A7A] bg-[#96AEC2]/20'     // Blue 3
       default:
-        return 'text-gray-700 bg-gray-100'
+        return 'text-[#757777] bg-[#979796]/20'     // Grey
     }
   }
 
@@ -178,9 +180,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
 
   return (
     <>
-    <div className="space-y-8 p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 min-h-screen">
-      {/* Premium Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 p-8 shadow-2xl">
+    <div className="space-y-8 p-6 bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10/30 to-[#6F8A9D]/10/50 min-h-screen">
+      {/* Premium Hero Header - Kardex Colors */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#96AEC2] via-[#6F8A9D] to-[#546A7A] p-8 shadow-2xl">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOGM5Ljk0MSAwIDE4LTguMDU5IDE4LTE4cy04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         
@@ -195,9 +197,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
             <div>
               <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
                 Spare Parts Catalog
-                <Sparkles className="w-8 h-8 text-yellow-300 animate-pulse" />
+                <Sparkles className="w-8 h-8 text-[#CE9F6B] animate-pulse" />
               </h1>
-              <p className="text-blue-100 text-lg max-w-xl">
+              <p className="text-[#96AEC2] text-lg max-w-xl">
                 Browse spare parts inventory and pricing for SPP offers
               </p>
             </div>
@@ -214,64 +216,64 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#AEBFC3]/30 hover:border-[#96AEC2]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Total Parts</p>
-                <p className="text-4xl font-black text-slate-900">{pagination.total}</p>
+                <p className="text-xs font-bold text-[#546A7A] uppercase tracking-widest mb-1">Total Parts</p>
+                <p className="text-4xl font-black text-[#546A7A]">{pagination.total}</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+              <div className="p-3 bg-gradient-to-br from-[#96AEC2] to-[#6F8A9D] rounded-xl shadow-lg shadow-[#96AEC2]/30 group-hover:scale-110 transition-transform">
                 <Package className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-emerald-200">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#AEBFC3]/30 hover:border-[#82A094]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#A2B9AF]/5 to-[#82A094]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#A2B9AF]/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Active Parts</p>
-                <p className="text-4xl font-black text-slate-900">{totalActive}</p>
+                <p className="text-xs font-bold text-[#4F6A64] uppercase tracking-widest mb-1">Active Parts</p>
+                <p className="text-4xl font-black text-[#546A7A]">{totalActive}</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+              <div className="p-3 bg-gradient-to-br from-[#A2B9AF] to-[#82A094] rounded-xl shadow-lg shadow-[#A2B9AF]/30 group-hover:scale-110 transition-transform">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-amber-200">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#AEBFC3]/30 hover:border-[#CE9F6B]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#EEC1BF]/5 to-[#CE9F6B]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#EEC1BF]/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-1">Avg. Price</p>
-                <p className="text-4xl font-black text-slate-900">{avgPrice}</p>
+                <p className="text-xs font-bold text-[#976E44] uppercase tracking-widest mb-1">Avg. Price</p>
+                <p className="text-4xl font-black text-[#546A7A]">{avgPrice}</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
+              <div className="p-3 bg-gradient-to-br from-[#EEC1BF] to-[#CE9F6B] rounded-xl shadow-lg shadow-[#EEC1BF]/30 group-hover:scale-110 transition-transform">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-purple-200">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-[#AEBFC3]/30 hover:border-[#6F8A9D]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#546A7A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">Categories</p>
-                <p className="text-4xl font-black text-slate-900">{totalCategories}</p>
+                <p className="text-xs font-bold text-[#546A7A] uppercase tracking-widest mb-1">Categories</p>
+                <p className="text-4xl font-black text-[#546A7A]">{totalCategories}</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+              <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl shadow-lg shadow-[#6F8A9D]/30 group-hover:scale-110 transition-transform">
                 <Tag className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -281,10 +283,10 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
 
       {/* Filters */}
       <Card className="shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-white border-b">
+        <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-white border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-blue-600" />
+              <Filter className="h-5 w-5 text-[#546A7A]" />
               <CardTitle className="text-lg">Search & Filters</CardTitle>
             </div>
           </div>
@@ -293,24 +295,24 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Search */}
             <div className="space-y-2">
-              <Label htmlFor="search" className="text-sm font-semibold text-gray-700">Search Parts</Label>
+              <Label htmlFor="search" className="text-sm font-semibold text-[#5D6E73]">Search Parts</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-[#979796]" />
                 <Input
                   id="search"
                   placeholder="Search by name or part number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="pl-10 h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]"
                 />
               </div>
             </div>
 
             {/* Status Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">Status</Label>
+              <Label className="text-sm font-semibold text-[#5D6E73]">Status</Label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -319,9 +321,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                       <div className="flex items-center gap-2">
                         {status !== 'All Status' && (
                           <div className={`w-2 h-2 rounded-full ${
-                            status === 'ACTIVE' ? 'bg-green-500' :
-                            status === 'INACTIVE' ? 'bg-gray-500' :
-                            status === 'DISCONTINUED' ? 'bg-red-500' : ''
+                            status === 'ACTIVE' ? 'bg-[#82A094]' :
+                            status === 'INACTIVE' ? 'bg-[#979796]' :
+                            status === 'DISCONTINUED' ? 'bg-[#E17F70]' : ''
                           }`} />
                         )}
                         {status}
@@ -334,9 +336,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">Category</Label>
+              <Label className="text-sm font-semibold text-[#5D6E73]">Category</Label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <SelectTrigger className="h-11 border-[#92A2A5] focus:border-[#6F8A9D] focus:ring-[#96AEC2]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -350,11 +352,11 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
 
           <div className="flex justify-between items-center mt-6 pt-4 border-t">
             <div className="flex items-center gap-3">
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${showAll ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
+              <div className={`px-3 py-1 rounded-full text-sm font-medium ${showAll ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' : 'bg-[#96AEC2]/20 text-[#546A7A]'}`}>
                 {showAll ? `Showing all ${spareParts.length} parts` : `Showing ${((pagination.page - 1) * pageSize) + 1}-${Math.min(pagination.page * pageSize, pagination.total)} of ${pagination.total} parts`}
               </div>
               <div className="flex items-center gap-2">
-                <Label className="text-sm text-gray-600">Per page:</Label>
+                <Label className="text-sm text-[#5D6E73]">Per page:</Label>
                 <Select value={showAll ? '9999' : pageSize.toString()} onValueChange={(val) => handlePageSizeChange(Number(val))}>
                   <SelectTrigger className="h-9 w-28">
                     <SelectValue />
@@ -370,7 +372,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex gap-1 border-2 border-gray-200 rounded-lg p-1 bg-white">
+              <div className="flex gap-1 border-2 border-[#92A2A5] rounded-lg p-1 bg-white">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
@@ -404,9 +406,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
         <Card className="shadow-lg border-0">
           <CardContent className="py-20">
             <div className="flex flex-col items-center justify-center">
-              <Loader2 className="h-16 w-16 animate-spin text-blue-600 mb-4" />
-              <p className="text-xl font-semibold text-gray-700">Loading spare parts...</p>
-              <p className="text-sm text-gray-500 mt-2">Please wait while we fetch the data</p>
+              <Loader2 className="h-16 w-16 animate-spin text-[#6F8A9D] mb-4" />
+              <p className="text-xl font-semibold text-[#5D6E73]">Loading spare parts...</p>
+              <p className="text-sm text-[#AEBFC3]0 mt-2">Please wait while we fetch the data</p>
             </div>
           </CardContent>
         </Card>
@@ -414,11 +416,11 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
         <Card className="shadow-lg border-0">
           <CardContent className="py-20">
             <div className="flex flex-col items-center justify-center">
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl mb-6">
-                <Package className="h-20 w-20 text-blue-400" />
+              <div className="p-6 bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-2xl mb-6">
+                <Package className="h-20 w-20 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No spare parts found</h3>
-              <p className="text-gray-600 mb-2">Try adjusting your filters</p>
+              <h3 className="text-2xl font-bold text-[#546A7A] mb-2">No spare parts found</h3>
+              <p className="text-[#5D6E73] mb-2">Try adjusting your filters</p>
             </div>
           </CardContent>
         </Card>
@@ -426,10 +428,10 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {spareParts.map((part: any) => (
-              <Card key={part.id} className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 hover:border-blue-400 bg-white">
+              <Card key={part.id} className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 hover:border-[#6F8A9D] bg-white">
                 <CardContent className="p-0">
                   {/* Image Section */}
-                  <div className="relative h-52 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 overflow-hidden">
+                  <div className="relative h-52 bg-gradient-to-br from-[#AEBFC3]/10 via-gray-100 to-gray-200 overflow-hidden">
                     {part.imageUrl ? (
                       <img
                         src={part.imageUrl}
@@ -438,7 +440,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="h-24 w-24 text-gray-300" />
+                        <Package className="h-24 w-24 text-[#92A2A5]" />
                       </div>
                     )}
 
@@ -446,9 +448,9 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     <div className="absolute top-3 right-3">
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border-2 shadow-lg backdrop-blur-sm ${getStatusColor(part.status)}`}>
                         <div className={`w-2 h-2 rounded-full ${
-                          part.status === 'ACTIVE' ? 'bg-green-600' :
-                          part.status === 'INACTIVE' ? 'bg-gray-600' :
-                          'bg-red-600'
+                          part.status === 'ACTIVE' ? 'bg-[#82A094]' :
+                          part.status === 'INACTIVE' ? 'bg-[#979796]' :
+                          'bg-[#E17F70]'
                         }`} />
                         {part.status}
                       </div>
@@ -458,10 +460,10 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                   {/* Content Section */}
                   <div className="p-5 space-y-3">
                     <div>
-                      <h3 className="font-bold text-gray-900 text-lg line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                      <h3 className="font-bold text-[#546A7A] text-lg line-clamp-2 group-hover:text-[#546A7A] transition-colors leading-tight">
                         {part.name}
                       </h3>
-                      <p className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded mt-2 inline-block">
+                      <p className="text-xs text-[#AEBFC3]0 font-mono bg-[#AEBFC3]/20 px-2 py-1 rounded mt-2 inline-block">
                         #{part.partNumber}
                       </p>
                     </div>
@@ -474,25 +476,25 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     )}
 
                     {part.description && part.description !== part.name && (
-                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{part.description}</p>
+                      <p className="text-sm text-[#5D6E73] line-clamp-2 leading-relaxed">{part.description}</p>
                     )}
 
-                    <div className="pt-3 border-t-2 border-gray-100">
+                    <div className="pt-3 border-t-2 border-[#AEBFC3]/30">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-600">Price</span>
+                        <span className="text-sm font-medium text-[#5D6E73]">Price</span>
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                          <span className="text-2xl font-bold text-blue-600">
+                          <DollarSign className="h-5 w-5 text-[#4F6A64]" />
+                          <span className="text-2xl font-bold text-[#546A7A]">
                             {formatCurrency(Number(part.basePrice))}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+                    <div className="flex items-center justify-between text-xs text-[#AEBFC3]0 pt-2">
                       {!readOnly && (
                         <span className="flex items-center gap-1">
-                          <div className="w-1 h-1 rounded-full bg-gray-400" />
+                          <div className="w-1 h-1 rounded-full bg-[#979796]" />
                           Added {new Date(part.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       )}
@@ -503,7 +505,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                           setSelectedPart(part);
                           setIsViewModalOpen(true);
                         }}
-                        className="h-7 px-2 text-xs border-blue-200 text-blue-600 hover:bg-blue-50"
+                        className="h-7 px-2 text-xs border-[#96AEC2] text-[#546A7A] hover:bg-[#96AEC2]/10"
                       >
                         <Eye className="h-3 w-3 mr-1" />
                         View
@@ -520,7 +522,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
             <Card className="shadow-lg border-0 mt-6">
               <CardContent className="py-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-[#5D6E73]">
                     Page {pagination.page} of {pagination.pages}
                   </div>
                   <div className="flex items-center gap-2">
@@ -566,22 +568,22 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                 </thead>
                 <tbody className="divide-y divide-gray-100 bg-white">
                   {spareParts.map((part: any) => (
-                    <tr key={part.id} className="hover:bg-blue-50 transition-colors">
+                    <tr key={part.id} className="hover:bg-[#96AEC2]/10 transition-colors">
                       <td className="px-6 py-4">
                         {part.imageUrl ? (
-                          <img src={part.imageUrl} alt={part.name} className="w-16 h-16 object-cover rounded-xl border-2 border-gray-200 shadow-sm" />
+                          <img src={part.imageUrl} alt={part.name} className="w-16 h-16 object-cover rounded-xl border-2 border-[#92A2A5] shadow-sm" />
                         ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow-sm">
-                            <Package className="h-8 w-8 text-gray-400" />
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#AEBFC3]/20 to-gray-200 rounded-xl border-2 border-[#92A2A5] flex items-center justify-center shadow-sm">
+                            <Package className="h-8 w-8 text-[#979796]" />
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="space-y-1">
-                          <p className="text-sm font-semibold text-gray-900">{part.name}</p>
-                          <p className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded inline-block">#{part.partNumber}</p>
+                          <p className="text-sm font-semibold text-[#546A7A]">{part.name}</p>
+                          <p className="text-xs text-[#AEBFC3]0 font-mono bg-[#AEBFC3]/20 px-2 py-0.5 rounded inline-block">#{part.partNumber}</p>
                           {part.description && (
-                            <p className="text-xs text-gray-500 mt-1 max-w-xs truncate">{part.description}</p>
+                            <p className="text-xs text-[#AEBFC3]0 mt-1 max-w-xs truncate">{part.description}</p>
                           )}
                         </div>
                       </td>
@@ -594,22 +596,22 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4 text-green-600" />
-                          <span className="text-sm font-bold text-gray-900">{formatCurrency(Number(part.basePrice))}</span>
+                          <DollarSign className="h-4 w-4 text-[#4F6A64]" />
+                          <span className="text-sm font-bold text-[#546A7A]">{formatCurrency(Number(part.basePrice))}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border-2 shadow-sm ${getStatusColor(part.status)}`}>
                           <div className={`w-2 h-2 rounded-full ${
-                            part.status === 'ACTIVE' ? 'bg-green-600' :
-                            part.status === 'INACTIVE' ? 'bg-gray-600' :
-                            'bg-red-600'
+                            part.status === 'ACTIVE' ? 'bg-[#82A094]' :
+                            part.status === 'INACTIVE' ? 'bg-[#979796]' :
+                            'bg-[#E17F70]'
                           }`} />
                           {part.status}
                         </div>
                       </td>
                       {!readOnly && (
-                        <td className="px-6 py-4 text-sm text-gray-600">
+                        <td className="px-6 py-4 text-sm text-[#5D6E73]">
                           {new Date(part.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </td>
                       )}
@@ -621,7 +623,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                             setSelectedPart(part);
                             setIsViewModalOpen(true);
                           }}
-                          className="h-8 px-3 border-blue-200 text-blue-600 hover:bg-blue-50"
+                          className="h-8 px-3 border-[#96AEC2] text-[#546A7A] hover:bg-[#96AEC2]/10"
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           View
@@ -637,7 +639,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
           {!showAll && pagination.pages > 1 && (
             <CardContent className="border-t py-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-[#5D6E73]">
                   Page {pagination.page} of {pagination.pages} • {pagination.total} total parts
                 </div>
                 <div className="flex items-center gap-2">
@@ -672,8 +674,8 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Package className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                <Package className="h-5 w-5 text-[#546A7A]" />
               </div>
               Spare Part Details
             </DialogTitle>
@@ -691,23 +693,23 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
                     <img 
                       src={selectedPart.imageUrl} 
                       alt={selectedPart.name}
-                      className="w-32 h-32 object-cover rounded-xl border-2 border-gray-200 shadow-lg"
+                      className="w-32 h-32 object-cover rounded-xl border-2 border-[#92A2A5] shadow-lg"
                     />
                   ) : (
-                    <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-gray-200 flex items-center justify-center shadow-lg">
-                      <Package className="h-12 w-12 text-gray-400" />
+                    <div className="w-32 h-32 bg-gradient-to-br from-[#AEBFC3]/20 to-gray-200 rounded-xl border-2 border-[#92A2A5] flex items-center justify-center shadow-lg">
+                      <Package className="h-12 w-12 text-[#979796]" />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 space-y-3">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">{selectedPart.name}</h3>
-                    <p className="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded inline-block mt-1">
+                    <h3 className="text-xl font-bold text-[#546A7A]">{selectedPart.name}</h3>
+                    <p className="text-sm text-[#AEBFC3]0 font-mono bg-[#AEBFC3]/20 px-2 py-1 rounded inline-block mt-1">
                       #{selectedPart.partNumber}
                     </p>
                   </div>
                   {selectedPart.description && (
-                    <p className="text-gray-600 text-sm">{selectedPart.description}</p>
+                    <p className="text-[#5D6E73] text-sm">{selectedPart.description}</p>
                   )}
                 </div>
               </div>
@@ -715,47 +717,47 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Category */}
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                <div className="p-4 bg-[#AEBFC3]/10 rounded-xl border border-[#AEBFC3]/30">
+                  <div className="flex items-center gap-2 text-[#AEBFC3]0 text-sm mb-1">
                     <Tag className="h-4 w-4" />
                     Category
                   </div>
-                  <p className="font-semibold text-gray-900">{selectedPart.category || 'N/A'}</p>
+                  <p className="font-semibold text-[#546A7A]">{selectedPart.category || 'N/A'}</p>
                 </div>
 
                 {/* Status */}
-                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                <div className="p-4 bg-[#AEBFC3]/10 rounded-xl border border-[#AEBFC3]/30">
+                  <div className="flex items-center gap-2 text-[#AEBFC3]0 text-sm mb-1">
                     <Info className="h-4 w-4" />
                     Status
                   </div>
                   <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-semibold ${getStatusColor(selectedPart.status)}`}>
                     <div className={`w-2 h-2 rounded-full ${
-                      selectedPart.status === 'ACTIVE' ? 'bg-green-600' :
-                      selectedPart.status === 'INACTIVE' ? 'bg-gray-600' :
-                      'bg-red-600'
+                      selectedPart.status === 'ACTIVE' ? 'bg-[#82A094]' :
+                      selectedPart.status === 'INACTIVE' ? 'bg-[#979796]' :
+                      'bg-[#E17F70]'
                     }`} />
                     {selectedPart.status}
                   </div>
                 </div>
 
                 {/* Base Price */}
-                <div className={`p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 ${readOnly ? 'col-span-2' : ''}`}>
-                  <div className="flex items-center gap-2 text-green-600 text-sm mb-1">
+                <div className={`p-4 bg-gradient-to-r from-[#A2B9AF]/20 to-[#82A094]/20 rounded-xl border border-[#A2B9AF] ${readOnly ? 'col-span-2' : ''}`}>
+                  <div className="flex items-center gap-2 text-[#4F6A64] text-sm mb-1">
                     <DollarSign className="h-4 w-4" />
                     Base Price
                   </div>
-                  <p className="font-bold text-2xl text-green-700">{formatCurrency(Number(selectedPart.basePrice))}</p>
+                  <p className="font-bold text-2xl text-[#4F6A64]">{formatCurrency(Number(selectedPart.basePrice))}</p>
                 </div>
 
                 {/* Created Date - Only for non-readOnly users */}
                 {!readOnly && (
-                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                  <div className="p-4 bg-[#AEBFC3]/10 rounded-xl border border-[#AEBFC3]/30">
+                    <div className="flex items-center gap-2 text-[#AEBFC3]0 text-sm mb-1">
                       <Calendar className="h-4 w-4" />
                       Added On
                     </div>
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-[#546A7A]">
                       {new Date(selectedPart.createdAt).toLocaleDateString('en-IN', { 
                         day: '2-digit', 
                         month: 'long', 
@@ -770,7 +772,7 @@ export default function SparePartsList({ defaultView = 'list', readOnly = false 
               <div className="flex justify-end pt-4 border-t">
                 <Button 
                   onClick={() => setIsViewModalOpen(false)}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                  className="bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] hover:from-[#546A7A] hover:to-[#4F6A64]"
                 >
                   Close
                 </Button>

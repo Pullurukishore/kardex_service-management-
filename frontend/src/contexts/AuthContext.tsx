@@ -679,8 +679,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         duration: 3000,
       });
 
-      // Redirect to module-select which will determine the correct module based on role/financeRole
-      router.replace('/module-select');
+      // Redirect based on user type
+      // Finance users (with financeRole) go directly to finance module select
+      if (safeUser.financeRole) {
+        localStorage.setItem('selectedModule', 'finance');
+        router.replace('/finance/select');
+      } else {
+        // FSM users go to module-select to choose their workspace
+        router.replace('/module-select');
+      }
 
       return { success: true, user: safeUser };
     } catch (error: any) {

@@ -52,42 +52,42 @@ export default function NewActivitySchedulePageShared() {
       icon: <User className="h-5 w-5" />,
       title: "Assign Service Person",
       description: "Select from available service personnel",
-      gradient: "from-purple-500 to-pink-500",
-      bg: "bg-purple-50"
+      gradient: "from-[#6F8A9D] to-[#E17F70]",
+      bg: "bg-[#6F8A9D]/10"
     },
     {
       icon: <Calendar className="h-5 w-5" />,
       title: "Schedule Date & Time",
       description: "Pick the optimal scheduling window",
-      gradient: "from-blue-500 to-indigo-500",
-      bg: "bg-blue-50"
+      gradient: "from-[#6F8A9D] to-[#6F8A9D]",
+      bg: "bg-[#96AEC2]/10"
     },
     {
       icon: <Target className="h-5 w-5" />,
       title: "Set Priority Level",
       description: "Define urgency from Low to Critical",
-      gradient: "from-amber-500 to-orange-500",
-      bg: "bg-amber-50"
+      gradient: "from-[#CE9F6B] to-[#CE9F6B]",
+      bg: "bg-[#CE9F6B]/10"
     },
     {
       icon: <Layers className="h-5 w-5" />,
       title: "Link Assets",
       description: "Associate relevant equipment",
-      gradient: "from-emerald-500 to-teal-500",
-      bg: "bg-emerald-50"
+      gradient: "from-[#82A094] to-[#82A094]",
+      bg: "bg-[#82A094]/10"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10/30 to-[#6F8A9D]/10/50">
       {/* Hero Header */}
       <div className="relative overflow-hidden">
-        <div className="bg-gradient-to-r from-[#3d5a78] via-[#507295] to-[#6889ab] py-12 px-4 md:px-8">
+        <div className="bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] py-12 px-4 md:px-8">
           {/* Decorative Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
             <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-purple-400/20 rounded-full blur-2xl" />
+            <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-[#6F8A9D]/20 rounded-full blur-2xl" />
           </div>
 
           <div className="relative max-w-7xl mx-auto">
@@ -139,14 +139,14 @@ export default function NewActivitySchedulePageShared() {
           <div className="lg:col-span-2 space-y-6">
             {/* Form Card */}
             <Card className="border-0 shadow-xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-white to-gray-50 border-b p-6">
+              <CardHeader className="bg-gradient-to-r from-white to-[#AEBFC3]/10 border-b p-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-gradient-to-br from-[#507295] to-[#6889ab] rounded-xl text-white shadow-lg">
+                  <div className="p-2.5 bg-gradient-to-br from-[#6F8A9D] to-[#96AEC2] rounded-xl text-white shadow-lg">
                     <FileText className="h-5 w-5" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900">Activity Details</CardTitle>
-                    <CardDescription className="text-gray-500">
+                    <CardTitle className="text-xl font-bold text-[#546A7A]">Activity Details</CardTitle>
+                    <CardDescription className="text-[#AEBFC3]0">
                       Fill in the required information to create a new schedule
                     </CardDescription>
                   </div>
@@ -165,7 +165,7 @@ export default function NewActivitySchedulePageShared() {
           <div className="space-y-6">
             {/* Quick Setup Guide */}
             <Card className="border-0 shadow-xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-[#507295] to-[#6889ab] text-white p-6">
+              <CardHeader className="bg-gradient-to-r from-[#6F8A9D] to-[#96AEC2] text-white p-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <Sparkles className="h-5 w-5" />
@@ -178,17 +178,17 @@ export default function NewActivitySchedulePageShared() {
                   {features.map((feature, index) => (
                     <div 
                       key={index}
-                      className="p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors"
+                      className="p-4 flex items-start gap-4 hover:bg-[#AEBFC3]/10 transition-colors"
                     >
                       <div className={`p-2.5 rounded-xl bg-gradient-to-br ${feature.gradient} text-white shadow-md flex-shrink-0`}>
                         {feature.icon}
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">{feature.title}</h4>
-                        <p className="text-sm text-gray-500 mt-0.5">{feature.description}</p>
+                        <h4 className="font-semibold text-[#546A7A]">{feature.title}</h4>
+                        <p className="text-sm text-[#AEBFC3]0 mt-0.5">{feature.description}</p>
                       </div>
                       <div className="flex-shrink-0 self-center">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm font-bold">
+                        <div className="w-8 h-8 rounded-full bg-[#AEBFC3]/20 flex items-center justify-center text-[#979796] text-sm font-bold">
                           {index + 1}
                         </div>
                       </div>
@@ -200,7 +200,7 @@ export default function NewActivitySchedulePageShared() {
 
             {/* Tips Card */}
             <Card className="border-0 shadow-xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6">
+              <CardHeader className="bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B] text-white p-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <Zap className="h-5 w-5" />
@@ -210,42 +210,42 @@ export default function NewActivitySchedulePageShared() {
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <div className="w-6 h-6 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-4 w-4 text-[#976E44]" />
                   </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium text-gray-900">Check availability</span> - Ensure the service person isn't already booked
+                  <p className="text-sm text-[#5D6E73]">
+                    <span className="font-medium text-[#546A7A]">Check availability</span> - Ensure the service person isn't already booked
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <div className="w-6 h-6 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-4 w-4 text-[#976E44]" />
                   </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium text-gray-900">Add context</span> - Include detailed notes for better preparation
+                  <p className="text-sm text-[#5D6E73]">
+                    <span className="font-medium text-[#546A7A]">Add context</span> - Include detailed notes for better preparation
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <div className="w-6 h-6 rounded-full bg-[#CE9F6B]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-4 w-4 text-[#976E44]" />
                   </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium text-gray-900">Set priority wisely</span> - Helps in scheduling conflicts
+                  <p className="text-sm text-[#5D6E73]">
+                    <span className="font-medium text-[#546A7A]">Set priority wisely</span> - Helps in scheduling conflicts
                   </p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Info Card */}
-            <Card className="border border-[#507295]/20 shadow-lg bg-gradient-to-br from-[#507295]/5 to-[#6889ab]/5">
+            <Card className="border border-[#6F8A9D]/20 shadow-lg bg-gradient-to-br from-[#6F8A9D]/5 to-[#96AEC2]/5">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-[#507295]/15 rounded-xl">
-                    <AlertCircle className="h-6 w-6 text-[#507295]" />
+                  <div className="p-3 bg-[#6F8A9D]/15 rounded-xl">
+                    <AlertCircle className="h-6 w-6 text-[#6F8A9D]" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Need Help?</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-[#546A7A] mb-1">Need Help?</h4>
+                    <p className="text-sm text-[#5D6E73]">
                       Contact your administrator if you need assistance with scheduling or have questions about the process.
                     </p>
                   </div>

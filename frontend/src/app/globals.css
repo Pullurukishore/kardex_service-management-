@@ -17,26 +17,81 @@
   }
 
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* ===================================
+       KARDEX OFFICIAL COMPANY COLOR PALETTE
+       Using only company-approved colors
+       =================================== */
+
+    /* Primary Blues: Used for headers, large areas, primary actions */
+    /* Blue 1: #96AEC2 | Blue 2: #6F8A9D | Blue 3: #546A7A */
+
+    /* Primary Greens: Used for success states, secondary elements */
+    /* Green 1: #A2B9AF | Green 2: #82A094 | Green 3: #4F6A64 */
+
+    /* Greys: Used for neutral UI elements, borders, muted text */
+    /* Grey 1: #AEBFC3 | Grey 2: #92A2A5 | Grey 3: #5D6E73 */
+
+    /* Silvers: Used for subtle backgrounds, disabled states */
+    /* Silver 1: #ABACA9 | Silver 2: #979796 | Silver 3: #757777 */
+
+    /* Markup Reds: Used for errors, warnings, destructive actions */
+    /* Red 1: #E17F70 | Red 2: #9E3B47 | Red 3: #75242D */
+
+    /* Markup Sands: Used for warm accents, highlights, CTAs */
+    /* Sand 1: #EEC1BF | Sand 2: #CE9F6B | Sand 3: #976E44 */
+
+    --background: 0 0% 98%;
+    --foreground: 200 18% 25%;
+    /* Blue 3 tone */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 200 18% 25%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --popover-foreground: 200 18% 25%;
+    --primary: 204 28% 67%;
+    /* Blue 1: #96AEC2 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 18% 68%;
+    /* Green 1: #A2B9AF */
+    --secondary-foreground: 180 17% 35%;
+    /* Green 3: #4F6A64 */
+    --muted: 195 22% 76%;
+    /* Grey 1: #AEBFC3 */
+    --muted-foreground: 200 3% 47%;
+    /* Silver 3: #757777 */
+    --accent: 8 64% 74%;
+    /* Sand 1: #EEC1BF */
+    --accent-foreground: 28 37% 43%;
+    /* Sand 3: #976E44 */
+    --destructive: 8 63% 66%;
+    /* Red 1: #E17F70 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 195 13% 61%;
+    /* Grey 2: #92A2A5 */
+    --input: 195 22% 76%;
+    /* Grey 1: #AEBFC3 */
+    --ring: 204 28% 67%;
+    /* Blue 1: #96AEC2 */
     --radius: 0.5rem;
+
+    /* Kardex Color Variables for Direct Use */
+    --kardex-blue-1: #96AEC2;
+    --kardex-blue-2: #6F8A9D;
+    --kardex-blue-3: #546A7A;
+    --kardex-green-1: #A2B9AF;
+    --kardex-green-2: #82A094;
+    --kardex-green-3: #4F6A64;
+    --kardex-grey-1: #AEBFC3;
+    --kardex-grey-2: #92A2A5;
+    --kardex-grey-3: #5D6E73;
+    --kardex-silver-1: #ABACA9;
+    --kardex-silver-2: #979796;
+    --kardex-silver-3: #757777;
+    --kardex-red-1: #E17F70;
+    --kardex-red-2: #9E3B47;
+    --kardex-red-3: #75242D;
+    --kardex-sand-1: #EEC1BF;
+    --kardex-sand-2: #CE9F6B;
+    --kardex-sand-3: #976E44;
   }
 
   * {
@@ -49,25 +104,36 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --background: 200 18% 18%;
+    /* Dark Blue 3 base */
+    --foreground: 195 22% 85%;
+    /* Light Grey 1 */
+    --card: 200 18% 22%;
+    /* Slightly lighter */
+    --card-foreground: 195 22% 90%;
+    --popover: 200 18% 20%;
+    --popover-foreground: 195 22% 90%;
+    --primary: 204 28% 64%;
+    /* Blue 1: #96AEC2 */
+    --primary-foreground: 200 18% 15%;
+    --secondary: 150 18% 58%;
+    /* Green 2: #82A094 */
+    --secondary-foreground: 195 22% 90%;
+    --muted: 200 15% 28%;
+    /* Dark muted */
+    --muted-foreground: 195 22% 65%;
+    /* Grey 1 tone */
+    --accent: 36 74% 65%;
+    /* Sand 1 darker */
+    --accent-foreground: 200 18% 15%;
+    --destructive: 8 63% 56%;
+    /* Red 1 darker */
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 15% 32%;
+    /* Blue 3 border */
+    --input: 200 15% 28%;
+    --ring: 204 28% 64%;
+    /* Blue 1 */
   }
 
   * {
@@ -447,34 +513,40 @@
 /* Custom Toast Styles */
 [data-sonner-toast] {
   background: #ffffff !important;
-  color: #059669 !important;
-  border: 1px solid #059669 !important;
+  color: #82A094 !important;
+  /* Green 2 */
+  border: 1px solid #82A094 !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 [data-sonner-toast][data-type="success"] {
   background: #ffffff !important;
-  color: #059669 !important;
-  border-color: #059669 !important;
+  color: #82A094 !important;
+  /* Green 2 */
+  border-color: #82A094 !important;
 }
 
 [data-sonner-toast][data-type="error"] {
   background: #ffffff !important;
-  color: #6366f1 !important;
-  border-color: #6366f1 !important;
+  color: #E17F70 !important;
+  /* Red 1 */
+  border-color: #E17F70 !important;
 }
 
 [data-sonner-toast][data-type="warning"] {
   background: #ffffff !important;
-  color: #059669 !important;
-  border-color: #059669 !important;
+  color: #EEC18F !important;
+  /* Sand 1 */
+  border-color: #CE9F6B !important;
+  /* Sand 2 */
 }
 
 [data-sonner-toast][data-type="info"] {
   background: #ffffff !important;
-  color: #059669 !important;
-  border-color: #059669 !important;
+  color: #96AEC2 !important;
+  /* Blue 1 */
+  border-color: #96AEC2 !important;
 }
 
 /* ============================================
@@ -482,29 +554,43 @@
    World-class design system
    ============================================ */
 
-/* Finance Color Palette */
+/* Finance Color Palette - Using Kardex Company Colors */
 :root {
-  --finance-cyan: #22d3ee;
-  --finance-purple: #a855f7;
-  --finance-pink: #ec4899;
-  --finance-gold: #fbbf24;
-  --finance-emerald: #10b981;
-  --finance-blue: #3b82f6;
-  --finance-glow-cyan: rgba(34, 211, 238, 0.4);
-  --finance-glow-purple: rgba(168, 85, 247, 0.4);
-  --finance-glow-pink: rgba(236, 72, 153, 0.4);
+  --finance-primary: #96AEC2;
+  /* Blue 1 */
+  --finance-secondary: #6F8A9D;
+  /* Blue 2 */
+  --finance-tertiary: #546A7A;
+  /* Blue 3 */
+  --finance-accent: #A2B9AF;
+  /* Green 1 */
+  --finance-accent-dark: #4F6A64;
+  /* Green 3 */
+  --finance-highlight: #E17F70;
+  /* Red 1 */
+  --finance-warning: #EEC1BF;
+  /* Sand 1 */
+  --finance-success: #82A094;
+  /* Green 2 */
+  --finance-glow-primary: rgba(150, 174, 194, 0.4);
+  /* Blue 1 glow */
+  --finance-glow-accent: rgba(162, 185, 175, 0.4);
+  /* Green 1 glow */
+  --finance-glow-highlight: rgba(225, 127, 112, 0.4);
+  /* Red 1 glow */
 }
 
 /* Premium Gradient Text */
 .finance-gradient-text {
-  background: linear-gradient(135deg, var(--finance-cyan) 0%, var(--finance-purple) 50%, var(--finance-pink) 100%);
+  background: linear-gradient(135deg, var(--finance-primary) 0%, var(--finance-secondary) 50%, var(--finance-tertiary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .finance-gradient-text-gold {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  background: linear-gradient(135deg, #EEC1BF 0%, #CE9F6B 50%, #976E44 100%);
+  /* Sand gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -522,7 +608,8 @@
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+  background: linear-gradient(135deg, transparent, rgba(150, 174, 194, 0.3), transparent);
+  /* Blue 1 */
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -536,14 +623,16 @@
 }
 
 .finance-card-glow:hover {
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.2), 0 0 80px rgba(236, 72, 153, 0.1);
+  box-shadow: 0 0 40px rgba(150, 174, 194, 0.2), 0 0 80px rgba(162, 185, 175, 0.1);
+  /* Blue 1 & Green 1 */
   transform: translateY(-2px);
 }
 
 /* Animated Gradient Border */
 .finance-gradient-border {
   position: relative;
-  background: rgba(15, 15, 35, 0.65);
+  background: rgba(84, 106, 122, 0.65);
+  /* Blue 3 base */
   border-radius: 1rem;
 }
 
@@ -553,7 +642,7 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink));
+  background: linear-gradient(135deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -562,11 +651,25 @@
 }
 
 @keyframes rotate-gradient {
-  0% { background: linear-gradient(0deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink)); }
-  25% { background: linear-gradient(90deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink)); }
-  50% { background: linear-gradient(180deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink)); }
-  75% { background: linear-gradient(270deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink)); }
-  100% { background: linear-gradient(360deg, var(--finance-cyan), var(--finance-purple), var(--finance-pink)); }
+  0% {
+    background: linear-gradient(0deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
+  }
+
+  25% {
+    background: linear-gradient(90deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
+  }
+
+  50% {
+    background: linear-gradient(180deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
+  }
+
+  75% {
+    background: linear-gradient(270deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
+  }
+
+  100% {
+    background: linear-gradient(360deg, var(--finance-primary), var(--finance-accent), var(--finance-highlight));
+  }
 }
 
 /* Premium Shimmer Effect */
@@ -587,8 +690,14 @@
 }
 
 @keyframes shimmer-slide {
-  0% { left: -100%; }
-  50%, 100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
 }
 
 /* Floating Animation */
@@ -597,8 +706,15 @@
 }
 
 @keyframes gentle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Pulse Glow Animation */
@@ -607,17 +723,23 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(150, 174, 194, 0.3);
+    /* Blue 1 */
   }
-  50% { 
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.5), 0 0 60px rgba(236, 72, 153, 0.3);
+
+  50% {
+    box-shadow: 0 0 40px rgba(150, 174, 194, 0.5), 0 0 60px rgba(162, 185, 175, 0.3);
+    /* Blue 1 & Green 1 */
   }
 }
 
 /* Premium Button Styles */
 .finance-btn-primary {
-  background: linear-gradient(135deg, var(--finance-purple) 0%, var(--finance-pink) 100%);
+  background: linear-gradient(135deg, var(--finance-secondary) 0%, var(--finance-tertiary) 100%);
+  /* Blue 2 to Blue 3 */
   color: white;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
@@ -627,12 +749,14 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 20px rgba(111, 138, 157, 0.3);
+  /* Blue 2 shadow */
 }
 
 .finance-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.4), 0 0 40px rgba(236, 72, 153, 0.2);
+  box-shadow: 0 8px 30px rgba(111, 138, 157, 0.4), 0 0 40px rgba(150, 174, 194, 0.2);
+  /* Blue 2 & Blue 1 */
 }
 
 .finance-btn-primary::before {
@@ -658,7 +782,8 @@
 }
 
 .finance-table thead {
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05));
+  background: linear-gradient(90deg, rgba(150, 174, 194, 0.1), rgba(162, 185, 175, 0.05));
+  /* Blue 1 & Green 1 */
 }
 
 .finance-table thead th {
@@ -676,7 +801,8 @@
 }
 
 .finance-table tbody tr:hover {
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.08), rgba(56, 189, 248, 0.05));
+  background: linear-gradient(90deg, rgba(150, 174, 194, 0.08), rgba(162, 185, 175, 0.05));
+  /* Blue 1 & Green 1 */
 }
 
 .finance-table tbody td {
@@ -699,21 +825,25 @@
 }
 
 .finance-badge-success {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(130, 160, 148, 0.15);
+  /* Green 2 */
+  color: #A2B9AF;
+  /* Green 1 */
+  border-color: rgba(130, 160, 148, 0.3);
 }
 
 .finance-badge-warning {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(238, 193, 191, 0.15);
+  /* Sand 1 */
+  color: #EEC1BF;
+  border-color: rgba(238, 193, 191, 0.3);
 }
 
 .finance-badge-danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(225, 127, 112, 0.15);
+  /* Red 1 */
+  color: #E17F70;
+  border-color: rgba(225, 127, 112, 0.3);
 }
 
 .finance-badge-danger.critical {
@@ -721,14 +851,24 @@
 }
 
 @keyframes critical-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 127, 112, 0.4);
+    /* Red 1 */
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(225, 127, 112, 0);
+    /* Red 1 */
+  }
 }
 
 .finance-badge-info {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(150, 174, 194, 0.15);
+  /* Blue 1 */
+  color: #96AEC2;
+  border-color: rgba(150, 174, 194, 0.3);
 }
 
 /* Premium Input Styles */
@@ -749,8 +889,10 @@
 
 .finance-input:focus {
   outline: none;
-  border-color: var(--finance-purple);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2), 0 0 20px rgba(168, 85, 247, 0.1);
+  border-color: var(--finance-primary);
+  /* Blue 1 */
+  box-shadow: 0 0 0 3px rgba(150, 174, 194, 0.2), 0 0 20px rgba(150, 174, 194, 0.1);
+  /* Blue 1 */
 }
 
 /* Premium KPI Card */
@@ -772,7 +914,8 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(150, 174, 194, 0.5), transparent);
+  /* Blue 1 */
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -782,8 +925,10 @@
 }
 
 .finance-kpi-card:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(139, 92, 246, 0.1);
+  border-color: rgba(150, 174, 194, 0.3);
+  /* Blue 1 */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(150, 174, 194, 0.1);
+  /* Blue 1 */
   transform: translateY(-4px);
 }
 
@@ -800,32 +945,40 @@
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(139, 92, 246, 0.6);
+  background: rgba(150, 174, 194, 0.6);
+  /* Blue 1 */
   border-radius: 50%;
   animation: particle-float 15s infinite;
 }
 
 .finance-particle:nth-child(2n) {
-  background: rgba(34, 211, 238, 0.5);
+  background: rgba(162, 185, 175, 0.5);
+  /* Green 1 */
   animation-delay: -2s;
 }
 
 .finance-particle:nth-child(3n) {
-  background: rgba(236, 72, 153, 0.5);
+  background: rgba(225, 127, 112, 0.5);
+  /* Red 1 */
   animation-delay: -4s;
 }
 
 @keyframes particle-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
+
   90% {
     opacity: 1;
   }
+
   100% {
     transform: translate(var(--tx, 100px), var(--ty, -200px)) scale(0.5);
     opacity: 0;
@@ -844,32 +997,52 @@
 }
 
 .finance-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--finance-purple), var(--finance-pink));
+  background: linear-gradient(180deg, var(--finance-secondary), var(--finance-tertiary));
+  /* Blue 2 to Blue 3 */
   border-radius: 4px;
 }
 
 .finance-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--finance-cyan), var(--finance-purple));
+  background: linear-gradient(180deg, var(--finance-primary), var(--finance-secondary));
+  /* Blue 1 to Blue 2 */
 }
 
 /* Staggered Fade In Animation */
-.finance-stagger-in > * {
+.finance-stagger-in>* {
   opacity: 0;
   animation: stagger-fade-in 0.5s ease forwards;
 }
 
-.finance-stagger-in > *:nth-child(1) { animation-delay: 0.1s; }
-.finance-stagger-in > *:nth-child(2) { animation-delay: 0.2s; }
-.finance-stagger-in > *:nth-child(3) { animation-delay: 0.3s; }
-.finance-stagger-in > *:nth-child(4) { animation-delay: 0.4s; }
-.finance-stagger-in > *:nth-child(5) { animation-delay: 0.5s; }
-.finance-stagger-in > *:nth-child(6) { animation-delay: 0.6s; }
+.finance-stagger-in>*:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.finance-stagger-in>*:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.finance-stagger-in>*:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.finance-stagger-in>*:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.finance-stagger-in>*:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.finance-stagger-in>*:nth-child(6) {
+  animation-delay: 0.6s;
+}
 
 @keyframes stagger-fade-in {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

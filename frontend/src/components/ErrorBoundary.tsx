@@ -56,14 +56,14 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       // Render fallback UI
       return (
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-slate-50 p-4">
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-[#AEBFC3]/10 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
             <div className="flex flex-col items-center space-y-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                <AlertCircle className="h-10 w-10 text-red-600" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E17F70]/20">
+                <AlertCircle className="h-10 w-10 text-[#9E3B47]" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-800">Something went wrong</h2>
-              <p className="text-center text-slate-600">
+              <h2 className="text-2xl font-bold text-[#546A7A]">Something went wrong</h2>
+              <p className="text-center text-[#5D6E73]">
                 {this.state.error?.message || 'An unexpected error occurred. Please try again.'}
               </p>
               <div className="mt-4 flex space-x-3">
@@ -78,18 +78,18 @@ export class ErrorBoundary extends Component<Props, State> {
                 <Button
                   variant="default"
                   onClick={this.handleReset}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#6F8A9D] hover:bg-[#546A7A]"
                 >
                   Try Again
                 </Button>
               </div>
             </div>
             {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
-              <details className="mt-6 overflow-hidden rounded-lg border border-red-200">
-                <summary className="cursor-pointer bg-red-50 px-4 py-2 text-sm font-medium text-red-700">
+              <details className="mt-6 overflow-hidden rounded-lg border border-[#E17F70]">
+                <summary className="cursor-pointer bg-[#E17F70]/10 px-4 py-2 text-sm font-medium text-[#75242D]">
                   Error Details
                 </summary>
-                <pre className="max-h-60 overflow-auto bg-white p-4 text-xs text-red-600">
+                <pre className="max-h-60 overflow-auto bg-white p-4 text-xs text-[#9E3B47]">
                   {this.state.error?.stack}
                   <br />
                   {this.state.errorInfo.componentStack}

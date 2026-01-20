@@ -29,13 +29,13 @@ interface POExpectedResponse {
 
 // Zone colors
 const zoneStyles: Record<string, { bg: string; border: string; text: string; light: string }> = {
-  WEST: { bg: 'bg-gradient-to-r from-blue-600 to-blue-700', border: 'border-blue-500', text: 'text-blue-600', light: 'bg-blue-50' },
-  SOUTH: { bg: 'bg-gradient-to-r from-emerald-600 to-emerald-700', border: 'border-emerald-500', text: 'text-emerald-600', light: 'bg-emerald-50' },
-  NORTH: { bg: 'bg-gradient-to-r from-amber-500 to-orange-600', border: 'border-amber-500', text: 'text-amber-600', light: 'bg-amber-50' },
-  EAST: { bg: 'bg-gradient-to-r from-purple-600 to-purple-700', border: 'border-purple-500', text: 'text-purple-600', light: 'bg-purple-50' },
+  WEST: { bg: 'bg-gradient-to-r from-[#546A7A] to-[#546A7A]', border: 'border-[#6F8A9D]', text: 'text-[#546A7A]', light: 'bg-[#96AEC2]/10' },
+  SOUTH: { bg: 'bg-gradient-to-r from-[#4F6A64] to-[#4F6A64]', border: 'border-[#82A094]', text: 'text-[#4F6A64]', light: 'bg-[#82A094]/10' },
+  NORTH: { bg: 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44]', border: 'border-[#CE9F6B]', text: 'text-[#976E44]', light: 'bg-[#CE9F6B]/10' },
+  EAST: { bg: 'bg-gradient-to-r from-[#546A7A] to-[#546A7A]', border: 'border-[#6F8A9D]', text: 'text-[#546A7A]', light: 'bg-[#6F8A9D]/10' },
 }
 
-const getZoneStyle = (name: string) => zoneStyles[name.toUpperCase()] || { bg: 'bg-gradient-to-r from-slate-600 to-slate-700', border: 'border-slate-500', text: 'text-slate-600', light: 'bg-slate-50' }
+const getZoneStyle = (name: string) => zoneStyles[name.toUpperCase()] || { bg: 'bg-gradient-to-r from-slate-600 to-slate-700', border: 'border-slate-500', text: 'text-[#5D6E73]', light: 'bg-[#AEBFC3]/10' }
 
 interface Props {
   year: number
@@ -140,9 +140,9 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+          <div className="w-16 h-16 border-4 border-[#96AEC2] border-t-blue-600 rounded-full animate-spin" />
         </div>
-        <p className="text-slate-600 font-medium animate-pulse">Loading PO Expected Month...</p>
+        <p className="text-[#5D6E73] font-medium animate-pulse">Loading PO Expected Month...</p>
       </div>
     )
   }
@@ -155,26 +155,26 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
   return (
     <div className="space-y-6">
       {/* Header with Filter and View Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 rounded-xl shadow-md border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#546A7A] rounded-xl shadow-md border border-[#92A2A5] dark:border-[#5D6E73]">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] shadow">
             <Calendar className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-800 dark:text-white">PO Expected Month - {year}</h2>
-            <p className="text-xs text-slate-500">Forecast by Zone and Month</p>
+            <h2 className="text-sm font-bold text-[#546A7A] dark:text-white">PO Expected Month - {year}</h2>
+            <p className="text-xs text-[#757777]">Forecast by Zone and Month</p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
           {/* View Toggle */}
-          <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+          <div className="flex rounded-lg bg-[#AEBFC3]/20 dark:bg-[#546A7A] p-0.5">
             <button
               onClick={() => setActiveView('month')}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 activeView === 'month' 
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white dark:bg-[#5D6E73] text-[#546A7A] shadow-sm' 
+                  : 'text-[#757777] hover:text-[#5D6E73]'
               }`}
             >
               📊 Month
@@ -183,8 +183,8 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
               onClick={() => setActiveView('zone')}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 activeView === 'zone' 
-                  ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white dark:bg-[#5D6E73] text-[#4F6A64] shadow-sm' 
+                  : 'text-[#757777] hover:text-[#5D6E73]'
               }`}
             >
               🏢 Zone
@@ -202,24 +202,24 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                 {/* Header */}
                 <thead>
                   <tr className="bg-gradient-to-r from-yellow-400 to-yellow-500">
-                    <th colSpan={2} className="px-2 py-2 text-left text-xs font-bold text-slate-800 border-r border-yellow-600">
+                    <th colSpan={2} className="px-2 py-2 text-left text-xs font-bold text-[#546A7A] border-r border-yellow-600">
                       <span className="underline">Forecast</span>
                     </th>
                     {data.zones.map(zone => (
-                      <th key={zone.zoneId} className="px-2 py-2 text-center text-xs font-bold text-slate-800 border-r border-yellow-600 min-w-[80px]">
+                      <th key={zone.zoneId} className="px-2 py-2 text-center text-xs font-bold text-[#546A7A] border-r border-yellow-600 min-w-[80px]">
                         {zone.zoneName}
                       </th>
                     ))}
-                    <th className="px-2 py-2 text-center text-xs font-bold text-slate-800 border-r border-yellow-600 min-w-[60px]">
+                    <th className="px-2 py-2 text-center text-xs font-bold text-[#546A7A] border-r border-yellow-600 min-w-[60px]">
                       {/* Empty for spacing */}
                     </th>
-                    <th className="px-2 py-2 text-center text-xs font-bold text-slate-800 border-r border-slate-300 min-w-[80px]" title="Quarterly Forecast: Sum of 3 months">
+                    <th className="px-2 py-2 text-center text-xs font-bold text-[#546A7A] border-r border-[#92A2A5] min-w-[80px]" title="Quarterly Forecast: Sum of 3 months">
                       Qtr Fcst
                     </th>
-                    <th className="px-2 py-2 text-center text-xs font-bold text-slate-800 border-r border-slate-300 min-w-[80px]" title="Quarterly BU Target">
+                    <th className="px-2 py-2 text-center text-xs font-bold text-[#546A7A] border-r border-[#92A2A5] min-w-[80px]" title="Quarterly BU Target">
                       Qtr BU
                     </th>
-                    <th className="px-2 py-2 text-center text-xs font-bold text-slate-800 min-w-[60px]" title="% Deviation from target">
+                    <th className="px-2 py-2 text-center text-xs font-bold text-[#546A7A] min-w-[60px]" title="% Deviation from target">
                       Dev
                     </th>
                   </tr>
@@ -235,44 +235,44 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                     return (
                       <tr 
                         key={monthKey} 
-                        className={`border-b border-slate-200 dark:border-slate-700 ${
-                          idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50 dark:bg-slate-800/50'
-                        } hover:bg-blue-50 dark:hover:bg-slate-700/50 transition-colors`}
+                        className={`border-b border-[#92A2A5] dark:border-[#5D6E73] ${
+                          idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10 dark:bg-[#546A7A]/50'
+                        } hover:bg-[#96AEC2]/10 dark:hover:bg-[#5D6E73]/50 transition-colors`}
                       >
-                        <td className="px-2 py-1.5 font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 w-[100px]">
+                        <td className="px-2 py-1.5 font-semibold text-[#5D6E73] dark:text-[#92A2A5] border-r border-[#92A2A5] dark:border-[#5D6E73] w-[100px]">
                           {monthName}
                         </td>
-                        <td className="px-2 py-1.5 font-mono font-bold text-slate-800 dark:text-white border-r border-slate-200 dark:border-slate-700 bg-yellow-50 dark:bg-yellow-900/20">
+                        <td className="px-2 py-1.5 font-mono font-bold text-[#546A7A] dark:text-white border-r border-[#92A2A5] dark:border-[#5D6E73] bg-[#EEC1BF]/10 dark:bg-[#976E44]/20">
                           {formatValue(rowTotal)}
                         </td>
                         {data.zones.map(zone => (
-                          <td key={zone.zoneId} className="px-2 py-1.5 text-right font-mono text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">
+                          <td key={zone.zoneId} className="px-2 py-1.5 text-right font-mono text-[#5D6E73] dark:text-[#979796] border-r border-[#92A2A5] dark:border-[#5D6E73]">
                             {formatValue(zone.monthlyTotals[monthKey] || 0)}
                           </td>
                         ))}
-                        <td className="border-r border-slate-200 dark:border-slate-700"></td>
+                        <td className="border-r border-[#92A2A5] dark:border-[#5D6E73]"></td>
                         
                         {/* Quarterly columns - only show on quarter end months */}
                         {isQuarterEnd ? (
                           <>
-                            <td className="px-2 py-1.5 text-right font-mono font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-                              <div className="text-[10px] text-slate-500">{quarter.label}</div>
+                            <td className="px-2 py-1.5 text-right font-mono font-semibold text-[#5D6E73] dark:text-[#92A2A5] border-r border-[#92A2A5] dark:border-[#5D6E73] bg-[#AEBFC3]/20 dark:bg-[#546A7A]">
+                              <div className="text-[10px] text-[#757777]">{quarter.label}</div>
                               {formatValue(quarter.total)}
                             </td>
-                            <td className="px-2 py-1.5 text-right font-mono font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-                              <div className="text-[10px] text-slate-500">{quarter.name} BU</div>
+                            <td className="px-2 py-1.5 text-right font-mono font-semibold text-[#5D6E73] dark:text-[#92A2A5] border-r border-[#92A2A5] dark:border-[#5D6E73] bg-[#AEBFC3]/20 dark:bg-[#546A7A]">
+                              <div className="text-[10px] text-[#757777]">{quarter.name} BU</div>
                               {formatValue(quarter.bu)}
                             </td>
                             <td className={`px-2 py-1.5 text-right font-mono font-bold ${
-                              quarter.dev >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' : 'text-rose-600 bg-rose-50 dark:bg-rose-900/30'
+                              quarter.dev >= 0 ? 'text-[#4F6A64] bg-[#82A094]/10 dark:bg-[#4F6A64]/30' : 'text-[#9E3B47] bg-[#EEC1BF]/10 dark:bg-[#9E3B47]/30'
                             }`}>
                               {quarter.dev >= 0 ? '+' : ''}{quarter.dev.toFixed(0)}%
                             </td>
                           </>
                         ) : (
                           <>
-                            <td className="border-r border-slate-200 dark:border-slate-700"></td>
-                            <td className="border-r border-slate-200 dark:border-slate-700"></td>
+                            <td className="border-r border-[#92A2A5] dark:border-[#5D6E73]"></td>
+                            <td className="border-r border-[#92A2A5] dark:border-[#5D6E73]"></td>
                             <td></td>
                           </>
                         )}
@@ -282,13 +282,13 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                 </tbody>
                 {/* Grand Total Row */}
                 <tfoot>
-                  <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white font-bold">
-                    <td className="px-2 py-2 border-r border-slate-700">Total</td>
-                    <td className="px-2 py-2 font-mono text-sm border-r border-slate-700 bg-yellow-600">
+                  <tr className="bg-gradient-to-r from-slate-800 to-[#5D6E73] text-white font-bold">
+                    <td className="px-2 py-2 border-r border-[#5D6E73]">Total</td>
+                    <td className="px-2 py-2 font-mono text-sm border-r border-[#5D6E73] bg-[#976E44]">
                       {formatValue(data.overallTotals.grandTotal)}
                     </td>
                     {data.zones.map(zone => (
-                      <td key={zone.zoneId} className="px-2 py-2 text-right font-mono border-r border-slate-700">
+                      <td key={zone.zoneId} className="px-2 py-2 text-right font-mono border-r border-[#5D6E73]">
                         {formatValue(zone.grandTotal)}
                       </td>
                     ))}
@@ -341,16 +341,16 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs">
                         <thead>
-                          <tr className="bg-slate-100 dark:bg-slate-800">
-                            <th className="sticky left-0 z-10 bg-slate-100 dark:bg-slate-800 px-2 py-2 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider min-w-[140px] border-r border-slate-200 dark:border-slate-700">
+                          <tr className="bg-[#AEBFC3]/20 dark:bg-[#546A7A]">
+                            <th className="sticky left-0 z-10 bg-[#AEBFC3]/20 dark:bg-[#546A7A] px-2 py-2 text-left text-xs font-bold text-[#5D6E73] dark:text-[#92A2A5] uppercase tracking-wider min-w-[140px] border-r border-[#92A2A5] dark:border-[#5D6E73]">
                               Member
                             </th>
                             {months.map((month) => (
-                              <th key={month} className="px-2 py-2 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider min-w-[60px]">
+                              <th key={month} className="px-2 py-2 text-center text-xs font-bold text-[#757777] dark:text-[#979796] uppercase tracking-wider min-w-[60px]">
                                 {month}
                               </th>
                             ))}
-                            <th className="px-2 py-2 text-center text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider min-w-[80px] bg-slate-200/50 dark:bg-slate-700/50">
+                            <th className="px-2 py-2 text-center text-xs font-bold text-[#5D6E73] dark:text-slate-200 uppercase tracking-wider min-w-[80px] bg-[#92A2A5]/30/50 dark:bg-[#5D6E73]/50">
                               Total
                             </th>
                           </tr>
@@ -359,30 +359,30 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                           {zone.users.map((user, idx) => (
                             <tr 
                               key={user.userId} 
-                              className={`transition-colors hover:bg-blue-50/50 dark:hover:bg-slate-700/30 ${
-                                idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30'
+                              className={`transition-colors hover:bg-[#96AEC2]/10/50 dark:hover:bg-[#5D6E73]/30 ${
+                                idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/30'
                               }`}
                             >
-                              <td className="sticky left-0 z-10 bg-inherit px-4 py-3 border-r border-slate-100 dark:border-slate-800">
+                              <td className="sticky left-0 z-10 bg-inherit px-4 py-3 border-r border-[#AEBFC3]/30 dark:border-slate-800">
                                 <div className="flex items-center gap-3">
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${style.bg}`}>
                                     {user.userName.charAt(0).toUpperCase()}
                                   </div>
-                                  <span className="font-medium text-slate-800 dark:text-slate-200">{user.userName}</span>
+                                  <span className="font-medium text-[#546A7A] dark:text-slate-200">{user.userName}</span>
                                 </div>
                               </td>
                               {months.map((month) => {
                                 const value = user.monthlyValues[month] || 0
                                 return (
                                   <td key={month} className={`px-3 py-3 text-center font-mono text-sm ${
-                                    value > 0 ? 'text-slate-700 dark:text-slate-300 font-medium' : 'text-slate-400'
+                                    value > 0 ? 'text-[#5D6E73] dark:text-[#92A2A5] font-medium' : 'text-[#979796]'
                                   }`}>
                                     {formatValue(value)}
                                   </td>
                                 )
                               })}
-                              <td className={`px-4 py-3 text-center font-mono font-bold bg-slate-100/70 dark:bg-slate-700/50 ${
-                                user.total > 0 ? style.text : 'text-slate-400'
+                              <td className={`px-4 py-3 text-center font-mono font-bold bg-[#AEBFC3]/20/70 dark:bg-[#5D6E73]/50 ${
+                                user.total > 0 ? style.text : 'text-[#979796]'
                               }`}>
                                 {formatValue(user.total)}
                               </td>
@@ -415,11 +415,11 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
       )}
 
       {/* Grand Total Summary */}
-      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-[#5D6E73] via-slate-800 to-[#5D6E73]">
         <CardContent className="p-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 shadow">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64] shadow">
                 <IndianRupee className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -433,7 +433,7 @@ export default function POExpectedMonthTab({ year, minProbability = 0, zoneId, u
                 return (
                   <div key={zone.zoneId} className={`px-2.5 py-1.5 rounded-lg ${style.light} border ${style.border}`}>
                     <p className={`text-[10px] font-bold ${style.text} uppercase`}>{zone.zoneName}</p>
-                    <p className="text-sm font-bold text-slate-800">{formatCrore(zone.grandTotal)}</p>
+                    <p className="text-sm font-bold text-[#546A7A]">{formatCrore(zone.grandTotal)}</p>
                   </div>
                 )
               })}

@@ -92,19 +92,19 @@ const CustomerClient = memo(function CustomerClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20">
+            <svg className="h-6 w-6 text-[#9E3B47]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Failed to load customers</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <h3 className="mt-2 text-sm font-medium text-[#546A7A]">Failed to load customers</h3>
+          <p className="mt-1 text-sm text-[#AEBFC3]0">{error}</p>
           <div className="mt-6">
             <button
               onClick={handleRefresh}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#6F8A9D] hover:bg-[#546A7A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#96AEC2]"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
@@ -121,7 +121,7 @@ const CustomerClient = memo(function CustomerClient({
       <div className="space-y-6">
         {/* Loading State */}
         <div className="flex justify-end">
-          <div className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-500">
+          <div className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-[#92A2A5]/30 text-[#AEBFC3]0">
             <RefreshCw className="w-4 h-4 animate-spin" />
             Refreshing...
           </div>
@@ -131,8 +131,8 @@ const CustomerClient = memo(function CustomerClient({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="bg-white p-6 rounded-lg shadow-sm border animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-[#92A2A5]/30 rounded w-3/4 mb-2"></div>
+              <div className="h-8 bg-[#92A2A5]/30 rounded w-1/2"></div>
             </div>
           ))}
         </div>
@@ -143,10 +143,10 @@ const CustomerClient = memo(function CustomerClient({
             {[...Array(5)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="flex space-x-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4"></div>
+                  <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4"></div>
+                  <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4"></div>
+                  <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4"></div>
                 </div>
               </div>
             ))}
@@ -165,8 +165,8 @@ const CustomerClient = memo(function CustomerClient({
           disabled={isRefreshing}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${
             isRefreshing 
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-              : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              ? 'bg-[#92A2A5]/30 text-[#AEBFC3]0 cursor-not-allowed' 
+              : 'bg-white text-[#5D6E73] hover:bg-[#AEBFC3]/10 border border-[#92A2A5]'
           }`}
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />

@@ -21,42 +21,42 @@ const QUICK_ACTIVITIES = [
     type: 'TICKET_WORK',
     label: 'Ticket Work',
     icon: '🎫',
-    color: 'bg-blue-100 text-blue-800',
+    color: 'bg-[#96AEC2]/20 text-[#546A7A]',
     description: 'Start working on a ticket'
   },
   {
     type: 'TRAVEL',
     label: 'Travel',
     icon: '🚗',
-    color: 'bg-green-100 text-green-800',
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64]',
     description: 'Traveling to location'
   },
   {
     type: 'MAINTENANCE',
     label: 'Maintenance',
     icon: '🔧',
-    color: 'bg-orange-100 text-orange-800',
+    color: 'bg-[#CE9F6B]/20 text-[#976E44]',
     description: 'Equipment maintenance'
   },
   {
     type: 'DOCUMENTATION',
     label: 'Documentation',
     icon: '📝',
-    color: 'bg-purple-100 text-purple-800',
+    color: 'bg-[#6F8A9D]/20 text-[#546A7A]',
     description: 'Documentation work'
   },
   {
     type: 'TRAINING',
     label: 'Training',
     icon: '📚',
-    color: 'bg-indigo-100 text-indigo-800',
+    color: 'bg-[#546A7A]/20 text-[#546A7A]',
     description: 'Training or learning'
   },
   {
     type: 'OTHER',
     label: 'Other',
     icon: '📋',
-    color: 'bg-gray-100 text-gray-800',
+    color: 'bg-[#AEBFC3]/20 text-[#546A7A]',
     description: 'Other activities'
   }
 ];
@@ -127,7 +127,7 @@ export default function QuickActivityStarter({ onActivityStarted }: QuickActivit
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-orange-500" />
+          <Zap className="h-5 w-5 text-[#CE9F6B]" />
           Quick Start Activity
         </CardTitle>
         <CardDescription>
@@ -145,27 +145,27 @@ export default function QuickActivityStarter({ onActivityStarted }: QuickActivit
               disabled={loading === activity.type}
             >
               {loading === activity.type ? (
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#6F8A9D] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{activity.icon}</span>
-                  <Play className="h-4 w-4 text-green-600" />
+                  <Play className="h-4 w-4 text-[#4F6A64]" />
                 </div>
               )}
               <div className="text-center">
                 <div className="font-medium text-sm">{activity.label}</div>
-                <div className="text-xs text-gray-500 mt-1">{activity.description}</div>
+                <div className="text-xs text-[#AEBFC3]0 mt-1">{activity.description}</div>
               </div>
             </Button>
           ))}
         </div>
         
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center gap-2 text-blue-800 text-sm">
+        <div className="mt-4 p-3 bg-[#96AEC2]/10 rounded-lg border border-[#96AEC2]">
+          <div className="flex items-center gap-2 text-[#546A7A] text-sm">
             <Timer className="h-4 w-4" />
             <span className="font-medium">Pro Tip:</span>
           </div>
-          <p className="text-blue-700 text-xs mt-1">
+          <p className="text-[#546A7A] text-xs mt-1">
             Activities automatically capture your location and can be managed in the Work Management Center above.
           </p>
         </div>

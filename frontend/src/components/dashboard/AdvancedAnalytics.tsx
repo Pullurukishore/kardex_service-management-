@@ -131,17 +131,17 @@ export default function AdvancedAnalytics({
             <div className="min-w-0 flex-1">
               <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
                 <div className="relative">
-                  <div className="p-2.5 sm:p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-xl sm:rounded-2xl shadow-lg shadow-purple-500/25">
+                  <div className="p-2.5 sm:p-3 bg-gradient-to-br from-[#6F8A9D] via-pink-500 to-[#E17F70] rounded-xl sm:rounded-2xl shadow-lg shadow-[#6F8A9D]/25">
                     <PieChart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
-                <span className="text-slate-800">Analytics Dashboard</span>
+                <span className="text-[#546A7A]">Analytics Dashboard</span>
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base mt-2 text-slate-500 ml-14 sm:ml-16">
+              <CardDescription className="text-sm sm:text-base mt-2 text-[#757777] ml-14 sm:ml-16">
                 Ticket distribution patterns and volume trends
               </CardDescription>
             </div>
-            <Badge className="bg-purple-100 text-purple-700 border border-purple-200/50 px-3 py-1.5 text-xs font-semibold ml-14 sm:ml-0">
+            <Badge className="bg-[#6F8A9D]/20 text-[#546A7A] border border-[#6F8A9D]/50 px-3 py-1.5 text-xs font-semibold ml-14 sm:ml-0">
               <Sparkles className="w-3 h-3 mr-1.5" />
               Visual Insights
             </Badge>
@@ -150,7 +150,7 @@ export default function AdvancedAnalytics({
         
         <CardContent className="relative z-10">
           <Tabs defaultValue="status" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-slate-100/80 p-1 rounded-xl">
+            <TabsList className="grid w-full grid-cols-2 bg-[#AEBFC3]/20/80 p-1 rounded-xl">
               <TabsTrigger value="status" className="rounded-lg text-xs sm:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 <PieChart className="w-4 h-4 mr-1.5" />
                 Status Distribution
@@ -165,26 +165,26 @@ export default function AdvancedAnalytics({
             <TabsContent value="status" className="mt-6">
               <div className="space-y-5">
                 {/* Filter Toggle */}
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-purple-50/50 rounded-xl border border-slate-200/50">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#AEBFC3]/10 to-[#6F8A9D]/10/50 rounded-xl border border-[#92A2A5]/50">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Filter className="w-4 h-4 text-purple-600" />
+                    <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
+                      <Filter className="w-4 h-4 text-[#546A7A]" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">Show Archived</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-semibold text-[#546A7A]">Show Archived</p>
+                      <p className="text-xs text-[#757777]">
                         {showClosedTickets ? 'All statuses visible' : 'Hiding closed & cancelled'}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className={showClosedTickets ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}>
+                    <Badge variant="outline" className={showClosedTickets ? 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]' : 'bg-[#82A094]/20 text-[#4F6A64] border-[#82A094]/50'}>
                       {showClosedTickets ? 'All' : 'Active'}
                     </Badge>
                     <Switch 
                       checked={showClosedTickets}
                       onCheckedChange={setShowClosedTickets}
-                      className="data-[state=checked]:bg-purple-600"
+                      className="data-[state=checked]:bg-[#546A7A]"
                     />
                   </div>
                 </div>
@@ -192,21 +192,21 @@ export default function AdvancedAnalytics({
                 {loading ? (
                   <div className="h-[350px] flex items-center justify-center">
                     <div className="text-center space-y-3">
-                      <RefreshCw className="h-8 w-8 animate-spin text-purple-500 mx-auto" />
-                      <p className="text-sm text-slate-500">Loading analytics...</p>
+                      <RefreshCw className="h-8 w-8 animate-spin text-[#6F8A9D] mx-auto" />
+                      <p className="text-sm text-[#757777]">Loading analytics...</p>
                     </div>
                   </div>
                 ) : statusChartData.length === 0 && !showClosedTickets ? (
                   <div className="h-[350px] flex flex-col items-center justify-center gap-4">
-                    <div className="p-4 bg-emerald-100 rounded-2xl">
-                      <CheckCircle className="w-12 h-12 text-emerald-600" />
+                    <div className="p-4 bg-[#82A094]/20 rounded-2xl">
+                      <CheckCircle className="w-12 h-12 text-[#4F6A64]" />
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-slate-900">All Clear! 🎉</p>
-                      <p className="text-sm text-slate-500 mt-1">No active tickets in queue</p>
+                      <p className="text-lg font-semibold text-[#546A7A]">All Clear! 🎉</p>
+                      <p className="text-sm text-[#757777] mt-1">No active tickets in queue</p>
                       <button
                         onClick={() => setShowClosedTickets(true)}
-                        className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors text-sm font-medium"
+                        className="mt-4 px-4 py-2 bg-[#546A7A] text-white rounded-xl hover:bg-[#546A7A] transition-colors text-sm font-medium"
                       >
                         View Archived
                       </button>
@@ -215,7 +215,7 @@ export default function AdvancedAnalytics({
                 ) : statusDistribution?.distribution?.length ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Pie Chart */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-5 border border-slate-100 shadow-sm">
+                    <div className="bg-gradient-to-br from-white to-[#AEBFC3]/10 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
                       <StatusPieChart 
                         data={statusChartData}
                         title="Status Distribution"
@@ -224,9 +224,9 @@ export default function AdvancedAnalytics({
                     </div>
                     
                     {/* Status Breakdown List */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-5 border border-slate-100 shadow-sm">
-                      <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-purple-600" />
+                    <div className="bg-gradient-to-br from-white to-[#AEBFC3]/10 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
+                      <h4 className="font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-[#546A7A]" />
                         Status Breakdown
                       </h4>
                       <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-2">
@@ -252,7 +252,7 @@ export default function AdvancedAnalytics({
                                     className="w-2.5 h-2.5 rounded-full"
                                     style={{ backgroundColor: statusColor }}
                                   />
-                                  <span className="font-medium text-sm text-slate-700 capitalize">
+                                  <span className="font-medium text-sm text-[#5D6E73] capitalize">
                                     {item.status.replace('_', ' ')}
                                   </span>
                                 </div>
@@ -271,7 +271,7 @@ export default function AdvancedAnalytics({
                                   </Badge>
                                 </div>
                               </div>
-                              <div className="relative h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="relative h-1.5 bg-[#AEBFC3]/20 rounded-full overflow-hidden">
                                 <div 
                                   className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                                   style={{ 
@@ -288,7 +288,7 @@ export default function AdvancedAnalytics({
                   </div>
                 ) : (
                   <div className="h-[350px] flex items-center justify-center">
-                    <p className="text-slate-500">No status data available</p>
+                    <p className="text-[#757777]">No status data available</p>
                   </div>
                 )}
               </div>
@@ -300,14 +300,14 @@ export default function AdvancedAnalytics({
                 {loading ? (
                   <div className="h-[350px] flex items-center justify-center">
                     <div className="text-center space-y-3">
-                      <RefreshCw className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
-                      <p className="text-sm text-slate-500">Loading trends...</p>
+                      <RefreshCw className="h-8 w-8 animate-spin text-[#6F8A9D] mx-auto" />
+                      <p className="text-sm text-[#757777]">Loading trends...</p>
                     </div>
                   </div>
                 ) : ticketTrends?.trends?.length ? (
                   <>
                     {/* Trend Chart */}
-                    <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl p-5 border border-slate-100 shadow-sm">
+                    <div className="bg-gradient-to-br from-white to-[#96AEC2]/10/30 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
                       <TrendLineChart 
                         data={trendsChartData}
                         title="14-Day Ticket Volume"
@@ -320,17 +320,17 @@ export default function AdvancedAnalytics({
                     </div>
                     
                     {/* Weekly Summary Cards */}
-                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-5 border border-slate-100 shadow-sm">
+                    <div className="bg-gradient-to-br from-white to-[#AEBFC3]/10 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-semibold text-slate-800 flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
+                        <h4 className="font-semibold text-[#546A7A] flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-[#546A7A]" />
                           Last 7 Days
                         </h4>
                         <div className="flex items-center gap-2">
-                          <Badge className="bg-blue-100 text-blue-700 border-0">
+                          <Badge className="bg-[#96AEC2]/20 text-[#546A7A] border-0">
                             {ticketTrends.trends.slice(-7).reduce((sum, t) => sum + t.count, 0)} Total
                           </Badge>
-                          <Badge className="bg-emerald-100 text-emerald-700 border-0">
+                          <Badge className="bg-[#82A094]/20 text-[#4F6A64] border-0">
                             ~{Math.round(ticketTrends.trends.slice(-7).reduce((sum, t) => sum + t.count, 0) / 7)}/day
                           </Badge>
                         </div>
@@ -347,22 +347,22 @@ export default function AdvancedAnalytics({
                               key={i} 
                               className={`p-3 rounded-xl text-center transition-all duration-300 hover:shadow-md ${
                                 isHighest 
-                                  ? 'bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-200' 
-                                  : 'bg-white border border-slate-100'
+                                  ? 'bg-gradient-to-br from-[#96AEC2]/20 to-[#6F8A9D]/20 border border-[#96AEC2]' 
+                                  : 'bg-white border border-[#AEBFC3]/30'
                               }`}
                             >
-                              <p className="text-[10px] font-medium text-slate-500 mb-1">
+                              <p className="text-[10px] font-medium text-[#757777] mb-1">
                                 {new Date(trend.date).toLocaleDateString('en-US', { weekday: 'short' })}
                               </p>
-                              <p className={`text-xl font-bold ${isHighest ? 'text-blue-700' : 'text-slate-800'}`}>
+                              <p className={`text-xl font-bold ${isHighest ? 'text-[#546A7A]' : 'text-[#546A7A]'}`}>
                                 {trend.count}
                               </p>
                               {isHighest && (
-                                <p className="text-[10px] text-blue-600 font-medium mt-0.5">Peak</p>
+                                <p className="text-[10px] text-[#546A7A] font-medium mt-0.5">Peak</p>
                               )}
-                              <div className="mt-2 h-1 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="mt-2 h-1 bg-[#AEBFC3]/20 rounded-full overflow-hidden">
                                 <div 
-                                  className={`h-full rounded-full ${isHighest ? 'bg-blue-500' : 'bg-slate-300'}`}
+                                  className={`h-full rounded-full ${isHighest ? 'bg-[#96AEC2]/100' : 'bg-[#92A2A5]'}`}
                                   style={{ width: `${Math.max(10, percentage)}%` }}
                                 />
                               </div>
@@ -374,7 +374,7 @@ export default function AdvancedAnalytics({
                   </>
                 ) : (
                   <div className="h-[350px] flex items-center justify-center">
-                    <p className="text-slate-500">No trends data available</p>
+                    <p className="text-[#757777]">No trends data available</p>
                   </div>
                 )}
               </div>

@@ -52,59 +52,59 @@ interface Props {
 const TICKET_STATUS_CONFIG = {
   'ASSIGNED': {
     label: 'Assigned',
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]',
     icon: User,
     nextStatuses: ['IN_PROGRESS', 'ONSITE_VISIT_STARTED']
   },
   'IN_PROGRESS': {
     label: 'In Progress',
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]',
     icon: Clock,
     nextStatuses: ['ONSITE_VISIT_STARTED', 'RESOLVED', 'ON_HOLD']
   },
   'ONSITE_VISIT_STARTED': {
     label: 'Onsite Visit Started',
-    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    color: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]',
     icon: MapPin,
     nextStatuses: ['ONSITE_VISIT_REACHED']
   },
   'ONSITE_VISIT_REACHED': {
     label: 'Reached Customer',
-    color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    color: 'bg-[#546A7A]/20 text-[#546A7A] border-[#546A7A]',
     icon: CheckCircle,
     nextStatuses: ['ONSITE_VISIT_IN_PROGRESS']
   },
   'ONSITE_VISIT_IN_PROGRESS': {
     label: 'Working Onsite',
-    color: 'bg-orange-100 text-orange-800 border-orange-200',
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]',
     icon: Wrench,
     nextStatuses: ['ONSITE_VISIT_RESOLVED']
   },
   'ONSITE_VISIT_RESOLVED': {
     label: 'Onsite Work Complete',
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]',
     icon: CheckCircle,
     nextStatuses: ['RESOLVED']
   },
   'RESOLVED': {
     label: 'Resolved',
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]',
     icon: CheckCircle,
     nextStatuses: ['CLOSED']
   },
   'CLOSED': {
     label: 'Closed',
-    color: 'bg-gray-100 text-gray-800 border-gray-200',
+    color: 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]',
     icon: XCircle,
     nextStatuses: []
   }
 };
 
 const PRIORITY_CONFIG = {
-  'CRITICAL': { label: 'Critical', color: 'bg-red-100 text-red-800', icon: AlertTriangle },
-  'HIGH': { label: 'High', color: 'bg-orange-100 text-orange-800', icon: AlertTriangle },
-  'MEDIUM': { label: 'Medium', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  'LOW': { label: 'Low', color: 'bg-green-100 text-green-800', icon: CheckCircle }
+  'CRITICAL': { label: 'Critical', color: 'bg-[#E17F70]/20 text-[#75242D]', icon: AlertTriangle },
+  'HIGH': { label: 'High', color: 'bg-[#CE9F6B]/20 text-[#976E44]', icon: AlertTriangle },
+  'MEDIUM': { label: 'Medium', color: 'bg-[#CE9F6B]/20 text-[#976E44]', icon: Clock },
+  'LOW': { label: 'Low', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', icon: CheckCircle }
 };
 
 export default function TicketWorkDashboard({ 
@@ -180,16 +180,16 @@ export default function TicketWorkDashboard({
     return (
       <div
         key={ticket.id}
-        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-white border border-[#92A2A5] rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
         onClick={() => setSelectedTicket(ticket)}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <TicketIcon className="w-5 h-5 text-gray-600" />
-            <span className="font-semibold text-gray-900">#{ticket.ticketNumber ?? ticket.id}</span>
+            <TicketIcon className="w-5 h-5 text-[#5D6E73]" />
+            <span className="font-semibold text-[#546A7A]">#{ticket.ticketNumber ?? ticket.id}</span>
             {isOverdue(ticket.slaDueAt) && (
-              <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+              <span className="bg-[#E17F70]/20 text-[#75242D] text-xs px-2 py-1 rounded-full">
                 Overdue
               </span>
             )}
@@ -203,15 +203,15 @@ export default function TicketWorkDashboard({
         </div>
 
         {/* Title */}
-        <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{ticket.title}</h3>
+        <h3 className="font-medium text-[#546A7A] mb-2 line-clamp-2">{ticket.title}</h3>
 
         {/* Customer & Asset */}
         <div className="space-y-1 mb-3">
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-[#5D6E73]">
             <Building className="w-4 h-4 mr-2" />
             <span>{ticket.customer.companyName}</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-[#5D6E73]">
             <Wrench className="w-4 h-4 mr-2" />
             <span>{ticket.asset.machineId} {ticket.asset.model && `(${ticket.asset.model})`}</span>
           </div>
@@ -223,7 +223,7 @@ export default function TicketWorkDashboard({
             <StatusIcon className="w-3 h-3 mr-1" />
             {statusConfig?.label}
           </span>
-          <div className="flex items-center text-xs text-gray-500">
+          <div className="flex items-center text-xs text-[#AEBFC3]0">
             <Calendar className="w-3 h-3 mr-1" />
             {formatDate(ticket.createdAt)}
           </div>
@@ -241,13 +241,13 @@ export default function TicketWorkDashboard({
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-lg max-w-md w-full p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-[#546A7A] mb-4">
             Update Ticket #{selectedTicket.id}
           </h3>
           
           <div className="mb-4">
-            <p className="text-sm text-gray-600 mb-2">{selectedTicket.title}</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#5D6E73] mb-2">{selectedTicket.title}</p>
+            <p className="text-sm text-[#AEBFC3]0">
               Current Status: <span className="font-medium">{statusConfig?.label}</span>
             </p>
           </div>
@@ -255,7 +255,7 @@ export default function TicketWorkDashboard({
           {nextStatuses.length > 0 ? (
             <>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">
                   Select New Status:
                 </label>
                 <div className="space-y-2">
@@ -268,9 +268,9 @@ export default function TicketWorkDashboard({
                         key={status}
                         onClick={() => handleStatusUpdate(selectedTicket.id, status)}
                         disabled={isUpdatingStatus}
-                        className="w-full flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 text-left"
+                        className="w-full flex items-center p-3 border border-[#92A2A5] rounded-lg hover:bg-[#AEBFC3]/10 disabled:opacity-50 text-left"
                       >
-                        <Icon className="w-5 h-5 mr-3 text-gray-600" />
+                        <Icon className="w-5 h-5 mr-3 text-[#5D6E73]" />
                         <span className="font-medium">{config?.label}</span>
                       </button>
                     );
@@ -279,21 +279,21 @@ export default function TicketWorkDashboard({
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#5D6E73] mb-2">
                   Comments (Optional):
                 </label>
                 <textarea
                   value={statusComment}
                   onChange={(e) => setStatusComment(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                  className="w-full p-2 border border-[#92A2A5] rounded-lg text-sm"
                   rows={3}
                   placeholder="Add any comments about this status change..."
                 />
               </div>
             </>
           ) : (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">
+            <div className="mb-4 p-3 bg-[#AEBFC3]/10 rounded-lg">
+              <p className="text-sm text-[#5D6E73]">
                 This ticket is in final status. No further status changes available.
               </p>
             </div>
@@ -305,7 +305,7 @@ export default function TicketWorkDashboard({
                 setSelectedTicket(null);
                 setStatusComment('');
               }}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="flex-1 px-4 py-2 border border-[#92A2A5] rounded-lg text-[#5D6E73] hover:bg-[#AEBFC3]/10"
             >
               Cancel
             </button>
@@ -321,24 +321,24 @@ export default function TicketWorkDashboard({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Ticket Work Dashboard</h2>
-            <p className="text-gray-600">Manage your assigned tickets</p>
+            <h2 className="text-2xl font-bold text-[#546A7A]">Ticket Work Dashboard</h2>
+            <p className="text-[#5D6E73]">Manage your assigned tickets</p>
           </div>
           <button
             onClick={() => onEndActivity(currentActivity.id)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold"
+            className="bg-[#9E3B47] hover:bg-[#75242D] text-white px-4 py-2 rounded-lg font-semibold"
           >
             End Ticket Work
           </button>
         </div>
 
         {/* Current Activity Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-4 mb-6">
           <div className="flex items-center space-x-3">
-            <Wrench className="w-6 h-6 text-blue-600" />
+            <Wrench className="w-6 h-6 text-[#546A7A]" />
             <div>
-              <h3 className="font-semibold text-blue-900">Ticket Work Activity Active</h3>
-              <p className="text-blue-800 text-sm">
+              <h3 className="font-semibold text-[#546A7A]">Ticket Work Activity Active</h3>
+              <p className="text-[#546A7A] text-sm">
                 Started: {new Date(currentActivity.startTime).toLocaleString()}
               </p>
             </div>
@@ -352,16 +352,16 @@ export default function TicketWorkDashboard({
           </div>
         ) : (
           <div className="text-center py-12">
-            <TicketIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Assigned Tickets</h3>
-            <p className="text-gray-600">You don't have any tickets assigned to you at the moment.</p>
+            <TicketIcon className="w-12 h-12 text-[#979796] mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[#546A7A] mb-2">No Assigned Tickets</h3>
+            <p className="text-[#5D6E73]">You don't have any tickets assigned to you at the moment.</p>
           </div>
         )}
 
         {/* Instructions */}
-        <div className="mt-8 bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Instructions:</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
+        <div className="mt-8 bg-[#AEBFC3]/10 border border-[#92A2A5] rounded-lg p-4">
+          <h4 className="font-semibold text-[#546A7A] mb-2">Instructions:</h4>
+          <ul className="text-sm text-[#5D6E73] space-y-1">
             <li>• Click on any ticket to update its status</li>
             <li>• Location is automatically captured with each status change</li>
             <li>• Follow the status progression: Assigned → In Progress → Onsite → Resolved</li>

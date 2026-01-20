@@ -75,9 +75,9 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
 
   const getRoleBadge = () => {
     if (effectiveRole === UserRole.ADMIN) {
-      return { text: "Admin", variant: "default" as const, color: "from-violet-600 to-purple-600" };
+      return { text: "Admin", variant: "default" as const, color: "from-[#546A7A] to-[#546A7A]" };
     } else if (effectiveRole === UserRole.ZONE_USER) {
-      return { text: "Zone User", variant: "secondary" as const, color: "from-blue-600 to-indigo-600" };
+      return { text: "Zone User", variant: "secondary" as const, color: "from-[#546A7A] to-[#546A7A]" };
     }
     return { text: "User", variant: "outline" as const, color: "from-slate-600 to-slate-700" };
   };
@@ -108,10 +108,10 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
       {/* Glassmorphic Navbar */}
       <div className="relative">
         {/* Background with blur */}
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-xl border-b border-slate-200/50" />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-xl border-b border-[#92A2A5]/50" />
         
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#6F8A9D]/5 via-[#6F8A9D]/5 to-[#E17F70]/5" />
         
         {/* Content */}
         <div className="relative flex h-16 items-center gap-x-4 px-4 sm:gap-x-6 sm:px-6 lg:px-8">
@@ -119,37 +119,37 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {/* Mobile menu button */}
             <button
-              className="lg:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors hover:scale-105 active:scale-95"
+              className="lg:hidden p-2 rounded-xl hover:bg-[#AEBFC3]/20 transition-colors hover:scale-105 active:scale-95"
               onClick={onMenuClick}
             >
-              <Menu className="h-5 w-5 text-slate-700" />
+              <Menu className="h-5 w-5 text-[#5D6E73]" />
             </button>
 
             {/* Project Name - Desktop */}
             <div className="hidden lg:flex items-center">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-[#546A7A] via-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
                 Offer Funnel
               </h1>
             </div>
 
             {/* Project Name - Mobile/Tablet */}
             <div className="lg:hidden flex items-center">
-              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-[#546A7A] via-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
                 Offer Funnel
               </h1>
             </div>
 
             {/* Breadcrumbs + Title */}
             <div className="hidden md:flex flex-col min-w-0">
-              <div className="flex items-center gap-2 text-xs text-slate-500 truncate" aria-label="Breadcrumbs">
+              <div className="flex items-center gap-2 text-xs text-[#757777] truncate" aria-label="Breadcrumbs">
                 {getBreadcrumbs().map((c, idx) => (
                   <span key={idx} className="truncate">
-                    {idx > 0 && <span className="mx-1 text-slate-300">/</span>}
+                    {idx > 0 && <span className="mx-1 text-[#92A2A5]">/</span>}
                     {c}
                   </span>
                 ))}
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent truncate">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-[#5D6E73] via-[#546A7A] to-purple-900 bg-clip-text text-transparent truncate">
                 {getPageTitle()}
               </h1>
             </div>
@@ -164,7 +164,7 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
               <Button
                 size="sm"
                 onClick={() => router.push("/admin/offers/new")}
-                className="hidden sm:flex h-9 gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all border-0 hover:scale-102 active:scale-98"
+                className="hidden sm:flex h-9 gap-2 rounded-xl bg-gradient-to-r from-[#546A7A] via-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:via-indigo-700 hover:to-[#546A7A] text-white shadow-lg shadow-[#6F8A9D]/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all border-0 hover:scale-102 active:scale-98"
               >
                 <Plus className="h-4 w-4" />
                 <span className="font-semibold">New Offer</span>
@@ -179,7 +179,7 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="flex items-center gap-2.5 h-10 pl-2 pr-3 hover:bg-slate-100 rounded-xl transition-all hover:scale-102 active:scale-98"
+                    className="flex items-center gap-2.5 h-10 pl-2 pr-3 hover:bg-[#AEBFC3]/20 rounded-xl transition-all hover:scale-102 active:scale-98"
                   >
                     <div className="relative">
                       <Avatar className="h-8 w-8 ring-2 ring-white shadow-lg">
@@ -193,20 +193,20 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
                           {getUserInitials()}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 ring-2 ring-white" />
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#A2B9AF]/100 ring-2 ring-white" />
                     </div>
                     <div className="hidden xl:block text-left">
-                      <p className="text-sm font-semibold text-slate-900" suppressHydrationWarning>
+                      <p className="text-sm font-semibold text-[#546A7A]" suppressHydrationWarning>
                         {user?.email?.split("@")[0] || "User"}
                       </p>
-                      <p className="text-xs text-slate-500" suppressHydrationWarning>
+                      <p className="text-xs text-[#757777]" suppressHydrationWarning>
                         {getRoleBadge().text}
                       </p>
                     </div>
-                    <ChevronDown className="hidden lg:block h-4 w-4 text-slate-400" />
+                    <ChevronDown className="hidden lg:block h-4 w-4 text-[#979796]" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72 rounded-2xl shadow-2xl border-slate-200 bg-white p-2">
+                <DropdownMenuContent align="end" className="w-72 rounded-2xl shadow-2xl border-[#92A2A5] bg-white p-2">
                   {/* User Info Header */}
                   <div className="px-3 py-4 mb-2">
                     <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">
+                        <p className="text-sm font-bold text-[#546A7A] truncate">
                           {effectiveEmail}
                         </p>
                         <Badge
@@ -239,7 +239,7 @@ export function Navbar({ onMenuClick, collapsed = false }: NavbarProps) {
                   <DropdownMenuSeparator className="my-2" />
                   
                   <DropdownMenuItem
-                    className="cursor-pointer px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 group"
+                    className="cursor-pointer px-3 py-2.5 rounded-xl text-[#9E3B47] hover:bg-[#E17F70]/10 hover:text-[#75242D] group"
                     onClick={() => logout()}
                   >
                     <LogOut className="mr-3 h-4 w-4 group-hover:scale-110 transition-transform" />

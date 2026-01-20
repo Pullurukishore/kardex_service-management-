@@ -39,7 +39,7 @@ export function ReportRenderer({ reportType, reportData }: ReportRendererProps) 
       return <ServicePersonPerformanceReport reportData={reportData} />;
     default:
       return (
-        <div className="p-8 text-center text-gray-500">
+        <div className="p-8 text-center text-[#AEBFC3]0">
           <p className="text-lg font-medium mb-2">Report type not recognized</p>
           <p className="text-sm">Please select a valid report type from the dropdown.</p>
         </div>

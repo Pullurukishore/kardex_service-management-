@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arApi, ARInvoice, formatARCurrency } from '@/lib/ar-api';
-import { ArrowLeft, Save, Loader2, FileText, User, Calendar, IndianRupee, Truck, MessageSquare, Shield } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, FileText, User, Calendar, IndianRupee, Truck, MessageSquare, Shield, Sparkles } from 'lucide-react';
 
 export default function EditInvoicePage() {
   const params = useParams();
@@ -15,7 +15,6 @@ export default function EditInvoicePage() {
   const [invoice, setInvoice] = useState<ARInvoice | null>(null);
 
   const [formData, setFormData] = useState({
-    // SAP Fields (Read-only - imported from SAP)
     invoiceNumber: '',
     bpCode: '',
     customerName: '',
@@ -24,21 +23,15 @@ export default function EditInvoicePage() {
     netAmount: '',
     taxAmount: '',
     invoiceDate: '',
-    
-    // Payment & Calculations
     dueDate: '',
     actualPaymentTerms: '',
     riskClass: 'LOW',
-    
-    // Customer Master Fields
     emailId: '',
     contactNo: '',
     region: '',
     department: '',
     personInCharge: '',
     pocName: '',
-    
-    // Manual Tracking Fields
     receipts: '',
     adjustments: '',
     type: '',
@@ -110,7 +103,6 @@ export default function EditInvoicePage() {
     try {
       setSaving(true);
       
-      // Calculate totalReceipts and balance
       const receipts = parseFloat(formData.receipts) || 0;
       const adjustments = parseFloat(formData.adjustments) || 0;
       const totalReceipts = receipts + adjustments;
@@ -118,21 +110,16 @@ export default function EditInvoicePage() {
       const balance = totalAmount - totalReceipts;
       
       await arApi.updateInvoice(invoice!.id, {
-        // Editable SAP Fields
         poNo: formData.poNo || undefined,
         dueDate: formData.dueDate,
         actualPaymentTerms: formData.actualPaymentTerms || undefined,
         riskClass: formData.riskClass as any,
-        
-        // Customer Fields
         emailId: formData.emailId || undefined,
         contactNo: formData.contactNo || undefined,
         region: formData.region || undefined,
         department: formData.department || undefined,
         personInCharge: formData.personInCharge || undefined,
         pocName: formData.pocName || undefined,
-        
-        // Manual Tracking
         receipts: receipts || undefined,
         adjustments: adjustments || undefined,
         totalReceipts: totalReceipts || undefined,
@@ -162,12 +149,12 @@ export default function EditInvoicePage() {
             {[0, 1, 2].map((i) => (
               <div 
                 key={i}
-                className="w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-bounce"
+                className="w-4 h-4 rounded-full bg-gradient-to-r from-[#E17F70] to-[#CE9F6B] animate-bounce"
                 style={{ animationDelay: `${i * 0.15}s` }}
               />
             ))}
           </div>
-          <span className="text-white/40 text-sm">Loading invoice...</span>
+          <span className="text-[#92A2A5] text-sm">Loading invoice...</span>
         </div>
       </div>
     );
@@ -177,9 +164,11 @@ export default function EditInvoicePage() {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px]">
         <div className="text-center">
-          <FileText className="w-16 h-16 text-white/10 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Invoice Not Found</h2>
-          <Link href="/finance/ar/invoices" className="text-purple-400 hover:text-purple-300">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#E17F70]/20 to-[#CE9F6B]/20 flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-12 h-12 text-[#CE9F6B]" />
+          </div>
+          <h2 className="text-xl font-bold text-[#546A7A] mb-2">Invoice Not Found</h2>
+          <Link href="/finance/ar/invoices" className="text-[#E17F70] hover:text-[#9E3B47] font-semibold">
             ← Back to Invoices
           </Link>
         </div>
@@ -187,26 +176,36 @@ export default function EditInvoicePage() {
     );
   }
 
-  const inputClass = "w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all";
-  const readOnlyClass = "w-full h-11 px-4 rounded-xl bg-white/[0.02] border border-white/5 text-white/50 cursor-not-allowed";
-  const labelClass = "block text-white/60 text-sm font-medium mb-2";
+  const inputClass = "w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#E17F70]/50 focus:outline-none focus:ring-4 focus:ring-[#E17F70]/10 transition-all font-medium";
+  const readOnlyClass = "w-full h-12 px-4 rounded-xl bg-gradient-to-r from-[#AEBFC3]/10 to-[#92A2A5]/10 border-2 border-[#AEBFC3]/20 text-[#92A2A5] cursor-not-allowed";
+  const labelClass = "block text-[#5D6E73] text-sm font-semibold mb-2";
+  const selectClass = "w-full h-12 px-4 rounded-xl bg-white border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#E17F70]/50 focus:outline-none focus:ring-4 focus:ring-[#E17F70]/10 transition-all font-medium";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Decorative Background */}
+      <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-to-br from-[#E17F70]/10 to-[#CE9F6B]/10 rounded-full blur-3xl pointer-events-none" />
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#E17F70] via-[#CE9F6B] to-[#976E44] p-6 shadow-xl">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-12 w-32 h-32 border-4 border-white rounded-full" />
+          <div className="absolute -bottom-8 right-32 w-48 h-48 border-4 border-white rounded-full" />
+        </div>
+
+        <div className="relative flex items-center gap-4">
           <Link 
             href={`/finance/ar/invoices/${encodeURIComponent(formData.invoiceNumber)}`}
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-purple-500/10 hover:text-white hover:border-purple-500/30 transition-all"
+            className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               Edit Invoice
+              <Sparkles className="w-5 h-5 text-white/80" />
             </h1>
-            <p className="text-white/40 text-sm mt-1">{formData.invoiceNumber} • {formData.customerName}</p>
+            <p className="text-white/80 text-sm mt-1">{formData.invoiceNumber} • {formData.customerName}</p>
           </div>
         </div>
       </div>
@@ -214,18 +213,20 @@ export default function EditInvoicePage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+          <div className="p-4 bg-gradient-to-r from-[#E17F70]/10 to-[#9E3B47]/10 border-2 border-[#E17F70]/30 rounded-xl text-[#9E3B47] font-medium">
             {error}
           </div>
         )}
 
         {/* SAP Fields (Read-only) */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-purple-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#E17F70]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-2 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#E17F70] to-[#CE9F6B]">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
             SAP Invoice Details
           </h3>
-          <p className="text-white/40 text-sm mb-5">These fields are imported from SAP and cannot be edited</p>
+          <p className="text-[#92A2A5] text-sm mb-5">These fields are imported from SAP and cannot be edited</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             <div>
               <label className={labelClass}>Invoice Number</label>
@@ -259,9 +260,11 @@ export default function EditInvoicePage() {
         </div>
 
         {/* Editable Fields - Payment & Status */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <IndianRupee className="w-5 h-5 text-emerald-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
+              <IndianRupee className="w-5 h-5 text-white" />
+            </div>
             Payment & Status
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -277,7 +280,7 @@ export default function EditInvoicePage() {
               />
             </div>
             <div>
-              <label className={labelClass}>Due Date <span className="text-purple-400">*</span></label>
+              <label className={labelClass}>Due Date <span className="text-[#E17F70]">*</span></label>
               <input
                 type="date"
                 name="dueDate"
@@ -300,21 +303,21 @@ export default function EditInvoicePage() {
             </div>
             <div>
               <label className={labelClass}>Status</label>
-              <select name="status" value={formData.status} onChange={handleChange} className={inputClass}>
-                <option value="PENDING" className="bg-gray-900">Pending</option>
-                <option value="PARTIAL" className="bg-gray-900">Partial</option>
-                <option value="PAID" className="bg-gray-900">Paid</option>
-                <option value="OVERDUE" className="bg-gray-900">Overdue</option>
-                <option value="CANCELLED" className="bg-gray-900">Cancelled</option>
+              <select name="status" value={formData.status} onChange={handleChange} className={selectClass}>
+                <option value="PENDING">Pending</option>
+                <option value="PARTIAL">Partial</option>
+                <option value="PAID">Paid</option>
+                <option value="OVERDUE">Overdue</option>
+                <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
             <div>
               <label className={labelClass}>Risk Class</label>
-              <select name="riskClass" value={formData.riskClass} onChange={handleChange} className={inputClass}>
-                <option value="LOW" className="bg-gray-900">Low</option>
-                <option value="MEDIUM" className="bg-gray-900">Medium</option>
-                <option value="HIGH" className="bg-gray-900">High</option>
-                <option value="CRITICAL" className="bg-gray-900">Critical</option>
+              <select name="riskClass" value={formData.riskClass} onChange={handleChange} className={selectClass}>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
               </select>
             </div>
             <div>
@@ -332,9 +335,11 @@ export default function EditInvoicePage() {
         </div>
 
         {/* Customer Contact Fields */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <User className="w-5 h-5 text-amber-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#CE9F6B] to-[#976E44]">
+              <User className="w-5 h-5 text-white" />
+            </div>
             Customer Contact Information
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -408,9 +413,11 @@ export default function EditInvoicePage() {
         </div>
 
         {/* Receipts & Payments */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <IndianRupee className="w-5 h-5 text-emerald-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
+              <IndianRupee className="w-5 h-5 text-white" />
+            </div>
             Receipts & Payments
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -441,8 +448,8 @@ export default function EditInvoicePage() {
             </div>
             <div>
               <label className={labelClass}>Calculated Total Receipts</label>
-              <div className="h-11 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center">
-                <span className="text-emerald-400 font-semibold">
+              <div className="h-12 px-4 rounded-xl bg-gradient-to-r from-[#82A094]/15 to-[#4F6A64]/15 border-2 border-[#82A094]/30 flex items-center">
+                <span className="text-[#4F6A64] font-bold">
                   {formatARCurrency((parseFloat(formData.receipts) || 0) + (parseFloat(formData.adjustments) || 0))}
                 </span>
               </div>
@@ -451,19 +458,21 @@ export default function EditInvoicePage() {
         </div>
 
         {/* Delivery Tracking */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <Truck className="w-5 h-5 text-blue-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#6F8A9D]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
+              <Truck className="w-5 h-5 text-white" />
+            </div>
             Delivery Tracking
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             <div>
               <label className={labelClass}>Delivery Status</label>
-              <select name="deliveryStatus" value={formData.deliveryStatus} onChange={handleChange} className={inputClass}>
-                <option value="PENDING" className="bg-gray-900">Pending</option>
-                <option value="SENT" className="bg-gray-900">Sent</option>
-                <option value="DELIVERED" className="bg-gray-900">Delivered</option>
-                <option value="ACKNOWLEDGED" className="bg-gray-900">Acknowledged</option>
+              <select name="deliveryStatus" value={formData.deliveryStatus} onChange={handleChange} className={selectClass}>
+                <option value="PENDING">Pending</option>
+                <option value="SENT">Sent</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="ACKNOWLEDGED">Acknowledged</option>
               </select>
             </div>
             <div>
@@ -501,9 +510,11 @@ export default function EditInvoicePage() {
         </div>
 
         {/* Comments */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-cyan-400" />
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#6F8A9D]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
+              <MessageSquare className="w-5 h-5 text-white" />
+            </div>
             Comments & Remarks
           </h3>
           <textarea
@@ -512,7 +523,7 @@ export default function EditInvoicePage() {
             onChange={handleChange}
             placeholder="Add any comments or remarks..."
             rows={4}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#E17F70]/50 focus:outline-none focus:ring-4 focus:ring-[#E17F70]/10 transition-all resize-none font-medium"
           />
         </div>
 
@@ -520,17 +531,18 @@ export default function EditInvoicePage() {
         <div className="flex items-center justify-end gap-4 pt-2">
           <Link
             href={`/finance/ar/invoices/${encodeURIComponent(formData.invoiceNumber)}`}
-            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all font-medium"
+            className="px-8 py-3.5 rounded-xl bg-white border-2 border-[#AEBFC3]/40 text-[#5D6E73] hover:bg-[#AEBFC3]/10 transition-all font-semibold"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+            className="group relative flex items-center gap-2 px-10 py-3.5 rounded-xl bg-gradient-to-r from-[#E17F70] to-[#CE9F6B] text-white font-bold hover:shadow-xl hover:shadow-[#E17F70]/30 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0 overflow-hidden"
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {saving ? 'Saving...' : 'Save Changes'}
+            <span className="relative">{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </form>

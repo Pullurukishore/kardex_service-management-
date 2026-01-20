@@ -415,31 +415,31 @@ export class EnhancedGPSService {
       return {
         level: 'excellent',
         description: 'Excellent GPS accuracy (±' + Math.round(accuracy) + 'm)',
-        color: 'text-green-600'
+        color: 'text-[#4F6A64]'
       };
     } else if (accuracy <= 50) {
       return {
         level: 'good',
         description: 'Good GPS accuracy (±' + Math.round(accuracy) + 'm)',
-        color: 'text-blue-600'
+        color: 'text-[#546A7A]'
       };
     } else if (accuracy <= 100) {
       return {
         level: 'fair',
         description: 'Fair GPS accuracy (±' + Math.round(accuracy) + 'm)',
-        color: 'text-yellow-600'
+        color: 'text-[#976E44]'
       };
     } else if (accuracy <= 500) {
       return {
         level: 'poor',
         description: 'Poor GPS accuracy (±' + Math.round(accuracy) + 'm) - consider manual entry',
-        color: 'text-orange-600'
+        color: 'text-[#976E44]'
       };
     } else {
       return {
         level: 'very-poor',
         description: 'GPS accuracy too poor (±' + Math.round(accuracy) + 'm) - manual selection required',
-        color: 'text-red-600'
+        color: 'text-[#9E3B47]'
       };
     }
   }

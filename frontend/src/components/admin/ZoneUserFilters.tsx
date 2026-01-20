@@ -19,7 +19,7 @@ export function ZoneUserFilters({ searchParams }: ZoneUserFiltersProps) {
       <CardContent className="p-4">
         <form method="GET" className="flex items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#979796] h-4 w-4" />
             <Input
               name="search"
               placeholder="Search zone users by name, email, or phone..."
@@ -31,7 +31,7 @@ export function ZoneUserFilters({ searchParams }: ZoneUserFiltersProps) {
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-[#AEBFC3]/20"
                 onClick={(e) => {
                   e.preventDefault();
                   const form = e.currentTarget.closest('form');
@@ -46,7 +46,7 @@ export function ZoneUserFilters({ searchParams }: ZoneUserFiltersProps) {
               </Button>
             )}
           </div>
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+          <Button type="submit" className="bg-[#6F8A9D] hover:bg-[#546A7A]">
             Search
           </Button>
         </form>

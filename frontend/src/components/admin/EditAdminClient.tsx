@@ -68,7 +68,7 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
       <div className="flex items-center space-x-3">
         <Link 
           href="/admin/manage-admins"
-          className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+          className="flex items-center space-x-2 text-[#5D6E73] hover:text-[#546A7A] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="text-sm font-medium">Back to Manage Admins</span>
@@ -76,22 +76,22 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
       </div>
 
       {/* Admin Info Card */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+      <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-xl p-6 border border-[#96AEC2]">
         <div className="flex items-center space-x-4">
-          <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+          <div className="h-16 w-16 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-full flex items-center justify-center shadow-lg">
             <User className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{admin.name || 'Administrator'}</h3>
-            <p className="text-gray-600">{admin.email}</p>
+            <h3 className="text-xl font-bold text-[#546A7A]">{admin.name || 'Administrator'}</h3>
+            <p className="text-[#5D6E73]">{admin.email}</p>
             <div className="mt-2">
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                 admin.isActive 
-                  ? 'bg-green-100 text-green-800 border border-green-200' 
-                  : 'bg-red-100 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/20 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/20 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`w-2 h-2 rounded-full mr-2 ${
-                  admin.isActive ? 'bg-green-400' : 'bg-red-400'
+                  admin.isActive ? 'bg-[#82A094]' : 'bg-[#E17F70]'
                 }`}></div>
                 {admin.isActive ? 'Active' : 'Inactive'}
               </span>
@@ -102,15 +102,15 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
 
       {/* Desktop Form */}
       <div className="hidden md:block max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="bg-white rounded-xl shadow-lg border border-[#92A2A5] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#92A2A5] bg-gradient-to-r from-[#AEBFC3]/10 to-[#96AEC2]/10">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#6F8A9D] rounded-lg flex items-center justify-center">
                 <User className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Edit Administrator</h2>
-                <p className="text-sm text-gray-600">Update administrator information and settings</p>
+                <h2 className="text-lg font-semibold text-[#546A7A]">Edit Administrator</h2>
+                <p className="text-sm text-[#5D6E73]">Update administrator information and settings</p>
               </div>
             </div>
           </div>
@@ -119,11 +119,11 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -133,8 +133,8 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="h-4 w-4 text-blue-600" />
+                <label htmlFor="email" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Mail className="h-4 w-4 text-[#546A7A]" />
                   <span>Email Address *</span>
                 </label>
                 <input
@@ -142,14 +142,14 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="name" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <User className="h-4 w-4 text-blue-600" />
+                <label htmlFor="name" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <User className="h-4 w-4 text-[#546A7A]" />
                   <span>Full Name *</span>
                 </label>
                 <input
@@ -157,14 +157,14 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="phone" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                <label htmlFor="phone" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Phone className="h-4 w-4 text-[#546A7A]" />
                   <span>Phone Number</span>
                 </label>
                 <input
@@ -172,18 +172,18 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors bg-[#AEBFC3]/10 focus:bg-white"
                   placeholder="+1234567890"
                 />
               </div>
 
             </div>
 
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-[#92A2A5]">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-[#5D6E73] bg-white border border-[#92A2A5] rounded-lg hover:bg-[#AEBFC3]/10 focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors"
               >
                 <X className="h-4 w-4" />
                 <span>Cancel</span>
@@ -191,7 +191,7 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 border border-transparent rounded-lg hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                className="flex items-center space-x-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#546A7A] to-[#546A7A] border border-transparent rounded-lg hover:from-[#546A7A] hover:to-[#546A7A] focus:ring-2 focus:ring-[#96AEC2] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
               >
                 <Save className="h-4 w-4" />
                 <span>{loading ? 'Updating...' : 'Update Administrator'}</span>
@@ -208,11 +208,11 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
             {message && (
               <div className={`p-4 rounded-lg flex items-center space-x-3 ${
                 message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-[#A2B9AF]/10 text-[#4F6A64] border border-[#A2B9AF]' 
+                  : 'bg-[#E17F70]/10 text-[#75242D] border border-[#E17F70]'
               }`}>
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-                  message.type === 'success' ? 'bg-green-200' : 'bg-red-200'
+                  message.type === 'success' ? 'bg-[#82A094]/30' : 'bg-[#E17F70]/30'
                 }`}>
                   {message.type === 'success' ? '✓' : '⚠'}
                 </div>
@@ -222,8 +222,8 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
 
             <MobileForm>
               <MobileFormRow>
-                <label htmlFor="mobile-email" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="h-4 w-4 text-blue-600" />
+                <label htmlFor="mobile-email" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Mail className="h-4 w-4 text-[#546A7A]" />
                   <span>Email Address *</span>
                 </label>
                 <input
@@ -231,14 +231,14 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="mobile-email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors"
                   required
                 />
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-name" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <User className="h-4 w-4 text-blue-600" />
+                <label htmlFor="mobile-name" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <User className="h-4 w-4 text-[#546A7A]" />
                   <span>Full Name *</span>
                 </label>
                 <input
@@ -246,14 +246,14 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="mobile-name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors"
                   required
                 />
               </MobileFormRow>
 
               <MobileFormRow>
-                <label htmlFor="mobile-phone" className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                <label htmlFor="mobile-phone" className="flex items-center space-x-2 text-sm font-medium text-[#5D6E73] mb-2">
+                  <Phone className="h-4 w-4 text-[#546A7A]" />
                   <span>Phone Number</span>
                 </label>
                 <input
@@ -261,7 +261,7 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
                   id="mobile-phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 border border-[#92A2A5] rounded-lg focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-colors"
                   placeholder="+1234567890"
                 />
               </MobileFormRow>
@@ -272,7 +272,7 @@ export default function EditAdminClient({ admin }: EditAdminClientProps) {
               <MobileButton
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white shadow-lg"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Updating...' : 'Update Administrator'}

@@ -30,7 +30,7 @@ export function PhotoDisplayDemo() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#5D6E73]">
               This shows how photos are displayed when captured during onsite visits:
             </p>
             <PhotoDisplay 
@@ -47,10 +47,10 @@ export function PhotoDisplayDemo() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#5D6E73]">
               This shows a regular activity without photo capture:
             </p>
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="p-3 bg-[#AEBFC3]/10 rounded-lg">
               <p className="text-sm">No photos captured for this activity</p>
             </div>
           </div>
@@ -64,11 +64,11 @@ export function PhotoDisplayDemo() {
         <CardContent>
           <div className="space-y-2">
             <p className="text-sm font-medium">Backend stores photo metadata in notes:</p>
-            <pre className="text-xs bg-gray-100 p-3 rounded-md overflow-x-auto">
+            <pre className="text-xs bg-[#AEBFC3]/20 p-3 rounded-md overflow-x-auto">
 {`📸 Photos: 2 verification photos captured (1.2MB)
 🕒 Photo Time: 10/7/2025, 4:00:15 PM`}
             </pre>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-[#5D6E73]">
               The PhotoDisplay component parses this format and shows a rich UI
             </p>
           </div>

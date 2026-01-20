@@ -105,7 +105,7 @@ export default function NewServiceZonePage() {
                             type="checkbox"
                             checked={field.value}
                             onChange={field.onChange}
-                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            className="h-4 w-4 rounded border-[#92A2A5] text-[#546A7A] focus:ring-[#6F8A9D]"
                           />
                         </div>
                       </FormControl>

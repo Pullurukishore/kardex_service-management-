@@ -34,14 +34,14 @@ interface ServicePersonPerformanceReportProps {
 }
 
 const FLAG_CONFIG = {
-  LATE: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertTriangle, severity: 'warning' },
-  EARLY_CHECKOUT: { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: Clock3, severity: 'warning' },
-  LONG_DAY: { color: 'bg-purple-100 text-purple-800 border-purple-200', icon: Timer, severity: 'warning' },
-  AUTO_CHECKOUT: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Zap, severity: 'info' },
-  NO_ACTIVITY: { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle, severity: 'error' },
-  MISSING_CHECKOUT: { color: 'bg-red-100 text-red-800 border-red-200', icon: AlertTriangle, severity: 'error' },
-  MULTIPLE_SESSIONS: { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Info, severity: 'info' },
-  ABSENT: { color: 'bg-red-100 text-red-800 border-red-200', icon: UserX, severity: 'error' },
+  LATE: { color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: AlertTriangle, severity: 'warning' },
+  EARLY_CHECKOUT: { color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', icon: Clock3, severity: 'warning' },
+  LONG_DAY: { color: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]', icon: Timer, severity: 'warning' },
+  AUTO_CHECKOUT: { color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', icon: Zap, severity: 'info' },
+  NO_ACTIVITY: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: XCircle, severity: 'error' },
+  MISSING_CHECKOUT: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: AlertTriangle, severity: 'error' },
+  MULTIPLE_SESSIONS: { color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', icon: Info, severity: 'info' },
+  ABSENT: { color: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]', icon: UserX, severity: 'error' },
 };
 
 export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerformanceReportProps) {
@@ -75,9 +75,9 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
-            <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">No Reports Found</h3>
-            <p className="text-gray-500">No service person reports available for the selected period.</p>
+            <Users className="h-12 w-12 mx-auto text-[#92A2A5] mb-4" />
+            <h3 className="text-lg font-medium text-[#5D6E73] mb-2">No Reports Found</h3>
+            <p className="text-[#AEBFC3]0">No service person reports available for the selected period.</p>
           </div>
         </CardContent>
       </Card>
@@ -112,8 +112,8 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
   return (
     <div className="space-y-6">
       {/* Business Hours Notice */}
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex items-center gap-2 text-blue-800">
+      <div className="mb-6 p-4 bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg">
+        <div className="flex items-center gap-2 text-[#546A7A]">
           <Info className="h-4 w-4" />
           <span className="text-sm font-medium">
             Time calculations are based on business hours only (9 AM - 5:30 PM, Monday to Saturday). Travel times show actual elapsed time.
@@ -123,8 +123,8 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
 
       {/* Performance Metrics */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Target className="h-5 w-5 text-purple-600" />
+        <h3 className="text-lg font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+          <Target className="h-5 w-5 text-[#546A7A]" />
           Performance Metrics
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -146,10 +146,10 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tickets Resolved</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-[#4F6A64]">
                 {reports.reduce((sum, person) => sum + ((person.summary || {}).ticketsResolved || 0), 0)}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -161,10 +161,10 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Resolution Time</CardTitle>
-              <Clock4 className="h-4 w-4 text-blue-600" />
+              <Clock4 className="h-4 w-4 text-[#546A7A]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-[#546A7A]">
                 {(() => {
                   const totalHours = reports.reduce((sum, person) => {
                     const hours = (person.summary || {}).averageResolutionTimeHours || 0;
@@ -184,10 +184,10 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Travel Time</CardTitle>
-              <TravelIcon className="h-4 w-4 text-orange-600" />
+              <TravelIcon className="h-4 w-4 text-[#976E44]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-[#976E44]">
                 {(() => {
                   const totalHours = reports.reduce((sum, person) => {
                     const hours = (person.summary || {}).averageTravelTimeHours || 0;
@@ -207,10 +207,10 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Onsite Time</CardTitle>
-              <Wrench className="h-4 w-4 text-purple-600" />
+              <Wrench className="h-4 w-4 text-[#546A7A]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-[#546A7A]">
                 {(() => {
                   const totalHours = reports.reduce((sum, person) => {
                     const hours = (person.summary || {}).averageOnsiteTimeHours || 0;
@@ -253,24 +253,24 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
         <CardContent>
           {reports.length === 0 ? (
             <div className="text-center py-12">
-              <Users className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">No Reports Found</h3>
-              <p className="text-gray-500">No service person reports available for the selected period.</p>
+              <Users className="h-12 w-12 mx-auto text-[#92A2A5] mb-4" />
+              <h3 className="text-lg font-medium text-[#5D6E73] mb-2">No Reports Found</h3>
+              <p className="text-[#AEBFC3]0">No service person reports available for the selected period.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left p-3 font-medium text-gray-900">Service Person</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Working Days</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Total Hours</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Tickets</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Resolution Rate</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Avg Resolution</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Avg Travel</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Avg Onsite</th>
-                    <th className="text-left p-3 font-medium text-gray-900">Performance</th>
+                  <tr className="border-b bg-[#AEBFC3]/10">
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Service Person</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Working Days</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Total Hours</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Tickets</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Resolution Rate</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Avg Resolution</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Avg Travel</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Avg Onsite</th>
+                    <th className="text-left p-3 font-medium text-[#546A7A]">Performance</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -278,15 +278,15 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                     // Ensure person.summary exists to prevent undefined errors
                     const personSummary = person.summary || {};
                     return (
-                    <tr key={person.id} className="border-b hover:bg-gray-50 transition-colors">
+                    <tr key={person.id} className="border-b hover:bg-[#AEBFC3]/10 transition-colors">
                       {/* Service Person */}
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <div>
-                            <div className="font-medium text-gray-900">{person.name}</div>
-                            <div className="text-sm text-gray-600">{person.email}</div>
+                            <div className="font-medium text-[#546A7A]">{person.name}</div>
+                            <div className="text-sm text-[#5D6E73]">{person.email}</div>
                             {person.zones && person.zones.length > 0 && (
-                              <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded mt-1">
+                              <div className="text-xs text-[#AEBFC3]0 bg-[#AEBFC3]/20 px-2 py-1 rounded mt-1">
                                 {person.zones.map((zone, idx) => (
                                   <span key={idx}>
                                     {zone.name}
@@ -302,7 +302,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       {/* Working Days */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Calendar className="h-3 w-3 text-green-600" />
+                          <Calendar className="h-3 w-3 text-[#4F6A64]" />
                           {personSummary.presentDays || personSummary.totalWorkingDays || 0}
                         </div>
                       </td>
@@ -310,7 +310,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       {/* Total Hours */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Clock className="h-3 w-3 text-blue-600" />
+                          <Clock className="h-3 w-3 text-[#546A7A]" />
                           {Number(personSummary.totalHours || 0).toFixed(1)}h
                         </div>
                       </td>
@@ -319,10 +319,10 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       <td className="p-3">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1 text-sm font-medium">
-                            <Ticket className="h-3 w-3 text-blue-600" />
+                            <Ticket className="h-3 w-3 text-[#546A7A]" />
                             {personSummary.totalTickets || 0}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[#AEBFC3]0">
                             {personSummary.ticketsResolved || 0} resolved
                           </div>
                         </div>
@@ -335,7 +335,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                             const total = personSummary.totalTickets || 0;
                             const resolved = personSummary.ticketsResolved || 0;
                             const rate = total > 0 ? Math.round((resolved / total) * 100) : 0;
-                            const color = rate >= 80 ? 'text-green-600' : rate >= 60 ? 'text-yellow-600' : 'text-red-600';
+                            const color = rate >= 80 ? 'text-[#4F6A64]' : rate >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]';
                             return (
                               <>
                                 <Target className={`h-3 w-3 ${color}`} />
@@ -349,7 +349,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       {/* Average Resolution Time */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Clock4 className="h-3 w-3 text-blue-600" />
+                          <Clock4 className="h-3 w-3 text-[#546A7A]" />
                           {(() => {
                             const hours = personSummary.averageResolutionTimeHours || 0;
                             return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
@@ -360,7 +360,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       {/* Average Travel Time */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <TravelIcon className="h-3 w-3 text-orange-600" />
+                          <TravelIcon className="h-3 w-3 text-[#976E44]" />
                           {(() => {
                             const hours = personSummary.averageTravelTimeHours || 0;
                             return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
@@ -371,7 +371,7 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                       {/* Average Onsite Time */}
                       <td className="p-3">
                         <div className="flex items-center gap-1 text-sm font-medium">
-                          <Wrench className="h-3 w-3 text-purple-600" />
+                          <Wrench className="h-3 w-3 text-[#546A7A]" />
                           {(() => {
                             const hours = personSummary.averageOnsiteTimeHours || 0;
                             return hours > 0 ? `${hours.toFixed(1)}h` : 'N/A';
@@ -384,14 +384,14 @@ export function ServicePersonPerformanceReport({ reportData }: ServicePersonPerf
                         <div className="flex items-center gap-2">
                           {(() => {
                             const score = personSummary.performanceScore || 0;
-                            let color = 'bg-gray-100 text-gray-800';
+                            let color = 'bg-[#AEBFC3]/20 text-[#546A7A]';
                             
                             if (score >= 80) {
-                              color = 'bg-green-100 text-green-800 border-green-200';
+                              color = 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]';
                             } else if (score >= 60) {
-                              color = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                              color = 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
                             } else if (score > 0) {
-                              color = 'bg-red-100 text-red-800 border-red-200';
+                              color = 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]';
                             }
                             
                             return (

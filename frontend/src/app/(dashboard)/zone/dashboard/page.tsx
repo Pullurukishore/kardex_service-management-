@@ -47,8 +47,8 @@ function ZoneDashboardLoading() {
   return (
     <div className="flex items-center justify-center h-[calc(100vh-200px)]">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-600 font-medium">Loading zone dashboard data...</p>
+        <div className="w-8 h-8 border-4 border-[#6F8A9D] border-t-transparent rounded-full animate-spin" />
+        <p className="text-[#5D6E73] font-medium">Loading zone dashboard data...</p>
       </div>
     </div>
   );
@@ -140,8 +140,8 @@ export default async function ZoneDashboardPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600">Failed to load zone dashboard</h2>
-          <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+          <h2 className="text-xl font-semibold text-[#9E3B47]">Failed to load zone dashboard</h2>
+          <p className="text-[#5D6E73] mt-2">Please try refreshing the page</p>
         </div>
       </div>
     );

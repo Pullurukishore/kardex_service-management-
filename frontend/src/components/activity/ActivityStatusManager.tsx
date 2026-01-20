@@ -53,84 +53,84 @@ const ACTIVITY_TYPES = [
     value: "TICKET_WORK",
     label: "Ticket Work", 
     icon: "🎫",
-    color: "bg-blue-100 text-blue-800",
+    color: "bg-[#96AEC2]/20 text-[#546A7A]",
     stages: ['IN_PROGRESS', 'WAITING_CUSTOMER', 'ONSITE_VISIT_STARTED', 'ONSITE_VISIT_REACHED', 'ONSITE_VISIT_IN_PROGRESS', 'ONSITE_VISIT_RESOLVED', 'ONSITE_VISIT_COMPLETED', 'CLOSED_PENDING']
   },
   { 
     value: "PO_DISCUSSION", 
     label: "PO Discussion", 
     icon: "💼",
-    color: "bg-purple-100 text-purple-800",
+    color: "bg-[#6F8A9D]/20 text-[#546A7A]",
     stages: ['STARTED', 'TRAVELING', 'ARRIVED', 'PLANNING', 'DOCUMENTATION', 'COMPLETED']
   },
   { 
     value: "SPARE_REPLACEMENT", 
     label: "Spare Replacement", 
     icon: "🔧",
-    color: "bg-orange-100 text-orange-800",
+    color: "bg-[#CE9F6B]/20 text-[#976E44]",
     stages: ['STARTED', 'TRAVELING', 'ARRIVED', 'ASSESSMENT', 'EXECUTION', 'TESTING', 'CUSTOMER_HANDOVER', 'COMPLETED']
   },
   { 
     value: "TRAVEL", 
     label: "Travel", 
     icon: "🚗",
-    color: "bg-green-100 text-green-800",
+    color: "bg-[#A2B9AF]/20 text-[#4F6A64]",
     stages: ['STARTED', 'TRAVELING', 'ARRIVED', 'COMPLETED']
   },
   { 
     value: "TRAINING", 
     label: "Training", 
     icon: "📚",
-    color: "bg-indigo-100 text-indigo-800",
+    color: "bg-[#546A7A]/20 text-[#546A7A]",
     stages: ['STARTED', 'PREPARATION', 'WORK_IN_PROGRESS', 'DOCUMENTATION', 'COMPLETED']
   },
   { 
     value: "REVIEW_MEETING", 
     label: "Review Meeting", 
     icon: "👥",
-    color: "bg-pink-100 text-pink-800",
+    color: "bg-[#EEC1BF]/20 text-pink-800",
     stages: ['STARTED', 'TRAVELING', 'ARRIVED', 'PLANNING', 'DOCUMENTATION', 'COMPLETED']
   },
   { 
     value: "RELOCATION", 
     label: "Relocation", 
     icon: "📦",
-    color: "bg-yellow-100 text-yellow-800",
+    color: "bg-[#CE9F6B]/20 text-[#976E44]",
     stages: ['STARTED', 'PREPARATION', 'TRAVELING', 'ARRIVED', 'EXECUTION', 'CLEANUP', 'COMPLETED']
   },
   { 
     value: "MAINTENANCE_PLANNED", 
     label: "Maintenance Planned", 
     icon: "🔧",
-    color: "bg-teal-100 text-teal-800",
+    color: "bg-[#82A094]/20 text-[#4F6A64]",
     stages: ['STARTED', 'PREPARATION', 'TRAVELING', 'ARRIVED', 'ASSESSMENT', 'EXECUTION', 'TESTING', 'CLEANUP', 'COMPLETED']
   },
   { 
     value: "INSTALLATION", 
     label: "Installation", 
     icon: "🔨",
-    color: "bg-red-100 text-red-800",
+    color: "bg-[#E17F70]/20 text-[#75242D]",
     stages: ['STARTED', 'PREPARATION', 'TRAVELING', 'ARRIVED', 'PLANNING', 'EXECUTION', 'TESTING', 'CUSTOMER_HANDOVER', 'COMPLETED']
   },
   { 
     value: "DOCUMENTATION", 
     label: "Documentation", 
     icon: "📝",
-    color: "bg-gray-100 text-gray-800",
+    color: "bg-[#AEBFC3]/20 text-[#546A7A]",
     stages: ['STARTED', 'PREPARATION', 'WORK_IN_PROGRESS', 'DOCUMENTATION', 'COMPLETED']
   },
   { 
     value: "WORK_FROM_HOME", 
     label: "Work From Home", 
     icon: "🏠",
-    color: "bg-emerald-100 text-emerald-800",
+    color: "bg-[#82A094]/20 text-[#4F6A64]",
     stages: ['STARTED', 'WORK_IN_PROGRESS', 'COMPLETED']
   },
   { 
     value: "OTHER", 
     label: "Other", 
     icon: "📋",
-    color: "bg-slate-100 text-slate-800",
+    color: "bg-[#AEBFC3]/20 text-[#546A7A]",
     stages: ['STARTED', 'WORK_IN_PROGRESS', 'COMPLETED']
   },
 ];
@@ -138,29 +138,29 @@ const ACTIVITY_TYPES = [
 // Stage definitions with enhanced metadata
 const STAGE_DEFINITIONS: Record<string, { label: string; icon: string; color: string; description: string }> = {
   // Generic stages
-  'STARTED': { label: 'Started', icon: '🚀', color: 'bg-blue-100 text-blue-800', description: 'Activity has begun' },
-  'TRAVELING': { label: 'Traveling', icon: '🚗', color: 'bg-yellow-100 text-yellow-800', description: 'En route to location' },
-  'ARRIVED': { label: 'Arrived', icon: '📍', color: 'bg-green-100 text-green-800', description: 'Reached destination' },
-  'WORK_IN_PROGRESS': { label: 'In Progress', icon: '⚡', color: 'bg-orange-100 text-orange-800', description: 'Work is ongoing' },
-  'COMPLETED': { label: 'Completed', icon: '✅', color: 'bg-green-100 text-green-800', description: 'Activity finished' },
-  'ASSESSMENT': { label: 'Assessment', icon: '🔍', color: 'bg-purple-100 text-purple-800', description: 'Evaluating situation' },
-  'PLANNING': { label: 'Planning', icon: '📋', color: 'bg-indigo-100 text-indigo-800', description: 'Planning approach' },
-  'EXECUTION': { label: 'Execution', icon: '🔧', color: 'bg-red-100 text-red-800', description: 'Executing the work' },
-  'TESTING': { label: 'Testing', icon: '🧪', color: 'bg-cyan-100 text-cyan-800', description: 'Testing results' },
-  'DOCUMENTATION': { label: 'Documentation', icon: '📝', color: 'bg-gray-100 text-gray-800', description: 'Documenting work' },
-  'CUSTOMER_HANDOVER': { label: 'Customer Handover', icon: '🤝', color: 'bg-pink-100 text-pink-800', description: 'Handing over to customer' },
-  'PREPARATION': { label: 'Preparation', icon: '🧰', color: 'bg-violet-100 text-violet-800', description: 'Preparing for work' },
-  'CLEANUP': { label: 'Cleanup', icon: '🧹', color: 'bg-amber-100 text-amber-800', description: 'Cleaning up work area' },
+  'STARTED': { label: 'Started', icon: '🚀', color: 'bg-[#96AEC2]/20 text-[#546A7A]', description: 'Activity has begun' },
+  'TRAVELING': { label: 'Traveling', icon: '🚗', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'En route to location' },
+  'ARRIVED': { label: 'Arrived', icon: '📍', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', description: 'Reached destination' },
+  'WORK_IN_PROGRESS': { label: 'In Progress', icon: '⚡', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Work is ongoing' },
+  'COMPLETED': { label: 'Completed', icon: '✅', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', description: 'Activity finished' },
+  'ASSESSMENT': { label: 'Assessment', icon: '🔍', color: 'bg-[#6F8A9D]/20 text-[#546A7A]', description: 'Evaluating situation' },
+  'PLANNING': { label: 'Planning', icon: '📋', color: 'bg-[#546A7A]/20 text-[#546A7A]', description: 'Planning approach' },
+  'EXECUTION': { label: 'Execution', icon: '🔧', color: 'bg-[#E17F70]/20 text-[#75242D]', description: 'Executing the work' },
+  'TESTING': { label: 'Testing', icon: '🧪', color: 'bg-[#96AEC2]/20 text-[#546A7A]', description: 'Testing results' },
+  'DOCUMENTATION': { label: 'Documentation', icon: '📝', color: 'bg-[#AEBFC3]/20 text-[#546A7A]', description: 'Documenting work' },
+  'CUSTOMER_HANDOVER': { label: 'Customer Handover', icon: '🤝', color: 'bg-[#EEC1BF]/20 text-pink-800', description: 'Handing over to customer' },
+  'PREPARATION': { label: 'Preparation', icon: '🧰', color: 'bg-[#6F8A9D]/20 text-[#546A7A]', description: 'Preparing for work' },
+  'CLEANUP': { label: 'Cleanup', icon: '🧹', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Cleaning up work area' },
   
   // Ticket-specific workflow stages (using actual TicketStatus enum values)
-  'IN_PROGRESS': { label: 'Start Work', icon: '🔧', color: 'bg-blue-100 text-blue-800', description: 'Begin working on this ticket' },
-  'ONSITE_VISIT_STARTED': { label: 'Travel to Site', icon: '🚗', color: 'bg-yellow-100 text-yellow-800', description: 'Traveling to customer location' },
-  'ONSITE_VISIT_REACHED': { label: 'Arrived at Site', icon: '📍', color: 'bg-green-100 text-green-800', description: 'Reached customer location' },
-  'ONSITE_VISIT_IN_PROGRESS': { label: 'Working Onsite', icon: '🔨', color: 'bg-orange-100 text-orange-800', description: 'Currently working at customer site' },
-  'ONSITE_VISIT_RESOLVED': { label: 'Complete Work', icon: '✅', color: 'bg-green-100 text-green-800', description: 'Work completed at customer site' },
-  'ONSITE_VISIT_COMPLETED': { label: 'Onsite Visit Completed', icon: '🏁', color: 'bg-green-100 text-green-800', description: 'Onsite visit has been completed' },
-  'CLOSED_PENDING': { label: 'Closed Pending', icon: '⏳', color: 'bg-yellow-100 text-yellow-800', description: 'Ticket closed pending final confirmation' },
-  'WAITING_CUSTOMER': { label: 'Waiting for Customer', icon: '⏳', color: 'bg-amber-100 text-amber-800', description: 'Waiting for customer response or availability' },
+  'IN_PROGRESS': { label: 'Start Work', icon: '🔧', color: 'bg-[#96AEC2]/20 text-[#546A7A]', description: 'Begin working on this ticket' },
+  'ONSITE_VISIT_STARTED': { label: 'Travel to Site', icon: '🚗', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Traveling to customer location' },
+  'ONSITE_VISIT_REACHED': { label: 'Arrived at Site', icon: '📍', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', description: 'Reached customer location' },
+  'ONSITE_VISIT_IN_PROGRESS': { label: 'Working Onsite', icon: '🔨', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Currently working at customer site' },
+  'ONSITE_VISIT_RESOLVED': { label: 'Complete Work', icon: '✅', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', description: 'Work completed at customer site' },
+  'ONSITE_VISIT_COMPLETED': { label: 'Onsite Visit Completed', icon: '🏁', color: 'bg-[#A2B9AF]/20 text-[#4F6A64]', description: 'Onsite visit has been completed' },
+  'CLOSED_PENDING': { label: 'Closed Pending', icon: '⏳', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Ticket closed pending final confirmation' },
+  'WAITING_CUSTOMER': { label: 'Waiting for Customer', icon: '⏳', color: 'bg-[#CE9F6B]/20 text-[#976E44]', description: 'Waiting for customer response or availability' },
 };
 
 interface Activity {
@@ -565,8 +565,8 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
     return (
       <div className="text-center py-6">
         <div className="text-4xl mb-3">📋</div>
-        <p className="text-sm text-gray-500">No active activities</p>
-        <p className="text-xs text-gray-400 mt-1">Start an activity to manage its progress</p>
+        <p className="text-sm text-[#AEBFC3]0">No active activities</p>
+        <p className="text-xs text-[#979796] mt-1">Start an activity to manage its progress</p>
       </div>
     );
   }
@@ -580,7 +580,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
         const stageInfo = STAGE_DEFINITIONS[currentStage];
 
         return (
-          <div key={activity.id} className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
+          <div key={activity.id} className="bg-white border border-[#92A2A5] rounded-xl p-3 shadow-sm">
             <div className="space-y-3">
               {/* Header with Activity Type and Stage */}
               <div className="flex items-center justify-between">
@@ -597,18 +597,18 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
                   
                   {/* Activity Title */}
                   <div>
-                    <h3 className="font-bold text-sm sm:text-base text-gray-900 line-clamp-2 leading-tight">{activity.title}</h3>
+                    <h3 className="font-bold text-sm sm:text-base text-[#546A7A] line-clamp-2 leading-tight">{activity.title}</h3>
                     {activity.description && (
-                      <p className="text-gray-600 text-xs sm:text-sm mt-1 line-clamp-2">{activity.description}</p>
+                      <p className="text-[#5D6E73] text-xs sm:text-sm mt-1 line-clamp-2">{activity.description}</p>
                     )}
                   </div>
                   
                   {/* Current Ticket Status */}
                   {activity.ticket && (
-                    <div className="bg-gray-50 rounded-lg p-2">
+                    <div className="bg-[#AEBFC3]/10 rounded-lg p-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-600">Ticket Status:</span>
-                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-800">
+                        <span className="text-xs font-semibold text-[#5D6E73]">Ticket Status:</span>
+                        <Badge variant="outline" className="text-xs bg-[#96AEC2]/10 text-[#546A7A]">
                           {activity.ticket.status.replace(/_/g, ' ')}
                         </Badge>
                       </div>
@@ -618,13 +618,13 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
                   {/* Duration and Location */}
                   <div className="space-y-1">
                     <div className="flex items-center gap-1">
-                      <Timer className="h-3 w-3 flex-shrink-0 text-gray-500" />
-                      <span className="font-medium text-xs text-gray-500">{formatDuration(activity.startTime)}</span>
+                      <Timer className="h-3 w-3 flex-shrink-0 text-[#AEBFC3]0" />
+                      <span className="font-medium text-xs text-[#AEBFC3]0">{formatDuration(activity.startTime)}</span>
                     </div>
                     {activity.location && (
                       <div className="flex items-start gap-1">
-                        <MapPin className="h-3 w-3 flex-shrink-0 text-gray-500 mt-0.5" />
-                        <span className="text-xs text-gray-600 break-words leading-relaxed">{activity.location}</span>
+                        <MapPin className="h-3 w-3 flex-shrink-0 text-[#AEBFC3]0 mt-0.5" />
+                        <span className="text-xs text-[#5D6E73] break-words leading-relaxed">{activity.location}</span>
                       </div>
                     )}
                   </div>
@@ -640,7 +640,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
                           setShowStatusDialog(true);
                         }}
                         disabled={isUpdatingStage}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-xs font-semibold h-9 active:scale-95 transition-transform touch-manipulation"
+                        className="flex-1 bg-[#6F8A9D] hover:bg-[#546A7A] disabled:bg-[#6F8A9D] disabled:cursor-not-allowed text-xs font-semibold h-9 active:scale-95 transition-transform touch-manipulation"
                       >
                         {isUpdatingStage ? (
                           <>
@@ -665,7 +665,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
                           setShowStageDialog(true);
                         }}
                         disabled={isUpdatingStage}
-                        className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-xs font-semibold h-9 active:scale-95 transition-transform touch-manipulation"
+                        className="flex-1 bg-[#546A7A] hover:bg-[#546A7A] disabled:bg-[#6F8A9D] disabled:cursor-not-allowed text-xs font-semibold h-9 active:scale-95 transition-transform touch-manipulation"
                       >
                         {isUpdatingStage ? (
                           <>
@@ -703,26 +703,26 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
       <Dialog open={showStageDialog} onOpenChange={(open) => !open && setShowStageDialog(false)}>
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto mx-3">
           <DialogHeader className="pb-4 border-b">
-            <DialogTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100">
-                <Activity className="h-5 w-5 text-purple-600" />
+            <DialogTitle className="flex items-center gap-3 text-xl font-bold text-[#546A7A]">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#6F8A9D]/20">
+                <Activity className="h-5 w-5 text-[#546A7A]" />
               </div>
               Update Stage
             </DialogTitle>
-            <DialogDescription className="text-gray-500 mt-1">
+            <DialogDescription className="text-[#AEBFC3]0 mt-1">
               Move your activity to the next stage
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-4">
             {/* Current Stage Display */}
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-4 p-4 bg-[#AEBFC3]/10 rounded-lg border border-[#AEBFC3]/30">
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white border border-[#92A2A5] shadow-sm">
                 <span className="text-2xl">{STAGE_DEFINITIONS[getCurrentStage(selectedActivity || {} as Activity)]?.icon}</span>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Current Stage</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Current Stage</p>
+                <p className="text-lg font-semibold text-[#546A7A]">
                   {STAGE_DEFINITIONS[getCurrentStage(selectedActivity || {} as Activity)]?.label}
                 </p>
               </div>
@@ -730,19 +730,19 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
             {/* Stage Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-900">
-                Select Next Stage <span className="text-red-500">*</span>
+              <label className="text-sm font-semibold text-[#546A7A]">
+                Select Next Stage <span className="text-[#E17F70]">*</span>
               </label>
               <Select value={selectedStage} onValueChange={setSelectedStage}>
-                <SelectTrigger className="h-12 bg-white border border-gray-200 rounded-lg hover:border-purple-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-colors">
+                <SelectTrigger className="h-12 bg-white border border-[#92A2A5] rounded-lg hover:border-[#6F8A9D] focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-100 transition-colors">
                   <SelectValue placeholder="Choose stage..." />
                 </SelectTrigger>
-                <SelectContent className="rounded-lg shadow-lg border border-gray-200">
+                <SelectContent className="rounded-lg shadow-lg border border-[#92A2A5]">
                   {getNextAvailableStages(selectedActivity || {} as Activity).map((stage) => (
-                    <SelectItem key={stage} value={stage} className="py-3 cursor-pointer hover:bg-purple-50 focus:bg-purple-50">
+                    <SelectItem key={stage} value={stage} className="py-3 cursor-pointer hover:bg-[#6F8A9D]/10 focus:bg-[#6F8A9D]/10">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{STAGE_DEFINITIONS[stage]?.icon}</span>
-                        <span className="font-medium text-gray-900">{STAGE_DEFINITIONS[stage]?.label || stage}</span>
+                        <span className="font-medium text-[#546A7A]">{STAGE_DEFINITIONS[stage]?.label || stage}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -752,13 +752,13 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
             {/* Notes Input */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-900">Notes (Optional)</label>
+              <label className="text-sm font-semibold text-[#546A7A]">Notes (Optional)</label>
               <Textarea
                 value={stageNotes}
                 onChange={(e) => setStageNotes(e.target.value)}
                 placeholder="Add any notes about this stage..."
                 rows={3}
-                className="resize-none bg-white border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-colors"
+                className="resize-none bg-white border border-[#92A2A5] rounded-lg focus:border-[#6F8A9D] focus:ring-2 focus:ring-purple-100 transition-colors"
               />
             </div>
 
@@ -792,15 +792,15 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
 
             {/* Selected Stage Preview */}
             {selectedStage && (
-              <div className="flex items-center gap-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-600">
+              <div className="flex items-center gap-4 p-4 bg-[#6F8A9D]/10 rounded-lg border border-[#6F8A9D]/30">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#546A7A]">
                   <ArrowRight className="h-5 w-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-medium text-purple-600 uppercase tracking-wide">Moving to</p>
+                  <p className="text-xs font-medium text-[#546A7A] uppercase tracking-wide">Moving to</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xl">{STAGE_DEFINITIONS[selectedStage]?.icon}</span>
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-lg font-semibold text-[#546A7A]">
                       {STAGE_DEFINITIONS[selectedStage]?.label}
                     </span>
                   </div>
@@ -835,7 +835,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
                 (requiresLocation(selectedStage) && !enhancedStageLocation) ||
                 (requiresPhoto(selectedStage) && capturedPhotos.length === 0)
               }
-              className="flex-1 h-11 bg-purple-600 hover:bg-purple-700 font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 h-11 bg-[#546A7A] hover:bg-[#546A7A] font-medium disabled:bg-[#92A2A5] disabled:cursor-not-allowed transition-colors"
             >
               {isUpdatingStage ? (
                 <>
@@ -897,10 +897,10 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-[#5D6E73]">
                 Are you sure you want to move to <span className="font-semibold">"{STAGE_DEFINITIONS[selectedStage]?.label || selectedStage}"</span> stage?
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-[#5D6E73] mt-2">
                 This will change the stage for this activity.
               </p>
             </div>
@@ -916,7 +916,7 @@ export default function ActivityStatusManager({ activities = [], onActivityChang
               <Button
                 onClick={confirmStageUpdate}
                 disabled={isUpdatingStage}
-                className="flex-1 h-10 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 h-10 bg-[#6F8A9D] hover:bg-[#546A7A]"
               >
                 {isUpdatingStage ? (
                   <>

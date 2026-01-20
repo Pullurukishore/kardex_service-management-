@@ -27,14 +27,14 @@ const LocationCaptureExample: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Location Capture Demo</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-[#546A7A] mb-2">Location Capture Demo</h1>
+        <p className="text-[#5D6E73]">
           Test the location capture component with GPS accuracy validation and map fallback
         </p>
       </div>
 
       {/* Location Capture Component */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-[#92A2A5] p-6">
         <LocationCapture
           onLocationCapture={handleLocationCapture}
           onError={handleError}
@@ -47,19 +47,19 @@ const LocationCaptureExample: React.FC = () => {
 
       {/* Results Display */}
       {capturedLocation && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+        <div className="bg-[#A2B9AF]/10 border border-[#A2B9AF] rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-4">
-            <MapPin className="h-5 w-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-green-800">Location Captured Successfully!</h3>
+            <MapPin className="h-5 w-5 text-[#4F6A64]" />
+            <h3 className="text-lg font-semibold text-[#4F6A64]">Location Captured Successfully!</h3>
           </div>
           
           <div className="space-y-3">
             {/* Coordinates */}
             <div className="flex items-start space-x-3">
-              <Globe className="h-4 w-4 text-green-600 mt-0.5" />
+              <Globe className="h-4 w-4 text-[#4F6A64] mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-green-800">Coordinates:</p>
-                <p className="text-sm text-green-700 font-mono">
+                <p className="text-sm font-medium text-[#4F6A64]">Coordinates:</p>
+                <p className="text-sm text-[#4F6A64] font-mono">
                   {capturedLocation.location.latitude.toFixed(6)}, {capturedLocation.location.longitude.toFixed(6)}
                 </p>
               </div>
@@ -67,21 +67,21 @@ const LocationCaptureExample: React.FC = () => {
 
             {/* Address */}
             <div className="flex items-start space-x-3">
-              <MapPin className="h-4 w-4 text-green-600 mt-0.5" />
+              <MapPin className="h-4 w-4 text-[#4F6A64] mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-green-800">Address:</p>
-                <p className="text-sm text-green-700">{capturedLocation.address}</p>
-                <p className="text-xs text-green-600">Source: {capturedLocation.source}</p>
+                <p className="text-sm font-medium text-[#4F6A64]">Address:</p>
+                <p className="text-sm text-[#4F6A64]">{capturedLocation.address}</p>
+                <p className="text-xs text-[#4F6A64]">Source: {capturedLocation.source}</p>
               </div>
             </div>
 
             {/* Accuracy Info */}
             {capturedLocation.location.accuracy && (
               <div className="flex items-start space-x-3">
-                <Clock className="h-4 w-4 text-green-600 mt-0.5" />
+                <Clock className="h-4 w-4 text-[#4F6A64] mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-green-800">Accuracy:</p>
-                  <p className="text-sm text-green-700">
+                  <p className="text-sm font-medium text-[#4F6A64]">Accuracy:</p>
+                  <p className="text-sm text-[#4F6A64]">
                     ±{Math.round(capturedLocation.location.accuracy)}m ({capturedLocation.location.accuracyLevel})
                   </p>
                 </div>
@@ -91,10 +91,10 @@ const LocationCaptureExample: React.FC = () => {
             {/* Timestamp */}
             {capturedLocation.location.timestamp && (
               <div className="flex items-start space-x-3">
-                <Clock className="h-4 w-4 text-green-600 mt-0.5" />
+                <Clock className="h-4 w-4 text-[#4F6A64] mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-green-800">Captured At:</p>
-                  <p className="text-sm text-green-700">
+                  <p className="text-sm font-medium text-[#4F6A64]">Captured At:</p>
+                  <p className="text-sm text-[#4F6A64]">
                     {capturedLocation.location.timestamp.toLocaleString()}
                   </p>
                 </div>
@@ -104,17 +104,17 @@ const LocationCaptureExample: React.FC = () => {
 
           {/* JSON Output for Developers */}
           <details className="mt-4">
-            <summary className="text-sm font-medium text-green-800 cursor-pointer hover:text-green-900">
+            <summary className="text-sm font-medium text-[#4F6A64] cursor-pointer hover:text-[#4F6A64]">
               View Raw Data (for developers)
             </summary>
-            <pre className="mt-2 text-xs bg-green-100 p-3 rounded overflow-x-auto">
+            <pre className="mt-2 text-xs bg-[#A2B9AF]/20 p-3 rounded overflow-x-auto">
               {JSON.stringify(capturedLocation, null, 2)}
             </pre>
           </details>
 
           <button
             onClick={handleReset}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-[#4F6A64] text-white rounded-lg hover:bg-[#4F6A64] transition-colors"
           >
             Capture Another Location
           </button>
@@ -123,15 +123,15 @@ const LocationCaptureExample: React.FC = () => {
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-[#E17F70]/10 border border-[#E17F70] rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-2">
-            <div className="h-5 w-5 text-red-600">⚠️</div>
-            <h3 className="text-lg font-semibold text-red-800">Location Capture Failed</h3>
+            <div className="h-5 w-5 text-[#9E3B47]">⚠️</div>
+            <h3 className="text-lg font-semibold text-[#75242D]">Location Capture Failed</h3>
           </div>
-          <p className="text-sm text-red-700 mb-4">{error}</p>
+          <p className="text-sm text-[#75242D] mb-4">{error}</p>
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-4 py-2 bg-[#9E3B47] text-white rounded-lg hover:bg-[#75242D] transition-colors"
           >
             Try Again
           </button>
@@ -139,9 +139,9 @@ const LocationCaptureExample: React.FC = () => {
       )}
 
       {/* Usage Instructions */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-blue-800 mb-3">How It Works</h3>
-        <div className="space-y-2 text-sm text-blue-700">
+      <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-[#546A7A] mb-3">How It Works</h3>
+        <div className="space-y-2 text-sm text-[#546A7A]">
           <p>✅ <strong>High Accuracy GPS:</strong> If GPS accuracy ≤ 5km, location is accepted immediately</p>
           <p>⚠️ <strong>Poor Accuracy GPS:</strong> If GPS accuracy &gt; 5km, you'll see a warning and map picker</p>
           <p>🗺️ <strong>Map Fallback:</strong> Tap anywhere on the LocationIQ map to set precise location</p>
@@ -151,9 +151,9 @@ const LocationCaptureExample: React.FC = () => {
       </div>
 
       {/* Integration Example */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Integration Example</h3>
-        <pre className="text-xs bg-gray-100 p-3 rounded overflow-x-auto">
+      <div className="bg-[#AEBFC3]/10 border border-[#92A2A5] rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-[#546A7A] mb-3">Integration Example</h3>
+        <pre className="text-xs bg-[#AEBFC3]/20 p-3 rounded overflow-x-auto">
 {`import LocationCapture from '@/components/location/LocationCapture';
 
 <LocationCapture

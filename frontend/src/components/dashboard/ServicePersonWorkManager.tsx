@@ -37,56 +37,56 @@ import Link from 'next/link';
 const TICKET_STATUS_CONFIG = {
   ASSIGNED: { 
     label: 'Ready to Start', 
-    color: 'bg-blue-100 text-blue-800 border-blue-200', 
+    color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]', 
     icon: Target,
     priority: 1,
     description: 'Ticket assigned and ready to begin'
   },
   IN_PROGRESS: { 
     label: 'Working On It', 
-    color: 'bg-orange-100 text-orange-800 border-orange-200', 
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', 
     icon: Zap,
     priority: 2,
     description: 'Currently working on this ticket'
   },
   ONSITE_VISIT_STARTED: { 
     label: 'Traveling to Site', 
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]', 
     icon: Navigation,
     priority: 3,
     description: 'En route to customer location'
   },
   ONSITE_VISIT_REACHED: { 
     label: 'On Site', 
-    color: 'bg-purple-100 text-purple-800 border-purple-200', 
+    color: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]', 
     icon: MapPin,
     priority: 4,
     description: 'Arrived at customer location'
   },
   ONSITE_VISIT_IN_PROGRESS: { 
     label: 'Working On Site', 
-    color: 'bg-indigo-100 text-indigo-800 border-indigo-200', 
+    color: 'bg-[#546A7A]/20 text-[#546A7A] border-[#546A7A]', 
     icon: Settings,
     priority: 5,
     description: 'Actively working at customer site'
   },
   WAITING_CUSTOMER: { 
     label: 'Waiting for Customer', 
-    color: 'bg-amber-100 text-amber-800 border-amber-200', 
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/50', 
     icon: User,
     priority: 3,
     description: 'Waiting for customer response or availability'
   },
   RESOLVED: { 
     label: 'Work Complete', 
-    color: 'bg-green-100 text-green-800 border-green-200', 
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]', 
     icon: CheckCircle,
     priority: 6,
     description: 'Work completed successfully'
   },
   CLOSED: { 
     label: 'Closed', 
-    color: 'bg-gray-100 text-gray-800 border-gray-200', 
+    color: 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]', 
     icon: Square,
     priority: 7,
     description: 'Ticket closed and completed'
@@ -96,19 +96,19 @@ const TICKET_STATUS_CONFIG = {
 const ACTIVITY_STATUS_CONFIG = {
   ACTIVE: {
     label: 'In Progress',
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]',
     icon: PlayCircle,
     description: 'Activity is currently running'
   },
   PAUSED: {
     label: 'Paused',
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    color: 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]',
     icon: PauseCircle,
     description: 'Activity is temporarily paused'
   },
   COMPLETED: {
     label: 'Completed',
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    color: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]',
     icon: CheckCircle,
     description: 'Activity has been completed'
   }
@@ -195,7 +195,7 @@ export default function ServicePersonWorkManager({
     if (item.type === 'ticket') {
       return TICKET_STATUS_CONFIG[item.status as keyof typeof TICKET_STATUS_CONFIG] || {
         label: item.status,
-        color: 'bg-gray-100 text-gray-800 border-gray-200',
+        color: 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]',
         icon: AlertCircle,
         priority: 999,
         description: 'Unknown status'
@@ -203,7 +203,7 @@ export default function ServicePersonWorkManager({
     } else {
       return ACTIVITY_STATUS_CONFIG[item.status as keyof typeof ACTIVITY_STATUS_CONFIG] || {
         label: item.status,
-        color: 'bg-gray-100 text-gray-800 border-gray-200',
+        color: 'bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]',
         icon: AlertCircle,
         priority: undefined,
         description: 'Unknown status'
@@ -288,7 +288,7 @@ export default function ServicePersonWorkManager({
     const StatusIcon = statusConfig.icon;
 
     return (
-      <Card key={`${item.type}-${item.id}`} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
+      <Card key={`${item.type}-${item.id}`} className="border-l-4 border-l-[#6F8A9D] hover:shadow-md transition-shadow">
         <CardContent className="pt-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -309,10 +309,10 @@ export default function ServicePersonWorkManager({
               
               <h3 className="font-semibold text-lg mb-1">{item.title}</h3>
               {item.description && (
-                <p className="text-gray-600 text-sm mb-2">{item.description}</p>
+                <p className="text-[#5D6E73] text-sm mb-2">{item.description}</p>
               )}
               
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-4 text-sm text-[#AEBFC3]0">
                 {item.startTime && (
                   <div className="flex items-center gap-1">
                     <Timer className="h-4 w-4" />
@@ -349,7 +349,7 @@ export default function ServicePersonWorkManager({
                   size="sm"
                   onClick={() => handleQuickAction(item, 'complete')}
                   disabled={loading}
-                  className="bg-green-600 hover:bg-green-700 text-xs"
+                  className="bg-[#4F6A64] hover:bg-[#4F6A64] text-xs"
                 >
                   <CheckCircle className="h-3 w-3 mr-1" />
                   Complete
@@ -365,13 +365,13 @@ export default function ServicePersonWorkManager({
               if (ticketStatusConfig?.priority) {
                 return (
                   <div className="mt-3">
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                    <div className="flex items-center justify-between text-xs text-[#AEBFC3]0 mb-1">
                       <span>Progress</span>
                       <span>{ticketStatusConfig.priority} / 7</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-[#92A2A5]/30 rounded-full h-2">
                       <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-[#96AEC2]/100 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${(ticketStatusConfig.priority / 7) * 100}%` }}
                       />
                     </div>
@@ -389,12 +389,12 @@ export default function ServicePersonWorkManager({
   return (
     <div className="space-y-6">
       {/* Work Overview Header */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+      <Card className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 border-[#96AEC2]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <Target className="h-6 w-6 text-blue-600" />
+                <Target className="h-6 w-6 text-[#546A7A]" />
                 Work Management Center
               </CardTitle>
               <CardDescription className="text-base">
@@ -410,32 +410,32 @@ export default function ServicePersonWorkManager({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{workItems.length}</div>
-              <div className="text-sm text-gray-600">Total Work Items</div>
+              <div className="text-2xl font-bold text-[#546A7A]">{workItems.length}</div>
+              <div className="text-sm text-[#5D6E73]">Total Work Items</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{getActiveItems().length}</div>
-              <div className="text-sm text-gray-600">Active Items</div>
+              <div className="text-2xl font-bold text-[#976E44]">{getActiveItems().length}</div>
+              <div className="text-sm text-[#5D6E73]">Active Items</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{getCompletedItems().length}</div>
-              <div className="text-sm text-gray-600">Completed Today</div>
+              <div className="text-2xl font-bold text-[#4F6A64]">{getCompletedItems().length}</div>
+              <div className="text-sm text-[#5D6E73]">Completed Today</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{getWorkProgress()}%</div>
-              <div className="text-sm text-gray-600">Progress</div>
+              <div className="text-2xl font-bold text-[#546A7A]">{getWorkProgress()}%</div>
+              <div className="text-sm text-[#5D6E73]">Progress</div>
             </div>
           </div>
           
           {/* Overall Progress Bar */}
           <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+            <div className="flex items-center justify-between text-sm text-[#5D6E73] mb-2">
               <span>Daily Progress</span>
               <span>{getWorkProgress()}% Complete</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-[#92A2A5]/30 rounded-full h-3">
               <div 
-                className="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                className="bg-[#96AEC2]/100 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${getWorkProgress()}%` }}
               />
             </div>
@@ -466,7 +466,7 @@ export default function ServicePersonWorkManager({
             {workItems.length > 6 && (
               <Card className="border-dashed">
                 <CardContent className="pt-6 text-center">
-                  <p className="text-gray-600">
+                  <p className="text-[#5D6E73]">
                     And {workItems.length - 6} more items...
                   </p>
                   <Button 
@@ -488,9 +488,9 @@ export default function ServicePersonWorkManager({
             {getActiveItems().length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center">
-                  <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500 opacity-50" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">All Caught Up!</h3>
-                  <p className="text-gray-600">No active work items at the moment.</p>
+                  <CheckCircle className="h-12 w-12 mx-auto mb-4 text-[#82A094] opacity-50" />
+                  <h3 className="text-lg font-medium text-[#546A7A] mb-2">All Caught Up!</h3>
+                  <p className="text-[#5D6E73]">No active work items at the moment.</p>
                 </CardContent>
               </Card>
             ) : (
@@ -504,9 +504,9 @@ export default function ServicePersonWorkManager({
             {getCompletedItems().length === 0 ? (
               <Card>
                 <CardContent className="pt-6 text-center">
-                  <Target className="h-12 w-12 mx-auto mb-4 text-blue-500 opacity-50" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Completed Work</h3>
-                  <p className="text-gray-600">Completed items will appear here.</p>
+                  <Target className="h-12 w-12 mx-auto mb-4 text-[#6F8A9D] opacity-50" />
+                  <h3 className="text-lg font-medium text-[#546A7A] mb-2">No Completed Work</h3>
+                  <p className="text-[#5D6E73]">Completed items will appear here.</p>
                 </CardContent>
               </Card>
             ) : (

@@ -144,7 +144,7 @@ export default function ServicePersonTicketDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#546A7A]"></div>
       </div>
     );
   }
@@ -152,7 +152,7 @@ export default function ServicePersonTicketDetailPage() {
   if (!ticket) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">Ticket not found</p>
+        <p className="text-[#AEBFC3]0">Ticket not found</p>
         <Link href="/service-person/dashboard">
           <Button variant="outline" className="mt-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -176,7 +176,7 @@ export default function ServicePersonTicketDetailPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Ticket #{ticket.ticketNumber ?? ticket.id}</h1>
-            <p className="text-gray-600">{ticket.title}</p>
+            <p className="text-[#5D6E73]">{ticket.title}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -202,8 +202,8 @@ export default function ServicePersonTicketDetailPage() {
               onClick={() => setActiveTab(id as any)}
               className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-[#6F8A9D] text-[#546A7A]'
+                  : 'border-transparent text-[#AEBFC3]0 hover:text-[#5D6E73] hover:border-[#92A2A5]'
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function ServicePersonTicketDetailPage() {
               <CardContent className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <p className="text-[#5D6E73] whitespace-pre-wrap">
                     {ticket.description || 'No description provided'}
                   </p>
                 </div>
@@ -233,7 +233,7 @@ export default function ServicePersonTicketDetailPage() {
                 {ticket.errorDetails && (
                   <div>
                     <h4 className="font-medium mb-2">Error Details</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{ticket.errorDetails}</p>
+                    <p className="text-[#5D6E73] whitespace-pre-wrap">{ticket.errorDetails}</p>
                   </div>
                 )}
 
@@ -244,21 +244,21 @@ export default function ServicePersonTicketDetailPage() {
                     <h4 className="font-medium mb-2">Customer Information</h4>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4 text-gray-500" />
+                        <Building className="h-4 w-4 text-[#AEBFC3]0" />
                         <span>{ticket.customer?.companyName || 'N/A'}</span>
                       </div>
                       {ticket.contact && (
                         <>
                           <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-gray-500" />
+                            <User className="h-4 w-4 text-[#AEBFC3]0" />
                             <span>{ticket.contact.name}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-gray-500" />
+                            <Phone className="h-4 w-4 text-[#AEBFC3]0" />
                             <span>{ticket.contact.phone}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-gray-500" />
+                            <Mail className="h-4 w-4 text-[#AEBFC3]0" />
                             <span>{ticket.contact.email}</span>
                           </div>
                         </>
@@ -275,7 +275,7 @@ export default function ServicePersonTicketDetailPage() {
                         <div><strong>Location:</strong> {(ticket.asset as any).location || 'N/A'}</div>
                       </div>
                     ) : (
-                      <p className="text-gray-500">No asset information</p>
+                      <p className="text-[#AEBFC3]0">No asset information</p>
                     )}
                   </div>
                 </div>
@@ -299,29 +299,29 @@ export default function ServicePersonTicketDetailPage() {
                   {statusHistory.length > 0 ? (
                     statusHistory.map((history, index) => (
                       <div key={index} className="flex items-start gap-3 pb-4 border-b last:border-b-0">
-                        <div className="p-2 rounded-full bg-gray-100">
+                        <div className="p-2 rounded-full bg-[#AEBFC3]/20">
                           <Activity className="h-4 w-4" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <StatusBadge status={history.status} />
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-[#AEBFC3]0">
                               {format(new Date(history.changedAt), 'MMM dd, yyyy HH:mm')}
                             </span>
                           </div>
                           {history.changedBy && (
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-[#5D6E73]">
                               by {history.changedBy.name || history.changedBy.email}
                             </p>
                           )}
                           {history.note && (
-                            <p className="text-sm text-gray-700 mt-1">{history.note}</p>
+                            <p className="text-sm text-[#5D6E73] mt-1">{history.note}</p>
                           )}
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No status history available</p>
+                    <p className="text-[#AEBFC3]0 text-center py-4">No status history available</p>
                   )}
                 </div>
               </CardContent>
@@ -338,22 +338,22 @@ export default function ServicePersonTicketDetailPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Created</span>
+                <span className="text-sm text-[#5D6E73]">Created</span>
                 <span className="text-sm font-medium">
                   {format(new Date(ticket.createdAt), 'MMM dd, yyyy')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Priority</span>
+                <span className="text-sm text-[#5D6E73]">Priority</span>
                 <PriorityBadge priority={ticket.priority} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Status</span>
+                <span className="text-sm text-[#5D6E73]">Status</span>
                 <StatusBadge status={ticket.status} />
               </div>
               {ticket.assignedTo && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Assigned To</span>
+                  <span className="text-sm text-[#5D6E73]">Assigned To</span>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className="text-xs">

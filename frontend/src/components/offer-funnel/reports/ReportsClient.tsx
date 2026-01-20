@@ -596,10 +596,10 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
 
   // Helper function for achievement color
   const getAchievementColor = (achievement: number) => {
-    if (achievement >= 100) return 'bg-green-100 text-green-800';
-    if (achievement >= 80) return 'bg-blue-100 text-blue-800';
-    if (achievement >= 50) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (achievement >= 100) return 'bg-[#A2B9AF]/20 text-[#4F6A64]';
+    if (achievement >= 80) return 'bg-[#96AEC2]/20 text-[#546A7A]';
+    if (achievement >= 50) return 'bg-[#CE9F6B]/20 text-[#976E44]';
+    return 'bg-[#E17F70]/20 text-[#75242D]';
   };
 
   return (
@@ -608,17 +608,17 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Reports</h1>
-            <p className="text-sm sm:text-base text-gray-600">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#546A7A] mb-2">Reports</h1>
+            <p className="text-sm sm:text-base text-[#5D6E73]">
               Generate and view detailed reports for your offer operations
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <div className="text-xs sm:text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
+            <div className="text-xs sm:text-sm text-[#5D6E73] bg-[#AEBFC3]/20 px-3 py-2 rounded-lg">
               Report Type: <span className="font-medium">{selectedReportType?.label || filters.reportType}</span>
             </div>
             {reportData && (
-              <div className="text-xs sm:text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+              <div className="text-xs sm:text-sm text-[#4F6A64] bg-[#A2B9AF]/10 px-3 py-2 rounded-lg">
                 ✓ Generated
               </div>
             )}
@@ -640,7 +640,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
               <Button 
                 onClick={() => fetchReport()} 
                 disabled={loading}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                className="w-full sm:w-auto bg-[#6F8A9D] hover:bg-[#546A7A] text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
               >
                 <BarChart3 className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 {loading ? 'Generating...' : 'Generate Report'}
@@ -650,7 +650,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   onClick={() => handleExport('excel')} 
                   disabled={(!reportData && !targetSummary) || loading}
                   variant="outline"
-                  className="w-full sm:w-auto min-h-[44px] border-green-600 text-green-600 hover:bg-green-50"
+                  className="w-full sm:w-auto min-h-[44px] border-[#4F6A64] text-[#4F6A64] hover:bg-[#A2B9AF]/10"
                 >
                   <FileDown className="h-4 w-4 mr-2" />
                   {loading ? 'Exporting...' : 'Export Excel'}
@@ -659,7 +659,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   onClick={() => handleExport('pdf')} 
                   disabled={(!reportData && !targetSummary) || loading}
                   variant="outline"
-                  className="w-full sm:w-auto min-h-[44px] border-red-600 text-red-600 hover:bg-red-50"
+                  className="w-full sm:w-auto min-h-[44px] border-[#9E3B47] text-[#9E3B47] hover:bg-[#E17F70]/10"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   {loading ? 'Exporting...' : 'Export PDF'}
@@ -678,9 +678,9 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             isLoadingCustomers={isLoadingCustomers}
           />
           {selectedReportType && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="font-medium text-blue-900">{selectedReportType.label}</h4>
-              <p className="text-sm text-blue-700 mt-1">{selectedReportType.description}</p>
+            <div className="mt-4 p-4 bg-[#96AEC2]/10 rounded-lg border border-[#96AEC2]">
+              <h4 className="font-medium text-[#546A7A]">{selectedReportType.label}</h4>
+              <p className="text-sm text-[#546A7A] mt-1">{selectedReportType.description}</p>
             </div>
           )}
         </CardContent>
@@ -708,50 +708,50 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           />
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-100">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-[#6F8A9D]/10 to-[#96AEC2]/20">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-indigo-700">Zone Targets</CardTitle>
+                <CardTitle className="text-sm font-semibold text-[#546A7A]">Zone Targets</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-indigo-800">{targetSummary.totalZoneTargets || 0}</div>
-                <div className="text-sm text-indigo-600 mt-2 font-medium">
+                <div className="text-4xl font-bold text-[#546A7A]">{targetSummary.totalZoneTargets || 0}</div>
+                <div className="text-sm text-[#546A7A] mt-2 font-medium">
                   Achievement: {targetSummary.totalZoneAchievement?.toFixed(2) || 0}%
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-100">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-blue-700">Zone Target Value</CardTitle>
+                <CardTitle className="text-sm font-semibold text-[#546A7A]">Zone Target Value</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-blue-800" title={formatINRFull(targetSummary.totalZoneTargetValue || 0)}>
+                <div className="text-3xl font-bold text-[#546A7A]" title={formatINRFull(targetSummary.totalZoneTargetValue || 0)}>
                   {formatCrLakh(targetSummary.totalZoneTargetValue || 0)}
                 </div>
-                <div className="text-sm text-blue-600 mt-2 font-medium">
+                <div className="text-sm text-[#546A7A] mt-2 font-medium">
                   <span title={formatINRFull(targetSummary.totalZoneActualValue || 0)}>Actual: {formatCrLakh(targetSummary.totalZoneActualValue || 0)}</span>
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-100">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-[#6F8A9D]/10 to-[#EEC1BF]/20">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-purple-700">User Targets</CardTitle>
+                <CardTitle className="text-sm font-semibold text-[#546A7A]">User Targets</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-purple-800">{targetSummary.totalUserTargets || 0}</div>
-                <div className="text-sm text-purple-600 mt-2 font-medium">
+                <div className="text-4xl font-bold text-[#546A7A]">{targetSummary.totalUserTargets || 0}</div>
+                <div className="text-sm text-[#546A7A] mt-2 font-medium">
                   Achievement: {targetSummary.totalUserAchievement?.toFixed(2) || 0}%
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-50 to-teal-100">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/20">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-emerald-700">User Target Value</CardTitle>
+                <CardTitle className="text-sm font-semibold text-[#4F6A64]">User Target Value</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-emerald-800" title={formatINRFull(targetSummary.totalUserTargetValue || 0)}>
+                <div className="text-3xl font-bold text-[#4F6A64]" title={formatINRFull(targetSummary.totalUserTargetValue || 0)}>
                   {formatCrLakh(targetSummary.totalUserTargetValue || 0)}
                 </div>
-                <div className="text-sm text-emerald-600 mt-2 font-medium">
+                <div className="text-sm text-[#4F6A64] mt-2 font-medium">
                   <span title={formatINRFull(targetSummary.totalUserActualValue || 0)}>Actual: {formatCrLakh(targetSummary.totalUserActualValue || 0)}</span>
                 </div>
               </CardContent>
@@ -761,60 +761,60 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           {/* Zone Targets Table */}
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className="h-5 w-5 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Zone Targets ({zoneTargets.length})</h2>
+              <MapPin className="h-5 w-5 text-[#546A7A]" />
+              <h2 className="text-xl font-bold text-[#546A7A]">Zone Targets ({zoneTargets.length})</h2>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-xl border border-[#92A2A5] overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Zone</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">No. Offers</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of all offer values in the period">
+                    <tr className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20 border-b border-[#92A2A5]">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#5D6E73]">Zone</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73]">No. Offers</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of all offer values in the period">
                         Offers Value
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of WON stage offer values">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of WON stage offer values">
                         Orders Received
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of (Offer Value × Probability %) for offers with probability > 50%">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of (Offer Value × Probability %) for offers with probability > 50%">
                         Expected Offers
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Offers Value - Orders Received (pending opportunities)">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Offers Value - Orders Received (pending opportunities)">
                         Open Funnel
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Count of WON/PO_RECEIVED stage offers in current year">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Count of WON/PO_RECEIVED stage offers in current year">
                         Order Booking
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">Target BU</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="(Orders Received / Target BU) × 100">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73]">Target BU</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="(Orders Received / Target BU) × 100">
                         Achievement
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="(Expected Offers / Target BU) × 100">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="(Expected Offers / Target BU) × 100">
                         Expected Ach %
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Target BU - Orders Received (remaining to achieve)">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Target BU - Orders Received (remaining to achieve)">
                         Balance BU
                       </th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-[#5D6E73]">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {zoneTargets.map((target: any, idx: number) => (
-                      <tr key={`zone-${target.serviceZoneId}-${idx}`} className="hover:bg-blue-50 transition-colors">
+                      <tr key={`zone-${target.serviceZoneId}-${idx}`} className="hover:bg-[#96AEC2]/10 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-blue-600"></div>
-                            <span className="font-semibold text-gray-900">{target.serviceZone.name}</span>
+                            <div className="h-2 w-2 rounded-full bg-[#6F8A9D]"></div>
+                            <span className="font-semibold text-[#546A7A]">{target.serviceZone.name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{target.metrics?.noOfOffers || 0}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-blue-700">{formatCrLakh(target.metrics?.offersValue || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">{formatCrLakh(target.metrics?.ordersReceived || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-indigo-700">{formatCrLakh(target.metrics?.expectedOffers || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-amber-700">{formatCrLakh(target.metrics?.openFunnel || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-cyan-700">{target.metrics?.orderBooking || 0}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{formatCrLakh(target.targetValue)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.noOfOffers || 0}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.metrics?.offersValue || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#4F6A64]">{formatCrLakh(target.metrics?.ordersReceived || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.metrics?.expectedOffers || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#976E44]">{formatCrLakh(target.metrics?.openFunnel || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.orderBooking || 0}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.targetValue)}</td>
                         <td className="px-4 py-3 text-right">
                           <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
                             {target.achievement.toFixed(1)}%
@@ -826,7 +826,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                           </Badge>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-semibold ${
-                          (target.metrics?.balanceBU || 0) >= 0 ? 'text-emerald-700' : 'text-red-700'
+                          (target.metrics?.balanceBU || 0) >= 0 ? 'text-[#4F6A64]' : 'text-[#75242D]'
                         }`}>
                           {formatCrLakh(target.metrics?.balanceBU || 0)}
                         </td>
@@ -835,7 +835,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => handleOpenZoneDetails(target)}
-                            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-100 hover:text-blue-700"
+                            className="h-8 w-8 p-0 text-[#546A7A] hover:bg-[#96AEC2]/20 hover:text-[#546A7A]"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -847,8 +847,8 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
               </div>
               {zoneTargets.length === 0 && (
                 <div className="px-6 py-12 text-center">
-                  <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 font-medium">No zone targets found</p>
+                  <MapPin className="h-12 w-12 text-[#92A2A5] mx-auto mb-3" />
+                  <p className="text-[#AEBFC3]0 font-medium">No zone targets found</p>
                 </div>
               )}
             </div>
@@ -857,70 +857,70 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
           {/* Zone User Targets Table */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Users className="h-5 w-5 text-purple-600" />
-              <h2 className="text-xl font-bold text-gray-900">Zone User Targets ({userTargets.length})</h2>
+              <Users className="h-5 w-5 text-[#546A7A]" />
+              <h2 className="text-xl font-bold text-[#546A7A]">Zone User Targets ({userTargets.length})</h2>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-xl border border-[#92A2A5] overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-purple-50 to-pink-100 border-b border-gray-200">
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">User</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Zone</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">No. Offers</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of all offer values in the period">
+                    <tr className="bg-gradient-to-r from-[#6F8A9D]/10 to-[#EEC1BF]/20 border-b border-[#92A2A5]">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#5D6E73]">User</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#5D6E73]">Zone</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73]">No. Offers</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of all offer values in the period">
                         Offers Value
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of WON stage offer values">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of WON stage offer values">
                         Orders Received
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Sum of (Offer Value × Probability %) for offers with probability > 50%">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Sum of (Offer Value × Probability %) for offers with probability > 50%">
                         Expected Offers
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Offers Value - Orders Received (pending opportunities)">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Offers Value - Orders Received (pending opportunities)">
                         Open Funnel
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Count of WON/PO_RECEIVED stage offers in current year">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Count of WON/PO_RECEIVED stage offers in current year">
                         Order Booking
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">Target BU</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="(Orders Received / Target BU) × 100">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73]">Target BU</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="(Orders Received / Target BU) × 100">
                         Achievement
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="(Expected Offers / Target BU) × 100">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="(Expected Offers / Target BU) × 100">
                         Expected Ach %
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 cursor-help" title="Target BU - Orders Received (remaining to achieve)">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#5D6E73] cursor-help" title="Target BU - Orders Received (remaining to achieve)">
                         Balance BU
                       </th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                      <th className="px-4 py-3 text-center text-sm font-semibold text-[#5D6E73]">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {userTargets.map((target: any, idx: number) => (
-                      <tr key={`user-${target.userId}-${idx}`} className="hover:bg-purple-50 transition-colors">
+                      <tr key={`user-${target.userId}-${idx}`} className="hover:bg-[#6F8A9D]/10 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-purple-600"></div>
+                            <div className="h-2 w-2 rounded-full bg-[#546A7A]"></div>
                             <div className="min-w-0">
-                              <div className="font-semibold text-gray-900 truncate">{target.user?.name || target.user?.email}</div>
-                              <div className="text-xs text-gray-500 truncate">{target.user?.email}</div>
+                              <div className="font-semibold text-[#546A7A] truncate">{target.user?.name || target.user?.email}</div>
+                              <div className="text-xs text-[#AEBFC3]0 truncate">{target.user?.email}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-700">
+                        <td className="px-4 py-3 text-sm text-[#5D6E73]">
                           {target.user?.serviceZones && target.user?.serviceZones.length > 0 
                             ? target.user.serviceZones.map((sz: any) => sz.serviceZone?.name || 'Unknown').join(', ')
                             : 'N/A'
                           }
                         </td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{target.metrics?.noOfOffers || 0}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-blue-700">{formatCrLakh(target.metrics?.offersValue || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-green-700">{formatCrLakh(target.metrics?.ordersReceived || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-indigo-700">{formatCrLakh(target.metrics?.expectedOffers || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-amber-700">{formatCrLakh(target.metrics?.openFunnel || 0)}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-cyan-700">{target.metrics?.orderBooking || 0}</td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{formatCrLakh(target.targetValue)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.noOfOffers || 0}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.metrics?.offersValue || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#4F6A64]">{formatCrLakh(target.metrics?.ordersReceived || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.metrics?.expectedOffers || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#976E44]">{formatCrLakh(target.metrics?.openFunnel || 0)}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.orderBooking || 0}</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.targetValue)}</td>
                         <td className="px-4 py-3 text-right">
                           <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
                             {target.achievement?.toFixed(1) || 0}%
@@ -932,7 +932,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                           </Badge>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-semibold ${
-                          (target.metrics?.balanceBU || 0) >= 0 ? 'text-emerald-700' : 'text-red-700'
+                          (target.metrics?.balanceBU || 0) >= 0 ? 'text-[#4F6A64]' : 'text-[#75242D]'
                         }`}>
                           {formatCrLakh(target.metrics?.balanceBU || 0)}
                         </td>
@@ -941,7 +941,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => handleOpenUserDetails(target)}
-                            className="h-8 w-8 p-0 text-purple-600 hover:bg-purple-100 hover:text-purple-700"
+                            className="h-8 w-8 p-0 text-[#546A7A] hover:bg-[#6F8A9D]/20 hover:text-[#546A7A]"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -953,8 +953,8 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
               </div>
               {userTargets.length === 0 && (
                 <div className="px-6 py-12 text-center">
-                  <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 font-medium">No user targets found</p>
+                  <Users className="h-12 w-12 text-[#92A2A5] mx-auto mb-3" />
+                  <p className="text-[#AEBFC3]0 font-medium">No user targets found</p>
                 </div>
               )}
             </div>
@@ -971,22 +971,22 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Offers</CardTitle>
-                  <Package className="h-5 w-5 text-blue-500" />
+                  <CardTitle className="text-sm font-medium text-[#5D6E73]">Total Offers</CardTitle>
+                  <Package className="h-5 w-5 text-[#6F8A9D]" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold text-gray-900">
+                  <div className="text-3xl font-bold text-[#546A7A]">
                     {filteredOffers.length}
                   </div>
                   {filters.search || filters.stage ? (
-                    <p className="text-xs text-gray-500">
-                      Filtered from <span className="font-semibold text-gray-700">{totalOffers}</span> total
+                    <p className="text-xs text-[#AEBFC3]0">
+                      Filtered from <span className="font-semibold text-[#5D6E73]">{totalOffers}</span> total
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-500">
-                      Out of <span className="font-semibold text-gray-700">{totalOffers || 0}</span> total offers
+                    <p className="text-xs text-[#AEBFC3]0">
+                      Out of <span className="font-semibold text-[#5D6E73]">{totalOffers || 0}</span> total offers
                     </p>
                   )}
                 </div>
@@ -997,17 +997,17 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Offer Value</CardTitle>
-                  <DollarSign className="h-5 w-5 text-amber-500" />
+                  <CardTitle className="text-sm font-medium text-[#5D6E73]">Total Offer Value</CardTitle>
+                  <DollarSign className="h-5 w-5 text-[#CE9F6B]" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold text-amber-600" title={formatINRFull(summary.totalOfferValue || 0)}>
+                  <div className="text-3xl font-bold text-[#976E44]" title={formatINRFull(summary.totalOfferValue || 0)}>
                     {formatCrLakh(summary.totalOfferValue || 0)}
                   </div>
-                  <p className="text-xs text-gray-500">
-                    Avg: <span className="font-semibold text-gray-700">
+                  <p className="text-xs text-[#AEBFC3]0">
+                    Avg: <span className="font-semibold text-[#5D6E73]">
                       {formatCrLakh((summary.totalOfferValue || 0) / Math.max(filteredOffers.length, 1))}
                     </span>
                   </p>
@@ -1019,17 +1019,17 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total PO Value</CardTitle>
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  <CardTitle className="text-sm font-medium text-[#5D6E73]">Total PO Value</CardTitle>
+                  <CheckCircle2 className="h-5 w-5 text-[#82A094]" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold text-green-600" title={formatINRFull(summary.totalPoValue || 0)}>
+                  <div className="text-3xl font-bold text-[#4F6A64]" title={formatINRFull(summary.totalPoValue || 0)}>
                     {formatCrLakh(summary.totalPoValue || 0)}
                   </div>
-                  <p className="text-xs text-gray-500">
-                    Conversion: <span className="font-semibold text-gray-700">
+                  <p className="text-xs text-[#AEBFC3]0">
+                    Conversion: <span className="font-semibold text-[#5D6E73]">
                       {((summary.totalPoValue || 0) / Math.max(summary.totalOfferValue || 1) * 100).toFixed(1)}%
                     </span>
                   </p>
@@ -1038,20 +1038,20 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             </Card>
 
             {/* Won Offers Card */}
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50">
+            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/10">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-600">Won Offers</CardTitle>
-                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  <CardTitle className="text-sm font-medium text-[#5D6E73]">Won Offers</CardTitle>
+                  <Trophy className="h-5 w-5 text-[#CE9F6B]" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-3xl font-bold text-green-700">
+                  <div className="text-3xl font-bold text-[#4F6A64]">
                     {offers.filter(o => o.stage === 'WON').length}
                   </div>
-                  <p className="text-xs text-gray-600">
-                    Success Rate: <span className="font-semibold text-green-700">
+                  <p className="text-xs text-[#5D6E73]">
+                    Success Rate: <span className="font-semibold text-[#4F6A64]">
                       {((offers.filter(o => o.stage === 'WON').length / Math.max(filteredOffers.length, 1)) * 100).toFixed(1)}%
                     </span>
                   </p>
@@ -1062,11 +1062,11 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
 
           {/* Won Offers Details Section */}
           {offers.filter(o => o.stage === 'WON').length > 0 && (
-            <Card className="border-0 shadow-md bg-gradient-to-r from-green-50 to-emerald-50">
+            <Card className="border-0 shadow-md bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Trophy className="h-6 w-6 text-yellow-500" />
+                    <Trophy className="h-6 w-6 text-[#CE9F6B]" />
                     <div>
                       <CardTitle className="text-lg">Won Offers Summary</CardTitle>
                       <CardDescription>Detailed breakdown of successfully won offers</CardDescription>
@@ -1076,27 +1076,27 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                    <p className="text-sm text-gray-600 font-medium">Won Offers Count</p>
-                    <p className="text-2xl font-bold text-green-700 mt-2">
+                  <div className="bg-white rounded-lg p-4 border border-[#A2B9AF]">
+                    <p className="text-sm text-[#5D6E73] font-medium">Won Offers Count</p>
+                    <p className="text-2xl font-bold text-[#4F6A64] mt-2">
                       {offers.filter(o => o.stage === 'WON').length}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                    <p className="text-sm text-gray-600 font-medium">Won Offer Value</p>
-                    <p className="text-2xl font-bold text-green-700 mt-2" title={formatINRFull(summary.wonOfferValue || 0)}>
+                  <div className="bg-white rounded-lg p-4 border border-[#A2B9AF]">
+                    <p className="text-sm text-[#5D6E73] font-medium">Won Offer Value</p>
+                    <p className="text-2xl font-bold text-[#4F6A64] mt-2" title={formatINRFull(summary.wonOfferValue || 0)}>
                       {formatCrLakh(summary.wonOfferValue || 0)}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                    <p className="text-sm text-gray-600 font-medium">Won PO Value</p>
-                    <p className="text-2xl font-bold text-green-700 mt-2" title={formatINRFull(summary.wonPoValue || 0)}>
+                  <div className="bg-white rounded-lg p-4 border border-[#A2B9AF]">
+                    <p className="text-sm text-[#5D6E73] font-medium">Won PO Value</p>
+                    <p className="text-2xl font-bold text-[#4F6A64] mt-2" title={formatINRFull(summary.wonPoValue || 0)}>
                       {formatCrLakh(summary.wonPoValue || 0)}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                    <p className="text-sm text-gray-600 font-medium">Success Rate</p>
-                    <p className="text-2xl font-bold text-green-700 mt-2">
+                  <div className="bg-white rounded-lg p-4 border border-[#A2B9AF]">
+                    <p className="text-sm text-[#5D6E73] font-medium">Success Rate</p>
+                    <p className="text-2xl font-bold text-[#4F6A64] mt-2">
                       {(summary.successRate || 0).toFixed(1)}%
                     </p>
                   </div>
@@ -1118,7 +1118,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   className="w-full"
                 />
                 {filters.search && (
-                  <p className="text-xs text-green-600 mt-2">
+                  <p className="text-xs text-[#4F6A64] mt-2">
                     ✓ Showing {filteredOffers.length} result{filteredOffers.length !== 1 ? 's' : ''} for "{filters.search}"
                   </p>
                 )}
@@ -1156,9 +1156,9 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
         (filters.reportType === 'customer-performance' && !customerPerformanceData)) && (
         <Card className="text-center py-12">
           <CardContent>
-            <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Report Generated</h3>
-            <p className="text-gray-500 mb-4">
+            <BarChart3 className="h-12 w-12 mx-auto mb-4 text-[#979796]" />
+            <h3 className="text-lg font-medium text-[#546A7A] mb-2">No Report Generated</h3>
+            <p className="text-[#AEBFC3]0 mb-4">
               Select your report parameters and click "Generate Report" to view analytics
             </p>
           </CardContent>

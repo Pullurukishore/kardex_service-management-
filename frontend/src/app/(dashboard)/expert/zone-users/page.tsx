@@ -58,7 +58,7 @@ export default async function ZoneUsersPage({ searchParams }: ZoneUsersPageProps
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-[#6F8A9D] to-cyan-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative flex items-center justify-between">
           <div>
@@ -68,7 +68,7 @@ export default async function ZoneUsersPage({ searchParams }: ZoneUsersPageProps
             </p>
           </div>
           <Link href="/expert/zone-users/new">
-            <Button className="bg-white text-cyan-600 hover:bg-cyan-50 shadow-lg">
+            <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/10 shadow-lg">
               <Plus className="mr-2 h-4 w-4" />
               Add Zone User
             </Button>
@@ -83,7 +83,7 @@ export default async function ZoneUsersPage({ searchParams }: ZoneUsersPageProps
           description="Manage users assigned to service zones and their permissions"
           action={
             <Link href="/expert/zone-users/new">
-              <Button className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg">
+              <Button className="bg-[#546A7A] hover:bg-[#546A7A] text-white shadow-lg">
                 <Plus className="mr-2 h-4 w-4" /> Add
               </Button>
             </Link>

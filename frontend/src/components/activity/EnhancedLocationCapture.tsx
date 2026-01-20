@@ -127,18 +127,18 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
 
   const getStatusIcon = () => {
     if (isLoading) {
-      return <Loader2 className="h-4 w-4 animate-spin text-blue-600" />;
+      return <Loader2 className="h-4 w-4 animate-spin text-[#546A7A]" />;
     }
     
     if (hasValidLocation) {
-      return <CheckCircle className="h-4 w-4 text-green-600" />;
+      return <CheckCircle className="h-4 w-4 text-[#4F6A64]" />;
     }
     
     if (error) {
-      return <AlertTriangle className="h-4 w-4 text-red-600" />;
+      return <AlertTriangle className="h-4 w-4 text-[#9E3B47]" />;
     }
     
-    return <MapPin className="h-4 w-4 text-gray-400" />;
+    return <MapPin className="h-4 w-4 text-[#979796]" />;
   };
 
   const getStatusText = () => {
@@ -172,11 +172,11 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
             variant={isManualLocation ? "default" : "secondary"}
             className={cn(
               "text-xs",
-              isManualLocation && "bg-blue-100 text-blue-800",
-              isGPSLocation && quality.level === 'excellent' && "bg-green-100 text-green-800",
-              isGPSLocation && quality.level === 'good' && "bg-blue-100 text-blue-800",
-              isGPSLocation && quality.level === 'fair' && "bg-yellow-100 text-yellow-800",
-              isGPSLocation && quality.level === 'poor' && "bg-orange-100 text-orange-800"
+              isManualLocation && "bg-[#96AEC2]/20 text-[#546A7A]",
+              isGPSLocation && quality.level === 'excellent' && "bg-[#A2B9AF]/20 text-[#4F6A64]",
+              isGPSLocation && quality.level === 'good' && "bg-[#96AEC2]/20 text-[#546A7A]",
+              isGPSLocation && quality.level === 'fair' && "bg-[#CE9F6B]/20 text-[#976E44]",
+              isGPSLocation && quality.level === 'poor' && "bg-[#CE9F6B]/20 text-[#976E44]"
             )}
           >
             {isManualLocation ? (
@@ -193,11 +193,11 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
           </Badge>
         </div>
         
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-[#5D6E73]">
           {currentLocation.address || `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`}
         </div>
         
-        <div className="flex gap-4 text-xs text-gray-500">
+        <div className="flex gap-4 text-xs text-[#AEBFC3]0">
           <span>Lat: {currentLocation.latitude.toFixed(6)}</span>
           <span>Lng: {currentLocation.longitude.toFixed(6)}</span>
           <span>{new Date(currentLocation.timestamp).toLocaleTimeString()}</span>
@@ -217,16 +217,16 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
       {/* Status Card */}
       <Card className={cn(
         "border-2 transition-colors",
-        hasValidLocation && "border-green-200 bg-green-50",
-        error && "border-red-200 bg-red-50",
-        isLoading && "border-blue-200 bg-blue-50"
+        hasValidLocation && "border-[#A2B9AF] bg-[#A2B9AF]/10",
+        error && "border-[#E17F70] bg-[#E17F70]/10",
+        isLoading && "border-[#96AEC2] bg-[#96AEC2]/10"
       )}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               {getStatusIcon()}
               <span className="text-sm font-medium">
-                Location Capture {required && <span className="text-red-500">*</span>}
+                Location Capture {required && <span className="text-[#E17F70]">*</span>}
               </span>
             </div>
             
@@ -234,7 +234,7 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
               <Button
                 size="sm"
                 onClick={handleCaptureClick}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-[#6F8A9D] hover:bg-[#546A7A]"
               >
                 <Target className="h-4 w-4 mr-1" />
                 Capture GPS
@@ -253,7 +253,7 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
             )}
           </div>
           
-          <div className="text-sm text-gray-600 mb-2">
+          <div className="text-sm text-[#5D6E73] mb-2">
             {getStatusText()}
           </div>
           
@@ -261,9 +261,9 @@ const EnhancedLocationCapture: React.FC<EnhancedLocationCaptureProps> = ({
           
           {/* GPS Accuracy Info */}
           {lastAttempt && !lastAttempt.success && lastAttempt.location && (
-            <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-              <div className="font-medium text-yellow-800">GPS Available but Inaccurate</div>
-              <div className="text-yellow-700">
+            <div className="mt-3 p-2 bg-[#EEC1BF]/10 border border-[#CE9F6B] rounded text-xs">
+              <div className="font-medium text-[#976E44]">GPS Available but Inaccurate</div>
+              <div className="text-[#976E44]">
                 Best GPS: ±{Math.round(lastAttempt.location.accuracy)}m (requires ≤2000m)
               </div>
             </div>

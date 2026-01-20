@@ -31,13 +31,13 @@ interface ZonePerformanceAnalyticsProps {
 // Loading component for heavy analytics
 const AnalyticsLoading = () => (
   <div className="bg-white rounded-lg border p-6 animate-pulse">
-    <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+    <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4 mb-4"></div>
     <div className="space-y-3">
-      <div className="h-3 bg-gray-200 rounded"></div>
-      <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-      <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+      <div className="h-3 bg-[#92A2A5]/30 rounded"></div>
+      <div className="h-3 bg-[#92A2A5]/30 rounded w-5/6"></div>
+      <div className="h-3 bg-[#92A2A5]/30 rounded w-4/6"></div>
     </div>
-    <div className="mt-4 h-32 bg-gray-100 rounded"></div>
+    <div className="mt-4 h-32 bg-[#AEBFC3]/20 rounded"></div>
   </div>
 );
 

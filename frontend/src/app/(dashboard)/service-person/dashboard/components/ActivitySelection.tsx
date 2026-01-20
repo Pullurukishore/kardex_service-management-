@@ -31,7 +31,7 @@ const ACTIVITY_CONFIG = {
     icon: Wrench,
     label: 'Ticket Work',
     description: 'Work on assigned tickets',
-    color: 'bg-blue-500 hover:bg-blue-600',
+    color: 'bg-[#96AEC2]/100 hover:bg-[#6F8A9D]',
     requiresLocation: true,
     special: true // Special handling - goes to ticket dashboard
   },
@@ -39,98 +39,98 @@ const ACTIVITY_CONFIG = {
     icon: Users,
     label: 'Business Development',
     description: 'Customer visits and BD activities',
-    color: 'bg-purple-500 hover:bg-purple-600',
+    color: 'bg-[#6F8A9D]/100 hover:bg-[#546A7A]',
     requiresLocation: true
   },
   'PO_DISCUSSION': {
     icon: MessageSquare,
     label: 'PO Discussion',
     description: 'Purchase order discussions',
-    color: 'bg-green-500 hover:bg-green-600',
+    color: 'bg-[#A2B9AF]/100 hover:bg-[#4F6A64]',
     requiresLocation: true
   },
   'SPARE_REPLACEMENT': {
     icon: Package,
     label: 'Spare Replacement',
     description: 'Replace spare parts',
-    color: 'bg-orange-500 hover:bg-orange-600',
+    color: 'bg-[#CE9F6B]/100 hover:bg-[#976E44]',
     requiresLocation: true
   },
   'TRAVEL': {
     icon: Car,
     label: 'Travel',
     description: 'Traveling to customer location',
-    color: 'bg-indigo-500 hover:bg-indigo-600',
+    color: 'bg-[#546A7A]/100 hover:bg-[#546A7A]',
     requiresLocation: true
   },
   'TRAINING': {
     icon: GraduationCap,
     label: 'Training',
     description: 'Training sessions and learning',
-    color: 'bg-teal-500 hover:bg-teal-600',
+    color: 'bg-[#82A094]/100 hover:bg-[#4F6A64]',
     requiresLocation: true
   },
   'MEETING': {
     icon: Calendar,
     label: 'Meeting',
     description: 'Team meetings and discussions',
-    color: 'bg-pink-500 hover:bg-pink-600',
+    color: 'bg-[#EEC1BF]/100 hover:bg-[#9E3B47]',
     requiresLocation: true
   },
   'MAINTENANCE': {
     icon: Settings,
     label: 'Maintenance',
     description: 'Equipment maintenance work',
-    color: 'bg-red-500 hover:bg-red-600',
+    color: 'bg-[#E17F70]/100 hover:bg-[#9E3B47]',
     requiresLocation: true
   },
   'DOCUMENTATION': {
     icon: FileText,
     label: 'Documentation',
     description: 'Report writing and documentation',
-    color: 'bg-gray-500 hover:bg-gray-600',
+    color: 'bg-[#AEBFC3]/100 hover:bg-[#5D6E73]',
     requiresLocation: true
   },
   'WORK_FROM_HOME': {
     icon: Home,
     label: 'Work From Home',
     description: 'Remote work activities',
-    color: 'bg-emerald-500 hover:bg-emerald-600',
+    color: 'bg-[#82A094]/100 hover:bg-[#4F6A64]',
     requiresLocation: false // Special case - no location required
   },
   'INSTALLATION': {
     icon: Hammer,
     label: 'Installation',
     description: 'New equipment installation',
-    color: 'bg-amber-500 hover:bg-amber-600',
+    color: 'bg-[#CE9F6B]/100 hover:bg-[#976E44]',
     requiresLocation: true
   },
   'MAINTENANCE_PLANNED': {
     icon: Cog,
     label: 'Planned Maintenance',
     description: 'Scheduled maintenance activities',
-    color: 'bg-cyan-500 hover:bg-cyan-600',
+    color: 'bg-[#96AEC2]/100 hover:bg-[#546A7A]',
     requiresLocation: true
   },
   'REVIEW_MEETING': {
     icon: UserCheck,
     label: 'Review Meeting',
     description: 'Performance and review meetings',
-    color: 'bg-violet-500 hover:bg-violet-600',
+    color: 'bg-[#6F8A9D] hover:bg-[#6F8A9D]',
     requiresLocation: true
   },
   'RELOCATION': {
     icon: MapPin,
     label: 'Relocation',
     description: 'Equipment relocation work',
-    color: 'bg-rose-500 hover:bg-rose-600',
+    color: 'bg-[#EEC1BF]/100 hover:bg-[#9E3B47]',
     requiresLocation: true
   },
   'OTHER': {
     icon: MoreHorizontal,
     label: 'Other',
     description: 'Other work activities',
-    color: 'bg-slate-500 hover:bg-slate-600',
+    color: 'bg-[#AEBFC3]/100 hover:bg-[#5D6E73]',
     requiresLocation: true
   }
 };
@@ -151,17 +151,17 @@ export default function ActivitySelection({ activityTypes, onStartActivity, isLo
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Select Activity Type</h2>
-          <p className="text-gray-600">Choose the type of work you want to start</p>
+          <h2 className="text-2xl font-bold text-[#546A7A] mb-2">Select Activity Type</h2>
+          <p className="text-[#5D6E73]">Choose the type of work you want to start</p>
         </div>
 
         {/* Special Notice for TICKET_WORK */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-4 mb-6">
           <div className="flex items-start space-x-3">
-            <Wrench className="w-6 h-6 text-blue-600 mt-0.5 flex-shrink-0" />
+            <Wrench className="w-6 h-6 text-[#546A7A] mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-blue-900 mb-1">Ticket Work</h3>
-              <p className="text-blue-800 text-sm">
+              <h3 className="font-semibold text-[#546A7A] mb-1">Ticket Work</h3>
+              <p className="text-[#546A7A] text-sm">
                 Select "Ticket Work" to access your ticket dashboard where you can manage ticket statuses 
                 and work on assigned tickets like a zone user.
               </p>
@@ -221,21 +221,21 @@ export default function ActivitySelection({ activityTypes, onStartActivity, isLo
 
         {/* Location Loading Notice */}
         {isLocationLoading && (
-          <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="mt-6 bg-[#CE9F6B]/10 border border-[#CE9F6B]/40 rounded-lg p-4">
             <div className="flex items-center space-x-3">
-              <div className="w-5 h-5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-[#976E44] border-t-transparent rounded-full animate-spin"></div>
               <div>
-                <p className="font-medium text-amber-800">Getting your location...</p>
-                <p className="text-amber-700 text-sm">Please wait while we determine your GPS coordinates.</p>
+                <p className="font-medium text-[#976E44]">Getting your location...</p>
+                <p className="text-[#976E44] text-sm">Please wait while we determine your GPS coordinates.</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Instructions */}
-        <div className="mt-8 bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Instructions:</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
+        <div className="mt-8 bg-[#AEBFC3]/10 border border-[#92A2A5] rounded-lg p-4">
+          <h4 className="font-semibold text-[#546A7A] mb-2">Instructions:</h4>
+          <ul className="text-sm text-[#5D6E73] space-y-1">
             <li>• <strong>Ticket Work:</strong> Access ticket dashboard to manage assigned tickets</li>
             <li>• <strong>Work From Home:</strong> No location tracking required</li>
             <li>• <strong>Other Activities:</strong> Progress through stages with location tracking</li>

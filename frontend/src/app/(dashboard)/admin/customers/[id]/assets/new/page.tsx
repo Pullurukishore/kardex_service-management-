@@ -97,7 +97,7 @@ export default function AddAssetPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-2">
-            <Package className="h-6 w-6 text-blue-600" />
+            <Package className="h-6 w-6 text-[#546A7A]" />
             <CardTitle>Add New Asset</CardTitle>
           </div>
           <CardDescription>

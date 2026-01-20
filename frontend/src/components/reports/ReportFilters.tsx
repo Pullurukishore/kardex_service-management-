@@ -93,7 +93,7 @@ export function ReportFilters({
         <label className="text-sm font-medium text-foreground flex items-center gap-2">
           Zone
           {isZoneUser && (
-            <span className="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+            <span className="text-xs font-normal text-[#546A7A] bg-[#96AEC2]/10 px-2 py-0.5 rounded">
               Your Zone
             </span>
           )}
@@ -103,7 +103,7 @@ export function ReportFilters({
           onValueChange={(value) => handleFilterChange('zoneId', value || undefined)}
           disabled={isZoneUser}
         >
-          <SelectTrigger className={isZoneUser ? 'bg-gray-50 cursor-not-allowed' : ''}>
+          <SelectTrigger className={isZoneUser ? 'bg-[#AEBFC3]/10 cursor-not-allowed' : ''}>
             <SelectValue placeholder="All zones" />
           </SelectTrigger>
           <SelectContent>

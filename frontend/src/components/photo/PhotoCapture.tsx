@@ -169,31 +169,31 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   };
 
   return (
-    <div className={cn("bg-white rounded-xl border border-gray-200 overflow-hidden", className)}>
+    <div className={cn("bg-white rounded-xl border border-[#92A2A5] overflow-hidden", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b border-[#AEBFC3]/30 bg-[#AEBFC3]/10">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100">
-            <Camera className="h-4 w-4 text-purple-600" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#6F8A9D]/20">
+            <Camera className="h-4 w-4 text-[#546A7A]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900">{label}</span>
+              <span className="font-semibold text-[#546A7A]">{label}</span>
               {required && (
-                <span className="px-2 py-0.5 text-xs font-medium text-red-600 bg-red-50 rounded-full">
+                <span className="px-2 py-0.5 text-xs font-medium text-[#9E3B47] bg-[#E17F70]/10 rounded-full">
                   Required
                 </span>
               )}
             </div>
             {description && (
-              <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+              <p className="text-sm text-[#AEBFC3]0 mt-0.5">{description}</p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-1 text-sm">
-          <span className="font-bold text-purple-600">{capturedPhotos.length}</span>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-500">{maxPhotos}</span>
+          <span className="font-bold text-[#546A7A]">{capturedPhotos.length}</span>
+          <span className="text-[#979796]">/</span>
+          <span className="text-[#AEBFC3]0">{maxPhotos}</span>
         </div>
       </div>
 
@@ -202,7 +202,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         {!isCapturing && capturedPhotos.length < maxPhotos && (
           <Button
             onClick={startCamera}
-            className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm"
+            className="w-full h-12 bg-[#546A7A] hover:bg-[#546A7A] text-white font-medium rounded-lg shadow-sm"
           >
             <Camera className="h-5 w-5 mr-2" />
             Open Camera
@@ -212,7 +212,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         {/* Camera View */}
         {isCapturing && (
           <div className="space-y-3">
-            <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-inner">
+            <div className="relative bg-[#546A7A] rounded-xl overflow-hidden shadow-inner">
               <video
                 ref={videoRef}
                 className="w-full h-56 object-cover"
@@ -239,7 +239,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
                   disabled={capturedPhotos.length >= maxPhotos}
                   className="w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
                 >
-                  <div className="w-14 h-14 flex items-center justify-center bg-purple-600 rounded-full">
+                  <div className="w-14 h-14 flex items-center justify-center bg-[#546A7A] rounded-full">
                     <Camera className="h-6 w-6 text-white" />
                   </div>
                 </button>
@@ -259,10 +259,10 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         {capturedPhotos.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 flex items-center justify-center bg-green-100 rounded-full">
-                <Check className="h-3 w-3 text-green-600" />
+              <div className="w-5 h-5 flex items-center justify-center bg-[#A2B9AF]/20 rounded-full">
+                <Check className="h-3 w-3 text-[#4F6A64]" />
               </div>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-[#5D6E73]">
                 {capturedPhotos.length} photo{capturedPhotos.length > 1 ? 's' : ''} captured
               </span>
             </div>
@@ -273,7 +273,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
                   key={photo.id}
                   className="relative flex-shrink-0 group"
                 >
-                  <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 shadow-sm">
+                  <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-[#92A2A5] shadow-sm">
                     <img
                       src={photo.dataUrl}
                       alt={`Photo ${index + 1}`}
@@ -284,7 +284,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
                   {/* Delete button */}
                   <button
                     onClick={() => deletePhoto(photo.id)}
-                    className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-red-500 text-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-[#E17F70]/100 text-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#9E3B47]"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -300,7 +300,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               {capturedPhotos.length < maxPhotos && !isCapturing && (
                 <button
                   onClick={startCamera}
-                  className="w-20 h-20 flex-shrink-0 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-purple-400 hover:text-purple-500 hover:bg-purple-50 transition-colors"
+                  className="w-20 h-20 flex-shrink-0 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#92A2A5] text-[#979796] hover:border-[#6F8A9D] hover:text-[#6F8A9D] hover:bg-[#6F8A9D]/10 transition-colors"
                 >
                   <Camera className="h-5 w-5" />
                   <span className="text-xs mt-1">Add</span>
@@ -312,22 +312,22 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 
         {/* Status Messages */}
         {required && capturedPhotos.length === 0 && !isCapturing && (
-          <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-amber-100">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <div className="flex items-center gap-3 p-3 bg-[#CE9F6B]/10 border border-[#CE9F6B]/50 rounded-lg">
+            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#CE9F6B]/20">
+              <AlertTriangle className="h-4 w-4 text-[#976E44]" />
             </div>
-            <p className="text-sm text-amber-700">
+            <p className="text-sm text-[#976E44]">
               Photo verification is required to continue
             </p>
           </div>
         )}
 
         {capturedPhotos.length >= maxPhotos && (
-          <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-green-100">
-              <Check className="h-4 w-4 text-green-600" />
+          <div className="flex items-center gap-3 p-3 bg-[#A2B9AF]/10 border border-[#A2B9AF] rounded-lg">
+            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#A2B9AF]/20">
+              <Check className="h-4 w-4 text-[#4F6A64]" />
             </div>
-            <p className="text-sm text-green-700">
+            <p className="text-sm text-[#4F6A64]">
               All photos captured! Ready to proceed.
             </p>
           </div>

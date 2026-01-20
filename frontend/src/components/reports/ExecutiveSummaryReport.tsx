@@ -17,30 +17,30 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
     <div className="space-y-8">
       {/* Executive KPI Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 text-sm font-medium">Total Tickets</p>
-                <p className="text-3xl font-bold text-blue-900">{reportData.summary?.totalTickets || 0}</p>
+                <p className="text-[#546A7A] text-sm font-medium">Total Tickets</p>
+                <p className="text-3xl font-bold text-[#546A7A]">{reportData.summary?.totalTickets || 0}</p>
               </div>
-              <BarChart3 className="h-8 w-8 text-blue-500" />
+              <BarChart3 className="h-8 w-8 text-[#6F8A9D]" />
             </div>
             <div className="mt-4">
               <Progress value={(reportData.summary?.resolutionRate || 0)} className="h-2" />
-              <p className="text-xs text-blue-600 mt-1">{(reportData.summary?.resolutionRate || 0).toFixed(1)}% Resolution Rate</p>
+              <p className="text-xs text-[#546A7A] mt-1">{(reportData.summary?.resolutionRate || 0).toFixed(1)}% Resolution Rate</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-600 text-sm font-medium">Customer Satisfaction</p>
-                <p className="text-3xl font-bold text-green-900">{reportData.summary?.customerSatisfaction || 0}/5</p>
+                <p className="text-[#4F6A64] text-sm font-medium">Customer Satisfaction</p>
+                <p className="text-3xl font-bold text-[#4F6A64]">{reportData.summary?.customerSatisfaction || 0}/5</p>
               </div>
-              <Star className="h-8 w-8 text-green-500" />
+              <Star className="h-8 w-8 text-[#82A094]" />
             </div>
             <div className="mt-4 flex">
               {[...Array(5)].map((_, i) => (
@@ -48,8 +48,8 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                   key={i}
                   className={`h-4 w-4 ${
                     i < Math.floor(reportData.summary?.customerSatisfaction || 0)
-                      ? 'fill-green-400 text-green-400'
-                      : 'text-green-300'
+                      ? 'fill-green-400 text-[#82A094]'
+                      : 'text-[#82A094]'
                   }`}
                 />
               ))}
@@ -57,34 +57,34 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-[#6F8A9D]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 text-sm font-medium">Avg Resolution Time</p>
-                <p className="text-3xl font-bold text-purple-900">{reportData.summary?.avgResolutionTimeHours || 0}h</p>
+                <p className="text-[#546A7A] text-sm font-medium">Avg Resolution Time</p>
+                <p className="text-3xl font-bold text-[#546A7A]">{reportData.summary?.avgResolutionTimeHours || 0}h</p>
               </div>
-              <Clock className="h-8 w-8 text-purple-500" />
+              <Clock className="h-8 w-8 text-[#6F8A9D]" />
             </div>
             <div className="mt-4">
-              <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+              <Badge variant="secondary" className="bg-[#6F8A9D]/20 text-[#546A7A]">
                 Target: 4h
               </Badge>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+        <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B]/50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-600 text-sm font-medium">Active Assets</p>
-                <p className="text-3xl font-bold text-amber-900">{reportData.summary?.activeAssets || 0}</p>
+                <p className="text-[#976E44] text-sm font-medium">Active Assets</p>
+                <p className="text-3xl font-bold text-[#976E44]">{reportData.summary?.activeAssets || 0}</p>
               </div>
-              <Settings className="h-8 w-8 text-amber-500" />
+              <Settings className="h-8 w-8 text-[#CE9F6B]" />
             </div>
             <div className="mt-4">
-              <p className="text-xs text-amber-600">Across {reportData.summary?.totalCustomers || 0} customers</p>
+              <p className="text-xs text-[#976E44]">Across {reportData.summary?.totalCustomers || 0} customers</p>
             </div>
           </CardContent>
         </Card>
@@ -109,15 +109,15 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       <div className="mt-2 space-y-2">
                         <div className="flex justify-between">
                           <span className="text-sm">Created:</span>
-                          <span className="font-semibold text-blue-600">{trend.ticketsCreated}</span>
+                          <span className="font-semibold text-[#546A7A]">{trend.ticketsCreated}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm">Resolved:</span>
-                          <span className="font-semibold text-green-600">{trend.ticketsResolved}</span>
+                          <span className="font-semibold text-[#4F6A64]">{trend.ticketsResolved}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm">Avg Rating:</span>
-                          <span className="font-semibold text-amber-600">{trend.avgRating?.toFixed(1) || 'N/A'}</span>
+                          <span className="font-semibold text-[#976E44]">{trend.avgRating?.toFixed(1) || 'N/A'}</span>
                         </div>
                       </div>
                     </div>
@@ -143,10 +143,10 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {reportData.zonePerformance.slice(0, 6).map((zone: any, index: number) => (
-                <Card key={zone.name} className="bg-gradient-to-r from-slate-50 to-slate-100">
+                <Card key={zone.name} className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-slate-900">{zone.name}</h4>
+                      <h4 className="font-semibold text-[#546A7A]">{zone.name}</h4>
                       <Badge 
                         variant={zone.efficiency > 80 ? "default" : zone.efficiency > 60 ? "secondary" : "destructive"}
                         className="text-xs"
@@ -156,11 +156,11 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">Tickets:</span>
+                        <span className="text-[#5D6E73]">Tickets:</span>
                         <span className="font-medium">{zone.ticketCount}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-600">Customers:</span>
+                        <span className="text-[#5D6E73]">Customers:</span>
                         <span className="font-medium">{zone.customerCount}</span>
                       </div>
                       <Progress value={zone.efficiency} className="h-2" />
@@ -194,7 +194,7 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="transparent"
-                      className="text-gray-200"
+                      className="text-[#AEBFC3]"
                     />
                     <circle
                       cx="40"
@@ -205,14 +205,14 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       fill="transparent"
                       strokeDasharray={`${2 * Math.PI * 36}`}
                       strokeDashoffset={`${2 * Math.PI * 36 * (1 - (reportData.kpis.firstCallResolution || 0) / 100)}`}
-                      className="text-blue-500"
+                      className="text-[#6F8A9D]"
                     />
                   </svg>
-                  <span className="absolute text-lg font-bold text-blue-600">
+                  <span className="absolute text-lg font-bold text-[#546A7A]">
                     {reportData.kpis.firstCallResolution}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-gray-700">First Call Resolution</p>
+                <p className="text-sm font-medium text-[#5D6E73]">First Call Resolution</p>
               </div>
 
               <div className="text-center">
@@ -225,7 +225,7 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="transparent"
-                      className="text-gray-200"
+                      className="text-[#AEBFC3]"
                     />
                     <circle
                       cx="40"
@@ -236,14 +236,14 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       fill="transparent"
                       strokeDasharray={`${2 * Math.PI * 36}`}
                       strokeDashoffset={`${2 * Math.PI * 36 * (1 - (reportData.kpis.slaCompliance || 0) / 100)}`}
-                      className="text-green-500"
+                      className="text-[#82A094]"
                     />
                   </svg>
-                  <span className="absolute text-lg font-bold text-green-600">
+                  <span className="absolute text-lg font-bold text-[#4F6A64]">
                     {reportData.kpis.slaCompliance}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-gray-700">SLA Compliance</p>
+                <p className="text-sm font-medium text-[#5D6E73]">SLA Compliance</p>
               </div>
 
               <div className="text-center">
@@ -256,7 +256,7 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="transparent"
-                      className="text-gray-200"
+                      className="text-[#AEBFC3]"
                     />
                     <circle
                       cx="40"
@@ -267,14 +267,14 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       fill="transparent"
                       strokeDasharray={`${2 * Math.PI * 36}`}
                       strokeDashoffset={`${2 * Math.PI * 36 * (1 - (reportData.kpis.customerRetention || 0) / 100)}`}
-                      className="text-purple-500"
+                      className="text-[#6F8A9D]"
                     />
                   </svg>
-                  <span className="absolute text-lg font-bold text-purple-600">
+                  <span className="absolute text-lg font-bold text-[#546A7A]">
                     {reportData.kpis.customerRetention}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-gray-700">Customer Retention</p>
+                <p className="text-sm font-medium text-[#5D6E73]">Customer Retention</p>
               </div>
 
               <div className="text-center">
@@ -287,7 +287,7 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="transparent"
-                      className="text-gray-200"
+                      className="text-[#AEBFC3]"
                     />
                     <circle
                       cx="40"
@@ -298,14 +298,14 @@ export function ExecutiveSummaryReport({ reportData }: ExecutiveSummaryReportPro
                       fill="transparent"
                       strokeDasharray={`${2 * Math.PI * 36}`}
                       strokeDashoffset={`${2 * Math.PI * 36 * (1 - (reportData.kpis.operationalEfficiency || 0) / 100)}`}
-                      className="text-amber-500"
+                      className="text-[#CE9F6B]"
                     />
                   </svg>
-                  <span className="absolute text-lg font-bold text-amber-600">
+                  <span className="absolute text-lg font-bold text-[#976E44]">
                     {reportData.kpis.operationalEfficiency}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-gray-700">Operational Efficiency</p>
+                <p className="text-sm font-medium text-[#5D6E73]">Operational Efficiency</p>
               </div>
             </div>
           </CardContent>

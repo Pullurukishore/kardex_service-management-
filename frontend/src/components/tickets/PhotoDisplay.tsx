@@ -202,9 +202,9 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
   return (
     <>
       {/* Premium Photo Card with Direct Thumbnails */}
-      <div className={`mt-3 overflow-hidden rounded-xl border border-purple-200/60 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/40 shadow-lg shadow-purple-100/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-200/60 ${className}`}>
+      <div className={`mt-3 overflow-hidden rounded-xl border border-[#6F8A9D]/60 bg-gradient-to-br from-white via-purple-50/30 to-[#EEC1BF]/10/40 shadow-lg shadow-[#6F8A9D]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#6F8A9D]/30 ${className}`}>
         {/* Premium Header */}
-        <div className="bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 px-4 py-2.5">
+        <div className="bg-gradient-to-r from-[#546A7A] via-fuchsia-600 to-[#9E3B47] px-4 py-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg ring-1 ring-white/30">
@@ -225,18 +225,18 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
           {/* Photo Thumbnails Grid - Show directly */}
           {loading ? (
             <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-5 w-5 animate-spin text-purple-600" />
-              <span className="ml-2 text-xs text-slate-500">Loading photos...</span>
+              <Loader2 className="h-5 w-5 animate-spin text-[#546A7A]" />
+              <span className="ml-2 text-xs text-[#757777]">Loading photos...</span>
             </div>
           ) : cloudinaryPhotos.length > 0 ? (
             <div className={`grid gap-2 ${cloudinaryPhotos.length === 1 ? 'grid-cols-1' : cloudinaryPhotos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
               {cloudinaryPhotos.slice(0, 6).map((photo, index) => (
                 <div 
                   key={photo.id} 
-                  className="relative group cursor-pointer rounded-lg overflow-hidden border border-purple-100 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="relative group cursor-pointer rounded-lg overflow-hidden border border-[#6F8A9D]/30 shadow-sm hover:shadow-md transition-all duration-200"
                   onClick={() => setSelectedPhoto(photo)}
                 >
-                  <div className="aspect-square bg-slate-100">
+                  <div className="aspect-square bg-[#AEBFC3]/20">
                     <img
                       src={photo.thumbnailUrl}
                       alt={`Verification photo ${index + 1}`}
@@ -257,32 +257,32 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
               ))}
               {cloudinaryPhotos.length > 6 && (
                 <div 
-                  className="aspect-square bg-gradient-to-br from-purple-100 to-fuchsia-100 rounded-lg flex items-center justify-center cursor-pointer hover:from-purple-200 hover:to-fuchsia-200 transition-colors border border-purple-200"
+                  className="aspect-square bg-gradient-to-br from-[#6F8A9D]/20 to-[#EEC1BF]/20 rounded-lg flex items-center justify-center cursor-pointer hover:from-[#6F8A9D]/30 hover:to-[#EEC1BF]/30 transition-colors border border-[#6F8A9D]"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <div className="text-center">
-                    <span className="text-lg font-bold text-purple-700">+{cloudinaryPhotos.length - 6}</span>
-                    <p className="text-[10px] text-purple-600">more</p>
+                    <span className="text-lg font-bold text-[#546A7A]">+{cloudinaryPhotos.length - 6}</span>
+                    <p className="text-[10px] text-[#546A7A]">more</p>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <FileImage className="h-4 w-4 text-purple-600" />
+            <div className="flex items-center gap-3 p-3 bg-[#AEBFC3]/10 rounded-lg">
+              <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
+                <FileImage className="h-4 w-4 text-[#546A7A]" />
               </div>
               <div>
-                <p className="font-semibold text-slate-800 text-sm">
+                <p className="font-semibold text-[#546A7A] text-sm">
                   {photoInfo.count} Verification Photo{photoInfo.count > 1 ? 's' : ''}
                 </p>
-                <p className="text-xs text-slate-500">Photos captured but not available for preview</p>
+                <p className="text-xs text-[#757777]">Photos captured but not available for preview</p>
               </div>
             </div>
           )}
           
           {/* Photo Meta Info */}
-          <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs text-[#757777] pt-1 border-t border-[#AEBFC3]/30">
             <span className="flex items-center gap-1">
               <FileImage className="h-3 w-3" />
               {photoInfo.size}
@@ -300,7 +300,7 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Camera className="h-5 w-5 text-purple-600" />
+              <Camera className="h-5 w-5 text-[#546A7A]" />
               Verification Photos ({photoUrls.length || cloudinaryPhotos.length || photoInfo?.count || 0})
             </DialogTitle>
           </DialogHeader>
@@ -308,16 +308,16 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
           <div className="space-y-4">
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
-                <span className="ml-2 text-sm text-gray-600">Loading photos...</span>
+                <Loader2 className="h-6 w-6 animate-spin text-[#546A7A]" />
+                <span className="ml-2 text-sm text-[#5D6E73]">Loading photos...</span>
               </div>
             ) : photoUrls.length > 0 ? (
               <>
                 {/* Photo Grid from URLs */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {photoUrls.map((url: string, index: number) => (
-                    <div key={index} className="group relative bg-white rounded-lg border border-purple-200 overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="relative aspect-video bg-gray-100">
+                    <div key={index} className="group relative bg-white rounded-lg border border-[#6F8A9D] overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="relative aspect-video bg-[#AEBFC3]/20">
                         <img
                           src={getPhotoUrl(url)}
                           alt={`Verification photo ${index + 1}`}
@@ -369,11 +369,11 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                       </div>
                       
                       <div className="p-3">
-                        <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                        <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
                           <span className="truncate flex-1">Photo {index + 1}</span>
                           <span>Cloudinary</span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
                           <Clock className="h-3 w-3" />
                           <span>{photoInfo?.time || 'Recently captured'}</span>
                         </div>
@@ -383,12 +383,12 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                 </div>
                 
                 {/* Photo Info Summary */}
-                <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                <div className="bg-[#6F8A9D]/10 p-3 rounded-lg border border-[#6F8A9D]">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-800 font-medium">
+                    <span className="text-[#546A7A] font-medium">
                       {photoUrls.length} verification photos stored permanently
                     </span>
-                    <span className="text-purple-600">
+                    <span className="text-[#546A7A]">
                       Size: {photoInfo?.size || 'Unknown'}
                     </span>
                   </div>
@@ -399,8 +399,8 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                 {/* Photo Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {cloudinaryPhotos.map((photo, index) => (
-                    <div key={photo.id} className="group relative bg-white rounded-lg border border-purple-200 overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="relative aspect-video bg-gray-100">
+                    <div key={photo.id} className="group relative bg-white rounded-lg border border-[#6F8A9D] overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="relative aspect-video bg-[#AEBFC3]/20">
                         <img
                           src={photo.thumbnailUrl}
                           alt={`Verification photo ${index + 1}`}
@@ -434,11 +434,11 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                       </div>
                       
                       <div className="p-3">
-                        <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                        <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
                           <span className="truncate flex-1">Photo {index + 1}</span>
                           <span>{Math.round(photo.size / 1024)}KB</span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
                           <Clock className="h-3 w-3" />
                           <span>{new Date(photo.createdAt).toLocaleString()}</span>
                         </div>
@@ -448,44 +448,44 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                 </div>
                 
                 {/* Photo Info Summary */}
-                <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                <div className="bg-[#6F8A9D]/10 p-3 rounded-lg border border-[#6F8A9D]">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-purple-800 font-medium">
+                    <span className="text-[#546A7A] font-medium">
                       {cloudinaryPhotos.length} verification photos stored permanently
                     </span>
-                    <span className="text-purple-600">
+                    <span className="text-[#546A7A]">
                       Total: {Math.round(cloudinaryPhotos.reduce((sum, p) => sum + p.size, 0) / 1024)}KB
                     </span>
                   </div>
                 </div>
               </>
             ) : (
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <div className="bg-[#6F8A9D]/10 p-4 rounded-lg border border-[#6F8A9D]">
                 <div className="text-center space-y-3">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                    <FileImage className="h-8 w-8 text-purple-600" />
+                  <div className="mx-auto w-16 h-16 bg-[#6F8A9D]/20 rounded-full flex items-center justify-center">
+                    <FileImage className="h-8 w-8 text-[#546A7A]" />
                   </div>
                   
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-[#546A7A]">
                       {photoInfo.count} Photo{photoInfo.count > 1 ? 's' : ''} Captured
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-[#5D6E73] mt-1">
                       Photos were captured but may not be available for viewing
                     </p>
                   </div>
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Photos:</span>
+                      <span className="text-[#5D6E73]">Photos:</span>
                       <span className="font-medium">{photoInfo.count}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Total Size:</span>
+                      <span className="text-[#5D6E73]">Total Size:</span>
                       <span className="font-medium">{photoInfo.size}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Captured:</span>
+                      <span className="text-[#5D6E73]">Captured:</span>
                       <span className="font-medium">{photoInfo.time}</span>
                     </div>
                   </div>

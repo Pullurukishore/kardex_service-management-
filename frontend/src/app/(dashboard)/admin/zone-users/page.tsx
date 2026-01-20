@@ -57,18 +57,18 @@ export default async function ZoneUsersPage({ searchParams }: ZoneUsersPageProps
 
   return (
     <div className="space-y-6">
-      {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-800 p-6 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
+      {/* Desktop Header with Gradient - Kardex Colors */}
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#96AEC2] via-[#6F8A9D] to-[#546A7A] p-6 text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Zone Users & Managers</h1>
-            <p className="text-cyan-100">
+            <p className="text-white/80">
               Manage zone users and zone managers assigned to service zones and their permissions
             </p>
           </div>
           <Link href="/admin/zone-users/new">
-            <Button className="bg-white text-cyan-600 hover:bg-cyan-50 shadow-lg">
+            <Button className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/20 shadow-lg">
               <Plus className="mr-2 h-4 w-4" />
               Add Zone User
             </Button>
@@ -83,7 +83,7 @@ export default async function ZoneUsersPage({ searchParams }: ZoneUsersPageProps
           description="Manage zone users and managers assigned to service zones"
           action={
             <Link href="/admin/zone-users/new">
-              <Button className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg">
+              <Button className="bg-[#6F8A9D] hover:bg-[#546A7A] text-white shadow-lg">
                 <Plus className="mr-2 h-4 w-4" /> Add
               </Button>
             </Link>

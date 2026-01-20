@@ -59,19 +59,19 @@ export function AddContactDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden border-0 shadow-2xl">
         {/* Gradient header */}
-        <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-700 p-6 text-white">
+        <div className="bg-gradient-to-br from-[#546A7A] via-[#546A7A] to-[#546A7A] p-6 text-white">
           <div className="flex items-center space-x-4">
             <div className="relative">
               <div className="h-14 w-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30 shadow-lg">
                 <UserPlus className="h-7 w-7 text-white" />
               </div>
-              <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow">
+              <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-br from-[#CE9F6B] to-[#CE9F6B] flex items-center justify-center shadow">
                 <Sparkles className="h-3 w-3 text-white" />
               </div>
             </div>
             <div>
               <DialogTitle className="text-xl font-bold text-white">Add New Contact</DialogTitle>
-              <DialogDescription className="text-purple-100 mt-0.5">
+              <DialogDescription className="text-[#6F8A9D] mt-0.5">
                 Create a new contact for the selected customer
               </DialogDescription>
             </div>
@@ -86,9 +86,9 @@ export function AddContactDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
-                      <div className="h-6 w-6 rounded-md bg-purple-100 flex items-center justify-center">
-                        <User className="h-3.5 w-3.5 text-purple-600" />
+                    <FormLabel className="flex items-center gap-2 text-[#5D6E73] font-medium">
+                      <div className="h-6 w-6 rounded-md bg-[#6F8A9D]/20 flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 text-[#546A7A]" />
                       </div>
                       Full Name
                     </FormLabel>
@@ -97,7 +97,7 @@ export function AddContactDialog({
                         placeholder="Enter contact's full name" 
                         {...field} 
                         disabled={isCreating}
-                        className="h-11 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        className="h-11 border-[#92A2A5] focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-all"
                       />
                     </FormControl>
                     <FormMessage />
@@ -110,9 +110,9 @@ export function AddContactDialog({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
-                      <div className="h-6 w-6 rounded-md bg-green-100 flex items-center justify-center">
-                        <Phone className="h-3.5 w-3.5 text-green-600" />
+                    <FormLabel className="flex items-center gap-2 text-[#5D6E73] font-medium">
+                      <div className="h-6 w-6 rounded-md bg-[#A2B9AF]/20 flex items-center justify-center">
+                        <Phone className="h-3.5 w-3.5 text-[#4F6A64]" />
                       </div>
                       Phone Number
                     </FormLabel>
@@ -121,7 +121,7 @@ export function AddContactDialog({
                         placeholder="+1 (555) 123-4567" 
                         {...field} 
                         disabled={isCreating}
-                        className="h-11 border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                        className="h-11 border-[#92A2A5] focus:ring-2 focus:ring-[#82A094] focus:border-[#82A094] transition-all"
                       />
                     </FormControl>
                     <FormMessage />
@@ -129,20 +129,20 @@ export function AddContactDialog({
                 )}
               />
               
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#AEBFC3]/30">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isCreating}
-                  className="hover:bg-gray-100 transition-all"
+                  className="hover:bg-[#AEBFC3]/20 transition-all"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isCreating}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                  className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                 >
                   {isCreating ? (
                     <>

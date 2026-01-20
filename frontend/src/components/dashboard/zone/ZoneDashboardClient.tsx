@@ -177,13 +177,13 @@ export default function ZoneDashboardClient({
   // Show loading state during initial data fetch
   if (isInitialLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center">
-            <RefreshCw className="h-8 w-8 animate-spin text-indigo-600" />
+            <RefreshCw className="h-8 w-8 animate-spin text-[#546A7A]" />
           </div>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Loading Zone Dashboard</h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <h3 className="mt-4 text-lg font-medium text-[#546A7A]">Loading Zone Dashboard</h3>
+          <p className="mt-2 text-sm text-[#5D6E73]">
             Fetching real-time data from backend...
           </p>
         </div>
@@ -193,11 +193,11 @@ export default function ZoneDashboardClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-[#9E3B47]"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
@@ -211,8 +211,8 @@ export default function ZoneDashboardClient({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">Error loading zone dashboard</h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <h3 className="mt-4 text-lg font-medium text-[#546A7A]">Error loading zone dashboard</h3>
+          <p className="mt-2 text-sm text-[#5D6E73]">
             {error}
           </p>
           <div className="mt-6">
@@ -220,7 +220,7 @@ export default function ZoneDashboardClient({
               type="button"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+              className="inline-flex items-center rounded-md bg-[#546A7A] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#546A7A]/100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
             >
               {isRefreshing ? (
                 <>
@@ -238,7 +238,7 @@ export default function ZoneDashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-4 md:p-6 lg:p-8">
       {/* Zone Executive Header - Always visible */}
       <ZoneExecutiveHeader 
         zoneData={zoneDashboardData?.zone || {
@@ -259,8 +259,8 @@ export default function ZoneDashboardClient({
       {isRefreshing && (
         <div className="fixed top-4 right-4 z-50">
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-lg">
-            <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
-            <span className="text-sm font-medium text-gray-700">Updating data...</span>
+            <RefreshCw className="w-4 h-4 animate-spin text-[#546A7A]" />
+            <span className="text-sm font-medium text-[#5D6E73]">Updating data...</span>
           </div>
         </div>
       )}

@@ -48,15 +48,15 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       >
         <div
           ref={sliderRef}
-          className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-200 cursor-pointer"
+          className="relative h-2 w-full grow overflow-hidden rounded-full bg-[#92A2A5]/30 cursor-pointer"
           onMouseDown={handleMouseDown}
         >
           <div 
-            className="absolute h-full bg-purple-600 rounded-full"
+            className="absolute h-full bg-[#546A7A] rounded-full"
             style={{ width: `${percentage}%` }}
           />
           <div
-            className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 block h-5 w-5 rounded-full border-2 border-purple-600 bg-white shadow-lg cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+            className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 block h-5 w-5 rounded-full border-2 border-[#546A7A] bg-white shadow-lg cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6F8A9D] focus-visible:ring-offset-2"
             style={{ left: `${percentage}%` }}
           />
         </div>

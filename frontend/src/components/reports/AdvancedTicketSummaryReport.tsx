@@ -191,13 +191,13 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
     <div className="space-y-6">
       {/* Executive Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <Card className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Tickets</p>
+                <p className="text-[#96AEC2] text-sm font-medium">Total Tickets</p>
                 <p className="text-3xl font-bold mt-2">{totalTickets}</p>
-                <p className="text-blue-100 text-xs mt-1">All time high</p>
+                <p className="text-[#96AEC2] text-xs mt-1">All time high</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg">
                 <BarChart3 className="h-8 w-8" />
@@ -206,13 +206,13 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <Card className="bg-gradient-to-br from-[#82A094] to-[#4F6A64] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Resolved</p>
+                <p className="text-[#A2B9AF] text-sm font-medium">Resolved</p>
                 <p className="text-3xl font-bold mt-2">{resolvedTickets}</p>
-                <p className="text-green-100 text-xs mt-1">{resolutionRate}% success rate</p>
+                <p className="text-[#A2B9AF] text-xs mt-1">{resolutionRate}% success rate</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg">
                 <CheckCircle className="h-8 w-8" />
@@ -221,13 +221,13 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+        <Card className="bg-gradient-to-br from-[#CE9F6B] to-[#976E44] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-100 text-sm font-medium">Avg Resolution</p>
+                <p className="text-[#EEC1BF] text-sm font-medium">Avg Resolution</p>
                 <p className="text-3xl font-bold mt-2">{avgResolutionTime}</p>
-                <p className="text-amber-100 text-xs mt-1">Business hours</p>
+                <p className="text-[#EEC1BF] text-xs mt-1">Business hours</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg">
                 <Clock className="h-8 w-8" />
@@ -236,13 +236,13 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+        <Card className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">First Response</p>
+                <p className="text-[#6F8A9D] text-sm font-medium">First Response</p>
                 <p className="text-3xl font-bold mt-2">{avgFirstResponse}</p>
-                <p className="text-purple-100 text-xs mt-1">Average time</p>
+                <p className="text-[#6F8A9D] text-xs mt-1">Average time</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg">
                 <Zap className="h-8 w-8" />
@@ -258,7 +258,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-600" />
+              <Activity className="h-5 w-5 text-[#546A7A]" />
               Status Distribution
             </CardTitle>
             <CardDescription>Breakdown of tickets by current status</CardDescription>
@@ -288,9 +288,9 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
             {/* Status breakdown list */}
             <div className="mt-4 grid grid-cols-2 gap-2">
               {Object.entries(statusDistribution || {}).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-600 capitalize">{status.replace('_', ' ')}</span>
-                  <span className="font-semibold text-gray-900">{count}</span>
+                <div key={status} className="flex items-center justify-between p-2 bg-[#AEBFC3]/10 rounded">
+                  <span className="text-sm text-[#5D6E73] capitalize">{status.replace('_', ' ')}</span>
+                  <span className="font-semibold text-[#546A7A]">{count}</span>
                 </div>
               ))}
             </div>
@@ -301,7 +301,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-purple-600" />
+              <Target className="h-5 w-5 text-[#546A7A]" />
               Priority Distribution
             </CardTitle>
             <CardDescription>Breakdown of tickets by priority level</CardDescription>
@@ -332,9 +332,9 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
             {/* Priority breakdown list */}
             <div className="mt-4 grid grid-cols-2 gap-2">
               {Object.entries(priorityDistribution || {}).map(([priority, count]) => (
-                <div key={priority} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-600">{priority}</span>
-                  <span className="font-semibold text-gray-900">{count}</span>
+                <div key={priority} className="flex items-center justify-between p-2 bg-[#AEBFC3]/10 rounded">
+                  <span className="text-sm text-[#5D6E73]">{priority}</span>
+                  <span className="font-semibold text-[#546A7A]">{count}</span>
                 </div>
               ))}
             </div>
@@ -347,7 +347,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-indigo-600" />
+              <Calendar className="h-5 w-5 text-[#546A7A]" />
               Monthly Ticket Analysis - Last 12 Months
             </CardTitle>
             <CardDescription>Year-over-year ticket volume and resolution performance</CardDescription>
@@ -395,21 +395,21 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
             
             {/* Monthly summary stats */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-600 font-medium">Avg Monthly Created</p>
-                <p className="text-2xl font-bold text-blue-900">
+              <div className="text-center p-3 bg-[#96AEC2]/10 rounded-lg">
+                <p className="text-sm text-[#546A7A] font-medium">Avg Monthly Created</p>
+                <p className="text-2xl font-bold text-[#546A7A]">
                   {dailyTrends.length > 0 ? Math.round(dailyTrends.reduce((sum: number, d: any) => sum + (d.created || 0), 0) / Math.max(1, Math.ceil(dailyTrends.length / 30))) : 0}
                 </p>
               </div>
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <p className="text-sm text-green-600 font-medium">Avg Monthly Resolved</p>
-                <p className="text-2xl font-bold text-green-900">
+              <div className="text-center p-3 bg-[#A2B9AF]/10 rounded-lg">
+                <p className="text-sm text-[#4F6A64] font-medium">Avg Monthly Resolved</p>
+                <p className="text-2xl font-bold text-[#4F6A64]">
                   {dailyTrends.length > 0 ? Math.round(dailyTrends.reduce((sum: number, d: any) => sum + (d.resolved || 0), 0) / Math.max(1, Math.ceil(dailyTrends.length / 30))) : 0}
                 </p>
               </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <p className="text-sm text-purple-600 font-medium">Peak Month</p>
-                <p className="text-lg font-bold text-purple-900">
+              <div className="text-center p-3 bg-[#6F8A9D]/10 rounded-lg">
+                <p className="text-sm text-[#546A7A] font-medium">Peak Month</p>
+                <p className="text-lg font-bold text-[#546A7A]">
                   {(() => {
                     const monthlyTotals: Record<string, number> = {};
                     dailyTrends.forEach((d: any) => {
@@ -421,9 +421,9 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
                   })()}
                 </p>
               </div>
-              <div className="text-center p-3 bg-amber-50 rounded-lg">
-                <p className="text-sm text-amber-600 font-medium">Resolution Rate</p>
-                <p className="text-2xl font-bold text-amber-900">{resolutionRate}%</p>
+              <div className="text-center p-3 bg-[#CE9F6B]/10 rounded-lg">
+                <p className="text-sm text-[#976E44] font-medium">Resolution Rate</p>
+                <p className="text-2xl font-bold text-[#976E44]">{resolutionRate}%</p>
               </div>
             </div>
           </CardContent>
@@ -435,7 +435,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+              <TrendingUp className="h-5 w-5 text-[#4F6A64]" />
               Daily Ticket Trends
             </CardTitle>
             <CardDescription>Day-by-day ticket creation and resolution patterns</CardDescription>
@@ -501,7 +501,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
+                <Users className="h-5 w-5 text-[#546A7A]" />
                 All Zones Performance Summary
               </CardTitle>
               <CardDescription>Aggregated analytics across all service zones</CardDescription>
@@ -509,25 +509,25 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
             <CardContent>
               {/* Zone summary metrics */}
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-600 font-medium">Total Zones</p>
-                  <p className="text-3xl font-bold text-blue-900">{zoneDistribution.length}</p>
+                <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+                  <p className="text-sm text-[#546A7A] font-medium">Total Zones</p>
+                  <p className="text-3xl font-bold text-[#546A7A]">{zoneDistribution.length}</p>
                 </div>
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-green-600 font-medium">Total Tickets</p>
-                  <p className="text-3xl font-bold text-green-900">
+                <div className="p-4 bg-[#A2B9AF]/10 rounded-lg">
+                  <p className="text-sm text-[#4F6A64] font-medium">Total Tickets</p>
+                  <p className="text-3xl font-bold text-[#4F6A64]">
                     {zoneDistribution.reduce((sum, z: any) => sum + z.count, 0)}
                   </p>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <p className="text-sm text-purple-600 font-medium">Avg per Zone</p>
-                  <p className="text-3xl font-bold text-purple-900">
+                <div className="p-4 bg-[#6F8A9D]/10 rounded-lg">
+                  <p className="text-sm text-[#546A7A] font-medium">Avg per Zone</p>
+                  <p className="text-3xl font-bold text-[#546A7A]">
                     {Math.round(zoneDistribution.reduce((sum, z: any) => sum + z.count, 0) / zoneDistribution.length)}
                   </p>
                 </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                  <p className="text-sm text-amber-600 font-medium">Most Active</p>
-                  <p className="text-xl font-bold text-amber-900 truncate">
+                <div className="p-4 bg-[#CE9F6B]/10 rounded-lg">
+                  <p className="text-sm text-[#976E44] font-medium">Most Active</p>
+                  <p className="text-xl font-bold text-[#976E44] truncate">
                     {zoneDistribution.sort((a: any, b: any) => b.count - a.count)[0]?.zoneName.substring(0, 12) || 'N/A'}
                   </p>
                 </div>
@@ -564,7 +564,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
 
               {/* Detailed Zone Breakdown List */}
               <div className="mt-6">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">All Zones Breakdown</h4>
+                <h4 className="text-sm font-semibold text-[#5D6E73] mb-3">All Zones Breakdown</h4>
                 <div className="space-y-2">
                   {zoneDistribution.map((zone: any, index: number) => {
                     const totalZoneTickets = zoneDistribution.reduce((sum, z: any) => sum + z.count, 0);
@@ -572,18 +572,18 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
                     return (
                       <div 
                         key={zone.zoneId} 
-                        className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-transparent rounded-lg hover:from-blue-100 transition-colors"
+                        className="flex items-center justify-between p-3 bg-gradient-to-r from-[#96AEC2]/10 to-transparent rounded-lg hover:from-[#96AEC2]/20 transition-colors"
                       >
                         <div className="flex items-center gap-3 flex-1">
                           <div 
                             className="w-4 h-4 rounded-full flex-shrink-0" 
                             style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
                           />
-                          <span className="font-medium text-gray-900">{zone.zoneName}</span>
+                          <span className="font-medium text-[#546A7A]">{zone.zoneName}</span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-sm text-gray-500">{percentage}%</span>
-                          <span className="font-bold text-blue-600 min-w-[60px] text-right">
+                          <span className="text-sm text-[#AEBFC3]0">{percentage}%</span>
+                          <span className="font-bold text-[#546A7A] min-w-[60px] text-right">
                             {zone.count} tickets
                           </span>
                         </div>
@@ -594,8 +594,8 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
                 
                 {/* Debug info */}
                 {zoneDistribution.length < 4 && (
-                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm text-yellow-800">
+                  <div className="mt-4 p-3 bg-[#EEC1BF]/10 border border-[#CE9F6B] rounded-lg">
+                    <p className="text-sm text-[#976E44]">
                       ⚠️ Note: Showing {zoneDistribution.length} zone(s). If you have 4 zones but only see {zoneDistribution.length}, 
                       the other zones may not have any tickets in the selected date range.
                     </p>
@@ -611,7 +611,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-green-600" />
+                <Award className="h-5 w-5 text-[#4F6A64]" />
                 All Customers Performance Summary
               </CardTitle>
               <CardDescription>Aggregated ticket analytics across all customers</CardDescription>
@@ -619,25 +619,25 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
             <CardContent>
               {/* Customer summary metrics */}
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-green-600 font-medium">Total Customers</p>
-                  <p className="text-3xl font-bold text-green-900">{customerDistribution.length}</p>
+                <div className="p-4 bg-[#A2B9AF]/10 rounded-lg">
+                  <p className="text-sm text-[#4F6A64] font-medium">Total Customers</p>
+                  <p className="text-3xl font-bold text-[#4F6A64]">{customerDistribution.length}</p>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-600 font-medium">Total Tickets</p>
-                  <p className="text-3xl font-bold text-blue-900">
+                <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+                  <p className="text-sm text-[#546A7A] font-medium">Total Tickets</p>
+                  <p className="text-3xl font-bold text-[#546A7A]">
                     {customerDistribution.reduce((sum, c: any) => sum + c.count, 0)}
                   </p>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <p className="text-sm text-purple-600 font-medium">Avg per Customer</p>
-                  <p className="text-3xl font-bold text-purple-900">
+                <div className="p-4 bg-[#6F8A9D]/10 rounded-lg">
+                  <p className="text-sm text-[#546A7A] font-medium">Avg per Customer</p>
+                  <p className="text-3xl font-bold text-[#546A7A]">
                     {Math.round(customerDistribution.reduce((sum, c: any) => sum + c.count, 0) / customerDistribution.length)}
                   </p>
                 </div>
-                <div className="p-4 bg-amber-50 rounded-lg">
-                  <p className="text-sm text-amber-600 font-medium">Most Active</p>
-                  <p className="text-xl font-bold text-amber-900 truncate">
+                <div className="p-4 bg-[#CE9F6B]/10 rounded-lg">
+                  <p className="text-sm text-[#976E44] font-medium">Most Active</p>
+                  <p className="text-xl font-bold text-[#976E44] truncate">
                     {customerDistribution.sort((a: any, b: any) => b.count - a.count)[0]?.customerName.substring(0, 15) || 'N/A'}
                   </p>
                 </div>
@@ -663,7 +663,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
 
               {/* Detailed Customer Breakdown List */}
               <div className="mt-6">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">All Customers Breakdown</h4>
+                <h4 className="text-sm font-semibold text-[#5D6E73] mb-3">All Customers Breakdown</h4>
                 <div className="max-h-96 overflow-y-auto space-y-2">
                   {customerDistribution.map((customer: any, index: number) => {
                     const totalCustomerTickets = customerDistribution.reduce((sum, c: any) => sum + c.count, 0);
@@ -671,18 +671,18 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
                     return (
                       <div 
                         key={customer.customerId} 
-                        className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-transparent rounded-lg hover:from-green-100 transition-colors"
+                        className="flex items-center justify-between p-3 bg-gradient-to-r from-[#A2B9AF]/10 to-transparent rounded-lg hover:from-[#A2B9AF]/20 transition-colors"
                       >
                         <div className="flex items-center gap-3 flex-1">
                           <div 
                             className="w-4 h-4 rounded-full flex-shrink-0" 
                             style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
                           />
-                          <span className="font-medium text-gray-900">{customer.customerName}</span>
+                          <span className="font-medium text-[#546A7A]">{customer.customerName}</span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-sm text-gray-500">{percentage}%</span>
-                          <span className="font-bold text-green-600 min-w-[60px] text-right">
+                          <span className="text-sm text-[#AEBFC3]0">{percentage}%</span>
+                          <span className="font-bold text-[#4F6A64] min-w-[60px] text-right">
                             {customer.count} tickets
                           </span>
                         </div>
@@ -692,8 +692,8 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
                 </div>
                 
                 {/* Info message */}
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
+                <div className="mt-4 p-3 bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg">
+                  <p className="text-sm text-[#546A7A]">
                     ℹ️ Showing all {customerDistribution.length} customers. Customers with 0 tickets are included to provide complete visibility.
                   </p>
                 </div>
@@ -707,7 +707,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-purple-600" />
+            <Target className="h-5 w-5 text-[#546A7A]" />
             Overall Performance Radar
           </CardTitle>
           <CardDescription>360° view of service desk performance metrics</CardDescription>
@@ -732,25 +732,25 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           
           {/* Performance insights */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-600 font-medium">Strengths</p>
+            <div className="p-4 bg-[#A2B9AF]/10 rounded-lg">
+              <p className="text-sm text-[#4F6A64] font-medium">Strengths</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-green-800">✓ High resolution rate</li>
-                <li className="text-sm text-green-800">✓ Quick response times</li>
+                <li className="text-sm text-[#4F6A64]">✓ High resolution rate</li>
+                <li className="text-sm text-[#4F6A64]">✓ Quick response times</li>
               </ul>
             </div>
-            <div className="p-4 bg-yellow-50 rounded-lg">
-              <p className="text-sm text-yellow-600 font-medium">Areas to Improve</p>
+            <div className="p-4 bg-[#EEC1BF]/10 rounded-lg">
+              <p className="text-sm text-[#976E44] font-medium">Areas to Improve</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-yellow-800">→ Reduce critical tickets</li>
-                <li className="text-sm text-yellow-800">→ Better SLA compliance</li>
+                <li className="text-sm text-[#976E44]">→ Reduce critical tickets</li>
+                <li className="text-sm text-[#976E44]">→ Better SLA compliance</li>
               </ul>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-600 font-medium">Recommendations</p>
+            <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+              <p className="text-sm text-[#546A7A] font-medium">Recommendations</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-blue-800">• Proactive monitoring</li>
-                <li className="text-sm text-blue-800">• Staff training</li>
+                <li className="text-sm text-[#546A7A]">• Proactive monitoring</li>
+                <li className="text-sm text-[#546A7A]">• Staff training</li>
               </ul>
             </div>
           </div>
@@ -762,7 +762,7 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
         <Card className="border-t-4 border-t-purple-500">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-purple-600" />
+              <Award className="h-5 w-5 text-[#546A7A]" />
               Key Insights
             </CardTitle>
             <CardDescription>Automated insights from your ticket data</CardDescription>
@@ -770,38 +770,38 @@ export function AdvancedTicketSummaryReport({ reportData }: AdvancedTicketSummar
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {insights.topPerformingZone && (
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-green-600 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-[#A2B9AF]/10 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-[#4F6A64] mt-0.5" />
                   <div>
-                    <p className="font-medium text-green-900">Top Performing Zone</p>
-                    <p className="text-sm text-green-700 mt-1">{insights.topPerformingZone}</p>
+                    <p className="font-medium text-[#4F6A64]">Top Performing Zone</p>
+                    <p className="text-sm text-[#4F6A64] mt-1">{insights.topPerformingZone}</p>
                   </div>
                 </div>
               )}
               {insights.mostActiveCustomer && (
-                <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                  <Users className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-[#96AEC2]/10 rounded-lg">
+                  <Users className="h-5 w-5 text-[#546A7A] mt-0.5" />
                   <div>
-                    <p className="font-medium text-blue-900">Most Active Customer</p>
-                    <p className="text-sm text-blue-700 mt-1">{insights.mostActiveCustomer}</p>
+                    <p className="font-medium text-[#546A7A]">Most Active Customer</p>
+                    <p className="text-sm text-[#546A7A] mt-1">{insights.mostActiveCustomer}</p>
                   </div>
                 </div>
               )}
               {insights.topAssignee && (
-                <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-                  <Award className="h-5 w-5 text-purple-600 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-[#6F8A9D]/10 rounded-lg">
+                  <Award className="h-5 w-5 text-[#546A7A] mt-0.5" />
                   <div>
-                    <p className="font-medium text-purple-900">Top Assignee</p>
-                    <p className="text-sm text-purple-700 mt-1">{insights.topAssignee}</p>
+                    <p className="font-medium text-[#546A7A]">Top Assignee</p>
+                    <p className="text-sm text-[#546A7A] mt-1">{insights.topAssignee}</p>
                   </div>
                 </div>
               )}
               {insights.worstPerformingCustomer && (
-                <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-[#E17F70]/10 rounded-lg">
+                  <AlertCircle className="h-5 w-5 text-[#9E3B47] mt-0.5" />
                   <div>
-                    <p className="font-medium text-red-900">Attention Needed</p>
-                    <p className="text-sm text-red-700 mt-1">{insights.worstPerformingCustomer}</p>
+                    <p className="font-medium text-[#75242D]">Attention Needed</p>
+                    <p className="text-sm text-[#75242D] mt-1">{insights.worstPerformingCustomer}</p>
                   </div>
                 </div>
               )}

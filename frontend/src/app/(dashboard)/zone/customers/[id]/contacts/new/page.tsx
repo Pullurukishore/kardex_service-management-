@@ -14,14 +14,14 @@ export default function NewContactPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-4 sm:p-6 lg:p-8">
       <Card className="max-w-xl mx-auto">
         <CardContent className="text-center py-12">
-          <AlertCircle className="mx-auto h-16 w-16 text-yellow-500 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <AlertCircle className="mx-auto h-16 w-16 text-[#CE9F6B] mb-4" />
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">
             Access Denied
           </h3>
-          <p className="text-gray-600">
+          <p className="text-[#5D6E73]">
             Zone users do not have permission to create new contacts.
           </p>
         </CardContent>

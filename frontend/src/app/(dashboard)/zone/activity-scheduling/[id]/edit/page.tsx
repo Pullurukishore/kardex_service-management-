@@ -64,10 +64,10 @@ export default function ZoneEditActivitySchedulePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#AEBFC3]/10 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading schedule details...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#546A7A] mx-auto mb-4" />
+          <p className="text-[#5D6E73]">Loading schedule details...</p>
         </div>
       </div>
     );
@@ -75,11 +75,11 @@ export default function ZoneEditActivitySchedulePage() {
 
   if (!schedule) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#AEBFC3]/10 flex items-center justify-center">
         <div className="text-center">
-          <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Schedule Not Found</h2>
-          <p className="text-gray-600 mb-4">The requested activity schedule could not be found.</p>
+          <AlertTriangle className="h-12 w-12 text-[#979796] mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-[#546A7A] mb-2">Schedule Not Found</h2>
+          <p className="text-[#5D6E73] mb-4">The requested activity schedule could not be found.</p>
           <Button onClick={() => router.push('/zone/activity-scheduling')}>
             Back to Activity Scheduling
           </Button>
@@ -89,9 +89,9 @@ export default function ZoneEditActivitySchedulePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#AEBFC3]/10">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-[#92A2A5]">
         <div className="p-6 md:p-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
@@ -105,10 +105,10 @@ export default function ZoneEditActivitySchedulePage() {
                   <ArrowLeft className="h-4 w-4" />
                   Back to Schedule Details
                 </Button>
-                <div className="h-6 w-px bg-gray-300" />
+                <div className="h-6 w-px bg-[#92A2A5]" />
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm font-medium text-gray-600">Edit Schedule</span>
+                  <Calendar className="h-5 w-5 text-[#546A7A]" />
+                  <span className="text-sm font-medium text-[#5D6E73]">Edit Schedule</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function ZoneEditActivitySchedulePage() {
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-[#546A7A]" />
                 Schedule Information
               </CardTitle>
               <CardDescription>
@@ -143,20 +143,20 @@ export default function ZoneEditActivitySchedulePage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                  <Clock className="h-4 w-4 text-[#AEBFC3]0" />
+                  <span className="text-sm text-[#5D6E73]">
                     {schedule.startTime ? new Date(schedule.startTime).toLocaleString() : 'No start time'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                  <User className="h-4 w-4 text-[#AEBFC3]0" />
+                  <span className="text-sm text-[#5D6E73]">
                     {schedule.assignedUser?.name || 'Unassigned'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                  <MapPin className="h-4 w-4 text-[#AEBFC3]0" />
+                  <span className="text-sm text-[#5D6E73]">
                     {schedule.location || 'No location'}
                   </span>
                 </div>
@@ -164,10 +164,10 @@ export default function ZoneEditActivitySchedulePage() {
               <Separator className="my-4" />
               <div className="flex items-center gap-2">
                 <Badge className={
-                  schedule.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                  schedule.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
-                  schedule.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                  'bg-gray-100 text-gray-800'
+                  schedule.status === 'COMPLETED' ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' :
+                  schedule.status === 'IN_PROGRESS' ? 'bg-[#96AEC2]/20 text-[#546A7A]' :
+                  schedule.status === 'CANCELLED' ? 'bg-[#E17F70]/20 text-[#75242D]' :
+                  'bg-[#AEBFC3]/20 text-[#546A7A]'
                 }>
                   {schedule.status || 'UNKNOWN'}
                 </Badge>

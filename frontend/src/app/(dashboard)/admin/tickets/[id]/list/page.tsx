@@ -145,18 +145,18 @@ export default function TicketDetailPage() {
 
   if (loading || !ticket) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/20">
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="text-center space-y-4">
             <div className="relative mx-auto w-16 h-16">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 opacity-20 animate-ping" />
-              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] opacity-20 animate-ping" />
+              <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center shadow-lg shadow-[#6F8A9D]/25">
                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
               </div>
             </div>
             <div>
-              <p className="text-lg font-semibold text-slate-800">{loading ? 'Loading ticket details...' : 'Ticket not found'}</p>
-              <p className="text-sm text-slate-500 mt-1">Please wait while we fetch the information</p>
+              <p className="text-lg font-semibold text-[#546A7A]">{loading ? 'Loading ticket details...' : 'Ticket not found'}</p>
+              <p className="text-sm text-[#757777] mt-1">Please wait while we fetch the information</p>
             </div>
           </div>
         </div>
@@ -165,14 +165,14 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/20">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Premium Header with Glassmorphism */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-2xl shadow-2xl shadow-blue-500/20 p-6 md:p-8">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-cyan-600 rounded-2xl shadow-2xl shadow-[#6F8A9D]/20 p-6 md:p-8">
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#96AEC2]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-[#6F8A9D]/10 rounded-full blur-2xl" />
           
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -193,7 +193,7 @@ export default function TicketDetailPage() {
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                       Ticket #{ticket.ticketNumber ?? ticket.id}
                     </h1>
-                    <p className="text-blue-100 mt-1 text-sm md:text-base flex items-center gap-2">
+                    <p className="text-[#96AEC2] mt-1 text-sm md:text-base flex items-center gap-2">
                       <Clock className="h-4 w-4" />
                       Created {formatDistanceToNow(new Date(ticket.createdAt))} ago
                     </p>
@@ -209,7 +209,7 @@ export default function TicketDetailPage() {
                 <div className="flex items-center gap-2">
                   <Button 
                     onClick={() => setIsStatusDialogOpen(true)}
-                    className="relative overflow-hidden bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white hover:from-amber-400 hover:via-orange-400 hover:to-rose-400 border-0 shadow-xl shadow-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 font-semibold animate-pulse hover:animate-none"
+                    className="relative overflow-hidden bg-gradient-to-r from-[#CE9F6B] via-[#CE9F6B] to-[#E17F70] text-white hover:from-[#CE9F6B] hover:via-orange-400 hover:to-rose-400 border-0 shadow-xl shadow-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 font-semibold animate-pulse hover:animate-none"
                     size="default"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-[shimmer_2s_infinite]" />
@@ -223,19 +223,19 @@ export default function TicketDetailPage() {
             {/* Quick Stats Strip */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wide">Priority</p>
+                <p className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Priority</p>
                 <p className="text-white font-bold text-lg capitalize">{ticket.priority?.toLowerCase() || 'Normal'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wide">Zone</p>
+                <p className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Zone</p>
                 <p className="text-white font-bold text-lg truncate">{ticket.zone?.name || 'Unassigned'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wide">Call Type</p>
+                <p className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Call Type</p>
                 <p className="text-white font-bold text-lg truncate">{ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' ? 'Under Contract' : 'Not Under Contract'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wide">Created On</p>
+                <p className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Created On</p>
                 <p className="text-white font-bold text-lg">{format(new Date(ticket.createdAt), 'MMM d, yyyy')}</p>
               </div>
             </div>
@@ -247,15 +247,15 @@ export default function TicketDetailPage() {
         <div className="space-y-6">
           {/* Ticket Overview Card */}
           <Card className="border-0 shadow-xl bg-white overflow-hidden group hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="pb-4 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 border-b border-slate-100/80 p-6">
+            <CardHeader className="pb-4 bg-gradient-to-br from-[#AEBFC3]/10 via-white to-[#96AEC2]/10/30 border-b border-[#AEBFC3]/20/80 p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform duration-300">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] text-white shadow-lg shadow-[#6F8A9D]/25 group-hover:scale-105 transition-transform duration-300">
                     <FileText className="h-6 w-6" />
                   </div>
                   <div className="space-y-1">
-                    <CardTitle className="text-xl font-bold text-slate-800 leading-tight">{ticket.title}</CardTitle>
-                    <p className="text-sm text-slate-500 flex items-center gap-1.5">
+                    <CardTitle className="text-xl font-bold text-[#546A7A] leading-tight">{ticket.title}</CardTitle>
+                    <p className="text-sm text-[#757777] flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5" />
                       Created {formatDistanceToNow(new Date(ticket.createdAt))} ago
                     </p>
@@ -271,23 +271,23 @@ export default function TicketDetailPage() {
               {/* Description */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                  <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-wide">Description</h3>
+                  <div className="h-1.5 w-1.5 rounded-full bg-[#96AEC2]/100" />
+                  <h3 className="font-semibold text-[#5D6E73] text-sm uppercase tracking-wide">Description</h3>
                 </div>
-                <p className="text-slate-600 leading-relaxed pl-4 border-l-2 border-blue-200">{ticket.description}</p>
+                <p className="text-[#5D6E73] leading-relaxed pl-4 border-l-2 border-[#96AEC2]">{ticket.description}</p>
               </div>
 
               {ticket.callType && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-wide">Call Type</h3>
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#82A094]/100" />
+                    <h3 className="font-semibold text-[#5D6E73] text-sm uppercase tracking-wide">Call Type</h3>
                   </div>
                   <div className="pl-4">
                     <Badge 
                       className={`${ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' 
-                        ? 'bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-800 border-emerald-300' 
-                        : 'bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 border-amber-300'} 
+                        ? 'bg-gradient-to-r from-emerald-100 to-[#A2B9AF]/10 text-[#4F6A64] border-emerald-300' 
+                        : 'bg-gradient-to-r from-amber-100 to-[#EEC1BF]/10 text-[#976E44] border-amber-300'} 
                         font-semibold px-4 py-1.5 shadow-sm`}
                     >
                       {ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' 
@@ -302,28 +302,28 @@ export default function TicketDetailPage() {
               {ticket.contact && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-wide">Contact Information</h3>
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#6F8A9D]" />
+                    <h3 className="font-semibold text-[#5D6E73] text-sm uppercase tracking-wide">Contact Information</h3>
                   </div>
                   <div className="pl-4 space-y-2.5">
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
-                      <div className="h-8 w-8 rounded-lg bg-violet-100 flex items-center justify-center">
-                        <User className="h-4 w-4 text-violet-600" />
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
+                      <div className="h-8 w-8 rounded-lg bg-[#96AEC2]/20 flex items-center justify-center">
+                        <User className="h-4 w-4 text-[#6F8A9D]" />
                       </div>
-                      <span className="text-slate-700 font-medium">{ticket.contact.name}</span>
+                      <span className="text-[#5D6E73] font-medium">{ticket.contact.name}</span>
                     </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
-                      <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                        <Mail className="h-4 w-4 text-blue-600" />
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
+                      <div className="h-8 w-8 rounded-lg bg-[#96AEC2]/20 flex items-center justify-center">
+                        <Mail className="h-4 w-4 text-[#546A7A]" />
                       </div>
-                      <span className="text-slate-700 font-medium break-all">{ticket.contact.email}</span>
+                      <span className="text-[#5D6E73] font-medium break-all">{ticket.contact.email}</span>
                     </div>
                     {ticket.contact.phone && (
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
-                        <div className="h-8 w-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                          <Phone className="h-4 w-4 text-emerald-600" />
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20/50 hover:from-slate-100 hover:to-slate-150 transition-colors">
+                        <div className="h-8 w-8 rounded-lg bg-[#82A094]/20 flex items-center justify-center">
+                          <Phone className="h-4 w-4 text-[#4F6A64]" />
                         </div>
-                        <span className="text-slate-700 font-medium">{ticket.contact.phone}</span>
+                        <span className="text-[#5D6E73] font-medium">{ticket.contact.phone}</span>
                       </div>
                     )}
                   </div>
@@ -334,19 +334,19 @@ export default function TicketDetailPage() {
               {ticket.asset && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-                    <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-wide">Asset Details</h3>
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#CE9F6B]/100" />
+                    <h3 className="font-semibold text-[#5D6E73] text-sm uppercase tracking-wide">Asset Details</h3>
                   </div>
-                  <div className="pl-4 p-4 rounded-xl bg-gradient-to-br from-orange-50/50 to-amber-50/30 border border-orange-100">
+                  <div className="pl-4 p-4 rounded-xl bg-gradient-to-br from-[#EEC1BF]/10/50 to-[#EEC1BF]/10/30 border border-[#EEC1BF]/20">
                     <div className="grid gap-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 text-sm">Model</span>
-                        <span className="font-semibold text-slate-800 bg-white px-3 py-1 rounded-lg shadow-sm">{ticket.asset.model}</span>
+                        <span className="text-[#757777] text-sm">Model</span>
+                        <span className="font-semibold text-[#546A7A] bg-white px-3 py-1 rounded-lg shadow-sm">{ticket.asset.model}</span>
                       </div>
                       {(ticket.asset as any).serialNo && (
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-500 text-sm">Serial Number</span>
-                          <span className="font-mono font-semibold text-slate-800 bg-white px-3 py-1 rounded-lg shadow-sm text-sm">{(ticket.asset as any).serialNo}</span>
+                          <span className="text-[#757777] text-sm">Serial Number</span>
+                          <span className="font-mono font-semibold text-[#546A7A] bg-white px-3 py-1 rounded-lg shadow-sm text-sm">{(ticket.asset as any).serialNo}</span>
                         </div>
                       )}
                     </div>
@@ -358,7 +358,7 @@ export default function TicketDetailPage() {
 
           {/* Activity Card */}
           <Card className="border-0 shadow-xl bg-white overflow-hidden group hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white p-5 border-0">
+            <CardHeader className="bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] text-white p-5 border-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
@@ -384,7 +384,7 @@ export default function TicketDetailPage() {
         <div className="space-y-6">
           {/* Assignment Card - Premium Design */}
           <Card className="border-0 shadow-xl bg-white overflow-hidden group hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white p-5 border-0">
+            <CardHeader className="bg-gradient-to-br from-[#82A094] via-[#82A094] to-cyan-600 text-white p-5 border-0">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
                   <Shield className="h-5 w-5" />
@@ -399,28 +399,28 @@ export default function TicketDetailPage() {
               {/* Assignment Rows */}
               <div className="space-y-3">
                 {/* Expert Helpdesk */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50/80 to-pink-50/50 border border-purple-100 hover:shadow-md transition-all duration-200">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#96AEC2]/10/80 to-[#EEC1BF]/10/50 border border-[#96AEC2]/20 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider">Expert Helpdesk</span>
+                    <span className="text-xs font-semibold text-[#546A7A] uppercase tracking-wider">Expert Helpdesk</span>
                     {ticket.assignedTo && ticket.assignedTo.role === 'EXPERT_HELPDESK' && (
                       <div className="flex items-center gap-2">
                         {/* Assignment Status Badge */}
                         {ticket.assignmentStatus === 'PENDING' && (
-                          <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
+                          <Badge className="bg-[#CE9F6B]/20 text-[#976E44] border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
                             Awaiting Response
                           </Badge>
                         )}
                         {ticket.assignmentStatus === 'ACCEPTED' && (
-                          <Badge className="bg-green-100 text-green-700 border-green-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094] text-[10px] px-2 py-0.5">
                             ✓ Accepted
                           </Badge>
                         )}
                         {ticket.assignmentStatus === 'REJECTED' && (
-                          <Badge className="bg-red-100 text-red-700 border-red-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#E17F70]/20 text-[#75242D] border-[#E17F70] text-[10px] px-2 py-0.5">
                             ✗ Rejected
                           </Badge>
                         )}
-                        <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
+                        <div className="h-2 w-2 rounded-full bg-[#6F8A9D]/100 animate-pulse" />
                       </div>
                     )}
                   </div>
@@ -428,54 +428,54 @@ export default function TicketDetailPage() {
                     {ticket.assignedTo && ticket.assignedTo.role === 'EXPERT_HELPDESK' ? (
                       <>
                         <Avatar className="h-10 w-10 ring-2 ring-purple-200 shadow-md">
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+                          <AvatarFallback className="bg-gradient-to-br from-[#6F8A9D] to-[#E17F70] text-white font-bold">
                             {ticket.assignedTo.name?.charAt(0) || 'E'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <span className="font-semibold text-slate-800 block">{ticket.assignedTo.name || 'No name'}</span>
+                          <span className="font-semibold text-[#546A7A] block">{ticket.assignedTo.name || 'No name'}</span>
                           {ticket.assignedTo.phone && (
-                            <span className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                            <span className="text-xs text-[#757777] flex items-center gap-1 mt-0.5">
                               <Phone className="h-3 w-3" /> {ticket.assignedTo.phone}
                             </span>
                           )}
                         </div>
                       </>
                     ) : (
-                      <span className="text-slate-400 italic text-sm">Unassigned</span>
+                      <span className="text-[#979796] italic text-sm">Unassigned</span>
                     )}
                   </div>
                   {/* Show rejection notes if rejected */}
                   {ticket.assignmentStatus === 'REJECTED' && ticket.assignmentNotes && ticket.assignedTo?.role === 'EXPERT_HELPDESK' && (
-                    <div className="mt-2 p-2 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-xs text-red-600"><strong>Rejection Reason:</strong> {ticket.assignmentNotes}</p>
+                    <div className="mt-2 p-2 rounded-lg bg-[#E17F70]/10 border border-[#E17F70]">
+                      <p className="text-xs text-[#9E3B47]"><strong>Rejection Reason:</strong> {ticket.assignmentNotes}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Zone Manager / Zone User */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-50/80 to-teal-50/50 border border-emerald-100 hover:shadow-md transition-all duration-200">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-[#A2B9AF]/10/80 to-[#A2B9AF]/10/50 border border-[#A2B9AF]/20 hover:shadow-md transition-all duration-200">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Zone Manager / Zone User</span>
+                    <span className="text-xs font-semibold text-[#4F6A64] uppercase tracking-wider">Zone Manager / Zone User</span>
                     {ticket.assignedTo && (ticket.assignedTo.role === 'ZONE_USER' || ticket.assignedTo.role === 'ZONE_MANAGER') && (
                       <div className="flex items-center gap-2">
                         {/* Assignment Status Badge */}
                         {ticket.assignmentStatus === 'PENDING' && (
-                          <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
+                          <Badge className="bg-[#CE9F6B]/20 text-[#976E44] border-amber-300 text-[10px] px-2 py-0.5 animate-pulse">
                             Awaiting Response
                           </Badge>
                         )}
                         {ticket.assignmentStatus === 'ACCEPTED' && (
-                          <Badge className="bg-green-100 text-green-700 border-green-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094] text-[10px] px-2 py-0.5">
                             ✓ Accepted
                           </Badge>
                         )}
                         {ticket.assignmentStatus === 'REJECTED' && (
-                          <Badge className="bg-red-100 text-red-700 border-red-300 text-[10px] px-2 py-0.5">
+                          <Badge className="bg-[#E17F70]/20 text-[#75242D] border-[#E17F70] text-[10px] px-2 py-0.5">
                             ✗ Rejected
                           </Badge>
                         )}
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <div className="h-2 w-2 rounded-full bg-[#82A094]/100 animate-pulse" />
                       </div>
                     )}
                   </div>
@@ -483,57 +483,57 @@ export default function TicketDetailPage() {
                     {ticket.assignedTo && (ticket.assignedTo.role === 'ZONE_USER' || ticket.assignedTo.role === 'ZONE_MANAGER') ? (
                       <>
                         <Avatar className="h-10 w-10 ring-2 ring-emerald-200 shadow-md">
-                          <AvatarFallback className={`${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-gradient-to-br from-emerald-500 to-teal-500'} text-white font-bold`}>
+                          <AvatarFallback className={`${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-gradient-to-br from-[#CE9F6B] to-[#CE9F6B]' : 'bg-gradient-to-br from-[#82A094] to-[#82A094]'} text-white font-bold`}>
                             {ticket.assignedTo.name?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <span className="font-semibold text-slate-800 block">{ticket.assignedTo.name || 'No name'}</span>
-                          <Badge className={`text-[10px] px-2 py-0 ${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
+                          <span className="font-semibold text-[#546A7A] block">{ticket.assignedTo.name || 'No name'}</span>
+                          <Badge className={`text-[10px] px-2 py-0 ${ticket.assignedTo.role === 'ZONE_MANAGER' ? 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/40' : 'bg-[#82A094]/20 text-[#4F6A64] border-[#A2B9AF]/40'}`}>
                             {ticket.assignedTo.role === 'ZONE_MANAGER' ? 'Zone Manager' : 'Zone User'}
                           </Badge>
                           {ticket.assignedTo.phone && (
-                            <span className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                            <span className="text-xs text-[#757777] flex items-center gap-1 mt-1">
                               <Phone className="h-3 w-3" /> {ticket.assignedTo.phone}
                             </span>
                           )}
                         </div>
                       </>
                     ) : (
-                      <span className="text-slate-400 italic text-sm">Unassigned</span>
+                      <span className="text-[#979796] italic text-sm">Unassigned</span>
                     )}
                   </div>
                   {/* Show rejection notes if rejected */}
                   {ticket.assignmentStatus === 'REJECTED' && ticket.assignmentNotes && (ticket.assignedTo?.role === 'ZONE_USER' || ticket.assignedTo?.role === 'ZONE_MANAGER') && (
-                    <div className="mt-2 p-2 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-xs text-red-600"><strong>Rejection Reason:</strong> {ticket.assignmentNotes}</p>
+                    <div className="mt-2 p-2 rounded-lg bg-[#E17F70]/10 border border-[#E17F70]">
+                      <p className="text-xs text-[#9E3B47]"><strong>Rejection Reason:</strong> {ticket.assignmentNotes}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Zone & Created By Info */}
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-2 text-slate-500 text-xs mb-1">
+                  <div className="p-3 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/20">
+                    <div className="flex items-center gap-2 text-[#757777] text-xs mb-1">
                       <MapPin className="h-3.5 w-3.5" />
                       Zone
                     </div>
-                    <p className="font-semibold text-slate-800 truncate">{ticket.zone?.name || 'Unassigned'}</p>
+                    <p className="font-semibold text-[#546A7A] truncate">{ticket.zone?.name || 'Unassigned'}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-2 text-slate-500 text-xs mb-1">
+                  <div className="p-3 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/20">
+                    <div className="flex items-center gap-2 text-[#757777] text-xs mb-1">
                       <User className="h-3.5 w-3.5" />
                       Created By
                     </div>
-                    <p className="font-semibold text-slate-800 truncate">{ticket.owner?.name || 'System'}</p>
+                    <p className="font-semibold text-[#546A7A] truncate">{ticket.owner?.name || 'System'}</p>
                   </div>
                 </div>
               </div>
 
               {/* Quick Actions */}
-              <div className="pt-4 border-t border-slate-100">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Zap className="h-3.5 w-3.5 text-amber-500" />
+              <div className="pt-4 border-t border-[#AEBFC3]/20">
+                <p className="text-xs font-semibold text-[#757777] uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Zap className="h-3.5 w-3.5 text-[#CE9F6B]" />
                   Quick Actions
                 </p>
                 <div className="space-y-2.5">
@@ -543,7 +543,7 @@ export default function TicketDetailPage() {
                       setIsAssignDialogOpen(true);
                     }}
                     disabled={!ticket}
-                    className="w-full justify-between h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all duration-200"
+                    className="w-full justify-between h-12 bg-gradient-to-r from-[#6F8A9D] to-[#E17F70] hover:from-[#6F8A9D] hover:to-[#9E3B47] text-white shadow-lg shadow-[#6F8A9D]/25 hover:shadow-xl transition-all duration-200"
                   >
                     <div className="flex items-center gap-3">
                       <div className="p-1.5 rounded-lg bg-white/20">
@@ -561,7 +561,7 @@ export default function TicketDetailPage() {
                       setIsAssignDialogOpen(true);
                     }}
                     disabled={!ticket}
-                    className="w-full justify-between h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl transition-all duration-200"
+                    className="w-full justify-between h-12 bg-gradient-to-r from-[#82A094] to-[#82A094] hover:from-[#82A094] hover:to-[#82A094] text-white shadow-lg shadow-[#82A094]/25 hover:shadow-xl transition-all duration-200"
                   >
                     <div className="flex items-center gap-3">
                       <div className="p-1.5 rounded-lg bg-white/20">
@@ -580,7 +580,7 @@ export default function TicketDetailPage() {
 
           {/* Details Tabs Card - Premium Design */}
           <Card className="border-0 shadow-xl bg-white overflow-hidden hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 text-white p-5 border-0">
+            <CardHeader className="bg-gradient-to-br from-[#CE9F6B] via-[#CE9F6B] to-[#E17F70] text-white p-5 border-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
@@ -604,7 +604,7 @@ export default function TicketDetailPage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`px-4 py-2 h-9 rounded-xl transition-all duration-200 ${
                       activeTab === tab.id 
-                        ? 'bg-white text-orange-600 shadow-lg hover:bg-white' 
+                        ? 'bg-white text-[#976E44] shadow-lg hover:bg-white' 
                         : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
                     }`}
                   >
@@ -642,7 +642,7 @@ export default function TicketDetailPage() {
 
           {/* Status History Card - Premium Design */}
           <Card className="border-0 shadow-xl bg-white overflow-hidden hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 text-white p-5 border-0">
+            <CardHeader className="bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#E17F70] text-white p-5 border-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
@@ -668,33 +668,33 @@ export default function TicketDetailPage() {
                           {/* Timeline dot */}
                           <div className={`absolute left-0 top-1 h-10 w-10 rounded-xl flex items-center justify-center shadow-lg ${
                             index === 0 
-                              ? 'bg-gradient-to-br from-green-400 to-emerald-500 text-white ring-4 ring-green-100' 
-                              : 'bg-white border-2 border-purple-200'
+                              ? 'bg-gradient-to-br from-green-400 to-[#82A094] text-white ring-4 ring-green-100' 
+                              : 'bg-white border-2 border-[#6F8A9D]'
                           }`}>
                             {index === 0 ? (
                               <CheckCircle className="h-5 w-5" />
                             ) : (
-                              <div className="h-2.5 w-2.5 rounded-full bg-purple-400" />
+                              <div className="h-2.5 w-2.5 rounded-full bg-[#6F8A9D]" />
                             )}
                           </div>
                           
-                          <div className="p-4 rounded-xl bg-gradient-to-r from-slate-50 to-purple-50/30 border border-purple-50 hover:shadow-md transition-all duration-200">
+                          <div className="p-4 rounded-xl bg-gradient-to-r from-[#AEBFC3]/10 to-[#96AEC2]/10/30 border border-purple-50 hover:shadow-md transition-all duration-200">
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap mb-2">
                                   <StatusBadge status={history.status} />
-                                  <span className="text-slate-500 text-xs">•</span>
-                                  <span className="text-sm text-slate-600 font-medium">
+                                  <span className="text-[#757777] text-xs">•</span>
+                                  <span className="text-sm text-[#5D6E73] font-medium">
                                     by {history.changedBy?.name || history.changedBy?.email?.split('@')[0] || 'Unknown'}
                                   </span>
                                 </div>
                                 {history.notes && (
-                                  <p className="text-sm text-slate-500 line-clamp-2">
+                                  <p className="text-sm text-[#757777] line-clamp-2">
                                     {history.notes.split('\n\n')[0]}
                                   </p>
                                 )}
                               </div>
-                              <span className="text-xs text-slate-400 whitespace-nowrap bg-white px-2 py-1 rounded-lg shadow-sm">
+                              <span className="text-xs text-[#979796] whitespace-nowrap bg-white px-2 py-1 rounded-lg shadow-sm">
                                 {format(new Date(history.changedAt), 'MMM d, h:mm a')}
                               </span>
                             </div>
@@ -705,11 +705,11 @@ export default function TicketDetailPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <div className="h-16 w-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-4">
-                      <History className="h-8 w-8 text-purple-300" />
+                    <div className="h-16 w-16 rounded-full bg-[#6F8A9D]/10 flex items-center justify-center mx-auto mb-4">
+                      <History className="h-8 w-8 text-[#6F8A9D]" />
                     </div>
-                    <p className="text-slate-500 font-medium">No status history available</p>
-                    <p className="text-slate-400 text-sm mt-1">Status changes will appear here</p>
+                    <p className="text-[#757777] font-medium">No status history available</p>
+                    <p className="text-[#979796] text-sm mt-1">Status changes will appear here</p>
                   </div>
                 )}
               </div>

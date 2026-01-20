@@ -75,30 +75,30 @@ const OfferRow = memo(({ offer, onViewOffer }: { offer: Offer; onViewOffer: (id:
   );
 
   return (
-    <tr className="hover:bg-blue-50/30 transition-colors duration-150 border-b border-gray-100">
+    <tr className="hover:bg-[#96AEC2]/10/30 transition-colors duration-150 border-b border-[#AEBFC3]/30">
       <td className="py-3 px-4">
         <button 
           onClick={() => onViewOffer(offer.id)}
           className="text-left hover:underline focus:outline-none"
         >
-          <div className="font-medium text-blue-600 hover:text-blue-800 text-sm">
+          <div className="font-medium text-[#546A7A] hover:text-[#546A7A] text-sm">
             {offer.offerReferenceNumber}
           </div>
           {offer.title && (
-            <div className="text-xs text-gray-500 mt-1">{offer.title}</div>
+            <div className="text-xs text-[#AEBFC3]0 mt-1">{offer.title}</div>
           )}
         </button>
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm text-gray-900">{offer.company || 'N/A'}</div>
+        <div className="text-sm text-[#546A7A]">{offer.company || 'N/A'}</div>
         {offer.location && (
-          <div className="text-xs text-gray-500 mt-1">{offer.location}</div>
+          <div className="text-xs text-[#AEBFC3]0 mt-1">{offer.location}</div>
         )}
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm text-gray-900">{offer.contact?.contactPersonName || offer.contactPersonName || 'N/A'}</div>
+        <div className="text-sm text-[#546A7A]">{offer.contact?.contactPersonName || offer.contactPersonName || 'N/A'}</div>
         {(offer.contact?.contactNumber || offer.contactNumber) && (
-          <div className="text-xs text-gray-500 mt-1">{offer.contact?.contactNumber || offer.contactNumber}</div>
+          <div className="text-xs text-[#AEBFC3]0 mt-1">{offer.contact?.contactNumber || offer.contactNumber}</div>
         )}
       </td>
       <td className="py-3 px-4">
@@ -118,34 +118,34 @@ const OfferRow = memo(({ offer, onViewOffer }: { offer: Offer; onViewOffer: (id:
         </Badge>
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm font-medium text-gray-900" title={offer.offerValue ? formatINRFull(offer.offerValue) : undefined}>
+        <div className="text-sm font-medium text-[#546A7A]" title={offer.offerValue ? formatINRFull(offer.offerValue) : undefined}>
           {offer.offerValue ? formatCrLakh(offer.offerValue) : 'N/A'}
         </div>
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm text-gray-600">{offer.zone.name}</div>
+        <div className="text-sm text-[#5D6E73]">{offer.zone.name}</div>
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm text-gray-900">{offer.createdBy.name}</div>
-        <div className="text-xs text-gray-500 mt-0.5">
+        <div className="text-sm text-[#546A7A]">{offer.createdBy.name}</div>
+        <div className="text-xs text-[#AEBFC3]0 mt-0.5">
           {format(new Date(offer.createdAt), 'MMM dd, yyyy')}
         </div>
       </td>
       <td className="py-3 px-4">
-        <div className="text-sm text-gray-900">
+        <div className="text-sm text-[#546A7A]">
           {offer.poNumber || 'N/A'}
         </div>
         {offer.poValue && (
-          <div className="text-xs text-gray-500 mt-0.5" title={formatINRFull(offer.poValue)}>
+          <div className="text-xs text-[#AEBFC3]0 mt-0.5" title={formatINRFull(offer.poValue)}>
             {formatCrLakh(offer.poValue)}
           </div>
         )}
       </td>
       <td className="py-3 px-4">
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-[#AEBFC3]0">
           {format(new Date(offer.updatedAt), 'MMM dd, yyyy')}
         </div>
-        <div className="text-xs text-gray-400 mt-0.5">
+        <div className="text-xs text-[#979796] mt-0.5">
           by {offer.updatedBy.name}
         </div>
       </td>
@@ -154,7 +154,7 @@ const OfferRow = memo(({ offer, onViewOffer }: { offer: Offer; onViewOffer: (id:
           variant="ghost"
           size="sm"
           onClick={() => onViewOffer(offer.id)}
-          className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
+          className="h-8 w-8 p-0 text-[#979796] hover:text-[#5D6E73]"
           title="View details"
         >
           <Eye className="h-4 w-4" />
@@ -180,8 +180,8 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
       <Card>
         <CardContent className="p-6">
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading offers...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#546A7A]"></div>
+            <p className="mt-4 text-[#5D6E73]">Loading offers...</p>
           </div>
         </CardContent>
       </Card>
@@ -196,7 +196,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         </CardHeader>
         <CardContent className="p-6">
           <div className="text-center py-12">
-            <p className="text-gray-600">No offers found matching your filters.</p>
+            <p className="text-[#5D6E73]">No offers found matching your filters.</p>
           </div>
         </CardContent>
       </Card>
@@ -211,39 +211,39 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#AEBFC3]/10">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[150px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[150px]">
                   Offer Ref
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[150px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[150px]">
                   Company
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[140px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[140px]">
                   Contact
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[120px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[120px]">
                   Product Type
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[110px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[110px]">
                   Stage
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[100px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[100px]">
                   Offer Value
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[100px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[100px]">
                   Zone
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[120px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[120px]">
                   Created By
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[120px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[120px]">
                   PO Number
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm min-w-[120px]">
+                <th className="text-left py-3 px-4 font-medium text-[#5D6E73] text-sm min-w-[120px]">
                   Last Updated
                 </th>
-                <th className="text-right py-3 px-4 font-medium text-gray-700 text-sm w-20">
+                <th className="text-right py-3 px-4 font-medium text-[#5D6E73] text-sm w-20">
                   Actions
                 </th>
               </tr>
@@ -258,8 +258,8 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
         
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#92A2A5]">
+            <div className="text-sm text-[#5D6E73]">
               Showing {((currentPage - 1) * 50) + 1} to {Math.min(currentPage * 50, totalOffers)} of {totalOffers} offers
             </div>
             <div className="flex items-center gap-2">
@@ -271,7 +271,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-[#5D6E73]">
                 Page {currentPage} of {totalPages}
               </div>
               <Button

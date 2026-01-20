@@ -304,23 +304,23 @@ const MapPicker: React.FC<MapPickerProps> = ({
   }, [searchQuery]);
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-lg overflow-hidden ${className}`}>
+    <div className={`bg-white border border-[#92A2A5] rounded-lg overflow-hidden ${className}`}>
       {/* Search Header */}
-      <div className="p-4 bg-gray-50 border-b border-gray-200 relative">
+      <div className="p-4 bg-[#AEBFC3]/10 border-b border-[#92A2A5] relative">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-4 w-4 text-[#979796]" />
           </div>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for an address or place..."
-            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-10 py-2 border border-[#92A2A5] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#96AEC2] focus:border-transparent"
           />
           {isSearching && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+              <Loader2 className="h-4 w-4 text-[#6F8A9D] animate-spin" />
             </div>
           )}
           {searchQuery && !isSearching && (
@@ -329,7 +329,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
                 setSearchQuery('');
                 setShowResults(false);
               }}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#979796] hover:text-[#5D6E73]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -344,17 +344,17 @@ const MapPicker: React.FC<MapPickerProps> = ({
               className="fixed inset-0 z-[9998] bg-black bg-opacity-10"
               onClick={() => setShowResults(false)}
             />
-            <div className="absolute z-[9999] mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+            <div className="absolute z-[9999] mt-1 w-full bg-white border border-[#92A2A5] rounded-lg shadow-xl max-h-60 overflow-y-auto">
               {searchResults.map((result) => (
                 <button
                   key={result.place_id}
                   onClick={() => handleSearchResultSelect(result)}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                  className="w-full px-4 py-3 text-left hover:bg-[#AEBFC3]/10 border-b border-[#AEBFC3]/30 last:border-b-0 transition-colors"
                 >
                   <div className="flex items-start space-x-2">
-                    <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <MapPin className="h-4 w-4 text-[#6F8A9D] mt-0.5 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-[#546A7A] truncate">
                         {result.display_name}
                       </p>
                     </div>
@@ -370,18 +370,18 @@ const MapPicker: React.FC<MapPickerProps> = ({
       <div className="relative">
         <div 
           ref={mapRef} 
-          className="w-full h-64 sm:h-80 bg-gray-100"
+          className="w-full h-64 sm:h-80 bg-[#AEBFC3]/20"
           style={{ minHeight: '320px' }}
         />
         
         {!isMapLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 flex items-center justify-center bg-[#AEBFC3]/20">
             <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Loading interactive map...</p>
-              <p className="text-xs text-gray-500 mt-2">This may take a few seconds</p>
+              <Loader2 className="h-8 w-8 animate-spin text-[#6F8A9D] mx-auto mb-2" />
+              <p className="text-sm text-[#5D6E73]">Loading interactive map...</p>
+              <p className="text-xs text-[#AEBFC3]0 mt-2">This may take a few seconds</p>
               {isGettingLocation && (
-                <p className="text-xs text-blue-600 mt-1">📍 Getting your location...</p>
+                <p className="text-xs text-[#546A7A] mt-1">📍 Getting your location...</p>
               )}
             </div>
           </div>
@@ -389,23 +389,23 @@ const MapPicker: React.FC<MapPickerProps> = ({
 
         {/* Fallback UI if map fails to load */}
         {isMapLoaded && !(window as any).L && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 flex items-center justify-center bg-[#AEBFC3]/20">
             <div className="text-center p-6">
               <div className="text-4xl mb-4">🗺️</div>
-              <p className="text-sm text-gray-700 mb-4">Interactive map unavailable</p>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-sm text-[#5D6E73] mb-4">Interactive map unavailable</p>
+              <p className="text-xs text-[#AEBFC3]0 mb-4">
                 Please use the search bar above or quick location buttons below
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => handleLocationSelect(12.9716, 77.5946, 'Bangalore Fallback')}
-                  className="px-3 py-2 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+                  className="px-3 py-2 bg-[#96AEC2]/20 text-[#546A7A] text-xs rounded hover:bg-[#96AEC2]/30 transition-colors"
                 >
                   📍 Bangalore
                 </button>
                 <button
                   onClick={() => handleLocationSelect(19.0760, 72.8777, 'Mumbai Fallback')}
-                  className="px-3 py-2 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+                  className="px-3 py-2 bg-[#96AEC2]/20 text-[#546A7A] text-xs rounded hover:bg-[#96AEC2]/30 transition-colors"
                 >
                   📍 Mumbai
                 </button>
@@ -418,7 +418,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
         {isMapLoaded && (
           <div className="absolute top-2 left-2 right-2 z-[1000] pointer-events-none">
             <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-2 shadow-sm">
-              <p className="text-xs text-gray-700 text-center font-medium">
+              <p className="text-xs text-[#5D6E73] text-center font-medium">
                 🗺️ Click anywhere on the map or drag the marker to set your location
               </p>
             </div>
@@ -428,12 +428,12 @@ const MapPicker: React.FC<MapPickerProps> = ({
 
       {/* Selected Location Display */}
       {selectedLocation && (
-        <div className="p-4 bg-green-50 border-t border-green-200">
+        <div className="p-4 bg-[#A2B9AF]/10 border-t border-[#A2B9AF]">
           <div className="flex items-center space-x-2 mb-2">
-            <MapPin className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium text-green-800">Selected Location</span>
+            <MapPin className="h-4 w-4 text-[#4F6A64]" />
+            <span className="text-sm font-medium text-[#4F6A64]">Selected Location</span>
           </div>
-          <p className="text-xs font-mono text-green-700">
+          <p className="text-xs font-mono text-[#4F6A64]">
             📍 {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
           </p>
           <button
@@ -442,7 +442,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
                 onLocationSelect(selectedLocation.lat, selectedLocation.lng);
               }
             }}
-            className="mt-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+            className="mt-2 px-3 py-1 bg-[#4F6A64] text-white text-xs rounded hover:bg-[#4F6A64] transition-colors"
           >
             <Navigation className="h-3 w-3 inline mr-1" />
             Use This Location
@@ -451,13 +451,13 @@ const MapPicker: React.FC<MapPickerProps> = ({
       )}
 
       {/* Quick Actions */}
-      <div className="p-4 bg-gray-50 border-t border-gray-200">
+      <div className="p-4 bg-[#AEBFC3]/10 border-t border-[#92A2A5]">
         <div className="flex flex-wrap gap-2">
           {/* Current Location Button */}
           <button
             onClick={getCurrentLocation}
             disabled={isGettingLocation}
-            className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded hover:bg-green-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1 bg-[#A2B9AF]/20 text-[#4F6A64] text-xs rounded hover:bg-[#82A094]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGettingLocation ? (
               <>
@@ -473,7 +473,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
           {currentLocation && (
             <button
               onClick={() => handleLocationSelect(currentLocation.lat, currentLocation.lng, 'Current GPS')}
-              className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded hover:bg-green-200 transition-colors"
+              className="px-3 py-1 bg-[#A2B9AF]/20 text-[#4F6A64] text-xs rounded hover:bg-[#82A094]/30 transition-colors"
             >
               📍 Use Current GPS
             </button>
@@ -483,7 +483,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
           {initialLocation && (
             <button
               onClick={() => handleLocationSelect(initialLocation.latitude, initialLocation.longitude, 'Initial Location')}
-              className="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded hover:bg-purple-200 transition-colors"
+              className="px-3 py-1 bg-[#6F8A9D]/20 text-[#546A7A] text-xs rounded hover:bg-[#6F8A9D]/30 transition-colors"
             >
               📍 Initial Location
             </button>
@@ -494,7 +494,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
             onClick={() => {
               handleLocationSelect(12.9716, 77.5946, 'Bangalore');
             }}
-            className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+            className="px-3 py-1 bg-[#96AEC2]/20 text-[#546A7A] text-xs rounded hover:bg-[#96AEC2]/30 transition-colors"
           >
             📍 Bangalore
           </button>
@@ -502,7 +502,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
             onClick={() => {
               handleLocationSelect(19.0760, 72.8777, 'Mumbai');
             }}
-            className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+            className="px-3 py-1 bg-[#96AEC2]/20 text-[#546A7A] text-xs rounded hover:bg-[#96AEC2]/30 transition-colors"
           >
             📍 Mumbai
           </button>
@@ -510,7 +510,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
             onClick={() => {
               handleLocationSelect(28.6139, 77.2090, 'Delhi');
             }}
-            className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 transition-colors"
+            className="px-3 py-1 bg-[#96AEC2]/20 text-[#546A7A] text-xs rounded hover:bg-[#96AEC2]/30 transition-colors"
           >
             📍 Delhi
           </button>

@@ -26,7 +26,7 @@ export function ZoneUserPagination({ currentPage, totalPages, searchParams }: Zo
 
   return (
     <div className="flex items-center justify-between">
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-[#AEBFC3]0">
         Page {currentPage} of {totalPages}
       </div>
       <div className="flex items-center gap-2">

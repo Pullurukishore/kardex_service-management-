@@ -185,13 +185,13 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
   const getStatusIcon = () => {
     switch (state.status) {
       case 'loading':
-        return <Loader2 className="h-5 w-5 animate-spin text-blue-600" />;
+        return <Loader2 className="h-5 w-5 animate-spin text-[#546A7A]" />;
       case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
+        return <CheckCircle className="h-5 w-5 text-[#4F6A64]" />;
       case 'error':
-        return <AlertTriangle className="h-5 w-5 text-red-600" />;
+        return <AlertTriangle className="h-5 w-5 text-[#9E3B47]" />;
       default:
-        return <MapPin className="h-5 w-5 text-gray-600" />;
+        return <MapPin className="h-5 w-5 text-[#5D6E73]" />;
     }
   };
 
@@ -221,15 +221,15 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
       case 'success':
         const accuracy = state.location?.accuracy;
         if (accuracy && accuracy > 100) {
-          return 'text-amber-600 bg-amber-50 border-amber-200';
+          return 'text-[#976E44] bg-[#CE9F6B]/10 border-[#CE9F6B]/50';
         }
-        return 'text-green-600 bg-green-50 border-green-200';
+        return 'text-[#4F6A64] bg-[#A2B9AF]/10 border-[#A2B9AF]';
       case 'error':
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-[#9E3B47] bg-[#E17F70]/10 border-[#E17F70]';
       case 'loading':
-        return 'text-blue-600 bg-blue-50 border-blue-200';
+        return 'text-[#546A7A] bg-[#96AEC2]/10 border-[#96AEC2]';
       default:
-        return permissionGranted && autoCapture ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-gray-600 bg-gray-50 border-gray-200';
+        return permissionGranted && autoCapture ? 'text-[#546A7A] bg-[#96AEC2]/10 border-[#96AEC2]' : 'text-[#5D6E73] bg-[#AEBFC3]/10 border-[#92A2A5]';
     }
   };
 
@@ -237,8 +237,8 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
     <div className={`space-y-4 ${className}`}>
       {/* Header */}
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-        <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+        <h3 className="text-lg font-semibold text-[#546A7A]">{title}</h3>
+        <p className="text-sm text-[#5D6E73] mt-1">{subtitle}</p>
       </div>
 
       {/* Status Card */}
@@ -280,7 +280,7 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
         <button
           onClick={handleCaptureLocation}
           disabled={state.status === 'loading'}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 touch-manipulation"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-[#6F8A9D] text-white rounded-lg hover:bg-[#546A7A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 touch-manipulation"
         >
           <Navigation className="h-4 w-4" />
           <span className="font-medium">
@@ -292,7 +292,7 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
         {state.status === 'error' && (
           <button
             onClick={handleRetry}
-            className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors duration-200 touch-manipulation"
+            className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-[#976E44] text-white rounded-lg hover:bg-[#976E44] transition-colors duration-200 touch-manipulation"
           >
             <Navigation className="h-3 w-3" />
             <span className="text-sm font-medium">Retry GPS</span>
@@ -302,7 +302,7 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
         {/* Auto-tracking status */}
         {permissionGranted && autoCapture && (
           <div className="text-center">
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-[#546A7A]">
               🔄 Auto-tracking enabled - Location updates every 30 seconds
             </p>
           </div>
@@ -311,9 +311,9 @@ const LocationCapture: React.FC<LocationCaptureProps> = ({
 
       {/* Accuracy Help - Only shown when accuracy is poor but location is still captured */}
       {state.status === 'success' && state.location?.accuracy && state.location.accuracy > 100 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-          <h4 className="text-sm font-medium text-amber-800 mb-2">GPS Accuracy Notice:</h4>
-          <p className="text-xs text-amber-700">
+        <div className="bg-[#CE9F6B]/10 border border-[#CE9F6B]/50 rounded-lg p-3">
+          <h4 className="text-sm font-medium text-[#976E44] mb-2">GPS Accuracy Notice:</h4>
+          <p className="text-xs text-[#976E44]">
             Location captured with ±{Math.round(state.location.accuracy)}m accuracy. For better accuracy, try moving to an open area with clear sky view.
           </p>
         </div>

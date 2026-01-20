@@ -13,9 +13,9 @@ const ReportLoadingSkeleton = () => (
     {/* Summary Cards Skeleton */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {[1, 2, 3, 4].map(i => (
-        <div key={i} className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg p-6 h-32">
-          <div className="h-4 bg-gray-300 rounded w-1/3 mb-4"></div>
-          <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+        <div key={i} className="bg-gradient-to-br from-[#92A2A5]/30 to-[#92A2A5]/50 rounded-lg p-6 h-32">
+          <div className="h-4 bg-[#92A2A5] rounded w-1/3 mb-4"></div>
+          <div className="h-8 bg-[#92A2A5] rounded w-1/2"></div>
         </div>
       ))}
     </div>
@@ -23,12 +23,12 @@ const ReportLoadingSkeleton = () => (
     {/* Charts Skeleton */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-white rounded-lg border p-6">
-        <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="h-64 bg-gray-100 rounded"></div>
+        <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4 mb-4"></div>
+        <div className="h-64 bg-[#AEBFC3]/20 rounded"></div>
       </div>
       <div className="bg-white rounded-lg border p-6">
-        <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="h-64 bg-gray-100 rounded"></div>
+        <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4 mb-4"></div>
+        <div className="h-64 bg-[#AEBFC3]/20 rounded"></div>
       </div>
     </div>
   </div>
@@ -36,10 +36,10 @@ const ReportLoadingSkeleton = () => (
 
 const TableLoadingSkeleton = () => (
   <div className="animate-pulse space-y-4">
-    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+    <div className="h-4 bg-[#92A2A5]/30 rounded w-1/4"></div>
     <div className="space-y-3">
       {[1, 2, 3, 4, 5].map(i => (
-        <div key={i} className="h-12 bg-gray-100 rounded"></div>
+        <div key={i} className="h-12 bg-[#AEBFC3]/20 rounded"></div>
       ))}
     </div>
   </div>

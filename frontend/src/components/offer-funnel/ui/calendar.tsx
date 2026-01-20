@@ -113,7 +113,7 @@ const Calendar: React.FC<CalendarProps> = ({
         {weekDays.map((day) => (
           <div
             key={day}
-            className="text-center text-sm font-medium text-gray-500 py-1"
+            className="text-center text-sm font-medium text-[#AEBFC3]0 py-1"
           >
             {day}
           </div>
@@ -131,10 +131,10 @@ const Calendar: React.FC<CalendarProps> = ({
               className={cn(
                 "h-9 w-9 rounded-md text-sm transition-colors",
                 isSelected(day)
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  ? "bg-[#6F8A9D] text-white hover:bg-[#546A7A]"
                   : isToday(day)
-                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
-                  : "hover:bg-gray-100"
+                  ? "bg-[#96AEC2]/10 text-[#546A7A] hover:bg-[#96AEC2]/20"
+                  : "hover:bg-[#AEBFC3]/20"
               )}
             >
               {day}

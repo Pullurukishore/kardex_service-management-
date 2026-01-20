@@ -56,7 +56,7 @@ const STATUS_OPTIONS = [
     requiresLocation: false,
     requiresComment: false,
     requiresPhoto: false,
-    color: 'bg-blue-100 text-blue-800'
+    color: 'bg-[#96AEC2]/20 text-[#546A7A]'
   },
   {
     key: 'travel_to_site',
@@ -67,7 +67,7 @@ const STATUS_OPTIONS = [
     requiresLocation: true,
     requiresComment: false,
     requiresPhoto: false,
-    color: 'bg-yellow-100 text-yellow-800'
+    color: 'bg-[#CE9F6B]/20 text-[#976E44]'
   },
   {
     key: 'arrived_onsite',
@@ -78,7 +78,7 @@ const STATUS_OPTIONS = [
     requiresLocation: true,
     requiresComment: false,
     requiresPhoto: true,
-    color: 'bg-orange-100 text-orange-800'
+    color: 'bg-[#CE9F6B]/20 text-[#976E44]'
   },
   {
     key: 'working_onsite',
@@ -89,7 +89,7 @@ const STATUS_OPTIONS = [
     requiresLocation: true,
     requiresComment: false,
     requiresPhoto: false,
-    color: 'bg-purple-100 text-purple-800'
+    color: 'bg-[#6F8A9D]/20 text-[#546A7A]'
   },
   {
     key: 'complete_work',
@@ -100,7 +100,7 @@ const STATUS_OPTIONS = [
     requiresLocation: true,
     requiresComment: true,
     requiresPhoto: false,
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64]'
   },
   {
     key: 'resolve_ticket',
@@ -111,7 +111,7 @@ const STATUS_OPTIONS = [
     requiresLocation: false,
     requiresComment: true,
     requiresPhoto: false,
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-[#A2B9AF]/20 text-[#4F6A64]'
   },
   {
     key: 'pause_work',
@@ -122,7 +122,7 @@ const STATUS_OPTIONS = [
     requiresLocation: false,
     requiresComment: false,
     requiresPhoto: false,
-    color: 'bg-gray-100 text-gray-800'
+    color: 'bg-[#AEBFC3]/20 text-[#546A7A]'
   },
   {
     key: 'wait_customer',
@@ -133,7 +133,7 @@ const STATUS_OPTIONS = [
     requiresLocation: false,
     requiresComment: true,
     requiresPhoto: false,
-    color: 'bg-amber-100 text-amber-800'
+    color: 'bg-[#CE9F6B]/20 text-[#976E44]'
   }
 ];
 
@@ -301,17 +301,17 @@ export function TicketStatusDialogWithLocation({
                 <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg">
                   #{ticket.ticketNumber ?? ticket.id}
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[#546A7A]">
                   Location Required for {selectedOption?.label}
                 </h2>
                 <button
                   onClick={() => setShowLocationCapture(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-[#979796] hover:text-[#5D6E73]"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#5D6E73] mb-6">
                 This status change requires your location to track field service activities.
               </p>
               <EnhancedLocationCapture
@@ -339,9 +339,9 @@ export function TicketStatusDialogWithLocation({
 
           <div className="space-y-6">
             {/* Ticket Info */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">{ticket.title}</h3>
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+            <div className="bg-[#AEBFC3]/10 rounded-lg p-4">
+              <h3 className="font-medium text-[#546A7A] mb-2">{ticket.title}</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm text-[#5D6E73]">
                 <div>
                   <span className="font-medium">Customer:</span> {ticket.customer?.companyName || 'N/A'}
                 </div>
@@ -361,7 +361,7 @@ export function TicketStatusDialogWithLocation({
 
             {/* Status Options */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">Select New Status</h4>
+              <h4 className="font-medium text-[#546A7A] mb-3">Select New Status</h4>
               <div className="grid grid-cols-2 gap-3">
                 {STATUS_OPTIONS.map((option) => (
                   <button
@@ -369,42 +369,42 @@ export function TicketStatusDialogWithLocation({
                     onClick={() => handleStatusSelect(option.key)}
                     className={`p-3 rounded-lg border-2 text-left transition-all duration-200 ${
                       selectedStatus === option.key
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-[#6F8A9D] bg-[#96AEC2]/10'
+                        : 'border-[#92A2A5] hover:border-[#92A2A5] hover:bg-[#AEBFC3]/10'
                     }`}
                   >
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="text-lg">{option.icon}</span>
                       <span className="font-medium text-sm">{option.label}</span>
                       {option.requiresLocation && (
-                        <MapPin className="h-3 w-3 text-blue-500" />
+                        <MapPin className="h-3 w-3 text-[#6F8A9D]" />
                       )}
                       {option.requiresPhoto && (
-                        <Camera className="h-3 w-3 text-purple-500" />
+                        <Camera className="h-3 w-3 text-[#6F8A9D]" />
                       )}
                     </div>
-                    <p className="text-xs text-gray-600">{option.description}</p>
+                    <p className="text-xs text-[#5D6E73]">{option.description}</p>
                       {option.requiresLocation && (
-                        <p className="text-xs text-blue-600 mt-1">📍 Location required</p>
+                        <p className="text-xs text-[#546A7A] mt-1">📍 Location required</p>
                       )}
                       {option.requiresPhoto && (
-                        <p className="text-xs text-purple-600 mt-1">📷 Photo required</p>
+                        <p className="text-xs text-[#546A7A] mt-1">📷 Photo required</p>
                       )}
                       {option.requiresComment && (
-                        <p className="text-xs text-orange-600 mt-1">💬 Comment required</p>
+                        <p className="text-xs text-[#976E44] mt-1">💬 Comment required</p>
                       )}
                   </button>
                 ))}
               </div>
             </div>
             {capturedLocation && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div className="bg-[#A2B9AF]/10 border border-[#A2B9AF] rounded-lg p-3">
                 <div className="flex items-center space-x-2 mb-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-800">Location Captured</span>
+                  <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
+                  <span className="text-sm font-medium text-[#4F6A64]">Location Captured</span>
                 </div>
-                <p className="text-xs text-green-700 truncate">{capturedLocation.address}</p>
-                <p className="text-xs text-green-600">
+                <p className="text-xs text-[#4F6A64] truncate">{capturedLocation.address}</p>
+                <p className="text-xs text-[#4F6A64]">
                   Accuracy: ±{Math.round(capturedLocation.accuracy || 0)}m
                 </p>
                 <Button
@@ -425,8 +425,8 @@ export function TicketStatusDialogWithLocation({
             {/* Photo Capture Section */}
             {selectedOption && selectedOption.requiresPhoto && (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Verification Photos <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#546A7A] mb-2">
+                  Verification Photos <span className="text-[#E17F70]">*</span>
                 </label>
                 <PhotoCapture
                   onPhotoCapture={handlePhotoCapture}
@@ -442,8 +442,8 @@ export function TicketStatusDialogWithLocation({
             {/* Comment Section */}
             {selectedOption && (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Comment {selectedOption.requiresComment && <span className="text-red-500">*</span>}
+                <label className="block text-sm font-medium text-[#546A7A] mb-2">
+                  Comment {selectedOption.requiresComment && <span className="text-[#E17F70]">*</span>}
                 </label>
                 <Textarea
                   value={comment}
@@ -463,7 +463,7 @@ export function TicketStatusDialogWithLocation({
               <Button
                 onClick={handleSubmit}
                 disabled={!selectedStatus || isUpdating}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-[#6F8A9D] hover:bg-[#546A7A]"
               >
                 {isUpdating ? (
                   <>

@@ -152,7 +152,7 @@ export default function PinManagementClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/20">
       <div className="container mx-auto p-6 max-w-6xl">
         {/* Enhanced Header */}
         <motion.div 
@@ -164,7 +164,7 @@ export default function PinManagementClient() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <motion.div 
-                className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg"
+                className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg"
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
@@ -174,7 +174,7 @@ export default function PinManagementClient() {
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                   PIN Management
                 </h1>
-                <p className="text-gray-600 text-lg mt-1">
+                <p className="text-[#5D6E73] text-lg mt-1">
                   Secure access control for your KardexCare system
                 </p>
               </div>
@@ -183,10 +183,10 @@ export default function PinManagementClient() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-md border border-blue-200/50"
+              className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-md border border-[#96AEC2]/50"
             >
-              <Settings className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-gray-700">Admin Panel</span>
+              <Settings className="w-4 h-4 text-[#546A7A]" />
+              <span className="text-sm font-medium text-[#5D6E73]">Admin Panel</span>
             </motion.div>
           </div>
           
@@ -196,14 +196,14 @@ export default function PinManagementClient() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 shadow-sm"
+              className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 border border-[#A2B9AF] rounded-xl p-4 shadow-sm"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="font-medium text-green-800">System Status: Active</span>
+                  <CheckCircle className="w-5 h-5 text-[#4F6A64]" />
+                  <span className="font-medium text-[#4F6A64]">System Status: Active</span>
                 </div>
-                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                <Badge variant="outline" className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]">
                   PIN Never Expires
                 </Badge>
               </div>
@@ -216,7 +216,7 @@ export default function PinManagementClient() {
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-gray-600" />
+              <Clock className="w-5 h-5 text-[#5D6E73]" />
               <CardTitle>Current PIN Status</CardTitle>
             </div>
             <CardDescription>
@@ -227,14 +227,14 @@ export default function PinManagementClient() {
             {pinStatus ? (
               <>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Status</span>
+                  <span className="text-sm font-medium text-[#5D6E73]">Status</span>
                   <Badge variant={pinStatus.pinRequired ? 'destructive' : 'default'}>
                     {pinStatus.pinRequired ? 'Expired' : 'Active'}
                   </Badge>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Expiry</span>
+                  <span className="text-sm font-medium text-[#5D6E73]">Expiry</span>
                   <Badge variant="default">
                     Never expires
                   </Badge>
@@ -244,9 +244,9 @@ export default function PinManagementClient() {
                 
                 {/* Current PIN Display */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Current PIN</span>
+                  <span className="text-sm font-medium text-[#5D6E73]">Current PIN</span>
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-lg tracking-widest bg-gray-50 px-3 py-1 rounded border">
+                    <span className="font-mono text-lg tracking-widest bg-[#AEBFC3]/10 px-3 py-1 rounded border">
                       {showPin ? pinStatus.currentPin : '••••••'}
                     </span>
                     <Button
@@ -280,7 +280,7 @@ export default function PinManagementClient() {
                 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Created</span>
+                    <span className="text-[#5D6E73]">Created</span>
                     <span className="font-mono">{formatDate(pinStatus.createdAt)}</span>
                   </div>
                 </div>
@@ -295,8 +295,8 @@ export default function PinManagementClient() {
               </div>
             ) : (
               <div className="text-center py-4">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                <p className="text-sm text-gray-500">Loading PIN status...</p>
+                <div className="w-6 h-6 border-2 border-[#546A7A] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <p className="text-sm text-[#AEBFC3]0">Loading PIN status...</p>
               </div>
             )}
           </CardContent>
@@ -306,7 +306,7 @@ export default function PinManagementClient() {
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
-              <Key className="w-5 h-5 text-gray-600" />
+              <Key className="w-5 h-5 text-[#5D6E73]" />
               <CardTitle>Generate New PIN</CardTitle>
             </div>
             <CardDescription>
@@ -316,7 +316,7 @@ export default function PinManagementClient() {
           <CardContent>
             <form onSubmit={handleGeneratePin} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-[#5D6E73]">
                   New 6-Digit PIN
                 </label>
                 <div className="flex space-x-2">
@@ -357,7 +357,7 @@ export default function PinManagementClient() {
                     </Button>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#AEBFC3]0">
                   PIN must be exactly 6 digits. Click the refresh button to generate a random PIN.
                 </p>
               </div>
@@ -370,9 +370,9 @@ export default function PinManagementClient() {
               )}
 
               {success && (
-                <Alert className="border-green-200 bg-green-50">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">{success}</AlertDescription>
+                <Alert className="border-[#A2B9AF] bg-[#A2B9AF]/10">
+                  <CheckCircle className="h-4 w-4 text-[#4F6A64]" />
+                  <AlertDescription className="text-[#4F6A64]">{success}</AlertDescription>
                 </Alert>
               )}
 
@@ -399,7 +399,7 @@ export default function PinManagementClient() {
       <Card className="mt-6">
         <CardHeader>
           <div className="flex items-center space-x-2">
-            <Users className="w-5 h-5 text-gray-600" />
+            <Users className="w-5 h-5 text-[#5D6E73]" />
             <CardTitle>Usage Instructions</CardTitle>
           </div>
           <CardDescription>
@@ -409,8 +409,8 @@ export default function PinManagementClient() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <h4 className="font-semibold text-gray-900">📱 Sharing the PIN</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <h4 className="font-semibold text-[#546A7A]">📱 Sharing the PIN</h4>
+              <ul className="text-sm text-[#5D6E73] space-y-1">
                 <li>• Share via WhatsApp group or secure channel</li>
                 <li>• Send to authorized users only</li>
                 <li>• Inform users PIN doesn't expire</li>
@@ -418,8 +418,8 @@ export default function PinManagementClient() {
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-gray-900">🔄 PIN Management</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <h4 className="font-semibold text-[#546A7A]">🔄 PIN Management</h4>
+              <ul className="text-sm text-[#5D6E73] space-y-1">
                 <li>• PINs never expire automatically</li>
                 <li>• Generate new PIN when needed</li>
                 <li>• Users enter PIN once per device</li>
@@ -428,9 +428,9 @@ export default function PinManagementClient() {
             </div>
           </div>
           
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-900 mb-2">💡 Best Practices</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
+          <div className="bg-[#96AEC2]/10 border border-[#96AEC2] rounded-lg p-4">
+            <h4 className="font-semibold text-[#546A7A] mb-2">💡 Best Practices</h4>
+            <ul className="text-sm text-[#546A7A] space-y-1">
               <li>• Generate new PIN periodically for security</li>
               <li>• Share PIN only with active team members</li>
               <li>• Revoke access by generating new PIN immediately</li>

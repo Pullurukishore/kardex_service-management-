@@ -178,16 +178,16 @@ export default function AdminDashboard() {
 
   const getStageColor = (stage: string) => {
     const colors: Record<string, string> = {
-      'INITIAL': 'text-blue-600 bg-blue-50',
-      'PROPOSAL_SENT': 'text-indigo-600 bg-indigo-50',
-      'NEGOTIATION': 'text-purple-600 bg-purple-50',
-      'FINAL_APPROVAL': 'text-amber-600 bg-amber-50',
-      'PO_RECEIVED': 'text-cyan-600 bg-cyan-50',
-      'ORDER_BOOKED': 'text-teal-600 bg-teal-50',
-      'WON': 'text-green-600 bg-green-50',
-      'LOST': 'text-red-600 bg-red-50',
+      'INITIAL': 'text-[#546A7A] bg-[#96AEC2]/10',
+      'PROPOSAL_SENT': 'text-[#546A7A] bg-[#546A7A]/10',
+      'NEGOTIATION': 'text-[#546A7A] bg-[#6F8A9D]/10',
+      'FINAL_APPROVAL': 'text-[#976E44] bg-[#CE9F6B]/10',
+      'PO_RECEIVED': 'text-[#546A7A] bg-[#96AEC2]/10',
+      'ORDER_BOOKED': 'text-[#4F6A64] bg-[#82A094]/10',
+      'WON': 'text-[#4F6A64] bg-[#A2B9AF]/10',
+      'LOST': 'text-[#9E3B47] bg-[#E17F70]/10',
     }
-    return colors[stage] || 'text-gray-600 bg-gray-50'
+    return colors[stage] || 'text-[#5D6E73] bg-[#AEBFC3]/10'
   }
 
   const formatStage = (stage: string) => {
@@ -200,8 +200,8 @@ export default function AdminDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-violet-600 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium">Loading dashboard data...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-[#6F8A9D] mx-auto mb-4" />
+          <p className="text-[#5D6E73] font-medium">Loading dashboard data...</p>
         </div>
       </div>
     )
@@ -211,8 +211,8 @@ export default function AdminDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium">{error || 'No data available'}</p>
+          <XCircle className="h-12 w-12 text-[#9E3B47] mx-auto mb-4" />
+          <p className="text-[#5D6E73] font-medium">{error || 'No data available'}</p>
         </div>
       </div>
     )
@@ -221,15 +221,15 @@ export default function AdminDashboard() {
   const { stats } = dashboardData
 
   const getTrendIcon = (value: number) => {
-    if (value > 0) return <ArrowUpRight className="h-4 w-4 text-green-600" />
-    if (value < 0) return <ArrowDownRight className="h-4 w-4 text-red-600" />
+    if (value > 0) return <ArrowUpRight className="h-4 w-4 text-[#4F6A64]" />
+    if (value < 0) return <ArrowDownRight className="h-4 w-4 text-[#9E3B47]" />
     return null
   }
 
   const getTrendColor = (value: number) => {
-    if (value > 0) return "text-green-600"
-    if (value < 0) return "text-red-600"
-    return "text-gray-600"
+    if (value > 0) return "text-[#4F6A64]"
+    if (value < 0) return "text-[#9E3B47]"
+    return "text-[#5D6E73]"
   }
 
   const breakdown = dashboardData.zoneProductTypeBreakdown || []
@@ -399,20 +399,20 @@ export default function AdminDashboard() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-white to-[#96AEC2]/10/30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Enhanced Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl shadow-lg">
+              <div className="p-2 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg">
                 <BarChart3 className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] bg-clip-text text-transparent">
                 Analytics Dashboard
               </h1>
             </div>
-            <p className="text-slate-600 text-sm flex items-center gap-2">
+            <p className="text-[#5D6E73] text-sm flex items-center gap-2">
               <Activity className="h-4 w-4" />
               Real-time insights and performance metrics
             </p>
@@ -422,26 +422,26 @@ export default function AdminDashboard() {
         
 
         {/* Overall Performance (All-Time Totals) */}
-        <Card className="group overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-gradient-to-br from-violet-50 via-white to-indigo-50 hover:from-violet-50 hover:to-indigo-100 relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <Card className="group overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <CardHeader className="bg-transparent border-b border-violet-100">
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Award className="h-10 w-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">Overall Performance</h3>
-                  <p className="text-slate-600 text-sm flex items-center gap-2 mt-1">
-                    <Calendar className="h-4 w-4 text-slate-500" />
+                  <h3 className="text-2xl font-bold text-[#546A7A]">Overall Performance</h3>
+                  <p className="text-[#5D6E73] text-sm flex items-center gap-2 mt-1">
+                    <Calendar className="h-4 w-4 text-[#757777]" />
                     All-time totals across offers and value
                   </p>
                 </div>
               </div>
               <div className="text-center lg:text-right">
-                <div className="text-5xl lg:text-6xl font-extrabold mb-1 bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">{formatCurrency(stats.wonValue)}</div>
-                <div className="flex items-center justify-center lg:justify-end gap-2 text-slate-600">
-                  <DollarSign className="h-4 w-4 text-violet-500" />
+                <div className="text-5xl lg:text-6xl font-extrabold mb-1 bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] bg-clip-text text-transparent">{formatCurrency(stats.wonValue)}</div>
+                <div className="flex items-center justify-center lg:justify-end gap-2 text-[#5D6E73]">
+                  <DollarSign className="h-4 w-4 text-[#6F8A9D]" />
                   <p className="text-sm font-medium">Total Won Value</p>
                 </div>
               </div>
@@ -449,29 +449,29 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="p-8 relative">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-violet-50 via-white to-violet-50 hover:from-violet-50 hover:to-violet-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-violet-100 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardHeader className="bg-transparent border-b border-violet-100">
                   <div className="flex items-center justify-between">
-                    <div className="p-3 bg-gradient-to-br from-violet-500 to-violet-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <Target className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-xs font-medium text-violet-500 bg-violet-50 px-2 py-1 rounded-full">All-time</div>
+                    <div className="text-xs font-medium text-[#6F8A9D] bg-[#96AEC2]/10 px-2 py-1 rounded-full">All-time</div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6 relative">
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-violet-600 uppercase tracking-wider">Total Wins</p>
+                    <p className="text-xs font-semibold text-[#6F8A9D] uppercase tracking-wider">Total Wins</p>
                     <div className="flex items-end justify-between">
-                      <h3 className="text-4xl font-bold text-slate-900">{stats.wonOffers}</h3>
-                      <div className="flex items-center gap-1.5 bg-violet-50 px-3 py-1.5 rounded-full">
-                        <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-                        <span className="text-xs font-medium text-violet-700">{stats.closedOffers} total</span>
+                      <h3 className="text-4xl font-bold text-[#546A7A]">{stats.wonOffers}</h3>
+                      <div className="flex items-center gap-1.5 bg-[#96AEC2]/10 px-3 py-1.5 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-[#6F8A9D] animate-pulse" />
+                        <span className="text-xs font-medium text-[#546A7A]">{stats.closedOffers} total</span>
                       </div>
                     </div>
-                    <div className="h-1.5 w-full bg-violet-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-1.5 w-full bg-[#96AEC2]/20 rounded-full overflow-hidden mt-2">
                       <div 
-                        className="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full"
+                        className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
                         style={{ width: `${stats.closedOffers > 0 ? (stats.wonOffers / stats.closedOffers) * 100 : 0}%` }}
                       />
                     </div>
@@ -479,14 +479,14 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-emerald-50 via-white to-emerald-50 hover:from-emerald-50 hover:to-emerald-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardHeader className="bg-transparent border-b border-emerald-100">
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#A2B9AF]/10 via-white to-[#A2B9AF]/10 hover:from-[#A2B9AF]/10 hover:to-[#A2B9AF]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#82A094]/5 to-[#82A094]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="bg-transparent border-b border-[#A2B9AF]/20">
                   <div className="flex items-center justify-between">
-                    <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <DollarSign className="h-6 w-6 text-white" />
                     </div>
-                    <div className="flex items-center gap-1.5 bg-emerald-50 px-2 py-1 rounded-full">
+                    <div className="flex items-center gap-1.5 bg-[#82A094]/10 px-2 py-1 rounded-full">
                       {getTrendIcon(stats.valueGrowth)}
                       <span className={`text-xs font-bold ${getTrendColor(stats.valueGrowth)}`}>
                         {stats.valueGrowth > 0 ? '+' : ''}{stats.valueGrowth.toFixed(1)}%
@@ -496,17 +496,17 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="p-6 relative">
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Pipeline Value</p>
+                    <p className="text-xs font-semibold text-[#4F6A64] uppercase tracking-wider">Pipeline Value</p>
                     <div className="flex items-end justify-between">
-                      <h3 className="text-3xl font-bold text-slate-900">{formatCurrency(stats.totalValue)}</h3>
-                      <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1.5 rounded-full">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-xs font-medium text-emerald-700">Active</span>
+                      <h3 className="text-3xl font-bold text-[#546A7A]">{formatCurrency(stats.totalValue)}</h3>
+                      <div className="flex items-center gap-1.5 bg-[#82A094]/10 px-3 py-1.5 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-[#82A094]/100 animate-pulse" />
+                        <span className="text-xs font-medium text-[#4F6A64]">Active</span>
                       </div>
                     </div>
-                    <div className="h-1.5 w-full bg-emerald-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-1.5 w-full bg-[#82A094]/20 rounded-full overflow-hidden mt-2">
                       <div 
-                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"
+                        className="h-full bg-gradient-to-r from-[#82A094] to-[#82A094] rounded-full"
                         style={{ width: `${Math.min(100, (stats.valueGrowth + 100) / 2)}%` }}
                       />
                     </div>
@@ -514,41 +514,41 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-blue-50 via-white to-blue-50 hover:from-blue-50 hover:to-blue-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardHeader className="bg-transparent border-b border-blue-100">
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="bg-transparent border-b border-[#96AEC2]/30">
                   <div className="flex items-center justify-between">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <Percent className="h-6 w-6 text-white" />
                     </div>
                     {stats.closedOffers < 3 ? (
-                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
+                      <span className="text-xs font-medium text-[#976E44] bg-[#CE9F6B]/10 px-2 py-1 rounded-full border border-[#CE9F6B]/40">
                         Low sample
                       </span>
                     ) : (
-                      <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                      <div className="h-2 w-2 rounded-full bg-[#6F8A9D] animate-pulse" />
                     )}
                   </div>
                 </CardHeader>
                 <CardContent className="p-6 relative">
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Win Rate</p>
+                    <p className="text-xs font-semibold text-[#546A7A] uppercase tracking-wider">Win Rate</p>
                     <div className="flex items-end justify-between">
-                      <h3 className="text-4xl font-bold text-slate-900">
+                      <h3 className="text-4xl font-bold text-[#546A7A]">
                         {stats.closedOffers === 0 ? 'N/A' : `${stats.winRate.toFixed(1)}%`}
                       </h3>
                       {stats.closedOffers > 0 && (
-                        <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-full">
-                          <div className="w-2 h-2 rounded-full bg-blue-500" />
-                          <span className="text-xs font-medium text-blue-700">
+                        <div className="flex items-center gap-1.5 bg-[#96AEC2]/10 px-3 py-1.5 rounded-full">
+                          <div className="w-2 h-2 rounded-full bg-[#96AEC2]/100" />
+                          <span className="text-xs font-medium text-[#546A7A]">
                             {stats.wonOffers}W / {stats.lostOffers}L
                           </span>
                         </div>
                       )}
                     </div>
-                    <div className="h-1.5 w-full bg-blue-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-1.5 w-full bg-[#96AEC2]/20 rounded-full overflow-hidden mt-2">
                       <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                        className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
                         style={{ width: `${stats.winRate}%` }}
                       />
                     </div>
@@ -556,32 +556,32 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-amber-50 via-white to-amber-50 hover:from-amber-50 hover:to-amber-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-amber-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardHeader className="bg-transparent border-b border-amber-100">
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#EEC1BF]/10 via-white to-[#EEC1BF]/10 hover:from-[#EEC1BF]/10 hover:to-[#EEC1BF]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#CE9F6B]/5 to-[#976E44]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="bg-transparent border-b border-[#EEC1BF]/20">
                   <div className="flex items-center justify-between">
-                    <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="p-3 bg-gradient-to-br from-[#CE9F6B] to-[#976E44] rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <Activity className="h-6 w-6 text-white" />
                     </div>
-                    <div className="flex items-center gap-1.5 bg-amber-50 px-2 py-1 rounded-full">
-                      <Zap className="h-3.5 w-3.5 text-amber-600" />
-                      <span className="text-xs font-medium text-amber-700">Live</span>
+                    <div className="flex items-center gap-1.5 bg-[#CE9F6B]/10 px-2 py-1 rounded-full">
+                      <Zap className="h-3.5 w-3.5 text-[#976E44]" />
+                      <span className="text-xs font-medium text-[#976E44]">Live</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6 relative">
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Active Offers</p>
+                    <p className="text-xs font-semibold text-[#976E44] uppercase tracking-wider">Active Offers</p>
                     <div className="flex items-end justify-between">
-                      <h3 className="text-4xl font-bold text-slate-900">{stats.activeOffers}</h3>
-                      <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-full">
-                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                        <span className="text-xs font-medium text-amber-700">In progress</span>
+                      <h3 className="text-4xl font-bold text-[#546A7A]">{stats.activeOffers}</h3>
+                      <div className="flex items-center gap-1.5 bg-[#CE9F6B]/10 px-3 py-1.5 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-[#CE9F6B]/100 animate-pulse" />
+                        <span className="text-xs font-medium text-[#976E44]">In progress</span>
                       </div>
                     </div>
-                    <div className="h-1.5 w-full bg-amber-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-1.5 w-full bg-[#CE9F6B]/20 rounded-full overflow-hidden mt-2">
                       <div 
-                        className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                        className="h-full bg-gradient-to-r from-[#CE9F6B] to-[#976E44] rounded-full"
                         style={{ width: `${Math.min(100, (stats.activeOffers / (stats.totalOffers || 1)) * 100)}%` }}
                       />
                     </div>
@@ -590,81 +590,81 @@ export default function AdminDashboard() {
               </Card>
             </div>
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 via-white to-purple-50 hover:from-purple-50 hover:to-purple-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="p-5 relative">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-1">Conversion Rate</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.conversionRate.toFixed(1)}%</p>
+                      <p className="text-xs font-semibold text-[#546A7A] uppercase tracking-wider mb-1">Conversion Rate</p>
+                      <p className="text-3xl font-bold text-[#546A7A]">{stats.conversionRate.toFixed(1)}%</p>
                     </div>
-                    <div className="p-3 bg-purple-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <Zap className="h-6 w-6 text-purple-600" />
+                    <div className="p-3 bg-[#6F8A9D]/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                      <Zap className="h-6 w-6 text-[#546A7A]" />
                     </div>
                   </div>
-                  <div className="h-1.5 w-full bg-purple-100 rounded-full overflow-hidden mt-3">
+                  <div className="h-1.5 w-full bg-[#6F8A9D]/20 rounded-full overflow-hidden mt-3">
                     <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
+                      className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
                       style={{ width: `${Math.min(100, stats.conversionRate)}%` }}
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 hover:from-indigo-50 hover:to-indigo-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-[#6F8A9D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="p-5 relative">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Avg Deal Size</p>
-                      <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.avgOfferValue)}</p>
+                      <p className="text-xs font-semibold text-[#546A7A] uppercase tracking-wide mb-1">Avg Deal Size</p>
+                      <p className="text-2xl font-bold text-[#546A7A]">{formatCurrency(stats.avgOfferValue)}</p>
                     </div>
-                    <div className="p-3 bg-indigo-100 rounded-xl">
-                      <ShoppingCart className="h-6 w-6 text-indigo-600" />
+                    <div className="p-3 bg-[#546A7A]/20 rounded-xl">
+                      <ShoppingCart className="h-6 w-6 text-[#546A7A]" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-cyan-50 via-white to-cyan-50 hover:from-cyan-50 hover:to-cyan-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="p-5 relative">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-cyan-600 uppercase tracking-wide mb-1">Total Offers</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.totalOffers}</p>
+                      <p className="text-xs font-semibold text-[#546A7A] uppercase tracking-wide mb-1">Total Offers</p>
+                      <p className="text-3xl font-bold text-[#546A7A]">{stats.totalOffers}</p>
                     </div>
-                    <div className="p-3 bg-cyan-100 rounded-xl">
-                      <FileText className="h-6 w-6 text-cyan-600" />
+                    <div className="p-3 bg-[#96AEC2]/20 rounded-xl">
+                      <FileText className="h-6 w-6 text-[#546A7A]" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 via-white to-green-50 hover:from-green-50 hover:to-green-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-[#A2B9AF]/10 via-white to-[#A2B9AF]/10 hover:from-[#A2B9AF]/10 hover:to-[#A2B9AF]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#82A094]/5 to-[#82A094]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="p-5 relative">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">Active Zones</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.totalZones}</p>
+                      <p className="text-xs font-semibold text-[#4F6A64] uppercase tracking-wide mb-1">Active Zones</p>
+                      <p className="text-3xl font-bold text-[#546A7A]">{stats.totalZones}</p>
                     </div>
-                    <div className="p-3 bg-green-100 rounded-xl">
-                      <MapPin className="h-6 w-6 text-green-600" />
+                    <div className="p-3 bg-[#A2B9AF]/20 rounded-xl">
+                      <MapPin className="h-6 w-6 text-[#4F6A64]" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-orange-50 to-white">
+              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-[#EEC1BF]/10 to-white">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-1">Active Users</p>
-                      <p className="text-3xl font-bold text-slate-900">{stats.activeUsers}</p>
+                      <p className="text-xs font-semibold text-[#976E44] uppercase tracking-wide mb-1">Active Users</p>
+                      <p className="text-3xl font-bold text-[#546A7A]">{stats.activeUsers}</p>
                     </div>
-                    <div className="p-3 bg-orange-100 rounded-xl">
-                      <Users className="h-6 w-6 text-orange-600" />
+                    <div className="p-3 bg-[#CE9F6B]/20 rounded-xl">
+                      <Users className="h-6 w-6 text-[#976E44]" />
                     </div>
                   </div>
                 </CardContent>
@@ -679,17 +679,17 @@ export default function AdminDashboard() {
             {/* Monthly & Yearly Target Cards */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {/* Monthly Target Card */}
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-blue-50 via-white to-cyan-50 hover:from-blue-50 hover:to-cyan-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardHeader className="bg-transparent border-b border-blue-100">
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#96AEC2]/10 via-white to-[#96AEC2]/10 hover:from-[#96AEC2]/10 hover:to-[#96AEC2]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6F8A9D]/5 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="bg-transparent border-b border-[#96AEC2]/30">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-cyan-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Calendar className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900">Monthly Target</h3>
-                        <p className="text-xs text-slate-600">{targetsSummary.currentMonth.period}</p>
+                        <h3 className="text-lg font-bold text-[#546A7A]">Monthly Target</h3>
+                        <p className="text-xs text-[#5D6E73]">{targetsSummary.currentMonth.period}</p>
                       </div>
                     </div>
                   </div>
@@ -697,50 +697,50 @@ export default function AdminDashboard() {
                 <CardContent className="p-6 relative">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 rounded-lg p-4">
-                        <p className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Target</p>
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(targetsSummary.currentMonth.totalTargetValue)}</p>
+                      <div className="bg-[#96AEC2]/10 rounded-lg p-4">
+                        <p className="text-xs text-[#546A7A] font-semibold uppercase tracking-wide mb-1">Target</p>
+                        <p className="text-2xl font-bold text-[#546A7A]">{formatCurrency(targetsSummary.currentMonth.totalTargetValue)}</p>
                       </div>
-                      <div className="bg-emerald-50 rounded-lg p-4">
-                        <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wide mb-1">Actual</p>
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(targetsSummary.currentMonth.totalActualValue)}</p>
+                      <div className="bg-[#82A094]/10 rounded-lg p-4">
+                        <p className="text-xs text-[#4F6A64] font-semibold uppercase tracking-wide mb-1">Actual</p>
+                        <p className="text-2xl font-bold text-[#546A7A]">{formatCurrency(targetsSummary.currentMonth.totalActualValue)}</p>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4">
+                    <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-semibold text-slate-700">Achievement</p>
+                        <p className="text-sm font-semibold text-[#5D6E73]">Achievement</p>
                         <span className={`text-lg font-bold ${
-                          targetsSummary.currentMonth.achievement >= 100 ? 'text-green-600' :
-                          targetsSummary.currentMonth.achievement >= 80 ? 'text-emerald-600' :
-                          targetsSummary.currentMonth.achievement >= 60 ? 'text-amber-600' : 'text-red-600'
+                          targetsSummary.currentMonth.achievement >= 100 ? 'text-[#4F6A64]' :
+                          targetsSummary.currentMonth.achievement >= 80 ? 'text-[#4F6A64]' :
+                          targetsSummary.currentMonth.achievement >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'
                         }`}>
                           {targetsSummary.currentMonth.achievement.toFixed(1)}%
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-blue-100 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-[#96AEC2]/20 rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#6F8A9D] to-cyan-600 rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(100, targetsSummary.currentMonth.achievement)}%` }}
                         />
                       </div>
-                      <p className="text-xs text-slate-600 mt-2">{targetsSummary.currentMonth.totalOfferCount} offers</p>
+                      <p className="text-xs text-[#5D6E73] mt-2">{targetsSummary.currentMonth.totalOfferCount} offers</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Yearly Target Card */}
-              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-emerald-50 via-white to-green-50 hover:from-emerald-50 hover:to-green-100 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardHeader className="bg-transparent border-b border-emerald-100">
+              <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-[#A2B9AF]/10 via-white to-[#A2B9AF]/10 hover:from-[#A2B9AF]/10 hover:to-[#A2B9AF]/20 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#82A094]/5 to-[#82A094]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="bg-transparent border-b border-[#A2B9AF]/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="p-3 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <TrendingUp className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900">Annual Target</h3>
-                        <p className="text-xs text-slate-600">{targetsSummary.currentYear.period}</p>
+                        <h3 className="text-lg font-bold text-[#546A7A]">Annual Target</h3>
+                        <p className="text-xs text-[#5D6E73]">{targetsSummary.currentYear.period}</p>
                       </div>
                     </div>
                   </div>
@@ -748,33 +748,33 @@ export default function AdminDashboard() {
                 <CardContent className="p-6 relative">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-emerald-50 rounded-lg p-4">
-                        <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wide mb-1">Target</p>
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(targetsSummary.currentYear.totalTargetValue)}</p>
+                      <div className="bg-[#82A094]/10 rounded-lg p-4">
+                        <p className="text-xs text-[#4F6A64] font-semibold uppercase tracking-wide mb-1">Target</p>
+                        <p className="text-2xl font-bold text-[#546A7A]">{formatCurrency(targetsSummary.currentYear.totalTargetValue)}</p>
                       </div>
-                      <div className="bg-green-50 rounded-lg p-4">
-                        <p className="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">Actual</p>
-                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(targetsSummary.currentYear.totalActualValue)}</p>
+                      <div className="bg-[#A2B9AF]/10 rounded-lg p-4">
+                        <p className="text-xs text-[#4F6A64] font-semibold uppercase tracking-wide mb-1">Actual</p>
+                        <p className="text-2xl font-bold text-[#546A7A]">{formatCurrency(targetsSummary.currentYear.totalActualValue)}</p>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-4">
+                    <div className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-semibold text-slate-700">Achievement</p>
+                        <p className="text-sm font-semibold text-[#5D6E73]">Achievement</p>
                         <span className={`text-lg font-bold ${
-                          targetsSummary.currentYear.achievement >= 100 ? 'text-green-600' :
-                          targetsSummary.currentYear.achievement >= 80 ? 'text-emerald-600' :
-                          targetsSummary.currentYear.achievement >= 60 ? 'text-amber-600' : 'text-red-600'
+                          targetsSummary.currentYear.achievement >= 100 ? 'text-[#4F6A64]' :
+                          targetsSummary.currentYear.achievement >= 80 ? 'text-[#4F6A64]' :
+                          targetsSummary.currentYear.achievement >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'
                         }`}>
                           {targetsSummary.currentYear.achievement.toFixed(1)}%
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-emerald-100 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-[#82A094]/20 rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#82A094] to-[#82A094] rounded-full transition-all duration-500"
                           style={{ width: `${Math.min(100, targetsSummary.currentYear.achievement)}%` }}
                         />
                       </div>
-                      <p className="text-xs text-slate-600 mt-2">{targetsSummary.currentYear.totalOfferCount} offers</p>
+                      <p className="text-xs text-[#5D6E73] mt-2">{targetsSummary.currentYear.totalOfferCount} offers</p>
                     </div>
                   </div>
                 </CardContent>
@@ -784,10 +784,10 @@ export default function AdminDashboard() {
             {/* Zone-wise Targets - Modern Heatmap View with Toggle */}
             {targetsSummary.byZone && targetsSummary.byZone.length > 0 && (
               <Card className="border-0 shadow-xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-slate-50 to-white border-b">
+                <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-white border-b">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg">
+                      <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-lg">
                         <MapPin className="h-6 w-6 text-white" />
                       </div>
                       <div>
@@ -800,13 +800,13 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="flex gap-2 bg-slate-100 p-1 rounded-lg">
+                      <div className="flex gap-2 bg-[#AEBFC3]/20 p-1 rounded-lg">
                         <button
                           onClick={() => setHeatmapView('zone')}
                           className={`px-4 py-2 rounded-md font-medium transition-all ${
                             heatmapView === 'zone'
-                              ? 'bg-white text-purple-600 shadow-md'
-                              : 'text-slate-600 hover:text-slate-900'
+                              ? 'bg-white text-[#546A7A] shadow-md'
+                              : 'text-[#5D6E73] hover:text-[#546A7A]'
                           }`}
                         >
                           📍 Zone-wise
@@ -815,14 +815,14 @@ export default function AdminDashboard() {
                           onClick={() => setHeatmapView('user')}
                           className={`px-4 py-2 rounded-md font-medium transition-all ${
                             heatmapView === 'user'
-                              ? 'bg-white text-purple-600 shadow-md'
-                              : 'text-slate-600 hover:text-slate-900'
+                              ? 'bg-white text-[#546A7A] shadow-md'
+                              : 'text-[#5D6E73] hover:text-[#546A7A]'
                           }`}
                         >
                           👥 User-wise
                         </button>
                       </div>
-                      <span className="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
+                      <span className="text-sm font-semibold text-[#5D6E73] bg-[#AEBFC3]/20 px-3 py-1.5 rounded-full">
                         {heatmapView === 'zone' ? targetsSummary.byZone.length : dashboardData?.zones?.length || 0} {heatmapView === 'zone' ? 'zones' : 'users'}
                       </span>
                     </div>
@@ -834,13 +834,13 @@ export default function AdminDashboard() {
                     {/* Column Headers */}
                     <div className="grid grid-cols-12 gap-3 mb-4 px-4">
                       <div className="col-span-2">
-                        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">{heatmapView === 'zone' ? 'Zone' : 'User'}</p>
+                        <p className="text-xs font-bold text-[#5D6E73] uppercase tracking-wide">{heatmapView === 'zone' ? 'Zone' : 'User'}</p>
                       </div>
                       <div className="col-span-5">
-                        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">📅 Monthly Progress</p>
+                        <p className="text-xs font-bold text-[#5D6E73] uppercase tracking-wide">📅 Monthly Progress</p>
                       </div>
                       <div className="col-span-5">
-                        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">📈 Yearly Progress</p>
+                        <p className="text-xs font-bold text-[#5D6E73] uppercase tracking-wide">📈 Yearly Progress</p>
                       </div>
                     </div>
 
@@ -850,17 +850,17 @@ export default function AdminDashboard() {
                       const yearlyAch = Math.min(100, (zone.yearlyActual / zone.yearlyTarget) * 100);
                       
                       const getAchievementColor = (achievement: number) => {
-                        if (achievement >= 100) return 'from-green-400 to-emerald-500';
-                        if (achievement >= 80) return 'from-emerald-400 to-teal-500';
-                        if (achievement >= 60) return 'from-amber-400 to-orange-500';
-                        return 'from-red-400 to-rose-500';
+                        if (achievement >= 100) return 'from-green-400 to-[#82A094]';
+                        if (achievement >= 80) return 'from-[#A2B9AF] to-[#82A094]';
+                        if (achievement >= 60) return 'from-[#CE9F6B] to-[#CE9F6B]';
+                        return 'from-red-400 to-[#E17F70]';
                       };
 
                       const getAchievementBg = (achievement: number) => {
-                        if (achievement >= 100) return 'bg-green-50 border-green-100';
-                        if (achievement >= 80) return 'bg-emerald-50 border-emerald-100';
-                        if (achievement >= 60) return 'bg-amber-50 border-amber-100';
-                        return 'bg-red-50 border-red-100';
+                        if (achievement >= 100) return 'bg-[#A2B9AF]/10 border-[#A2B9AF]/20';
+                        if (achievement >= 80) return 'bg-[#82A094]/10 border-[#A2B9AF]/20';
+                        if (achievement >= 60) return 'bg-[#CE9F6B]/10 border-[#EEC1BF]/20';
+                        return 'bg-[#E17F70]/10 border-red-100';
                       };
 
                       const getStatusEmoji = (achievement: number) => {
@@ -876,7 +876,7 @@ export default function AdminDashboard() {
                           <div className="col-span-2 flex items-center">
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getAchievementColor(monthlyAch)}`} />
-                              <span className="font-bold text-slate-900">{zone.zoneName}</span>
+                              <span className="font-bold text-[#546A7A]">{zone.zoneName}</span>
                             </div>
                           </div>
 
@@ -885,17 +885,17 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold text-slate-700">{formatCurrency(zone.monthlyTarget)} → {formatCurrency(zone.monthlyActual)}</span>
+                                  <span className="text-sm font-semibold text-[#5D6E73]">{formatCurrency(zone.monthlyTarget)} → {formatCurrency(zone.monthlyActual)}</span>
                                   <div className="flex items-center gap-1">
-                                    <span className={`text-lg font-bold ${monthlyAch >= 100 ? 'text-green-600' : monthlyAch >= 80 ? 'text-emerald-600' : monthlyAch >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+                                    <span className={`text-lg font-bold ${monthlyAch >= 100 ? 'text-[#4F6A64]' : monthlyAch >= 80 ? 'text-[#4F6A64]' : monthlyAch >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
                                       {monthlyAch.toFixed(1)}%
                                     </span>
-                                    <div className={`w-2 h-2 rounded-full ${monthlyAch >= 100 ? 'bg-green-500' : monthlyAch >= 80 ? 'bg-emerald-500' : monthlyAch >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                                    <div className={`w-2 h-2 rounded-full ${monthlyAch >= 100 ? 'bg-[#A2B9AF]/100' : monthlyAch >= 80 ? 'bg-[#82A094]/100' : monthlyAch >= 60 ? 'bg-[#CE9F6B]/100' : 'bg-[#E17F70]/100'}`} />
                                   </div>
                                 </div>
                                 <span className="text-xl">{getStatusEmoji(monthlyAch)}</span>
                               </div>
-                              <div className="relative h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="relative h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                 <div 
                                   className={`h-full bg-gradient-to-r ${getAchievementColor(monthlyAch)} transition-all duration-500`}
                                   style={{ width: `${monthlyAch}%` }}
@@ -910,7 +910,7 @@ export default function AdminDashboard() {
                                   }}
                                 />
                               </div>
-                              <p className="text-xs text-slate-600 mt-1">{zone.monthlyOfferCount} offers • {zone.monthlyAchievement.toFixed(1)}% achievement</p>
+                              <p className="text-xs text-[#5D6E73] mt-1">{zone.monthlyOfferCount} offers • {zone.monthlyAchievement.toFixed(1)}% achievement</p>
                             </div>
                           </div>
 
@@ -919,17 +919,17 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-sm font-semibold text-slate-700">{formatCurrency(zone.yearlyTarget)} → {formatCurrency(zone.yearlyActual)}</span>
+                                  <span className="text-sm font-semibold text-[#5D6E73]">{formatCurrency(zone.yearlyTarget)} → {formatCurrency(zone.yearlyActual)}</span>
                                   <div className="flex items-center gap-1">
-                                    <span className={`text-lg font-bold ${yearlyAch >= 100 ? 'text-green-600' : yearlyAch >= 80 ? 'text-emerald-600' : yearlyAch >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+                                    <span className={`text-lg font-bold ${yearlyAch >= 100 ? 'text-[#4F6A64]' : yearlyAch >= 80 ? 'text-[#4F6A64]' : yearlyAch >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
                                       {yearlyAch.toFixed(1)}%
                                     </span>
-                                    <div className={`w-2 h-2 rounded-full ${yearlyAch >= 100 ? 'bg-green-500' : yearlyAch >= 80 ? 'bg-emerald-500' : yearlyAch >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                                    <div className={`w-2 h-2 rounded-full ${yearlyAch >= 100 ? 'bg-[#A2B9AF]/100' : yearlyAch >= 80 ? 'bg-[#82A094]/100' : yearlyAch >= 60 ? 'bg-[#CE9F6B]/100' : 'bg-[#E17F70]/100'}`} />
                                   </div>
                                 </div>
                                 <span className="text-xl">{getStatusEmoji(yearlyAch)}</span>
                               </div>
-                              <div className="relative h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="relative h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                 <div 
                                   className={`h-full bg-gradient-to-r ${getAchievementColor(yearlyAch)} transition-all duration-500`}
                                   style={{ width: `${yearlyAch}%` }}
@@ -944,7 +944,7 @@ export default function AdminDashboard() {
                                   }}
                                 />
                               </div>
-                              <p className="text-xs text-slate-600 mt-1">{zone.yearlyOfferCount} offers • {zone.yearlyAchievement.toFixed(1)}% achievement</p>
+                              <p className="text-xs text-[#5D6E73] mt-1">{zone.yearlyOfferCount} offers • {zone.yearlyAchievement.toFixed(1)}% achievement</p>
                             </div>
                           </div>
                         </div>
@@ -958,17 +958,17 @@ export default function AdminDashboard() {
                         const yearlyAch = user.yearlyTarget > 0 ? user.yearlyAchievement : 0;
 
                         const getAchievementColor = (achievement: number) => {
-                          if (achievement >= 100) return 'from-green-400 to-emerald-500';
-                          if (achievement >= 80) return 'from-emerald-400 to-teal-500';
-                          if (achievement >= 60) return 'from-amber-400 to-orange-500';
-                          return 'from-red-400 to-rose-500';
+                          if (achievement >= 100) return 'from-green-400 to-[#82A094]';
+                          if (achievement >= 80) return 'from-[#A2B9AF] to-[#82A094]';
+                          if (achievement >= 60) return 'from-[#CE9F6B] to-[#CE9F6B]';
+                          return 'from-red-400 to-[#E17F70]';
                         };
 
                         const getAchievementBg = (achievement: number) => {
-                          if (achievement >= 100) return 'bg-green-50 border-green-100';
-                          if (achievement >= 80) return 'bg-emerald-50 border-emerald-100';
-                          if (achievement >= 60) return 'bg-amber-50 border-amber-100';
-                          return 'bg-red-50 border-red-100';
+                          if (achievement >= 100) return 'bg-[#A2B9AF]/10 border-[#A2B9AF]/20';
+                          if (achievement >= 80) return 'bg-[#82A094]/10 border-[#A2B9AF]/20';
+                          if (achievement >= 60) return 'bg-[#CE9F6B]/10 border-[#EEC1BF]/20';
+                          return 'bg-[#E17F70]/10 border-red-100';
                         };
 
                         const getStatusEmoji = (achievement: number) => {
@@ -985,8 +985,8 @@ export default function AdminDashboard() {
                               <div className="flex items-center gap-2">
                                 <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getAchievementColor(monthlyAch)}`} />
                                 <div>
-                                  <p className="font-bold text-slate-900 text-sm">{user.userName}</p>
-                                  <p className="text-xs text-slate-600">{zoneData.zoneName}</p>
+                                  <p className="font-bold text-[#546A7A] text-sm">{user.userName}</p>
+                                  <p className="text-xs text-[#5D6E73]">{zoneData.zoneName}</p>
                                 </div>
                               </div>
                             </div>
@@ -996,17 +996,17 @@ export default function AdminDashboard() {
                               <div className="flex-1">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-slate-700">{formatCurrency(user.monthlyTarget)} → {formatCurrency(user.monthlyActual)}</span>
+                                    <span className="text-sm font-semibold text-[#5D6E73]">{formatCurrency(user.monthlyTarget)} → {formatCurrency(user.monthlyActual)}</span>
                                     <div className="flex items-center gap-1">
-                                      <span className={`text-lg font-bold ${monthlyAch >= 100 ? 'text-green-600' : monthlyAch >= 80 ? 'text-emerald-600' : monthlyAch >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+                                      <span className={`text-lg font-bold ${monthlyAch >= 100 ? 'text-[#4F6A64]' : monthlyAch >= 80 ? 'text-[#4F6A64]' : monthlyAch >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
                                         {monthlyAch.toFixed(1)}%
                                       </span>
-                                      <div className={`w-2 h-2 rounded-full ${monthlyAch >= 100 ? 'bg-green-500' : monthlyAch >= 80 ? 'bg-emerald-500' : monthlyAch >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                                      <div className={`w-2 h-2 rounded-full ${monthlyAch >= 100 ? 'bg-[#A2B9AF]/100' : monthlyAch >= 80 ? 'bg-[#82A094]/100' : monthlyAch >= 60 ? 'bg-[#CE9F6B]/100' : 'bg-[#E17F70]/100'}`} />
                                     </div>
                                   </div>
                                   <span className="text-xl">{getStatusEmoji(monthlyAch)}</span>
                                 </div>
-                                <div className="relative h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div className="relative h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full bg-gradient-to-r ${getAchievementColor(monthlyAch)} transition-all duration-500`}
                                     style={{ width: `${Math.min(100, monthlyAch)}%` }}
@@ -1021,7 +1021,7 @@ export default function AdminDashboard() {
                                     }}
                                   />
                                 </div>
-                                <p className="text-xs text-slate-600 mt-1">{user.monthlyOfferCount} offers</p>
+                                <p className="text-xs text-[#5D6E73] mt-1">{user.monthlyOfferCount} offers</p>
                               </div>
                             </div>
 
@@ -1030,17 +1030,17 @@ export default function AdminDashboard() {
                               <div className="flex-1">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-slate-700">{formatCurrency(user.yearlyTarget)} → {formatCurrency(user.yearlyActual)}</span>
+                                    <span className="text-sm font-semibold text-[#5D6E73]">{formatCurrency(user.yearlyTarget)} → {formatCurrency(user.yearlyActual)}</span>
                                     <div className="flex items-center gap-1">
-                                      <span className={`text-lg font-bold ${yearlyAch >= 100 ? 'text-green-600' : yearlyAch >= 80 ? 'text-emerald-600' : yearlyAch >= 60 ? 'text-amber-600' : 'text-red-600'}`}>
+                                      <span className={`text-lg font-bold ${yearlyAch >= 100 ? 'text-[#4F6A64]' : yearlyAch >= 80 ? 'text-[#4F6A64]' : yearlyAch >= 60 ? 'text-[#976E44]' : 'text-[#9E3B47]'}`}>
                                         {yearlyAch.toFixed(1)}%
                                       </span>
-                                      <div className={`w-2 h-2 rounded-full ${yearlyAch >= 100 ? 'bg-green-500' : yearlyAch >= 80 ? 'bg-emerald-500' : yearlyAch >= 60 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                                      <div className={`w-2 h-2 rounded-full ${yearlyAch >= 100 ? 'bg-[#A2B9AF]/100' : yearlyAch >= 80 ? 'bg-[#82A094]/100' : yearlyAch >= 60 ? 'bg-[#CE9F6B]/100' : 'bg-[#E17F70]/100'}`} />
                                     </div>
                                   </div>
                                   <span className="text-xl">{getStatusEmoji(yearlyAch)}</span>
                                 </div>
-                                <div className="relative h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div className="relative h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full bg-gradient-to-r ${getAchievementColor(yearlyAch)} transition-all duration-500`}
                                     style={{ width: `${Math.min(100, yearlyAch)}%` }}
@@ -1055,7 +1055,7 @@ export default function AdminDashboard() {
                                     }}
                                   />
                                 </div>
-                                <p className="text-xs text-slate-600 mt-1">{user.yearlyOfferCount} offers • {user.userEmail}</p>
+                                <p className="text-xs text-[#5D6E73] mt-1">{user.yearlyOfferCount} offers • {user.userEmail}</p>
                               </div>
                             </div>
                           </div>
@@ -1065,28 +1065,28 @@ export default function AdminDashboard() {
 
                     {heatmapView === 'user' && (!targetsSummary?.usersByZone || targetsSummary.usersByZone.length === 0 || targetsSummary.usersByZone.every((z: any) => !z.users || z.users.length === 0)) && (
                       <div className="text-center py-8">
-                        <p className="text-slate-600">No user targets data available</p>
+                        <p className="text-[#5D6E73]">No user targets data available</p>
                       </div>
                     )}
                   </div>
 
                   {/* Legend */}
-                  <div className="mt-6 pt-6 border-t border-slate-200 flex flex-wrap gap-4 justify-center">
+                  <div className="mt-6 pt-6 border-t border-[#92A2A5] flex flex-wrap gap-4 justify-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" />
-                      <span className="text-sm font-medium text-slate-700">✨ Exceeding (≥100%)</span>
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-400 to-[#82A094]" />
+                      <span className="text-sm font-medium text-[#5D6E73]">✨ Exceeding (≥100%)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500" />
-                      <span className="text-sm font-medium text-slate-700">🎯 On Track (≥80%)</span>
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-[#A2B9AF] to-[#82A094]" />
+                      <span className="text-sm font-medium text-[#5D6E73]">🎯 On Track (≥80%)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-400 to-orange-500" />
-                      <span className="text-sm font-medium text-slate-700">⚠️ Needs Attention (≥60%)</span>
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B]" />
+                      <span className="text-sm font-medium text-[#5D6E73]">⚠️ Needs Attention (≥60%)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-400 to-rose-500" />
-                      <span className="text-sm font-medium text-slate-700">❌ Below Target (&lt;60%)</span>
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-400 to-[#E17F70]" />
+                      <span className="text-sm font-medium text-[#5D6E73]">❌ Below Target (&lt;60%)</span>
                     </div>
                   </div>
                 </CardContent>
@@ -1105,7 +1105,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-violet-600 rounded-xl">
+                    <div className="p-2 bg-[#6F8A9D] rounded-xl">
                       <Package className="h-6 w-6 text-white" />
                     </div>
                     Product Type Performance
@@ -1120,8 +1120,8 @@ export default function AdminDashboard() {
             <CardContent className="p-6">
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-left text-slate-700">
+                  <thead className="bg-[#AEBFC3]/10">
+                    <tr className="text-left text-[#5D6E73]">
                       <th className="px-3 py-2 font-semibold">Product Type</th>
                       <th className="px-3 py-2 font-semibold cursor-pointer" onClick={() => toggleSort('count')}>Offers</th>
                       <th className="px-3 py-2 font-semibold cursor-pointer" onClick={() => toggleSort('value')}>Total Value</th>
@@ -1139,13 +1139,13 @@ export default function AdminDashboard() {
                           <td className="px-3 py-3 whitespace-nowrap">
                             <div className="flex items-center gap-3">
                               <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
-                              <span className="font-medium text-slate-900">{p.productType}</span>
+                              <span className="font-medium text-[#546A7A]">{p.productType}</span>
                             </div>
                           </td>
                           <td className="px-3 py-3">{p.count}</td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="w-40 h-2 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="w-40 h-2 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                 <div className="h-2 rounded-full" style={{ width: `${valuePct}%`, backgroundColor: color }} />
                               </div>
                               <span className="tabular-nums font-medium">{formatCurrency(p.value)}</span>
@@ -1153,7 +1153,7 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="w-40 h-2 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="w-40 h-2 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                 <div className="h-2 rounded-full" style={{ width: `${wonPct}%`, backgroundColor: color }} />
                               </div>
                               <span className="tabular-nums">{formatCurrency(p.wonValue)}</span>
@@ -1180,7 +1180,7 @@ export default function AdminDashboard() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="bg-white border-b">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-blue-600 rounded-lg">
+                <div className="p-2 bg-[#6F8A9D] rounded-lg">
                   <Activity className="h-5 w-5 text-white" />
                 </div>
                 Offer Stage Distribution
@@ -1232,7 +1232,7 @@ export default function AdminDashboard() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="bg-white border-b">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-emerald-600 rounded-lg">
+                <div className="p-2 bg-[#4F6A64] rounded-lg">
                   <MapPin className="h-5 w-5 text-white" />
                 </div>
                 Zone Performance
@@ -1290,7 +1290,7 @@ export default function AdminDashboard() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="bg-white border-b">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 bg-emerald-600 rounded-lg">
+                <div className="p-2 bg-[#4F6A64] rounded-lg">
                   <BarChart3 className="h-5 w-5 text-white" />
                 </div>
                 Zone × Product Type Mix
@@ -1334,7 +1334,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-xl">
-                  <div className="p-2 bg-indigo-600 rounded-lg">
+                  <div className="p-2 bg-[#546A7A] rounded-lg">
                     <FileText className="h-5 w-5 text-white" />
                   </div>
                   Recent Offers
@@ -1343,7 +1343,7 @@ export default function AdminDashboard() {
                   Latest offers added by zone users
                 </CardDescription>
               </div>
-              <button className="px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-lg hover:bg-indigo-200 transition-colors flex items-center gap-2">
+              <button className="px-3 py-2 text-sm font-medium text-[#546A7A] bg-[#546A7A]/20 rounded-lg hover:bg-[#6F8A9D]/30 transition-colors flex items-center gap-2">
                 <Eye className="h-4 w-4" />
                 View All
               </button>
@@ -1354,21 +1354,21 @@ export default function AdminDashboard() {
               {dashboardData.recentOffers.map((offer, index) => (
                 <div 
                   key={offer.id} 
-                  className="group flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white rounded-xl border border-slate-200 hover:border-violet-300 hover:shadow-lg transition-all"
+                  className="group flex items-center justify-between p-4 bg-gradient-to-r from-[#AEBFC3]/10 to-white rounded-xl border border-[#92A2A5] hover:border-violet-300 hover:shadow-lg transition-all"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg text-white font-bold shadow-md">
+                    <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-lg text-white font-bold shadow-md">
                       {index + 1}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-bold text-slate-900">{offer.customer?.companyName || 'Unknown'}</p>
-                        <span className="px-2 py-0.5 text-xs font-medium text-slate-600 bg-slate-200 rounded-full flex items-center gap-1">
+                        <p className="font-bold text-[#546A7A]">{offer.customer?.companyName || 'Unknown'}</p>
+                        <span className="px-2 py-0.5 text-xs font-medium text-[#5D6E73] bg-[#92A2A5]/30 rounded-full flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
                           {offer.zone?.name || 'N/A'}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 flex items-center gap-1">
+                      <p className="text-xs text-[#5D6E73] flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         Added by {offer.createdBy?.name || offer.createdBy?.email || 'N/A'} 
                         <span className="mx-1">•</span>
@@ -1379,8 +1379,8 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-xs text-slate-600 mb-1">Value</p>
-                      <p className="font-bold text-slate-900 text-lg">{formatCurrency(offer.offerValue || 0)}</p>
+                      <p className="text-xs text-[#5D6E73] mb-1">Value</p>
+                      <p className="font-bold text-[#546A7A] text-lg">{formatCurrency(offer.offerValue || 0)}</p>
                     </div>
                     <div className={`px-3 py-2 rounded-xl text-xs font-semibold shadow-sm ${getStageColor(offer.stage)}`}>
                       {formatStage(offer.stage)}
@@ -1394,19 +1394,19 @@ export default function AdminDashboard() {
 
         {/* Full-Width 12-Month Offers Trend - World-Class Design */}
         <Card className="border-0 shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-50 via-white to-slate-50">
+          <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-white to-[#AEBFC3]/10">
             <CardHeader className="pb-0">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <CardTitle className="flex items-center gap-3 text-3xl font-bold">
-                    <div className="p-3 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-xl shadow-lg">
+                    <div className="p-3 bg-gradient-to-br from-cyan-600 to-[#6F8A9D] rounded-xl shadow-lg">
                       <TrendingUp className="h-7 w-7 text-white" />
                     </div>
-                    <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-cyan-600 to-[#6F8A9D] bg-clip-text text-transparent">
                       12-Month Performance Trend
                     </span>
                   </CardTitle>
-                  <CardDescription className="text-base mt-3 text-slate-600">
+                  <CardDescription className="text-base mt-3 text-[#5D6E73]">
                     Comprehensive year-over-year analysis with dual-axis insights
                   </CardDescription>
                 </div>
@@ -1415,39 +1415,39 @@ export default function AdminDashboard() {
               {/* Key Metrics Bar */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-cyan-100 hover:border-cyan-300 transition-colors">
-                  <div className="p-2 bg-cyan-100 rounded-lg">
-                    <Package className="h-5 w-5 text-cyan-600" />
+                  <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                    <Package className="h-5 w-5 text-[#546A7A]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-medium">Total Offers</p>
-                    <p className="text-lg font-bold text-slate-900">{normalizedMonthlyTrend.reduce((sum, month) => sum + month.offers, 0)}</p>
+                    <p className="text-xs text-[#5D6E73] font-medium">Total Offers</p>
+                    <p className="text-lg font-bold text-[#546A7A]">{normalizedMonthlyTrend.reduce((sum, month) => sum + month.offers, 0)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-violet-100 hover:border-violet-300 transition-colors">
-                  <div className="p-2 bg-violet-100 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-violet-600" />
+                  <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-[#6F8A9D]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-medium">Total Revenue</p>
-                    <p className="text-lg font-bold text-slate-900">{formatCurrency(normalizedMonthlyTrend.reduce((sum, month) => sum + month.value, 0) / 1000000).replace('₹', '₹').split('.')[0]}</p>
+                    <p className="text-xs text-[#5D6E73] font-medium">Total Revenue</p>
+                    <p className="text-lg font-bold text-[#546A7A]">{formatCurrency(normalizedMonthlyTrend.reduce((sum, month) => sum + month.value, 0) / 1000000).replace('₹', '₹').split('.')[0]}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-emerald-100 hover:border-emerald-300 transition-colors">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-emerald-600" />
+                <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#A2B9AF]/20 hover:border-emerald-300 transition-colors">
+                  <div className="p-2 bg-[#82A094]/20 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-[#4F6A64]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-medium">Avg/Month</p>
-                    <p className="text-lg font-bold text-slate-900">{Math.round(normalizedMonthlyTrend.reduce((sum, month) => sum + month.offers, 0) / normalizedMonthlyTrend.length)}</p>
+                    <p className="text-xs text-[#5D6E73] font-medium">Avg/Month</p>
+                    <p className="text-lg font-bold text-[#546A7A]">{Math.round(normalizedMonthlyTrend.reduce((sum, month) => sum + month.offers, 0) / normalizedMonthlyTrend.length)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-amber-100 hover:border-amber-300 transition-colors">
-                  <div className="p-2 bg-amber-100 rounded-lg">
-                    <Activity className="h-5 w-5 text-amber-600" />
+                <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#EEC1BF]/20 hover:border-amber-300 transition-colors">
+                  <div className="p-2 bg-[#CE9F6B]/20 rounded-lg">
+                    <Activity className="h-5 w-5 text-[#976E44]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-600 font-medium">Growth Rate</p>
-                    <p className="text-lg font-bold text-slate-900">
+                    <p className="text-xs text-[#5D6E73] font-medium">Growth Rate</p>
+                    <p className="text-lg font-bold text-[#546A7A]">
                       {normalizedMonthlyTrend.length > 1 ? 
                         `${(((normalizedMonthlyTrend[normalizedMonthlyTrend.length - 1].offers - normalizedMonthlyTrend[0].offers) / normalizedMonthlyTrend[0].offers) * 100).toFixed(0)}%` 
                         : 'N/A'
@@ -1460,7 +1460,7 @@ export default function AdminDashboard() {
 
             <CardContent className="p-8 pt-6">
               {/* Enhanced Chart */}
-              <div className="bg-white rounded-xl p-6 border border-slate-100">
+              <div className="bg-white rounded-xl p-6 border border-[#AEBFC3]/20">
                 <ResponsiveContainer width="100%" height={500}>
                   <ComposedChart data={normalizedMonthlyTrend} margin={{ bottom: 30, left: 20, right: 60, top: 20 }}>
                     <defs>
@@ -1556,52 +1556,52 @@ export default function AdminDashboard() {
 
               {/* Advanced Analytics Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-                <div className="group p-5 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100 hover:border-cyan-300 hover:shadow-lg transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-xl border border-cyan-100 hover:border-cyan-300 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-cyan-700 uppercase tracking-wide">Peak Month</p>
-                    <Package className="h-5 w-5 text-cyan-600 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm font-semibold text-[#546A7A] uppercase tracking-wide">Peak Month</p>
+                    <Package className="h-5 w-5 text-[#546A7A] group-hover:scale-110 transition-transform" />
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-[#546A7A]">
                     {normalizedMonthlyTrend.reduce((max, m) => m.offers > max.offers ? m : max).month}
                   </p>
-                  <p className="text-xs text-cyan-600 mt-2 font-medium">
+                  <p className="text-xs text-[#546A7A] mt-2 font-medium">
                     {normalizedMonthlyTrend.reduce((max, m) => m.offers > max.offers ? m : max).offers} offers
                   </p>
                 </div>
 
-                <div className="group p-5 bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl border border-violet-100 hover:border-violet-300 hover:shadow-lg transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-xl border border-violet-100 hover:border-violet-300 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-violet-700 uppercase tracking-wide">Highest Revenue</p>
-                    <DollarSign className="h-5 w-5 text-violet-600 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm font-semibold text-[#546A7A] uppercase tracking-wide">Highest Revenue</p>
+                    <DollarSign className="h-5 w-5 text-[#6F8A9D] group-hover:scale-110 transition-transform" />
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-[#546A7A]">
                     {normalizedMonthlyTrend.reduce((max, m) => m.value > max.value ? m : max).month}
                   </p>
-                  <p className="text-xs text-violet-600 mt-2 font-medium">
+                  <p className="text-xs text-[#6F8A9D] mt-2 font-medium">
                     {formatCurrency(normalizedMonthlyTrend.reduce((max, m) => m.value > max.value ? m : max).value)}
                   </p>
                 </div>
 
-                <div className="group p-5 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100 hover:border-emerald-300 hover:shadow-lg transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/10 rounded-xl border border-[#A2B9AF]/20 hover:border-emerald-300 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Avg Deal Size</p>
-                    <Briefcase className="h-5 w-5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm font-semibold text-[#4F6A64] uppercase tracking-wide">Avg Deal Size</p>
+                    <Briefcase className="h-5 w-5 text-[#4F6A64] group-hover:scale-110 transition-transform" />
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-[#546A7A]">
                     {formatCurrency(normalizedMonthlyTrend.reduce((sum, m) => sum + m.value, 0) / normalizedMonthlyTrend.reduce((sum, m) => sum + m.offers, 0))}
                   </p>
-                  <p className="text-xs text-emerald-600 mt-2 font-medium">Per offer</p>
+                  <p className="text-xs text-[#4F6A64] mt-2 font-medium">Per offer</p>
                 </div>
 
-                <div className="group p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border border-[#EEC1BF]/20 hover:border-amber-300 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-amber-700 uppercase tracking-wide">Consistency</p>
-                    <Activity className="h-5 w-5 text-amber-600 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm font-semibold text-[#976E44] uppercase tracking-wide">Consistency</p>
+                    <Activity className="h-5 w-5 text-[#976E44] group-hover:scale-110 transition-transform" />
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-[#546A7A]">
                     {(100 - (Math.max(...normalizedMonthlyTrend.map(m => m.offers)) - Math.min(...normalizedMonthlyTrend.map(m => m.offers))) / (Math.max(...normalizedMonthlyTrend.map(m => m.offers)) || 1) * 100).toFixed(0)}%
                   </p>
-                  <p className="text-xs text-amber-600 mt-2 font-medium">Month-to-month</p>
+                  <p className="text-xs text-[#976E44] mt-2 font-medium">Month-to-month</p>
                 </div>
               </div>
             </CardContent>

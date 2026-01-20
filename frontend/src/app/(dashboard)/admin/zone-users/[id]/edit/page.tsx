@@ -254,13 +254,13 @@ export default function EditZoneUserPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cyan-100 mb-4">
-            <RefreshCw className="h-6 w-6 text-cyan-600 animate-spin" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#96AEC2]/20 mb-4">
+            <RefreshCw className="h-6 w-6 text-[#546A7A] animate-spin" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Zone User</h3>
-          <p className="text-sm text-gray-500">Please wait while we fetch the user details and service zones...</p>
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Loading Zone User</h3>
+          <p className="text-sm text-[#AEBFC3]0">Please wait while we fetch the user details and service zones...</p>
         </div>
       </div>
     );
@@ -268,14 +268,14 @@ export default function EditZoneUserPage() {
 
   if (!zoneUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50 to-[#96AEC2]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
-            <XCircle className="h-6 w-6 text-red-600" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20 mb-4">
+            <XCircle className="h-6 w-6 text-[#9E3B47]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Zone User Not Found</h3>
-          <p className="text-sm text-gray-500 mb-6">The zone user you're trying to edit doesn't exist or has been removed.</p>
-          <Button onClick={() => router.push('/admin/zone-users')} className="bg-cyan-600 hover:bg-cyan-700">
+          <h3 className="text-lg font-medium text-[#546A7A] mb-2">Zone User Not Found</h3>
+          <p className="text-sm text-[#AEBFC3]0 mb-6">The zone user you're trying to edit doesn't exist or has been removed.</p>
+          <Button onClick={() => router.push('/admin/zone-users')} className="bg-[#546A7A] hover:bg-[#546A7A]">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Zone Users
           </Button>
@@ -287,7 +287,7 @@ export default function EditZoneUserPage() {
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 via-[#6F8A9D] to-cyan-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
@@ -304,7 +304,7 @@ export default function EditZoneUserPage() {
               variant={zoneUser.isActive ? 'default' : 'secondary'}
               className={zoneUser.isActive 
                 ? 'bg-white/20 text-white hover:bg-white/30' 
-                : 'bg-gray-600 text-gray-200 hover:bg-gray-700'
+                : 'bg-[#5D6E73] text-[#AEBFC3] hover:bg-[#5D6E73]'
               }
             >
               {zoneUser.isActive ? (
@@ -342,7 +342,7 @@ export default function EditZoneUserPage() {
             variant="ghost" 
             size="sm"
             onClick={() => router.push('/admin/zone-users')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-[#5D6E73] hover:text-[#546A7A]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
@@ -350,8 +350,8 @@ export default function EditZoneUserPage() {
           <Badge 
             variant={zoneUser.isActive ? 'default' : 'secondary'}
             className={zoneUser.isActive 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-gray-100 text-gray-600'
+              ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+              : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
             }
           >
             {zoneUser.isActive ? (
@@ -376,10 +376,10 @@ export default function EditZoneUserPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Enhanced User Profile Edit Card */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-gray-100">
-            <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-100 rounded-t-lg border-b">
-              <CardTitle className="text-gray-800 flex items-center gap-2">
-                <User className="h-5 w-5 text-cyan-600" />
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/20">
+            <CardHeader className="bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 rounded-t-lg border-b">
+              <CardTitle className="text-[#546A7A] flex items-center gap-2">
+                <User className="h-5 w-5 text-[#546A7A]" />
                 User Profile Information
               </CardTitle>
               <CardDescription>
@@ -394,7 +394,7 @@ export default function EditZoneUserPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-blue-600" />
+                      <Mail className="h-4 w-4 text-[#546A7A]" />
                       Email Address *
                     </FormLabel>
                     <FormControl>
@@ -418,7 +418,7 @@ export default function EditZoneUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-cyan-600" />
+                        <User className="h-4 w-4 text-[#546A7A]" />
                         Full Name *
                       </FormLabel>
                       <FormControl>
@@ -440,7 +440,7 @@ export default function EditZoneUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-purple-600" />
+                        <Phone className="h-4 w-4 text-[#546A7A]" />
                         Phone Number
                       </FormLabel>
                       <FormControl>
@@ -463,8 +463,8 @@ export default function EditZoneUserPage() {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                      <Shield className="h-4 w-4 text-indigo-600" />
+                    <FormLabel className="flex items-center gap-2 text-sm font-semibold text-[#5D6E73]">
+                      <Shield className="h-4 w-4 text-[#546A7A]" />
                       User Role *
                     </FormLabel>
                     <div className="grid grid-cols-2 gap-4">
@@ -484,20 +484,20 @@ export default function EditZoneUserPage() {
                           htmlFor="role-zone-user"
                           className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
                             selectedRole === 'ZONE_USER'
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 bg-white hover:border-blue-300'
+                              ? 'border-[#6F8A9D] bg-[#96AEC2]/10'
+                              : 'border-[#92A2A5] bg-white hover:border-[#96AEC2]'
                           }`}
                         >
                           <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
                             selectedRole === 'ZONE_USER'
-                              ? 'border-blue-500 bg-blue-500'
-                              : 'border-gray-300'
+                              ? 'border-[#6F8A9D] bg-[#96AEC2]/100'
+                              : 'border-[#92A2A5]'
                           }`}>
                             {selectedRole === 'ZONE_USER' && <div className="h-2 w-2 bg-white rounded-full" />}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">Zone User</p>
-                            <p className="text-xs text-gray-600">Can manage assigned zones</p>
+                            <p className="font-semibold text-[#546A7A]">Zone User</p>
+                            <p className="text-xs text-[#5D6E73]">Can manage assigned zones</p>
                           </div>
                         </label>
                       </div>
@@ -518,20 +518,20 @@ export default function EditZoneUserPage() {
                           htmlFor="role-zone-manager"
                           className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
                             selectedRole === 'ZONE_MANAGER'
-                              ? 'border-purple-500 bg-purple-50'
-                              : 'border-gray-200 bg-white hover:border-purple-300'
+                              ? 'border-[#6F8A9D] bg-[#6F8A9D]/10'
+                              : 'border-[#92A2A5] bg-white hover:border-[#6F8A9D]'
                           }`}
                         >
                           <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
                             selectedRole === 'ZONE_MANAGER'
-                              ? 'border-purple-500 bg-purple-500'
-                              : 'border-gray-300'
+                              ? 'border-[#6F8A9D] bg-[#6F8A9D]/100'
+                              : 'border-[#92A2A5]'
                           }`}>
                             {selectedRole === 'ZONE_MANAGER' && <div className="h-2 w-2 bg-white rounded-full" />}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">Zone Manager</p>
-                            <p className="text-xs text-gray-600">Can manage and oversee zones</p>
+                            <p className="font-semibold text-[#546A7A]">Zone Manager</p>
+                            <p className="text-xs text-[#5D6E73]">Can manage and oversee zones</p>
                           </div>
                         </label>
                       </div>
@@ -549,7 +549,7 @@ export default function EditZoneUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-orange-600" />
+                        <Shield className="h-4 w-4 text-[#976E44]" />
                         New Password
                       </FormLabel>
                       <FormControl>
@@ -560,7 +560,7 @@ export default function EditZoneUserPage() {
                           className="focus:ring-2 focus:ring-cyan-500"
                         />
                       </FormControl>
-                      <FormDescription className="text-xs text-gray-600">
+                      <FormDescription className="text-xs text-[#5D6E73]">
                         Leave blank to keep the current password
                       </FormDescription>
                       <FormMessage />
@@ -574,7 +574,7 @@ export default function EditZoneUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-orange-600" />
+                        <Shield className="h-4 w-4 text-[#976E44]" />
                         Confirm New Password
                       </FormLabel>
                       <FormControl>
@@ -593,17 +593,17 @@ export default function EditZoneUserPage() {
 
               {/* Status Display */}
               <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border">
-                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <UserCheck className="h-5 w-5 text-green-600" />
+                <div className="h-10 w-10 rounded-full bg-[#A2B9AF]/20 flex items-center justify-center">
+                  <UserCheck className="h-5 w-5 text-[#4F6A64]" />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Account Status</label>
+                  <label className="text-xs font-medium text-[#AEBFC3]0 uppercase tracking-wide">Account Status</label>
                   <div className="mt-1">
                     <Badge 
                       variant={zoneUser.isActive ? 'default' : 'secondary'}
                       className={zoneUser.isActive 
-                        ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                        : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                       }
                     >
                       {zoneUser.isActive ? (
@@ -625,10 +625,10 @@ export default function EditZoneUserPage() {
           </Card>
 
       {/* Enhanced Zone Assignment Form */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-cyan-50 to-blue-100">
-        <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-100 rounded-t-lg border-b">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-cyan-600" />
+      <Card className="shadow-lg border-0 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20">
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-t-lg border-b">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-[#546A7A]" />
             Service Zone Assignments
           </CardTitle>
           <CardDescription>
@@ -644,9 +644,9 @@ export default function EditZoneUserPage() {
                 render={() => (
                   <FormItem>
                     <div className="flex items-center justify-between mb-4">
-                      <FormLabel className="text-lg font-semibold text-gray-900">Available Service Zones</FormLabel>
+                      <FormLabel className="text-lg font-semibold text-[#546A7A]">Available Service Zones</FormLabel>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200">
+                        <Badge variant="outline" className="bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2]/40">
                           {selectedZones.length} selected
                         </Badge>
                         <Button
@@ -659,7 +659,7 @@ export default function EditZoneUserPage() {
                               return [];
                             });
                           }}
-                          className="text-red-600 border-red-300 hover:bg-red-50"
+                          className="text-[#9E3B47] border-[#E17F70] hover:bg-[#E17F70]/10"
                         >
                           <X className="mr-1 h-3 w-3" />
                           Clear All
@@ -670,11 +670,11 @@ export default function EditZoneUserPage() {
                     <div className="space-y-3">
                       {serviceZones.length === 0 ? (
                         <div className="text-center py-8">
-                          <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center mb-4">
-                            <MapPin className="h-8 w-8 text-cyan-500" />
+                          <div className="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-cyan-100 to-[#96AEC2]/20 flex items-center justify-center mb-4">
+                            <MapPin className="h-8 w-8 text-[#6F8A9D]" />
                           </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Service Zones Available</h3>
-                          <p className="text-gray-500">
+                          <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No Service Zones Available</h3>
+                          <p className="text-[#AEBFC3]0">
                             No active service zones are currently available for assignment.
                           </p>
                         </div>
@@ -687,8 +687,8 @@ export default function EditZoneUserPage() {
                                 key={zone.id} 
                                 className={`relative p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
                                   selectedZones.includes(zone.id)
-                                    ? 'border-cyan-500 bg-cyan-50 shadow-sm'
-                                    : 'border-gray-200 bg-white hover:border-cyan-300'
+                                    ? 'border-cyan-500 bg-[#96AEC2]/10 shadow-sm'
+                                    : 'border-[#92A2A5] bg-white hover:border-cyan-300'
                                 }`}
                               >
                                 <div className="flex items-start gap-3">
@@ -708,14 +708,14 @@ export default function EditZoneUserPage() {
                                   </FormControl>
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
-                                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center text-white font-semibold text-sm">
                                         {zone.name.charAt(0).toUpperCase()}
                                       </div>
                                       <div>
-                                        <h4 className="font-semibold text-gray-900">{zone.name}</h4>
+                                        <h4 className="font-semibold text-[#546A7A]">{zone.name}</h4>
                                         <Badge 
                                           variant="outline" 
-                                          className="text-xs bg-green-50 text-green-700 border-green-200"
+                                          className="text-xs bg-[#A2B9AF]/10 text-[#4F6A64] border-[#A2B9AF]"
                                         >
                                           <CheckCircle className="mr-1 h-2 w-2" />
                                           Active
@@ -723,7 +723,7 @@ export default function EditZoneUserPage() {
                                       </div>
                                     </div>
                                     {zone.description && (
-                                      <p className="text-sm text-gray-600 leading-relaxed">
+                                      <p className="text-sm text-[#5D6E73] leading-relaxed">
                                         {zone.description}
                                       </p>
                                     )}
@@ -732,7 +732,7 @@ export default function EditZoneUserPage() {
                                 
                                 {selectedZones.includes(zone.id) && (
                                   <div className="absolute top-2 right-2">
-                                    <div className="h-6 w-6 rounded-full bg-cyan-500 flex items-center justify-center">
+                                    <div className="h-6 w-6 rounded-full bg-[#96AEC2]/100 flex items-center justify-center">
                                       <CheckCircle className="h-4 w-4 text-white" />
                                     </div>
                                   </div>
@@ -743,7 +743,7 @@ export default function EditZoneUserPage() {
                       )}
                     </div>
                     
-                    <FormDescription className="text-sm text-gray-600 mt-4">
+                    <FormDescription className="text-sm text-[#5D6E73] mt-4">
                       Select one or more service zones to assign to this user. Users can only manage tickets and activities within their assigned zones.
                     </FormDescription>
                     <FormMessage />
@@ -755,8 +755,8 @@ export default function EditZoneUserPage() {
         </Card>
 
         {/* Enhanced Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#92A2A5]">
+          <div className="flex items-center gap-2 text-sm text-[#5D6E73]">
             <MapPin className="h-4 w-4" />
             <span>
               {selectedZones.length === 0 
@@ -771,7 +771,7 @@ export default function EditZoneUserPage() {
               <Button 
                 type="button" 
                 variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="border-[#92A2A5] text-[#5D6E73] hover:bg-[#AEBFC3]/10"
               >
                 <X className="mr-2 h-4 w-4" />
                 Cancel
@@ -780,7 +780,7 @@ export default function EditZoneUserPage() {
             <Button 
               type="submit" 
               disabled={saving || selectedZones.length === 0}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg min-w-[120px]"
+              className="bg-gradient-to-r from-cyan-600 to-[#6F8A9D] hover:from-cyan-700 hover:to-[#546A7A] shadow-lg min-w-[120px]"
             >
               {saving ? (
                 <>

@@ -135,24 +135,24 @@ export default function DashboardClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
         <div className="relative overflow-hidden bg-white/80 backdrop-blur-xl p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full text-center border border-white/50">
-          <div className="absolute -top-16 -right-16 w-32 h-32 bg-red-200/30 rounded-full blur-3xl" />
-          <div className="absolute -bottom-12 -left-12 w-28 h-28 bg-blue-200/30 rounded-full blur-3xl" />
+          <div className="absolute -top-16 -right-16 w-32 h-32 bg-[#E17F70]/30/30 rounded-full blur-3xl" />
+          <div className="absolute -bottom-12 -left-12 w-28 h-28 bg-[#96AEC2]/30/30 rounded-full blur-3xl" />
           
           <div className="relative z-10">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 shadow-xl mb-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E17F70] to-[#9E3B47] shadow-xl mb-6">
               <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-3">Error loading dashboard</h3>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">{error}</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#546A7A] mb-3">Error loading dashboard</h3>
+            <p className="text-sm sm:text-base text-[#5D6E73] leading-relaxed mb-6">{error}</p>
             <button
               type="button"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#546A7A] to-[#546A7A] px-6 py-3 text-base font-semibold text-white shadow-lg hover:from-[#546A7A] hover:to-[#546A7A] disabled:opacity-50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
             >
               {isRefreshing ? (
                 <>
@@ -170,19 +170,21 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50/80 to-indigo-100/80 p-4 sm:p-6 md:p-8 lg:p-10 overflow-x-hidden w-full max-w-full">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#96AEC2]/10 p-4 sm:p-6 md:p-8 lg:p-10 overflow-x-hidden w-full max-w-full">
+      {/* Animated background elements - Light theme with colorful accents */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-200/30 to-cyan-200/20 rounded-full blur-3xl" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-br from-purple-200/25 to-pink-200/15 rounded-full blur-3xl" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-indigo-200/20 to-blue-200/10 rounded-full blur-3xl" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-[#96AEC2]/20 to-[#82A094]/15 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-br from-[#CE9F6B]/15 to-[#EEC1BF]/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#A2B9AF]/15 to-[#96AEC2]/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(150,174,194,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(150,174,194,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-full overflow-x-hidden">
         {/* Connection Status Indicator */}
         {!isOnline && (
           <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-600 text-white px-5 py-2.5 rounded-full shadow-lg shadow-red-500/30 border border-red-400/30">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-[#9E3B47] to-[#9E3B47] text-white px-5 py-2.5 rounded-full shadow-lg shadow-red-500/30 border border-[#E17F70]/30">
               <WifiOff className="w-4 h-4" />
               <span className="text-sm font-semibold">Offline Mode</span>
             </div>
@@ -192,9 +194,9 @@ export default function DashboardClient({
         {/* Refresh Indicator */}
         {isRefreshing && (
           <div className="fixed top-4 right-4 z-50">
-            <div className="flex items-center gap-2.5 bg-white/95 backdrop-blur-xl px-4 py-2.5 rounded-full shadow-xl border border-slate-200/50">
-              <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
-              <span className="text-sm font-semibold text-slate-700">Syncing...</span>
+            <div className="flex items-center gap-2.5 bg-white/95 backdrop-blur-xl px-4 py-2.5 rounded-full shadow-xl border border-[#92A2A5]/50">
+              <RefreshCw className="w-4 h-4 animate-spin text-[#546A7A]" />
+              <span className="text-sm font-semibold text-[#5D6E73]">Syncing...</span>
             </div>
           </div>
         )}

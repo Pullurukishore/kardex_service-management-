@@ -39,8 +39,8 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       trend: dashboardData?.stats?.kpis?.activeCustomers?.change || 0,
       isPositive: true,
       icon: Users,
-      color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-gradient-to-br from-blue-50 to-cyan-50"
+      color: "from-[#6F8A9D] to-cyan-600",
+      bgColor: "bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/10"
     },
     { 
       label: "Resource Utilization", 
@@ -51,8 +51,8 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       trend: dashboardData?.stats?.kpis?.activeServicePersons?.change || 0,
       isPositive: true,
       icon: Users,
-      color: "from-emerald-500 to-green-600",
-      bgColor: "bg-gradient-to-br from-emerald-50 to-green-50"
+      color: "from-[#82A094] to-[#4F6A64]",
+      bgColor: "bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/10"
     },
     { 
       label: "Total Customers", 
@@ -63,8 +63,8 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       trend: 0,
       isPositive: true,
       icon: Building2,
-      color: "from-purple-500 to-violet-600",
-      bgColor: "bg-gradient-to-br from-purple-50 to-violet-50"
+      color: "from-[#6F8A9D] to-[#546A7A]",
+      bgColor: "bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/10"
     },
     { 
       label: "Workload Distribution", 
@@ -77,8 +77,8 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       trend: -(dashboardData?.stats?.kpis?.unassignedTickets?.value || 0),
       isPositive: (dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) < 5,
       icon: Ticket,
-      color: "from-orange-500 to-red-600",
-      bgColor: "bg-gradient-to-br from-orange-50 to-red-50"
+      color: "from-[#CE9F6B] to-red-600",
+      bgColor: "bg-gradient-to-br from-[#EEC1BF]/10 to-[#E17F70]/10"
     }
   ];
 
@@ -89,7 +89,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       change: dashboardData?.stats?.kpis?.totalTickets?.change || "0%",
       isPositive: dashboardData?.stats?.kpis?.totalTickets?.isPositive !== false,
       icon: Ticket,
-      color: "from-blue-500 to-cyan-600"
+      color: "from-[#6F8A9D] to-cyan-600"
     },
     {
       label: "SLA Compliance",
@@ -97,7 +97,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       change: `${dashboardData?.stats?.kpis?.slaCompliance?.change || 0}%`,
       isPositive: (dashboardData?.stats?.kpis?.slaCompliance?.change || 0) >= 0,
       icon: Shield,
-      color: "from-green-500 to-emerald-600"
+      color: "from-[#82A094] to-[#4F6A64]"
     },
     {
       label: "Active Customers",
@@ -105,7 +105,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       change: `${dashboardData?.stats?.kpis?.activeCustomers?.change || 0}%`,
       isPositive: (dashboardData?.stats?.kpis?.activeCustomers?.change || 0) >= 0,
       icon: Building2,
-      color: "from-purple-500 to-violet-600"
+      color: "from-[#6F8A9D] to-[#546A7A]"
     },
     {
       label: "Response Time",
@@ -113,7 +113,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       change: `${dashboardData?.stats?.kpis?.avgResponseTime?.change || 0}%`,
       isPositive: (dashboardData?.stats?.kpis?.avgResponseTime?.change || 0) <= 0,
       icon: Timer,
-      color: "from-orange-500 to-red-600"
+      color: "from-[#CE9F6B] to-red-600"
     }
   ];
 
@@ -124,7 +124,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       utilization: (dashboardData?.adminStats?.zoneWiseTickets || []).filter(z => z.totalTickets > 0).length,
       total: dashboardData?.adminStats?.totalServiceZones || 0,
       icon: MapPin,
-      color: "from-cyan-500 to-blue-600"
+      color: "from-[#6F8A9D] to-[#546A7A]"
     },
     {
       label: "Service Personnel",
@@ -132,7 +132,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       utilization: dashboardData?.stats?.kpis?.activeServicePersons?.value || 0,
       total: dashboardData?.adminStats?.totalServicePersons || 0,
       icon: Users,
-      color: "from-green-500 to-emerald-600"
+      color: "from-[#82A094] to-[#4F6A64]"
     },
     {
       label: "Total Customers",
@@ -140,7 +140,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       utilization: dashboardData?.stats?.kpis?.activeCustomers?.value || 0,
       total: dashboardData?.adminStats?.totalCustomers || 0,
       icon: Building2,
-      color: "from-purple-500 to-violet-600"
+      color: "from-[#6F8A9D] to-[#546A7A]"
     },
     {
       label: "Unassigned Tickets",
@@ -148,7 +148,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
       utilization: Math.max(0, 100 - ((dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) * 20)),
       total: 100,
       icon: AlertTriangle,
-      color: (dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) > 5 ? "from-red-500 to-pink-600" : "from-orange-500 to-amber-600"
+      color: (dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) > 5 ? "from-[#E17F70] to-[#9E3B47]" : "from-[#CE9F6B] to-[#976E44]"
     }
   ];
 
@@ -188,31 +188,31 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
   ];
 
   return (
-    <Card className="lg:col-span-2 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50 border-0 shadow-xl">
-      <CardHeader className="pb-6 bg-gradient-to-r from-indigo-600/5 to-purple-600/5 rounded-t-lg">
+    <Card className="lg:col-span-2 bg-gradient-to-br from-white via-[#96AEC2]/10/30 to-[#6F8A9D]/10 border-0 shadow-xl">
+      <CardHeader className="pb-6 bg-gradient-to-r from-[#546A7A]/5 to-[#546A7A]/5 rounded-t-lg">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-3 text-2xl font-bold">
-              <div className="p-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-xl shadow-lg">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#546A7A] via-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
                   Performance Analytics
                 </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge className="bg-green-100 text-green-700 text-xs">
+                  <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] text-xs">
                     <Activity className="w-3 h-3 mr-1" />
                     Live Metrics
                   </Badge>
-                  <Badge className="bg-blue-100 text-blue-700 text-xs">
+                  <Badge className="bg-[#96AEC2]/20 text-[#546A7A] text-xs">
                     <Database className="w-3 h-3 mr-1" />
                     Real-time
                   </Badge>
                 </div>
               </div>
             </CardTitle>
-            <CardDescription className="text-base mt-3 text-slate-600">
+            <CardDescription className="text-base mt-3 text-[#5D6E73]">
               Advanced business intelligence with predictive analytics and performance insights
             </CardDescription>
           </div>
@@ -237,13 +237,13 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                       <item.icon className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-white/90 text-slate-700 border-0 shadow-sm">
+                      <Badge className="bg-white/90 text-[#5D6E73] border-0 shadow-sm">
                         <Activity className="w-3 h-3 mr-1" />
                         Live
                       </Badge>
                       {item.trend !== 0 && (
                         <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                          item.isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          item.isPositive ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' : 'bg-[#E17F70]/20 text-[#75242D]'
                         }`}>
                           {item.isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                           {Math.abs(item.trend)}%
@@ -252,12 +252,12 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800">{item.label}</h3>
-                    <p className="text-5xl font-bold text-slate-900 group-hover:scale-105 transition-transform duration-300">{item.value}</p>
-                    <p className="text-sm text-slate-600 font-medium">{item.subtitle}</p>
+                    <h3 className="text-xl font-bold text-[#546A7A]">{item.label}</h3>
+                    <p className="text-5xl font-bold text-[#546A7A] group-hover:scale-105 transition-transform duration-300">{item.value}</p>
+                    <p className="text-sm text-[#5D6E73] font-medium">{item.subtitle}</p>
                     
                     <div className="space-y-2">
-                      <div className="flex justify-between text-xs text-slate-500">
+                      <div className="flex justify-between text-xs text-[#757777]">
                         <span>Performance Score</span>
                         <span>{item.performance}%</span>
                       </div>
@@ -272,11 +272,11 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                     
                     <div className="pt-3 border-t border-white/50">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs text-slate-500 font-medium">{item.benchmark}</p>
+                        <p className="text-xs text-[#757777] font-medium">{item.benchmark}</p>
                         <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          item.performance >= 80 ? 'bg-green-200 text-green-800' :
-                          item.performance >= 60 ? 'bg-yellow-200 text-yellow-800' :
-                          'bg-red-200 text-red-800'
+                          item.performance >= 80 ? 'bg-[#82A094]/30 text-[#4F6A64]' :
+                          item.performance >= 60 ? 'bg-[#CE9F6B]/30 text-[#976E44]' :
+                          'bg-[#E17F70]/30 text-[#75242D]'
                         }`}>
                           {item.performance >= 80 ? 'Excellent' : item.performance >= 60 ? 'Good' : 'Needs Attention'}
                         </div>
@@ -290,12 +290,12 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
           
           <TabsContent value="trends" className="mt-6">
             <div className="space-y-4">
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+              <div className="p-4 bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-lg">
                 <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <TrendingUp className="w-4 h-4 text-[#4F6A64]" />
                   Service Performance
                 </h4>
-                <ul className="space-y-1 text-sm text-slate-600">
+                <ul className="space-y-1 text-sm text-[#5D6E73]">
                   {dashboardData?.stats?.kpis?.slaCompliance?.value !== undefined && dashboardData.stats.kpis.slaCompliance.value >= 95 && (
                     <li>• Excellent SLA compliance at {dashboardData.stats.kpis.slaCompliance.value}%</li>
                   )}
@@ -310,12 +310,12 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                 </ul>
               </div>
               {(dashboardData?.stats?.kpis?.unassignedTickets?.value || 0) > 0 && (
-                <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg">
+                <div className="p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#E17F70]/10 rounded-lg">
                   <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-orange-600" />
+                    <AlertTriangle className="w-4 h-4 text-[#976E44]" />
                     Attention Required
                   </h4>
-                  <ul className="space-y-1 text-sm text-slate-600">
+                  <ul className="space-y-1 text-sm text-[#5D6E73]">
                     <li>• {dashboardData?.stats?.kpis?.unassignedTickets?.value} unassigned tickets</li>
                     {dashboardData?.adminStats?.zoneWiseTickets?.some(z => z?.servicePersonCount === 0) && (
                       <li>• Some zones have no assigned service personnel</li>
@@ -330,16 +330,16 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Current Period Performance */}
-                <Card className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-0 shadow-xl">
+                <Card className="bg-gradient-to-br from-[#A2B9AF]/10 via-emerald-50 to-[#82A094]/10 border-0 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                        <div className="p-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl shadow-lg">
+                        <div className="p-3 bg-gradient-to-r from-[#4F6A64] to-[#4F6A64] rounded-xl shadow-lg">
                           <TrendingUp className="w-6 h-6 text-white" />
                         </div>
                         Current Period
                       </CardTitle>
-                      <Badge className="bg-green-100 text-green-800 px-3 py-1 shadow-sm">
+                      <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] px-3 py-1 shadow-sm">
                         <Activity className="w-4 h-4 mr-1" />
                         Live Data
                       </Badge>
@@ -355,12 +355,12 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                               <metric.icon className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-slate-600">{metric.label}</p>
-                              <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
+                              <p className="text-sm font-medium text-[#5D6E73]">{metric.label}</p>
+                              <p className="text-2xl font-bold text-[#546A7A]">{metric.value}</p>
                             </div>
                           </div>
                           <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                            metric.isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                            metric.isPositive ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' : 'bg-[#E17F70]/20 text-[#75242D]'
                           }`}>
                             {metric.isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                             {metric.change}
@@ -372,16 +372,16 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                 </Card>
 
                 {/* System Capacity & Resources */}
-                <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-0 shadow-xl">
+                <Card className="bg-gradient-to-br from-[#96AEC2]/10 via-[#6F8A9D]/10 to-[#6F8A9D]/10 border-0 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                        <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
+                        <div className="p-3 bg-gradient-to-r from-[#546A7A] to-[#546A7A] rounded-xl shadow-lg">
                           <Database className="w-6 h-6 text-white" />
                         </div>
                         System Capacity
                       </CardTitle>
-                      <Badge className="bg-blue-100 text-blue-800 px-3 py-1 shadow-sm">
+                      <Badge className="bg-[#96AEC2]/20 text-[#546A7A] px-3 py-1 shadow-sm">
                         <Database className="w-4 h-4 mr-1" />
                         Infrastructure
                       </Badge>
@@ -398,13 +398,13 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                                 <resource.icon className="w-5 h-5 text-white" />
                               </div>
                               <div>
-                                <p className="text-sm font-medium text-slate-600">{resource.label}</p>
-                                <p className="text-xl font-bold text-slate-900">{resource.value}</p>
+                                <p className="text-sm font-medium text-[#5D6E73]">{resource.label}</p>
+                                <p className="text-xl font-bold text-[#546A7A]">{resource.value}</p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-xs text-slate-500">Utilization</p>
-                              <p className="text-sm font-semibold text-slate-700">
+                              <p className="text-xs text-[#757777]">Utilization</p>
+                              <p className="text-sm font-semibold text-[#5D6E73]">
                                 {typeof resource.utilization === 'number' && typeof resource.total === 'number' && resource.total > 0
                                   ? `${Math.round((resource.utilization / resource.total) * 100)}%`
                                   : '0%'}
@@ -417,7 +417,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                               : 0} 
                             className="h-2"
                           />
-                          <div className="flex justify-between text-xs text-slate-500 mt-1">
+                          <div className="flex justify-between text-xs text-[#757777] mt-1">
                             <span>{resource.utilization} active</span>
                             <span>{resource.total} total</span>
                           </div>
@@ -429,7 +429,7 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
               </div>
 
               {/* Performance Benchmarks */}
-              <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-0 shadow-xl">
+              <Card className="bg-gradient-to-br from-[#AEBFC3]/10 to-[#AEBFC3]/10 border-0 shadow-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-xl font-bold">
                     <div className="p-3 bg-gradient-to-r from-slate-600 to-gray-600 rounded-xl shadow-lg">
@@ -453,26 +453,26 @@ export default function PerformanceAnalytics({ dashboardData }: PerformanceAnaly
                         <div key={i} className="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-slate-800">{benchmark.metric}</h4>
+                              <h4 className="font-semibold text-[#546A7A]">{benchmark.metric}</h4>
                               <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                                performance ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                performance ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' : 'bg-[#E17F70]/20 text-[#75242D]'
                               }`}>
                                 {performance ? '✓ Target Met' : '⚠ Below Target'}
                               </div>
                             </div>
                             <div className="space-y-2">
                               <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Current:</span>
+                                <span className="text-[#5D6E73]">Current:</span>
                                 <span className="font-semibold">{benchmark.format(benchmark.current)}</span>
                               </div>
                               <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Target:</span>
+                                <span className="text-[#5D6E73]">Target:</span>
                                 <span className="font-semibold">{benchmark.format(benchmark.target)}</span>
                               </div>
                             </div>
                             <div className="space-y-1">
                               <Progress value={percentage} className="h-3" />
-                              <p className="text-xs text-slate-500 text-center">
+                              <p className="text-xs text-[#757777] text-center">
                                 Performance: {Math.round(percentage)}%
                               </p>
                             </div>

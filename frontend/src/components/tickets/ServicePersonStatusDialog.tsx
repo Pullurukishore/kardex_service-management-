@@ -407,20 +407,20 @@ export function ServicePersonStatusDialog({
                   key={option.value}
                   className={`cursor-pointer transition-all hover:shadow-md ${
                     selectedStatus === option.value 
-                      ? 'ring-2 ring-blue-500 bg-blue-50' 
-                      : 'hover:bg-gray-50'
+                      ? 'ring-2 ring-[#96AEC2] bg-[#96AEC2]/10' 
+                      : 'hover:bg-[#AEBFC3]/10'
                   }`}
                   onClick={() => setSelectedStatus(option.value)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-gray-100">
+                        <div className="p-2 rounded-full bg-[#AEBFC3]/20">
                           {option.icon}
                         </div>
                         <div>
                           <div className="font-medium">{option.label}</div>
-                          <div className="text-sm text-gray-600">{option.description}</div>
+                          <div className="text-sm text-[#5D6E73]">{option.description}</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -435,7 +435,7 @@ export function ServicePersonStatusDialog({
                             Comment Required
                           </Badge>
                         )}
-                        <ArrowRight className="h-4 w-4 text-gray-400" />
+                        <ArrowRight className="h-4 w-4 text-[#979796]" />
                         <StatusBadge status={option.value} />
                       </div>
                     </div>
@@ -450,27 +450,27 @@ export function ServicePersonStatusDialog({
             <div className="space-y-2">
               <Label className="text-sm font-medium">Location Status</Label>
               {locationLoading ? (
-                <div className="flex items-center gap-2 text-sm text-blue-600">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <div className="flex items-center gap-2 text-sm text-[#546A7A]">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#546A7A]"></div>
                   Getting your location...
                 </div>
               ) : currentLocation ? (
                 <div className="space-y-2">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-green-600">
+                    <div className="flex items-center gap-2 text-sm text-[#4F6A64]">
                       <CheckCircle className="h-4 w-4" />
                       Location captured
                     </div>
-                    <div className="text-xs text-gray-600 pl-6">
+                    <div className="text-xs text-[#5D6E73] pl-6">
                       {currentLocation.address}
                     </div>
                     {currentLocation.source === 'manual' && (
-                      <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs ml-6">
+                      <Badge className="bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2] text-xs ml-6">
                         ✓ Manual
                       </Badge>
                     )}
                     {currentLocation.address?.includes('Low accuracy') && currentLocation.source === 'gps' && (
-                      <div className="text-xs text-amber-600 pl-6 flex items-center gap-1">
+                      <div className="text-xs text-[#976E44] pl-6 flex items-center gap-1">
                         <AlertTriangle className="h-3 w-3" />
                         GPS accuracy is limited. Consider moving to an open area for better precision.
                       </div>
@@ -488,7 +488,7 @@ export function ServicePersonStatusDialog({
                 </div>
               ) : locationError ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-red-600">
+                  <div className="flex items-center gap-2 text-sm text-[#9E3B47]">
                     <XCircle className="h-4 w-4" />
                     {locationError}
                   </div>
@@ -536,7 +536,7 @@ export function ServicePersonStatusDialog({
           {/* Comments */}
           <div className="space-y-2">
             <Label htmlFor="comments" className="text-sm font-medium">
-              Comments {selectedOption?.requiresComment && <span className="text-red-500">*</span>}
+              Comments {selectedOption?.requiresComment && <span className="text-[#E17F70]">*</span>}
             </Label>
             <Textarea
               id="comments"

@@ -69,9 +69,9 @@ function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: 
   const isAccurate = source?.includes('Accurate') || source?.includes('Manual');
 
   return (
-    <div className="mt-3 overflow-hidden rounded-xl border border-blue-200/60 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 shadow-lg shadow-blue-100/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/60">
+    <div className="mt-3 overflow-hidden rounded-xl border border-[#96AEC2]/60 bg-gradient-to-br from-white via-[#96AEC2]/10/30 to-[#6F8A9D]/10/40 shadow-lg shadow-blue-100/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/60">
       {/* Premium Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-4 py-2.5">
+      <div className="bg-gradient-to-r from-[#546A7A] via-[#546A7A] to-[#546A7A] px-4 py-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg ring-1 ring-white/30">
@@ -85,8 +85,8 @@ function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: 
             <Badge 
               className={`text-[10px] font-semibold px-2 py-0.5 ${
                 isAccurate
-                  ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-sm shadow-emerald-500/25'
-                  : 'bg-amber-500/90 text-white border-amber-400/50 shadow-sm shadow-amber-500/25'
+                  ? 'bg-[#82A094]/100/90 text-white border-[#82A094]/50 shadow-sm shadow-[#82A094]/25'
+                  : 'bg-[#CE9F6B]/100/90 text-white border-[#CE9F6B]/50 shadow-sm shadow-[#CE9F6B]/25'
               }`}
             >
               <span className="flex items-center gap-1">
@@ -103,11 +103,11 @@ function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: 
         {/* Address Display */}
         {location && (
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg shadow-inner">
-              <MapPin className="h-4 w-4 text-blue-600" />
+            <div className="mt-0.5 p-2 bg-gradient-to-br from-[#96AEC2]/20 to-[#6F8A9D]/20 rounded-lg shadow-inner">
+              <MapPin className="h-4 w-4 text-[#546A7A]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 text-sm leading-relaxed">
+              <p className="font-semibold text-[#546A7A] text-sm leading-relaxed">
                 {location}
               </p>
             </div>
@@ -117,22 +117,22 @@ function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: 
         {/* Coordinates & Time */}
         <div className="grid gap-2">
           {coordinates && (
-            <div className="flex items-center gap-2.5 px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100">
-              <div className="p-1 bg-rose-100 rounded-md">
-                <Globe className="h-3 w-3 text-rose-500" />
+            <div className="flex items-center gap-2.5 px-3 py-2 bg-[#AEBFC3]/10/80 rounded-lg border border-[#AEBFC3]/30">
+              <div className="p-1 bg-[#EEC1BF]/20 rounded-md">
+                <Globe className="h-3 w-3 text-[#E17F70]" />
               </div>
-              <span className="text-xs font-mono font-medium text-slate-600">
+              <span className="text-xs font-mono font-medium text-[#5D6E73]">
                 {coordinates}
               </span>
             </div>
           )}
           
           {time && (
-            <div className="flex items-center gap-2.5 px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100">
-              <div className="p-1 bg-violet-100 rounded-md">
-                <Clock className="h-3 w-3 text-violet-500" />
+            <div className="flex items-center gap-2.5 px-3 py-2 bg-[#AEBFC3]/10/80 rounded-lg border border-[#AEBFC3]/30">
+              <div className="p-1 bg-[#6F8A9D]/20 rounded-md">
+                <Clock className="h-3 w-3 text-[#6F8A9D]" />
               </div>
-              <span className="text-xs font-medium text-slate-600">
+              <span className="text-xs font-medium text-[#5D6E73]">
                 {time}
               </span>
             </div>
@@ -148,7 +148,7 @@ function LocationDisplayWithBackendAddress({ notes, activityId, locationData }: 
                 window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
               }
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs font-semibold rounded-lg shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 transition-all duration-200 group"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white text-xs font-semibold rounded-lg shadow-md shadow-[#6F8A9D]/25 hover:shadow-lg hover:shadow-blue-500/35 transition-all duration-200 group"
           >
             <ExternalLink className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
             View on Google Maps
@@ -211,15 +211,15 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
   const getActivityColor = (type: string) => {
     switch (type) {
       case 'STATUS_CHANGE':
-        return 'bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 shadow-lg shadow-blue-500/30';
+        return 'bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A] shadow-lg shadow-[#96AEC2]/30';
       case 'NOTE':
-        return 'bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 shadow-lg shadow-emerald-500/30';
+        return 'bg-gradient-to-br from-[#82A094] via-[#82A094] to-[#4F6A64] shadow-lg shadow-[#82A094]/30';
       case 'REPORT_UPLOADED':
-        return 'bg-gradient-to-br from-purple-500 via-fuchsia-500 to-purple-600 shadow-lg shadow-purple-500/30';
+        return 'bg-gradient-to-br from-[#6F8A9D] via-[#E17F70] to-[#546A7A] shadow-lg shadow-[#6F8A9D]/30';
       case 'SCHEDULED':
-        return 'bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 shadow-lg shadow-orange-500/30';
+        return 'bg-gradient-to-br from-[#CE9F6B] via-[#CE9F6B] to-[#976E44] shadow-lg shadow-[#CE9F6B]/30';
       default:
-        return 'bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700 shadow-lg shadow-slate-500/30';
+        return 'bg-gradient-to-br from-[#AEBFC3]/100 via-slate-600 to-slate-700 shadow-lg shadow-slate-500/30';
     }
   };
 
@@ -263,31 +263,31 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                   <div className="space-y-3 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Avatar className="h-7 w-7 ring-2 ring-white shadow-sm">
-                        <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700">
+                        <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-[#AEBFC3]/20 to-slate-200 text-[#5D6E73]">
                           {activity.user?.name?.charAt(0).toUpperCase() || activity.user?.email?.charAt(0).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-sm text-slate-800">
+                        <span className="font-semibold text-sm text-[#546A7A]">
                           {activity.user?.name || activity.user?.email?.split('@')[0] || 'Unknown User'}
                         </span>
                         {ticket?.zone?.name && (activity.user?.role === 'ZONE_USER' || activity.user?.role === 'SERVICE_PERSON') && (
-                          <span className="text-xs text-slate-500">Zone: {ticket.zone.name}</span>
+                          <span className="text-xs text-[#757777]">Zone: {ticket.zone.name}</span>
                         )}
                       </div>
-                      <Badge className="text-[10px] font-medium bg-gradient-to-r from-slate-100 to-slate-50 text-slate-600 border-slate-200 shadow-sm">
+                      <Badge className="text-[10px] font-medium bg-gradient-to-r from-[#AEBFC3]/20 to-[#AEBFC3]/10 text-[#5D6E73] border-[#92A2A5] shadow-sm">
                         {activity.user?.role?.replace('_', ' ').toLowerCase()}
                       </Badge>
                       {/* Show location badge only for onsite visit statuses */}
                       {activity.type === 'STATUS_CHANGE' && activity.data.status && isOnsiteVisitStatus(activity.data.status) && ((activity.data.location || (activity.data.latitude && activity.data.longitude)) || hasLocationData(activity.data.notes)) && (
-                        <Badge className="text-[10px] font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 shadow-sm shadow-blue-500/25">
+                        <Badge className="text-[10px] font-semibold bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0 shadow-sm shadow-[#6F8A9D]/25">
                           <MapPin className="h-2.5 w-2.5 mr-1" />
                           Location
                         </Badge>
                       )}
                       {/* Show photo badge for activities with photos */}
                       {hasPhotoData(activity.data.notes) && (
-                        <Badge className="text-[10px] font-semibold bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white border-0 shadow-sm shadow-purple-500/25">
+                        <Badge className="text-[10px] font-semibold bg-gradient-to-r from-[#6F8A9D] to-[#E17F70] text-white border-0 shadow-sm shadow-[#6F8A9D]/25">
                           <Camera className="h-2.5 w-2.5 mr-1" />
                           Photos
                         </Badge>
@@ -306,10 +306,10 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                           <>
                             <span className="font-medium">Uploaded report</span>
                             {activity.data.fileName && (
-                              <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                              <div className="mt-2 p-3 bg-[#6F8A9D]/10 border border-[#6F8A9D] rounded-lg">
                                 <div className="flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-purple-600" />
-                                  <span className="text-sm font-medium text-purple-900">{activity.data.fileName}</span>
+                                  <FileText className="h-4 w-4 text-[#546A7A]" />
+                                  <span className="text-sm font-medium text-[#546A7A]">{activity.data.fileName}</span>
                                   {activity.data.fileSize && (
                                     <Badge variant="secondary" className="text-xs">
                                       {(activity.data.fileSize / 1024).toFixed(1)} KB
@@ -321,7 +321,7 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                                     href={`/api/tickets/${ticketId}/reports/${activity.data.reportId}/download`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 mt-2 text-xs text-purple-600 hover:text-purple-800 hover:underline"
+                                    className="inline-flex items-center gap-1 mt-2 text-xs text-[#546A7A] hover:text-[#546A7A] hover:underline"
                                   >
                                     <Download className="h-3 w-3" />
                                     Download Report
@@ -334,9 +334,9 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                           <>
                             <span className="font-medium">{activity.description}</span>
                             {/* Scheduled Activity Premium Card */}
-                            <div className="mt-3 overflow-hidden rounded-xl border border-orange-200/60 bg-gradient-to-br from-white via-orange-50/30 to-amber-50/40 shadow-lg shadow-orange-100/50">
+                            <div className="mt-3 overflow-hidden rounded-xl border border-[#CE9F6B]/60 bg-gradient-to-br from-white via-orange-50/30 to-[#EEC1BF]/10/40 shadow-lg shadow-orange-100/50">
                               {/* Premium Header */}
-                              <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 px-4 py-2.5">
+                              <div className="bg-gradient-to-r from-[#CE9F6B] via-[#CE9F6B] to-[#976E44] px-4 py-2.5">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <div className="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg ring-1 ring-white/30">
@@ -347,9 +347,9 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                                     </span>
                                   </div>
                                   <Badge className={`text-[10px] font-semibold px-2 py-0.5 ${
-                                    activity.data.status === 'COMPLETED' ? 'bg-emerald-500/90 text-white' :
-                                    activity.data.status === 'ACCEPTED' ? 'bg-blue-500/90 text-white' :
-                                    activity.data.status === 'REJECTED' ? 'bg-red-500/90 text-white' :
+                                    activity.data.status === 'COMPLETED' ? 'bg-[#82A094]/100/90 text-white' :
+                                    activity.data.status === 'ACCEPTED' ? 'bg-[#96AEC2]/100/90 text-white' :
+                                    activity.data.status === 'REJECTED' ? 'bg-[#E17F70]/100/90 text-white' :
                                     'bg-white/20 text-white'
                                   }`}>
                                     {activity.data.status?.replace(/_/g, ' ')}
@@ -362,14 +362,14 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                                 {/* Service Person */}
                                 {activity.data.servicePerson && (
                                   <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-gradient-to-br from-orange-100 to-amber-100 rounded-lg shadow-inner">
-                                      <UserCheck className="h-4 w-4 text-orange-600" />
+                                    <div className="p-2 bg-gradient-to-br from-orange-100 to-[#EEC1BF]/20 rounded-lg shadow-inner">
+                                      <UserCheck className="h-4 w-4 text-[#976E44]" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className="font-semibold text-slate-800 text-sm">
+                                      <p className="font-semibold text-[#546A7A] text-sm">
                                         {activity.data.servicePerson.name}
                                       </p>
-                                      <p className="text-xs text-slate-500">
+                                      <p className="text-xs text-[#757777]">
                                         Assigned Service Person
                                       </p>
                                     </div>
@@ -379,22 +379,22 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                                 {/* Schedule Details */}
                                 <div className="grid grid-cols-2 gap-2">
                                   {activity.data.scheduledDate && (
-                                    <div className="flex items-center gap-2.5 px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100">
-                                      <div className="p-1 bg-blue-100 rounded-md">
-                                        <Calendar className="h-3 w-3 text-blue-500" />
+                                    <div className="flex items-center gap-2.5 px-3 py-2 bg-[#AEBFC3]/10/80 rounded-lg border border-[#AEBFC3]/30">
+                                      <div className="p-1 bg-[#96AEC2]/20 rounded-md">
+                                        <Calendar className="h-3 w-3 text-[#6F8A9D]" />
                                       </div>
-                                      <span className="text-xs font-medium text-slate-600">
+                                      <span className="text-xs font-medium text-[#5D6E73]">
                                         {format(new Date(activity.data.scheduledDate), 'MMM d, yyyy')}
                                       </span>
                                     </div>
                                   )}
                                   
                                   {activity.data.activityType && (
-                                    <div className="flex items-center gap-2.5 px-3 py-2 bg-slate-50/80 rounded-lg border border-slate-100">
-                                      <div className="p-1 bg-violet-100 rounded-md">
-                                        <Activity className="h-3 w-3 text-violet-500" />
+                                    <div className="flex items-center gap-2.5 px-3 py-2 bg-[#AEBFC3]/10/80 rounded-lg border border-[#AEBFC3]/30">
+                                      <div className="p-1 bg-[#6F8A9D]/20 rounded-md">
+                                        <Activity className="h-3 w-3 text-[#6F8A9D]" />
                                       </div>
-                                      <span className="text-xs font-medium text-slate-600 truncate">
+                                      <span className="text-xs font-medium text-[#5D6E73] truncate">
                                         {activity.data.activityType.replace(/_/g, ' ')}
                                       </span>
                                     </div>
@@ -403,7 +403,7 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                                 
                                 {/* Notes if present */}
                                 {activity.data.notes && (
-                                  <div className="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100 italic">
+                                  <div className="text-xs text-[#5D6E73] bg-[#AEBFC3]/10 p-2 rounded-lg border border-[#AEBFC3]/30 italic">
                                     "{activity.data.notes}"
                                   </div>
                                 )}
@@ -451,9 +451,9 @@ export function TicketActivity({ ticketId, ticket }: { ticketId: number; ticket?
                   <div className="whitespace-nowrap text-right">
                     <time 
                       dateTime={activity.createdAt.toString()} 
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 text-xs font-medium rounded-lg border border-slate-200/60 shadow-sm"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#AEBFC3]/10 to-[#AEBFC3]/20 text-[#5D6E73] text-xs font-medium rounded-lg border border-[#92A2A5]/60 shadow-sm"
                     >
-                      <Clock className="h-3 w-3 text-slate-400" />
+                      <Clock className="h-3 w-3 text-[#979796]" />
                       {format(new Date(activity.createdAt), 'MMM d, h:mm a')}
                     </time>
                   </div>

@@ -182,56 +182,56 @@ export default function ZoneUserClient({
     <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2]/50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-cyan-600">Total Users</p>
-                <p className="text-2xl font-bold text-cyan-900">{stats.total}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Total Users</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.total}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-cyan-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#96AEC2]/100 flex items-center justify-center">
                 <Users className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Active Users</p>
-                <p className="text-2xl font-bold text-green-900">{stats.active}</p>
+                <p className="text-sm font-medium text-[#4F6A64]">Active Users</p>
+                <p className="text-2xl font-bold text-[#4F6A64]">{stats.active}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#A2B9AF]/100 flex items-center justify-center">
                 <UserCheck className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600">Admin Users</p>
-                <p className="text-2xl font-bold text-orange-900">{stats.admin}</p>
+                <p className="text-sm font-medium text-[#976E44]">Admin Users</p>
+                <p className="text-2xl font-bold text-[#976E44]">{stats.admin}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#CE9F6B]/100 flex items-center justify-center">
                 <Shield className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-[#6F8A9D]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Zone Assignments</p>
-                <p className="text-2xl font-bold text-purple-900">{stats.totalZoneAssignments}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Zone Assignments</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.totalZoneAssignments}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#6F8A9D]/100 flex items-center justify-center">
                 <MapPin className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -244,11 +244,11 @@ export default function ZoneUserClient({
 
       {/* Enhanced Zone Users Table */}
       <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-lg">
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10 rounded-t-lg">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-gray-800 flex items-center gap-2">
-                <Users className="h-5 w-5 text-cyan-600" />
+              <CardTitle className="text-[#546A7A] flex items-center gap-2">
+                <Users className="h-5 w-5 text-[#546A7A]" />
                 Zone Users & Managers ({filteredZoneUsers.length})
               </CardTitle>
               <CardDescription>
@@ -270,15 +270,15 @@ export default function ZoneUserClient({
         <CardContent className="p-0">
           {filteredZoneUsers.length === 0 ? (
             <div className="text-center py-12">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center mb-4">
-                <Users className="h-12 w-12 text-cyan-500" />
+              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-cyan-100 to-[#96AEC2]/20 flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No zone users or managers found</h3>
-              <p className="text-gray-500 mb-6">
+              <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No zone users or managers found</h3>
+              <p className="text-[#AEBFC3]0 mb-6">
                 Get started by assigning zone users and managers to service zones.
               </p>
               <Link href="/admin/zone-users/new">
-                <Button className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg">
+                <Button className="bg-gradient-to-r from-cyan-600 to-[#546A7A] hover:from-cyan-700 hover:to-[#546A7A] shadow-lg">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Zone User
                 </Button>
@@ -287,32 +287,32 @@ export default function ZoneUserClient({
           ) : (
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50">
+                <TableHeader className="bg-[#AEBFC3]/10">
                   <TableRow>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">User Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Role & Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6">Assigned Zones</TableHead>
-                    <TableHead className="font-semibold text-gray-700 py-4 px-6 text-right">Actions</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">User Details</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Role & Status</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6">Assigned Zones</TableHead>
+                    <TableHead className="font-semibold text-[#5D6E73] py-4 px-6 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100">
                   {filteredZoneUsers.map((user) => (
-                    <TableRow key={user.id} className="hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-blue-50/50 transition-all duration-200">
+                    <TableRow key={user.id} className="hover:bg-gradient-to-r hover:from-[#96AEC2]/10/50 hover:to-[#96AEC2]/10/50 transition-all duration-200">
                       <TableCell className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] flex items-center justify-center text-white font-semibold">
                             {(user.name || user.email).charAt(0).toUpperCase()}
                           </div>
                           <div>
                             {user.name && (
                               <Link href={`/admin/zone-users/${user.id}`}>
-                                <div className="font-semibold text-gray-900 hover:text-cyan-600 transition-colors cursor-pointer">
+                                <div className="font-semibold text-[#546A7A] hover:text-[#546A7A] transition-colors cursor-pointer">
                                   {user.name}
                                 </div>
                               </Link>
                             )}
                             <Link href={`/admin/zone-users/${user.id}`}>
-                              <div className={`text-gray-600 hover:text-cyan-600 transition-colors cursor-pointer ${user.name ? 'text-sm' : 'font-semibold text-gray-900'}`}>
+                              <div className={`text-[#5D6E73] hover:text-[#546A7A] transition-colors cursor-pointer ${user.name ? 'text-sm' : 'font-semibold text-[#546A7A]'}`}>
                                 {user.email}
                               </div>
                             </Link>
@@ -324,10 +324,10 @@ export default function ZoneUserClient({
                           <Badge 
                             variant={getRoleBadgeVariant(user.role)}
                             className={
-                              user.role === 'ADMIN' ? 'bg-orange-100 text-orange-800 hover:bg-orange-200' :
-                              user.role === 'ZONE_MANAGER' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' :
-                              user.role === 'ZONE_USER' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' :
-                              'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              user.role === 'ADMIN' ? 'bg-[#CE9F6B]/20 text-[#976E44] hover:bg-[#CE9F6B]/30' :
+                              user.role === 'ZONE_MANAGER' ? 'bg-[#6F8A9D]/20 text-[#546A7A] hover:bg-[#6F8A9D]/30' :
+                              user.role === 'ZONE_USER' ? 'bg-[#96AEC2]/20 text-[#546A7A] hover:bg-[#96AEC2]/30' :
+                              'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                             }
                           >
                             {user.role.replace('_', ' ')}
@@ -336,8 +336,8 @@ export default function ZoneUserClient({
                             <Badge 
                               variant={user.isActive ? 'default' : 'secondary'}
                               className={user.isActive 
-                                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                                : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                               }
                             >
                               {user.isActive ? 'Active' : 'Inactive'}
@@ -352,13 +352,13 @@ export default function ZoneUserClient({
                               <Badge 
                                 key={zone.serviceZone.id} 
                                 variant="outline"
-                                className="bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100"
+                                className="bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2]/50 hover:bg-[#96AEC2]/20"
                               >
                                 {zone.serviceZone.name}
                               </Badge>
                             ))
                           ) : (
-                            <span className="text-sm text-gray-400 italic">No zones assigned</span>
+                            <span className="text-sm text-[#979796] italic">No zones assigned</span>
                           )}
                         </div>
                       </TableCell>
@@ -382,7 +382,7 @@ export default function ZoneUserClient({
         <Card className="shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-[#AEBFC3]0">
                 Showing {((currentPage - 1) * pagination.itemsPerPage) + 1} to {Math.min(currentPage * pagination.itemsPerPage, pagination.totalItems)} of {pagination.totalItems} users
               </div>
               <div className="flex items-center gap-2">
@@ -397,7 +397,7 @@ export default function ZoneUserClient({
                   Previous
                 </Button>
                 
-                <span className="text-sm font-medium px-3 py-1 bg-gray-100 rounded">
+                <span className="text-sm font-medium px-3 py-1 bg-[#AEBFC3]/20 rounded">
                   Page {currentPage} of {pagination.totalPages}
                 </span>
                 

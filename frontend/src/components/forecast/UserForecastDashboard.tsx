@@ -85,13 +85,13 @@ interface Props {
 const ProgressBar = ({ value, max, color = 'blue' }: { value: number; max: number; color?: string }) => {
   const percentage = max > 0 ? Math.min((value / max) * 100, 100) : 0
   const colorClasses: Record<string, string> = {
-    blue: 'bg-gradient-to-r from-blue-500 to-indigo-600',
-    emerald: 'bg-gradient-to-r from-emerald-500 to-teal-600',
-    amber: 'bg-gradient-to-r from-amber-500 to-orange-600',
-    purple: 'bg-gradient-to-r from-purple-500 to-pink-600',
+    blue: 'bg-gradient-to-r from-[#6F8A9D] to-[#546A7A]',
+    emerald: 'bg-gradient-to-r from-[#82A094] to-[#4F6A64]',
+    amber: 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44]',
+    purple: 'bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47]',
   }
   return (
-    <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+    <div className="w-full h-2 bg-[#92A2A5]/30 dark:bg-[#5D6E73] rounded-full overflow-hidden">
       <div 
         className={`h-full ${colorClasses[color] || colorClasses.blue} rounded-full transition-all duration-700 ease-out`}
         style={{ width: `${percentage}%` }}
@@ -226,23 +226,23 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
   }
 
   const getDeviationColor = (value: number | null) => {
-    if (value === null) return 'text-slate-400'
-    if (value >= 0) return 'text-emerald-600 dark:text-emerald-400'
-    if (value >= -25) return 'text-amber-600 dark:text-amber-400'
-    return 'text-rose-600 dark:text-rose-400'
+    if (value === null) return 'text-[#979796]'
+    if (value >= 0) return 'text-[#4F6A64] dark:text-[#82A094]'
+    if (value >= -25) return 'text-[#976E44] dark:text-[#CE9F6B]'
+    return 'text-[#9E3B47] dark:text-[#E17F70]'
   }
 
   const getDeviationBg = (value: number | null) => {
-    if (value === null) return 'bg-slate-100/80 dark:bg-slate-800/80'
-    if (value >= 0) return 'bg-emerald-100/80 dark:bg-emerald-900/40'
-    if (value >= -25) return 'bg-amber-100/80 dark:bg-amber-900/40'
-    return 'bg-rose-100/80 dark:bg-rose-900/40'
+    if (value === null) return 'bg-[#AEBFC3]/20/80 dark:bg-[#546A7A]/80'
+    if (value >= 0) return 'bg-[#82A094]/20/80 dark:bg-[#4F6A64]/40'
+    if (value >= -25) return 'bg-[#CE9F6B]/20/80 dark:bg-[#976E44]/40'
+    return 'bg-[#EEC1BF]/20/80 dark:bg-[#9E3B47]/40'
   }
 
   const getStatusIcon = (percentage: number) => {
-    if (percentage >= 100) return <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-    if (percentage >= 75) return <AlertTriangle className="h-5 w-5 text-amber-500" />
-    return <XCircle className="h-5 w-5 text-rose-500" />
+    if (percentage >= 100) return <CheckCircle2 className="h-5 w-5 text-[#82A094]" />
+    if (percentage >= 75) return <AlertTriangle className="h-5 w-5 text-[#CE9F6B]" />
+    return <XCircle className="h-5 w-5 text-[#E17F70]" />
   }
 
   const toggleProduct = (productType: string) => {
@@ -260,18 +260,18 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="flex flex-col items-center gap-8">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 animate-pulse" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#6F8A9D]/20 to-[#6F8A9D]/20 animate-pulse" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 animate-spin flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#6F8A9D] to-[#546A7A] animate-spin flex items-center justify-center shadow-lg shadow-[#96AEC2]/30">
                 <Loader2 className="h-8 w-8 text-white animate-spin" style={{ animationDirection: 'reverse' }} />
               </div>
             </div>
           </div>
           <div className="text-center space-y-3">
-            <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <p className="text-2xl font-bold bg-gradient-to-r from-[#546A7A] to-[#546A7A] bg-clip-text text-transparent">
               Loading Your Forecast
             </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
+            <p className="text-sm text-[#757777] dark:text-[#979796] max-w-xs">
               Analyzing your offer data...
             </p>
           </div>
@@ -283,19 +283,19 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[80vh] p-4">
-        <Card className="max-w-md border-rose-200 dark:border-rose-800 shadow-2xl shadow-rose-500/10">
+        <Card className="max-w-md border-[#EEC1BF]/50 dark:border-rose-800 shadow-2xl shadow-rose-500/10">
           <CardContent className="pt-10 pb-8 px-8">
             <div className="text-center space-y-6">
               <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 dark:from-rose-900/40 dark:to-rose-800/40 flex items-center justify-center shadow-lg">
-                <Zap className="h-10 w-10 text-rose-500" />
+                <Zap className="h-10 w-10 text-[#E17F70]" />
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-bold text-rose-600 dark:text-rose-400">Error Loading Data</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{error}</p>
+                <p className="text-xl font-bold text-[#9E3B47] dark:text-[#E17F70]">Error Loading Data</p>
+                <p className="text-sm text-[#5D6E73] dark:text-[#979796] leading-relaxed">{error}</p>
               </div>
               <Button 
                 onClick={() => handleRefresh()} 
-                className="mt-4 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white shadow-lg shadow-rose-500/25"
+                className="mt-4 bg-gradient-to-r from-[#E17F70] to-red-600 hover:from-[#9E3B47] hover:to-red-700 text-white shadow-lg shadow-rose-500/25"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
@@ -310,10 +310,10 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
   if (!userData) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-xl">
-          <BarChart3 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No Forecast Data</h2>
-          <p className="text-slate-600 dark:text-slate-400">No forecast data found for your account.</p>
+        <div className="text-center p-8 bg-white dark:bg-[#546A7A] rounded-2xl shadow-xl">
+          <BarChart3 className="h-12 w-12 text-[#979796] mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-[#546A7A] dark:text-white mb-2">No Forecast Data</h2>
+          <p className="text-[#5D6E73] dark:text-[#979796]">No forecast data found for your account.</p>
         </div>
       </div>
     )
@@ -324,11 +324,11 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
     : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10/30 to-[#6F8A9D]/10/50 dark:from-[#5D6E73] dark:via-slate-900 dark:to-[#5D6E73]">
       <div className="max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
         
         {/* Premium Header */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6 md:p-8 shadow-2xl shadow-blue-900/40 border border-white/5">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5D6E73] via-[#546A7A] to-[#546A7A] p-6 md:p-8 shadow-2xl shadow-blue-900/40 border border-white/5">
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.15),transparent_50%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(147,51,234,0.15),transparent_50%)]" />
@@ -345,7 +345,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                     <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
                       My Forecast
                     </h1>
-                    <p className="text-blue-100/80 text-sm md:text-base mt-1">
+                    <p className="text-[#96AEC2]/80 text-sm md:text-base mt-1">
                       {userName} • {zoneName} Zone
                     </p>
                   </div>
@@ -403,7 +403,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                 <Button
                   onClick={handleExportExcel}
                   disabled={exporting}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
+                  className="bg-gradient-to-r from-[#82A094] to-[#4F6A64] hover:from-[#4F6A64] hover:to-[#4F6A64] text-white shadow-lg shadow-[#82A094]/30"
                 >
                   <FileSpreadsheet className={`h-4 w-4 mr-2 ${exporting ? 'animate-pulse' : ''}`} />
                   {exporting ? 'Exporting...' : 'Export'}
@@ -416,71 +416,71 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
         {/* Quick Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {/* Yearly Target */}
-          <Card className="bg-white dark:bg-slate-900 border-0 shadow-xl rounded-2xl overflow-hidden">
+          <Card className="bg-white dark:bg-[#546A7A] border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <Target className="h-5 w-5 text-purple-500" />
-                <span className="text-xs font-medium text-purple-600 bg-purple-100 dark:bg-purple-900/40 px-2 py-1 rounded-full">
+                <Target className="h-5 w-5 text-[#6F8A9D]" />
+                <span className="text-xs font-medium text-[#546A7A] bg-[#6F8A9D]/20 dark:bg-[#546A7A]/40 px-2 py-1 rounded-full">
                   Target
                 </span>
               </div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-2xl font-bold text-[#546A7A] dark:text-white">
                 {formatCurrencyCompact(userData.yearlyTarget)}
               </p>
-              <p className="text-sm text-slate-500 mt-1">Yearly Target</p>
+              <p className="text-sm text-[#757777] mt-1">Yearly Target</p>
             </CardContent>
           </Card>
 
           {/* Orders Received */}
-          <Card className="bg-white dark:bg-slate-900 border-0 shadow-xl rounded-2xl overflow-hidden">
+          <Card className="bg-white dark:bg-[#546A7A] border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <IndianRupee className="h-5 w-5 text-emerald-500" />
-                <span className="text-xs font-medium text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-1 rounded-full">
+                <IndianRupee className="h-5 w-5 text-[#82A094]" />
+                <span className="text-xs font-medium text-[#4F6A64] bg-[#82A094]/20 dark:bg-[#4F6A64]/40 px-2 py-1 rounded-full">
                   Received
                 </span>
               </div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-2xl font-bold text-[#546A7A] dark:text-white">
                 {formatCurrencyCompact(userData.totals.orderReceived)}
               </p>
-              <p className="text-sm text-slate-500 mt-1">Orders Received</p>
+              <p className="text-sm text-[#757777] mt-1">Orders Received</p>
             </CardContent>
           </Card>
 
           {/* Achievement */}
-          <Card className="bg-white dark:bg-slate-900 border-0 shadow-xl rounded-2xl overflow-hidden">
+          <Card className="bg-white dark:bg-[#546A7A] border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
                 {getStatusIcon(achievement)}
                 <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  achievement >= 100 ? 'text-emerald-600 bg-emerald-100' :
-                  achievement >= 75 ? 'text-amber-600 bg-amber-100' :
-                  'text-rose-600 bg-rose-100'
+                  achievement >= 100 ? 'text-[#4F6A64] bg-[#82A094]/20' :
+                  achievement >= 75 ? 'text-[#976E44] bg-[#CE9F6B]/20' :
+                  'text-[#9E3B47] bg-[#EEC1BF]/20'
                 }`}>
                   {achievement.toFixed(0)}%
                 </span>
               </div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-2xl font-bold text-[#546A7A] dark:text-white">
                 {achievement.toFixed(1)}%
               </p>
-              <p className="text-sm text-slate-500 mt-1">Achievement</p>
+              <p className="text-sm text-[#757777] mt-1">Achievement</p>
               <ProgressBar value={achievement} max={100} color={achievement >= 100 ? 'emerald' : achievement >= 75 ? 'amber' : 'blue'} />
             </CardContent>
           </Card>
 
           {/* Hit Rate */}
-          <Card className="bg-white dark:bg-slate-900 border-0 shadow-xl rounded-2xl overflow-hidden">
+          <Card className="bg-white dark:bg-[#546A7A] border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-                <span className="text-xs font-medium text-blue-600 bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded-full">
+                <TrendingUp className="h-5 w-5 text-[#6F8A9D]" />
+                <span className="text-xs font-medium text-[#546A7A] bg-[#96AEC2]/20 dark:bg-[#546A7A]/40 px-2 py-1 rounded-full">
                   Rate
                 </span>
               </div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-2xl font-bold text-[#546A7A] dark:text-white">
                 {userData.hitRate}%
               </p>
-              <p className="text-sm text-slate-500 mt-1">Hit Rate</p>
+              <p className="text-sm text-[#757777] mt-1">Hit Rate</p>
             </CardContent>
           </Card>
         </div>
@@ -489,7 +489,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
         {poExpectedData && (
           <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardHeader 
-              className="bg-gradient-to-r from-amber-500 to-orange-600 py-4 px-6 cursor-pointer"
+              className="bg-gradient-to-r from-[#CE9F6B] to-[#976E44] py-4 px-6 cursor-pointer"
               onClick={() => setShowPOExpected(!showPOExpected)}
             >
               <div className="flex items-center justify-between">
@@ -516,22 +516,22 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-800/50">
-                        <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-300">Month</th>
-                        <th className="px-4 py-3 text-right font-bold text-amber-600">Expected PO Value</th>
-                        <th className="px-4 py-3 text-right font-bold text-slate-600">Offers Count</th>
+                      <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]/50">
+                        <th className="px-4 py-3 text-left font-bold text-[#5D6E73] dark:text-[#92A2A5]">Month</th>
+                        <th className="px-4 py-3 text-right font-bold text-[#976E44]">Expected PO Value</th>
+                        <th className="px-4 py-3 text-right font-bold text-[#5D6E73]">Offers Count</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                       {poExpectedData.months.map((month: any, idx: number) => {
                         const monthValue = poExpectedData.overallTotals?.monthlyTotals?.[month.name] || 0
                         return (
-                          <tr key={month.name} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30'}>
-                            <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">{month.fullName}</td>
-                            <td className="px-4 py-3 text-right font-mono text-amber-600 font-bold">
+                          <tr key={month.name} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/30'}>
+                            <td className="px-4 py-3 font-semibold text-[#5D6E73] dark:text-[#92A2A5]">{month.fullName}</td>
+                            <td className="px-4 py-3 text-right font-mono text-[#976E44] font-bold">
                               {monthValue > 0 ? formatCurrencyCompact(monthValue) : '-'}
                             </td>
-                            <td className="px-4 py-3 text-right text-slate-600">
+                            <td className="px-4 py-3 text-right text-[#5D6E73]">
                               {/* Count could be calculated from zones data if available */}
                               -
                             </td>
@@ -540,7 +540,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                       })}
                     </tbody>
                     <tfoot>
-                      <tr className="bg-slate-800 dark:bg-slate-950 text-white font-bold">
+                      <tr className="bg-[#546A7A] dark:bg-[#546A7A] text-white font-bold">
                         <td className="px-4 py-3">TOTAL</td>
                         <td className="px-4 py-3 text-right font-mono">{formatCurrencyCompact(poExpectedData.overallTotals?.grandTotal || 0)}</td>
                         <td className="px-4 py-3 text-right">-</td>
@@ -555,7 +555,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
 
         {/* Monthly Breakdown */}
         <Card className="border-0 shadow-2xl rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 py-4 px-6">
+          <CardHeader className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] py-4 px-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-white" />
@@ -571,49 +571,49 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50">
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-300">Month</th>
-                    <th className="px-4 py-3 text-right font-bold text-blue-600">Offers</th>
-                    <th className="px-4 py-3 text-right font-bold text-emerald-600">Orders</th>
-                    <th className="px-4 py-3 text-right font-bold text-amber-600">Funnel</th>
-                    <th className="px-4 py-3 text-right font-bold text-purple-600">BU/Mo</th>
-                    <th className="px-4 py-3 text-center font-bold text-slate-600">%Dev</th>
-                    <th className="px-4 py-3 text-right font-bold text-indigo-600">OfferBU</th>
-                    <th className="px-4 py-3 text-center font-bold text-slate-600">%Dev</th>
+                  <tr className="bg-[#AEBFC3]/10 dark:bg-[#546A7A]/50">
+                    <th className="px-4 py-3 text-left font-bold text-[#5D6E73] dark:text-[#92A2A5]">Month</th>
+                    <th className="px-4 py-3 text-right font-bold text-[#546A7A]">Offers</th>
+                    <th className="px-4 py-3 text-right font-bold text-[#4F6A64]">Orders</th>
+                    <th className="px-4 py-3 text-right font-bold text-[#976E44]">Funnel</th>
+                    <th className="px-4 py-3 text-right font-bold text-[#546A7A]">BU/Mo</th>
+                    <th className="px-4 py-3 text-center font-bold text-[#5D6E73]">%Dev</th>
+                    <th className="px-4 py-3 text-right font-bold text-[#546A7A]">OfferBU</th>
+                    <th className="px-4 py-3 text-center font-bold text-[#5D6E73]">%Dev</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                   {userData.monthlyData.map((m, idx) => (
-                    <tr key={m.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/30'}>
-                      <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">{m.monthLabel}</td>
-                      <td className="px-4 py-3 text-right font-mono text-blue-600">{formatCurrencyCompact(m.offersValue)}</td>
-                      <td className="px-4 py-3 text-right font-mono text-emerald-600">{formatCurrencyCompact(m.orderReceived)}</td>
-                      <td className="px-4 py-3 text-right font-mono text-amber-600">{formatCurrencyCompact(m.ordersInHand)}</td>
-                      <td className="px-4 py-3 text-right font-mono text-purple-600 bg-purple-50/50 dark:bg-purple-900/20">{formatCurrencyCompact(m.buMonthly)}</td>
+                    <tr key={m.month} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/30'}>
+                      <td className="px-4 py-3 font-semibold text-[#5D6E73] dark:text-[#92A2A5]">{m.monthLabel}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(m.offersValue)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(m.orderReceived)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[#976E44]">{formatCurrencyCompact(m.ordersInHand)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[#546A7A] bg-[#6F8A9D]/10/50 dark:bg-[#546A7A]/20">{formatCurrencyCompact(m.buMonthly)}</td>
                       <td className="px-4 py-3 text-center">
                         {m.percentDev !== null ? (
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${getDeviationBg(m.percentDev)} ${getDeviationColor(m.percentDev)}`}>
                             {m.percentDev >= 0 ? '+' : ''}{m.percentDev}%
                           </span>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="text-[#979796]">-</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20">{formatCurrencyCompact(m.offerBUMonth)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[#546A7A] bg-[#546A7A]/10/50 dark:bg-[#546A7A]/20">{formatCurrencyCompact(m.offerBUMonth)}</td>
                       <td className="px-4 py-3 text-center">
                         {m.offerBUMonthDev !== null ? (
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${getDeviationBg(m.offerBUMonthDev)} ${getDeviationColor(m.offerBUMonthDev)}`}>
                             {m.offerBUMonthDev >= 0 ? '+' : ''}{m.offerBUMonthDev}%
                           </span>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="text-[#979796]">-</span>
                         )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-slate-800 dark:bg-slate-950 text-white font-bold">
+                  <tr className="bg-[#546A7A] dark:bg-[#546A7A] text-white font-bold">
                     <td className="px-4 py-3">TOTAL</td>
                     <td className="px-4 py-3 text-right font-mono">{formatCurrencyCompact(userData.totals.offersValue)}</td>
                     <td className="px-4 py-3 text-right font-mono">{formatCurrencyCompact(userData.totals.orderReceived)}</td>
@@ -633,7 +633,7 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
         {userData.productBreakdown && userData.productBreakdown.length > 0 && (
           <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardHeader 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 py-4 px-6 cursor-pointer"
+              className="bg-gradient-to-r from-[#546A7A] to-[#9E3B47] py-4 px-6 cursor-pointer"
               onClick={() => setShowProductBreakdown(!showProductBreakdown)}
             >
               <div className="flex items-center justify-between">
@@ -652,33 +652,33 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                     ? ((product.totals.orderReceived / product.yearlyTarget) * 100).toFixed(1)
                     : '—'
                   return (
-                  <div key={product.productType} className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                  <div key={product.productType} className="border border-[#92A2A5] dark:border-[#5D6E73] rounded-xl overflow-hidden">
                     <button
                       onClick={() => toggleProduct(product.productType)}
-                      className="w-full px-4 py-3 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      className="w-full px-4 py-3 flex items-center justify-between bg-[#AEBFC3]/10 dark:bg-[#546A7A] hover:bg-[#AEBFC3]/20 dark:hover:bg-[#5D6E73] transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         {expandedProducts.has(product.productType) ? (
-                          <ChevronDown className="h-4 w-4 text-slate-600" />
+                          <ChevronDown className="h-4 w-4 text-[#5D6E73]" />
                         ) : (
-                          <ChevronRight className="h-4 w-4 text-slate-600" />
+                          <ChevronRight className="h-4 w-4 text-[#5D6E73]" />
                         )}
-                        <span className="font-semibold text-slate-800 dark:text-white">{product.productLabel}</span>
+                        <span className="font-semibold text-[#546A7A] dark:text-white">{product.productLabel}</span>
                         {product.yearlyTarget > 0 && (
-                          <span className="text-xs text-slate-500 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+                          <span className="text-xs text-[#757777] bg-[#92A2A5]/30 dark:bg-[#5D6E73] px-2 py-0.5 rounded-full">
                             Target: {formatCurrencyCompact(product.yearlyTarget)}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-[#757777]">
                           Received: {formatCurrencyCompact(product.totals.orderReceived)}
                         </span>
                         {product.yearlyTarget > 0 && (
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            Number(productAchievement) >= 100 ? 'bg-emerald-100 text-emerald-600' :
-                            Number(productAchievement) >= 75 ? 'bg-amber-100 text-amber-600' :
-                            'bg-rose-100 text-rose-600'
+                            Number(productAchievement) >= 100 ? 'bg-[#82A094]/20 text-[#4F6A64]' :
+                            Number(productAchievement) >= 75 ? 'bg-[#CE9F6B]/20 text-[#976E44]' :
+                            'bg-[#EEC1BF]/20 text-[#9E3B47]'
                           }`}>
                             {productAchievement}%
                           </span>
@@ -690,57 +690,57 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
                       <div className="overflow-x-auto">
                         <table className="w-full text-xs">
                           <thead>
-                            <tr className="bg-slate-100 dark:bg-slate-800/80">
-                              <th className="px-3 py-2 text-left font-bold text-slate-600">Month</th>
-                              <th className="px-3 py-2 text-right font-bold text-blue-600">Offers</th>
-                              <th className="px-3 py-2 text-right font-bold text-emerald-600">Orders</th>
-                              <th className="px-3 py-2 text-right font-bold text-amber-600">Funnel</th>
-                              <th className="px-3 py-2 text-right font-bold text-purple-600">BU/Mo</th>
-                              <th className="px-3 py-2 text-center font-bold text-slate-600">%Dev</th>
-                              <th className="px-3 py-2 text-right font-bold text-indigo-600">OfferBU</th>
-                              <th className="px-3 py-2 text-center font-bold text-slate-600">%Dev</th>
+                            <tr className="bg-[#AEBFC3]/20 dark:bg-[#546A7A]/80">
+                              <th className="px-3 py-2 text-left font-bold text-[#5D6E73]">Month</th>
+                              <th className="px-3 py-2 text-right font-bold text-[#546A7A]">Offers</th>
+                              <th className="px-3 py-2 text-right font-bold text-[#4F6A64]">Orders</th>
+                              <th className="px-3 py-2 text-right font-bold text-[#976E44]">Funnel</th>
+                              <th className="px-3 py-2 text-right font-bold text-[#546A7A]">BU/Mo</th>
+                              <th className="px-3 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
+                              <th className="px-3 py-2 text-right font-bold text-[#546A7A]">OfferBU</th>
+                              <th className="px-3 py-2 text-center font-bold text-[#5D6E73]">%Dev</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                             {product.monthlyData.map((m, idx) => (
-                              <tr key={m.month} className={idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-800/20'}>
-                                <td className="px-3 py-2 font-medium text-slate-700">{m.monthLabel}</td>
-                                <td className="px-3 py-2 text-right font-mono text-blue-600">{formatCurrencyCompact(m.offersValue)}</td>
-                                <td className="px-3 py-2 text-right font-mono text-emerald-600">{formatCurrencyCompact(m.orderReceived)}</td>
-                                <td className="px-3 py-2 text-right font-mono text-amber-600">{formatCurrencyCompact(m.ordersInHand)}</td>
-                                <td className="px-3 py-2 text-right font-mono text-purple-600">{formatCurrencyCompact(m.buMonthly)}</td>
+                              <tr key={m.month} className={idx % 2 === 0 ? 'bg-white dark:bg-[#546A7A]' : 'bg-[#AEBFC3]/10/50 dark:bg-[#546A7A]/20'}>
+                                <td className="px-3 py-2 font-medium text-[#5D6E73]">{m.monthLabel}</td>
+                                <td className="px-3 py-2 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(m.offersValue)}</td>
+                                <td className="px-3 py-2 text-right font-mono text-[#4F6A64]">{formatCurrencyCompact(m.orderReceived)}</td>
+                                <td className="px-3 py-2 text-right font-mono text-[#976E44]">{formatCurrencyCompact(m.ordersInHand)}</td>
+                                <td className="px-3 py-2 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(m.buMonthly)}</td>
                                 <td className="px-3 py-2 text-center">
                                   {m.percentDev !== null ? (
                                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold ${getDeviationBg(m.percentDev)} ${getDeviationColor(m.percentDev)}`}>
                                       {m.percentDev >= 0 ? '+' : ''}{m.percentDev}%
                                     </span>
                                   ) : (
-                                    <span className="text-slate-400">-</span>
+                                    <span className="text-[#979796]">-</span>
                                   )}
                                 </td>
-                                <td className="px-3 py-2 text-right font-mono text-indigo-600">{formatCurrencyCompact(m.offerBUMonth)}</td>
+                                <td className="px-3 py-2 text-right font-mono text-[#546A7A]">{formatCurrencyCompact(m.offerBUMonth)}</td>
                                 <td className="px-3 py-2 text-center">
                                   {m.offerBUMonthDev !== null ? (
                                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold ${getDeviationBg(m.offerBUMonthDev)} ${getDeviationColor(m.offerBUMonthDev)}`}>
                                       {m.offerBUMonthDev >= 0 ? '+' : ''}{m.offerBUMonthDev}%
                                     </span>
                                   ) : (
-                                    <span className="text-slate-400">-</span>
+                                    <span className="text-[#979796]">-</span>
                                   )}
                                 </td>
                               </tr>
                             ))}
                           </tbody>
                           <tfoot>
-                            <tr className="bg-slate-200 dark:bg-slate-700 font-bold text-xs">
-                              <td className="px-3 py-2 text-slate-800 dark:text-white">Total</td>
-                              <td className="px-3 py-2 text-right font-mono text-slate-800 dark:text-white">{formatCurrencyCompact(product.totals.offersValue)}</td>
-                              <td className="px-3 py-2 text-right font-mono text-slate-800 dark:text-white">{formatCurrencyCompact(product.totals.orderReceived)}</td>
-                              <td className="px-3 py-2 text-right font-mono text-slate-800 dark:text-white">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
-                              <td className="px-3 py-2 text-right font-mono text-slate-800 dark:text-white">{formatCurrencyCompact(product.totals.buMonthly)}</td>
-                              <td className="px-3 py-2 text-center text-slate-500">—</td>
-                              <td className="px-3 py-2 text-right font-mono text-slate-800 dark:text-white">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
-                              <td className="px-3 py-2 text-center text-slate-500">—</td>
+                            <tr className="bg-[#92A2A5]/30 dark:bg-[#5D6E73] font-bold text-xs">
+                              <td className="px-3 py-2 text-[#546A7A] dark:text-white">Total</td>
+                              <td className="px-3 py-2 text-right font-mono text-[#546A7A] dark:text-white">{formatCurrencyCompact(product.totals.offersValue)}</td>
+                              <td className="px-3 py-2 text-right font-mono text-[#546A7A] dark:text-white">{formatCurrencyCompact(product.totals.orderReceived)}</td>
+                              <td className="px-3 py-2 text-right font-mono text-[#546A7A] dark:text-white">{formatCurrencyCompact(product.totals.ordersInHand)}</td>
+                              <td className="px-3 py-2 text-right font-mono text-[#546A7A] dark:text-white">{formatCurrencyCompact(product.totals.buMonthly)}</td>
+                              <td className="px-3 py-2 text-center text-[#757777]">—</td>
+                              <td className="px-3 py-2 text-right font-mono text-[#546A7A] dark:text-white">{formatCurrencyCompact(product.totals.offerBUMonth)}</td>
+                              <td className="px-3 py-2 text-center text-[#757777]">—</td>
                             </tr>
                           </tfoot>
                         </table>
@@ -755,22 +755,22 @@ export default function UserForecastDashboard({ userId, userName, zoneName }: Pr
         )}
 
         {/* Legend Footer */}
-        <div className="flex flex-wrap items-center justify-center gap-6 p-4 bg-white/80 dark:bg-slate-900/80 rounded-2xl text-xs backdrop-blur-sm">
+        <div className="flex flex-wrap items-center justify-center gap-6 p-4 bg-white/80 dark:bg-[#546A7A]/80 rounded-2xl text-xs backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500" />
-            <span className="text-slate-600 dark:text-slate-400">Offers Value</span>
+            <div className="w-3 h-3 rounded-full bg-[#96AEC2]/100" />
+            <span className="text-[#5D6E73] dark:text-[#979796]">Offers Value</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-            <span className="text-slate-600 dark:text-slate-400">Orders Received</span>
+            <div className="w-3 h-3 rounded-full bg-[#82A094]/100" />
+            <span className="text-[#5D6E73] dark:text-[#979796]">Orders Received</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-amber-500" />
-            <span className="text-slate-600 dark:text-slate-400">Open Funnel</span>
+            <div className="w-3 h-3 rounded-full bg-[#CE9F6B]/100" />
+            <span className="text-[#5D6E73] dark:text-[#979796]">Open Funnel</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500" />
-            <span className="text-slate-600 dark:text-slate-400">BU/Monthly Target</span>
+            <div className="w-3 h-3 rounded-full bg-[#6F8A9D]/100" />
+            <span className="text-[#5D6E73] dark:text-[#979796]">BU/Monthly Target</span>
           </div>
         </div>
       </div>

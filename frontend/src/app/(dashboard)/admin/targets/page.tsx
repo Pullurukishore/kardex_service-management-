@@ -70,16 +70,16 @@ const PRODUCT_TYPES = [
 ];
 
 const PRODUCT_TYPE_COLORS: { [key: string]: string } = {
-  'RELOCATION': 'bg-blue-100 text-blue-700 border-blue-200',
-  'CONTRACT': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  'SPP': 'bg-purple-100 text-purple-700 border-purple-200',
-  'UPGRADE_KIT': 'bg-amber-100 text-amber-700 border-amber-200',
-  'SOFTWARE': 'bg-cyan-100 text-cyan-700 border-cyan-200',
-  'BD_CHARGES': 'bg-rose-100 text-rose-700 border-rose-200',
-  'BD_SPARE': 'bg-indigo-100 text-indigo-700 border-indigo-200',
-  'MIDLIFE_UPGRADE': 'bg-teal-100 text-teal-700 border-teal-200',
-  'RETROFIT_KIT': 'bg-orange-100 text-orange-700 border-orange-200',
-  'Overall': 'bg-slate-100 text-slate-700 border-slate-200',
+  'RELOCATION': 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]',
+  'CONTRACT': 'bg-[#82A094]/20 text-[#4F6A64] border-[#A2B9AF]/40',
+  'SPP': 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]',
+  'UPGRADE_KIT': 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/40',
+  'SOFTWARE': 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]/40',
+  'BD_CHARGES': 'bg-[#EEC1BF]/20 text-[#9E3B47] border-[#EEC1BF]/40',
+  'BD_SPARE': 'bg-[#546A7A]/20 text-[#546A7A] border-[#546A7A]',
+  'MIDLIFE_UPGRADE': 'bg-[#82A094]/20 text-[#4F6A64] border-[#A2B9AF]/40',
+  'RETROFIT_KIT': 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]',
+  'Overall': 'bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]',
 };
 
 export default function TargetsPage() {
@@ -226,17 +226,17 @@ export default function TargetsPage() {
   };
 
   const getAchievementStyle = (achievement: number) => {
-    if (achievement >= 100) return { bg: 'bg-gradient-to-r from-emerald-500 to-green-600', text: 'text-white', icon: Trophy };
-    if (achievement >= 75) return { bg: 'bg-gradient-to-r from-amber-500 to-yellow-500', text: 'text-white', icon: Flame };
-    if (achievement >= 50) return { bg: 'bg-gradient-to-r from-orange-500 to-orange-600', text: 'text-white', icon: TrendingUp };
-    return { bg: 'bg-gradient-to-r from-red-500 to-rose-600', text: 'text-white', icon: ArrowDownRight };
+    if (achievement >= 100) return { bg: 'bg-gradient-to-r from-[#82A094] to-[#82A094]', text: 'text-white', icon: Trophy };
+    if (achievement >= 75) return { bg: 'bg-gradient-to-r from-[#CE9F6B] to-yellow-500', text: 'text-white', icon: Flame };
+    if (achievement >= 50) return { bg: 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44]', text: 'text-white', icon: TrendingUp };
+    return { bg: 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47]', text: 'text-white', icon: ArrowDownRight };
   };
 
   const getAchievementBadge = (achievement: number) => {
-    if (achievement >= 100) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-    if (achievement >= 75) return 'bg-amber-100 text-amber-700 border-amber-200';
-    if (achievement >= 50) return 'bg-orange-100 text-orange-700 border-orange-200';
-    return 'bg-red-100 text-red-700 border-red-200';
+    if (achievement >= 100) return 'bg-[#82A094]/20 text-[#4F6A64] border-[#A2B9AF]/40';
+    if (achievement >= 75) return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/40';
+    if (achievement >= 50) return 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]';
+    return 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]';
   };
 
   // Summary calculations
@@ -255,13 +255,13 @@ export default function TargetsPage() {
   // Loading state
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10">
         <div className="text-center">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#96AEC2] rounded-full"></div>
             <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-blue-600 rounded-full animate-spin"></div>
           </div>
-          <p className="text-gray-600 font-medium mt-4">Loading Target Management...</p>
+          <p className="text-[#5D6E73] font-medium mt-4">Loading Target Management...</p>
         </div>
       </div>
     )
@@ -272,14 +272,14 @@ export default function TargetsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* Premium Header with Inline Stats */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 rounded-2xl shadow-2xl p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] via-[#6F8A9D] to-[#546A7A] rounded-2xl shadow-2xl p-6 text-white">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-purple-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#6F8A9D]/100/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
           
           <div className="relative z-10">
             {/* Top row */}
@@ -290,7 +290,7 @@ export default function TargetsPage() {
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight">Target Management</h1>
-                  <p className="text-blue-100 mt-1">Track and manage {activeTab === 'ZONE' ? 'zone' : 'user'} performance targets</p>
+                  <p className="text-[#96AEC2] mt-1">Track and manage {activeTab === 'ZONE' ? 'zone' : 'user'} performance targets</p>
                 </div>
               </div>
               
@@ -308,8 +308,8 @@ export default function TargetsPage() {
             <div className="mt-6 grid grid-cols-2 lg:grid-cols-5 gap-3">
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex items-center gap-2 mb-1">
-                  {activeTab === 'ZONE' ? <Building2 className="h-4 w-4 text-blue-200" /> : <Users className="h-4 w-4 text-blue-200" />}
-                  <span className="text-blue-100 text-xs font-medium uppercase tracking-wide">{activeTab === 'ZONE' ? 'Zones' : 'Users'}</span>
+                  {activeTab === 'ZONE' ? <Building2 className="h-4 w-4 text-[#96AEC2]" /> : <Users className="h-4 w-4 text-[#96AEC2]" />}
+                  <span className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">{activeTab === 'ZONE' ? 'Zones' : 'Users'}</span>
                 </div>
                 <p className="text-2xl font-bold">{currentTargets.length}</p>
               </div>
@@ -317,7 +317,7 @@ export default function TargetsPage() {
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex items-center gap-2 mb-1">
                   <Target className="h-4 w-4 text-amber-200" />
-                  <span className="text-blue-100 text-xs font-medium uppercase tracking-wide">Target</span>
+                  <span className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Target</span>
                 </div>
                 <p className="text-xl font-bold">{formatCurrency(totalTargetValue)}</p>
               </div>
@@ -325,26 +325,26 @@ export default function TargetsPage() {
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp className="h-4 w-4 text-emerald-200" />
-                  <span className="text-blue-100 text-xs font-medium uppercase tracking-wide">Actual</span>
+                  <span className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Actual</span>
                 </div>
                 <p className="text-xl font-bold">{formatCurrency(totalActualValue)}</p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex items-center gap-2 mb-1">
-                  {variance >= 0 ? <ArrowUpRight className="h-4 w-4 text-emerald-300" /> : <ArrowDownRight className="h-4 w-4 text-red-300" />}
-                  <span className="text-blue-100 text-xs font-medium uppercase tracking-wide">Variance</span>
+                  {variance >= 0 ? <ArrowUpRight className="h-4 w-4 text-[#A2B9AF]" /> : <ArrowDownRight className="h-4 w-4 text-[#E17F70]" />}
+                  <span className="text-[#96AEC2] text-xs font-medium uppercase tracking-wide">Variance</span>
                 </div>
-                <p className={`text-xl font-bold ${variance >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                <p className={`text-xl font-bold ${variance >= 0 ? 'text-[#A2B9AF]' : 'text-[#E17F70]'}`}>
                   {variance >= 0 ? '+' : ''}{formatCurrency(variance)}
                 </p>
               </div>
               
               <div className={`rounded-xl px-4 py-3 border transition-colors ${
-                overallAchievement >= 100 ? 'bg-emerald-500/30 border-emerald-400/50' :
-                overallAchievement >= 75 ? 'bg-amber-500/30 border-amber-400/50' :
-                overallAchievement >= 50 ? 'bg-orange-500/30 border-orange-400/50' :
-                'bg-red-500/30 border-red-400/50'
+                overallAchievement >= 100 ? 'bg-[#82A094]/100/30 border-emerald-400/50' :
+                overallAchievement >= 75 ? 'bg-[#CE9F6B]/100/30 border-amber-400/50' :
+                overallAchievement >= 50 ? 'bg-[#CE9F6B]/100/30 border-[#CE9F6B]/50' :
+                'bg-[#E17F70]/100/30 border-red-400/50'
               }`}>
                 <div className="flex items-center gap-2 mb-1">
                   {overallAchievement >= 100 ? <Trophy className="h-4 w-4" /> : 
@@ -360,11 +360,11 @@ export default function TargetsPage() {
 
         {/* Filters & Controls Card */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="border-b border-slate-100 py-4">
+          <CardHeader className="border-b border-[#AEBFC3]/20 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-100 rounded-lg">
-                  <Filter className="h-5 w-5 text-indigo-600" />
+                <div className="p-2 bg-[#546A7A]/20 rounded-lg">
+                  <Filter className="h-5 w-5 text-[#546A7A]" />
                 </div>
                 <CardTitle className="text-lg font-semibold">Filters & View</CardTitle>
               </div>
@@ -373,7 +373,7 @@ export default function TargetsPage() {
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowProductBreakdown(!showProductBreakdown)}
-                  className="border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+                  className="border-[#546A7A] text-[#546A7A] hover:bg-[#546A7A]/10"
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Product Breakdown
@@ -385,18 +385,18 @@ export default function TargetsPage() {
           <CardContent className="pt-5 pb-5">
             <div className="flex flex-wrap items-center gap-4">
               {/* View Type Toggle */}
-              <div className="flex items-center bg-slate-100 p-1.5 rounded-xl">
+              <div className="flex items-center bg-[#AEBFC3]/20 p-1.5 rounded-xl">
                 <button
                   onClick={() => setActiveTab('ZONE')}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
                     activeTab === 'ZONE'
-                      ? 'bg-white text-blue-600 shadow-md'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-[#546A7A] shadow-md'
+                      : 'text-[#5D6E73] hover:text-[#546A7A]'
                   }`}
                 >
                   <Building2 className="w-4 h-4" />
                   Zone Targets
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab === 'ZONE' ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab === 'ZONE' ? 'bg-[#96AEC2]/20 text-[#546A7A]' : 'bg-[#92A2A5]/30 text-[#5D6E73]'}`}>
                     {zoneTargets.length}
                   </span>
                 </button>
@@ -404,25 +404,25 @@ export default function TargetsPage() {
                   onClick={() => setActiveTab('USER')}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
                     activeTab === 'USER'
-                      ? 'bg-white text-purple-600 shadow-md'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-[#546A7A] shadow-md'
+                      : 'text-[#5D6E73] hover:text-[#546A7A]'
                   }`}
                 >
                   <Users className="w-4 h-4" />
                   User Targets
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab === 'USER' ? 'bg-purple-100 text-purple-600' : 'bg-slate-200 text-slate-600'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${activeTab === 'USER' ? 'bg-[#6F8A9D]/20 text-[#546A7A]' : 'bg-[#92A2A5]/30 text-[#5D6E73]'}`}>
                     {userTargets.length}
                   </span>
                 </button>
               </div>
 
               {/* Period Selector */}
-              <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
-                <Calendar className="w-4 h-4 text-indigo-500 ml-2" />
+              <div className="flex items-center gap-2 bg-[#AEBFC3]/10 p-2 rounded-xl border border-[#92A2A5]">
+                <Calendar className="w-4 h-4 text-[#546A7A] ml-2" />
                 <select
                   value={periodType}
                   onChange={(e) => setPeriodType(e.target.value as 'MONTHLY' | 'YEARLY')}
-                  className="px-3 py-2 border-0 bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700 text-sm shadow-sm"
+                  className="px-3 py-2 border-0 bg-white rounded-lg focus:ring-2 focus:ring-[#6F8A9D] font-medium text-[#5D6E73] text-sm shadow-sm"
                 >
                   <option value="MONTHLY">📅 Monthly</option>
                   <option value="YEARLY">📆 Yearly</option>
@@ -431,14 +431,14 @@ export default function TargetsPage() {
                   type={periodType === 'MONTHLY' ? 'month' : 'number'}
                   value={targetPeriod}
                   onChange={(e) => setTargetPeriod(e.target.value)}
-                  className="px-3 py-2 border-0 bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700 text-sm w-36 shadow-sm"
+                  className="px-3 py-2 border-0 bg-white rounded-lg focus:ring-2 focus:ring-[#6F8A9D] font-medium text-[#5D6E73] text-sm w-36 shadow-sm"
                   min={periodType === 'YEARLY' ? '2020' : undefined}
                   max={periodType === 'YEARLY' ? '2030' : undefined}
                 />
               </div>
 
               {periodType === 'MONTHLY' && (
-                <Badge className="bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                <Badge className="bg-[#CE9F6B]/10 text-[#976E44] border border-[#CE9F6B]/40 font-medium">
                   📅 Monthly = Yearly ÷ 12
                 </Badge>
               )}
@@ -446,26 +446,26 @@ export default function TargetsPage() {
 
             {/* Product Breakdown - Collapsible */}
             {showProductBreakdown && productTypeData.length > 0 && (
-              <div className="mt-5 pt-5 border-t border-slate-100">
+              <div className="mt-5 pt-5 border-t border-[#AEBFC3]/20">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {productTypeData.map((item) => (
                     <div 
                       key={item.productType}
-                      className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
+                      className="bg-gradient-to-br from-[#AEBFC3]/10 to-white rounded-xl p-4 border border-[#92A2A5] hover:border-[#92A2A5] hover:shadow-md transition-all"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <span className={`px-2 py-1 text-xs font-bold rounded-lg border ${PRODUCT_TYPE_COLORS[item.productType] || 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                        <span className={`px-2 py-1 text-xs font-bold rounded-lg border ${PRODUCT_TYPE_COLORS[item.productType] || 'bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]'}`}>
                           {item.productType.replace(/_/g, ' ')}
                         </span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-500">Target</span>
-                          <span className="font-bold text-slate-800">{formatCurrency(item.targetValue)}</span>
+                          <span className="text-[#757777]">Target</span>
+                          <span className="font-bold text-[#546A7A]">{formatCurrency(item.targetValue)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-slate-500">Actual</span>
-                          <span className="font-bold text-emerald-600">{formatCurrency(item.actualValue)}</span>
+                          <span className="text-[#757777]">Actual</span>
+                          <span className="font-bold text-[#4F6A64]">{formatCurrency(item.actualValue)}</span>
                         </div>
                         <div className="relative pt-1">
                           <div className="flex items-center justify-between mb-1">
@@ -473,13 +473,13 @@ export default function TargetsPage() {
                               {item.achievement.toFixed(0)}%
                             </span>
                           </div>
-                          <div className="w-full bg-slate-200 rounded-full h-2">
+                          <div className="w-full bg-[#92A2A5]/30 rounded-full h-2">
                             <div 
                               className={`h-2 rounded-full transition-all duration-500 ${
-                                item.achievement >= 100 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 
-                                item.achievement >= 75 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 
-                                item.achievement >= 50 ? 'bg-gradient-to-r from-orange-500 to-orange-400' : 
-                                'bg-gradient-to-r from-red-500 to-rose-500'
+                                item.achievement >= 100 ? 'bg-gradient-to-r from-[#82A094] to-[#82A094]' : 
+                                item.achievement >= 75 ? 'bg-gradient-to-r from-[#CE9F6B] to-yellow-500' : 
+                                item.achievement >= 50 ? 'bg-gradient-to-r from-[#CE9F6B] to-orange-400' : 
+                                'bg-gradient-to-r from-[#E17F70] to-[#E17F70]'
                               }`}
                               style={{ width: `${Math.min(100, item.achievement)}%` }}
                             />
@@ -502,19 +502,19 @@ export default function TargetsPage() {
                 <tr className={`${activeTab === 'ZONE' ? 'bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800' : 'bg-gradient-to-r from-purple-800 via-purple-700 to-purple-800'} text-white`}>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-2">
-                      {activeTab === 'ZONE' ? <Building2 className="h-4 w-4 text-blue-300" /> : <Users className="h-4 w-4 text-purple-300" />}
+                      {activeTab === 'ZONE' ? <Building2 className="h-4 w-4 text-[#96AEC2]" /> : <Users className="h-4 w-4 text-[#6F8A9D]" />}
                       {activeTab === 'ZONE' ? 'Zone' : 'User'}
                     </div>
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-amber-300" />
+                      <Target className="h-4 w-4 text-[#EEC1BF]" />
                       Target Value
                     </div>
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-emerald-300" />
+                      <TrendingUp className="h-4 w-4 text-[#A2B9AF]" />
                       Actual Value
                     </div>
                   </th>
@@ -535,34 +535,34 @@ export default function TargetsPage() {
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-20 text-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+                    <td colSpan={5} className="px-6 py-20 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="relative">
-                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl">
+                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] flex items-center justify-center shadow-xl">
                             <Loader2 className="h-8 w-8 animate-spin text-white" />
                           </div>
                         </div>
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">Loading targets...</p>
-                          <p className="text-sm text-gray-500 mt-1">Fetching {activeTab === 'ZONE' ? 'zone' : 'user'} data</p>
+                          <p className="text-lg font-semibold text-[#546A7A]">Loading targets...</p>
+                          <p className="text-sm text-[#AEBFC3]0 mt-1">Fetching {activeTab === 'ZONE' ? 'zone' : 'user'} data</p>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : currentTargets.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-20 text-center bg-gradient-to-br from-slate-50 to-indigo-50/30">
+                    <td colSpan={5} className="px-6 py-20 text-center bg-gradient-to-br from-[#AEBFC3]/10 to-[#96AEC2]/10/30">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center shadow-lg">
-                          <Target className="h-10 w-10 text-slate-500" />
+                          <Target className="h-10 w-10 text-[#757777]" />
                         </div>
                         <div>
-                          <p className="text-xl font-bold text-gray-900">No Targets Found</p>
-                          <p className="text-gray-500 mt-1 max-w-sm mx-auto">
+                          <p className="text-xl font-bold text-[#546A7A]">No Targets Found</p>
+                          <p className="text-[#AEBFC3]0 mt-1 max-w-sm mx-auto">
                             {activeTab === 'ZONE' ? 'No zone targets configured for this period.' : 'No user targets configured for this period.'}
                           </p>
                         </div>
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm text-[#979796]">
                           Create targets by clicking the "Create" button for each {activeTab === 'ZONE' ? 'zone' : 'user'}
                         </p>
                       </div>
@@ -578,26 +578,26 @@ export default function TargetsPage() {
                         <tr 
                           key={target.serviceZoneId} 
                           className={`
-                            ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}
-                            hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-indigo-50/50 
+                            ${index % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/70'}
+                            hover:bg-gradient-to-r hover:from-[#96AEC2]/10/80 hover:to-[#96AEC2]/10/50 
                             transition-all duration-200 group
                           `}
                         >
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-4">
-                              <div className={`h-12 w-12 rounded-xl ${target.id ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gradient-to-br from-gray-300 to-gray-400'} flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-105 transition-transform`}>
+                              <div className={`h-12 w-12 rounded-xl ${target.id ? 'bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D]' : 'bg-gradient-to-br from-gray-300 to-gray-400'} flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-105 transition-transform`}>
                                 {(target.serviceZone?.name || 'Z')?.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <p className="font-bold text-gray-900 text-lg">{target.serviceZone?.name}</p>
+                                <p className="font-bold text-[#546A7A] text-lg">{target.serviceZone?.name}</p>
                                 <div className="flex flex-wrap gap-1.5 mt-1">
                                   {target.targetCount > 1 && (
-                                    <span className="inline-flex text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-medium border border-blue-100">
+                                    <span className="inline-flex text-xs bg-[#96AEC2]/10 text-[#546A7A] px-2 py-0.5 rounded-md font-medium border border-[#96AEC2]/30">
                                       📊 {target.targetCount} Combined
                                     </span>
                                   )}
                                   {!target.id && (
-                                    <span className="inline-flex text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-md font-medium border border-orange-100">
+                                    <span className="inline-flex text-xs bg-[#CE9F6B]/10 text-[#976E44] px-2 py-0.5 rounded-md font-medium border border-[#EEC1BF]/20">
                                       ⚠️ No Target Set
                                     </span>
                                   )}
@@ -607,14 +607,14 @@ export default function TargetsPage() {
                           </td>
                           <td className="px-6 py-5">
                             <div>
-                              <span className="font-bold text-gray-900 text-xl">{formatCurrency(target.targetValue || 0)}</span>
-                              <p className="text-xs text-slate-500 mt-0.5">Target</p>
+                              <span className="font-bold text-[#546A7A] text-xl">{formatCurrency(target.targetValue || 0)}</span>
+                              <p className="text-xs text-[#757777] mt-0.5">Target</p>
                             </div>
                           </td>
                           <td className="px-6 py-5">
                             <div>
-                              <span className="font-bold text-emerald-600 text-xl">{formatCurrency(target.actualValue || 0)}</span>
-                              <p className="text-xs text-slate-500 mt-0.5">Achieved</p>
+                              <span className="font-bold text-[#4F6A64] text-xl">{formatCurrency(target.actualValue || 0)}</span>
+                              <p className="text-xs text-[#757777] mt-0.5">Achieved</p>
                             </div>
                           </td>
                           <td className="px-6 py-5">
@@ -624,13 +624,13 @@ export default function TargetsPage() {
                                 {achievement.toFixed(1)}%
                               </span>
                               <div className="hidden lg:block w-24">
-                                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div className="w-full h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                   <div
                                     className={`h-full transition-all duration-700 ${
-                                      achievement >= 100 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 
-                                      achievement >= 75 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 
-                                      achievement >= 50 ? 'bg-gradient-to-r from-orange-500 to-orange-400' : 
-                                      'bg-gradient-to-r from-red-500 to-rose-500'
+                                      achievement >= 100 ? 'bg-gradient-to-r from-[#82A094] to-[#82A094]' : 
+                                      achievement >= 75 ? 'bg-gradient-to-r from-[#CE9F6B] to-yellow-500' : 
+                                      achievement >= 50 ? 'bg-gradient-to-r from-[#CE9F6B] to-orange-400' : 
+                                      'bg-gradient-to-r from-[#E17F70] to-[#E17F70]'
                                     }`}
                                     style={{ width: `${Math.min(100, achievement)}%` }}
                                   />
@@ -644,7 +644,7 @@ export default function TargetsPage() {
                                 onClick={() => router.push(`/admin/targets/view?type=ZONE&id=${target.serviceZoneId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY`)}
                                 size="sm"
                                 variant="outline"
-                                className="border-slate-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all"
+                                className="border-[#92A2A5] hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] hover:text-[#546A7A] transition-all"
                               >
                                 <Eye className="w-4 h-4 mr-1.5" />
                                 View
@@ -653,7 +653,7 @@ export default function TargetsPage() {
                                 <Button
                                   onClick={() => router.push(`/admin/targets/edit?type=ZONE&id=${target.serviceZoneId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY&targetId=${target.id}`)}
                                   size="sm"
-                                  className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all"
+                                  className="bg-gradient-to-r from-[#82A094] to-[#82A094] hover:from-[#82A094] hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all"
                                 >
                                   <Edit2 className="w-4 h-4 mr-1.5" />
                                   Edit
@@ -662,7 +662,7 @@ export default function TargetsPage() {
                                 <Button
                                   onClick={() => router.push(`/admin/targets/edit?type=ZONE&id=${target.serviceZoneId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY`)}
                                   size="sm"
-                                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all"
+                                  className="bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#6F8A9D] hover:to-[#546A7A] text-white shadow-md hover:shadow-lg transition-all"
                                 >
                                   <Plus className="w-4 h-4 mr-1.5" />
                                   Create
@@ -682,27 +682,27 @@ export default function TargetsPage() {
                         <tr 
                           key={target.userId} 
                           className={`
-                            ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}
-                            hover:bg-gradient-to-r hover:from-purple-50/80 hover:to-pink-50/50 
+                            ${index % 2 === 0 ? 'bg-white' : 'bg-[#AEBFC3]/10/70'}
+                            hover:bg-gradient-to-r hover:from-[#96AEC2]/10/80 hover:to-[#EEC1BF]/10/50 
                             transition-all duration-200 group
                           `}
                         >
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-4">
-                              <div className={`h-12 w-12 rounded-xl ${target.id ? 'bg-gradient-to-br from-purple-500 to-pink-600' : 'bg-gradient-to-br from-gray-300 to-gray-400'} flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-105 transition-transform`}>
+                              <div className={`h-12 w-12 rounded-xl ${target.id ? 'bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47]' : 'bg-gradient-to-br from-gray-300 to-gray-400'} flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-105 transition-transform`}>
                                 {(target.user?.name || 'U')?.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <p className="font-bold text-gray-900 text-lg">{target.user?.name || 'N/A'}</p>
-                                <p className="text-sm text-slate-500">{target.user?.email}</p>
+                                <p className="font-bold text-[#546A7A] text-lg">{target.user?.name || 'N/A'}</p>
+                                <p className="text-sm text-[#757777]">{target.user?.email}</p>
                                 <div className="flex flex-wrap gap-1.5 mt-1">
                                   {target.targetCount > 1 && (
-                                    <span className="inline-flex text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-md font-medium border border-purple-100">
+                                    <span className="inline-flex text-xs bg-[#6F8A9D]/10 text-[#546A7A] px-2 py-0.5 rounded-md font-medium border border-[#96AEC2]/20">
                                       📊 {target.targetCount} Combined
                                     </span>
                                   )}
                                   {!target.id && (
-                                    <span className="inline-flex text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-md font-medium border border-orange-100">
+                                    <span className="inline-flex text-xs bg-[#CE9F6B]/10 text-[#976E44] px-2 py-0.5 rounded-md font-medium border border-[#EEC1BF]/20">
                                       ⚠️ No Target Set
                                     </span>
                                   )}
@@ -712,14 +712,14 @@ export default function TargetsPage() {
                           </td>
                           <td className="px-6 py-5">
                             <div>
-                              <span className="font-bold text-gray-900 text-xl">{formatCurrency(target.targetValue || 0)}</span>
-                              <p className="text-xs text-slate-500 mt-0.5">Target</p>
+                              <span className="font-bold text-[#546A7A] text-xl">{formatCurrency(target.targetValue || 0)}</span>
+                              <p className="text-xs text-[#757777] mt-0.5">Target</p>
                             </div>
                           </td>
                           <td className="px-6 py-5">
                             <div>
-                              <span className="font-bold text-emerald-600 text-xl">{formatCurrency(target.actualValue || 0)}</span>
-                              <p className="text-xs text-slate-500 mt-0.5">Achieved</p>
+                              <span className="font-bold text-[#4F6A64] text-xl">{formatCurrency(target.actualValue || 0)}</span>
+                              <p className="text-xs text-[#757777] mt-0.5">Achieved</p>
                             </div>
                           </td>
                           <td className="px-6 py-5">
@@ -729,13 +729,13 @@ export default function TargetsPage() {
                                 {achievement.toFixed(1)}%
                               </span>
                               <div className="hidden lg:block w-24">
-                                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div className="w-full h-2.5 bg-[#92A2A5]/30 rounded-full overflow-hidden">
                                   <div
                                     className={`h-full transition-all duration-700 ${
-                                      achievement >= 100 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : 
-                                      achievement >= 75 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 
-                                      achievement >= 50 ? 'bg-gradient-to-r from-orange-500 to-orange-400' : 
-                                      'bg-gradient-to-r from-red-500 to-rose-500'
+                                      achievement >= 100 ? 'bg-gradient-to-r from-[#82A094] to-[#82A094]' : 
+                                      achievement >= 75 ? 'bg-gradient-to-r from-[#CE9F6B] to-yellow-500' : 
+                                      achievement >= 50 ? 'bg-gradient-to-r from-[#CE9F6B] to-orange-400' : 
+                                      'bg-gradient-to-r from-[#E17F70] to-[#E17F70]'
                                     }`}
                                     style={{ width: `${Math.min(100, achievement)}%` }}
                                   />
@@ -749,7 +749,7 @@ export default function TargetsPage() {
                                 onClick={() => router.push(`/admin/targets/view?type=USER&id=${target.userId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY`)}
                                 size="sm"
                                 variant="outline"
-                                className="border-slate-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all"
+                                className="border-[#92A2A5] hover:bg-[#96AEC2]/10 hover:border-[#96AEC2] hover:text-[#546A7A] transition-all"
                               >
                                 <Eye className="w-4 h-4 mr-1.5" />
                                 View
@@ -758,7 +758,7 @@ export default function TargetsPage() {
                                 <Button
                                   onClick={() => router.push(`/admin/targets/edit?type=USER&id=${target.userId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY&targetId=${target.id}`)}
                                   size="sm"
-                                  className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all"
+                                  className="bg-gradient-to-r from-[#82A094] to-[#82A094] hover:from-[#82A094] hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all"
                                 >
                                   <Edit2 className="w-4 h-4 mr-1.5" />
                                   Edit
@@ -767,7 +767,7 @@ export default function TargetsPage() {
                                 <Button
                                   onClick={() => router.push(`/admin/targets/edit?type=USER&id=${target.userId}&period=${periodType === 'MONTHLY' ? targetPeriod.split('-')[0] : targetPeriod}&periodType=YEARLY`)}
                                   size="sm"
-                                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all"
+                                  className="bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#6F8A9D] hover:to-[#546A7A] text-white shadow-md hover:shadow-lg transition-all"
                                 >
                                   <Plus className="w-4 h-4 mr-1.5" />
                                   Create

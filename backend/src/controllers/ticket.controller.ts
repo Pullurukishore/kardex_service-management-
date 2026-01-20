@@ -272,8 +272,20 @@ async function checkTicketAccess(user: any, ticketId: number) {
     }
   }
 
-  // Zone user and zone manager can access tickets in their zones (check against zoneIds array)
+  // Zone user and zone manager can access tickets assigned to them
   if (user.role === UserRoleEnum.ZONE_USER || user.role === UserRoleEnum.ZONE_MANAGER) {
+    // First check if the ticket is assigned to this user
+    if (ticket.assignedToId === user.id) {
+      return { allowed: true };
+    }
+    // Zone users and zone managers can also access tickets they own or sub-own
+    if (ticket.ownerId === user.id || ticket.subOwnerId === user.id) {
+      return { allowed: true };
+    }
+    // Zone users and zone managers can access tickets they created
+    if (ticket.createdById === user.id) {
+      return { allowed: true };
+    }
     // If user has zone IDs and ticket has a zone, check if it matches
     if (user.zoneIds && user.zoneIds.length > 0 && ticket.zoneId) {
       if (user.zoneIds.includes(ticket.zoneId)) {

@@ -78,7 +78,7 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
       <div className="hidden sm:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="hover:bg-gray-100">
+            <Button variant="ghost" size="sm" className="hover:bg-[#AEBFC3]/20">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -90,19 +90,19 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
           >
             <DropdownMenuItem asChild>
               <Link href={`/admin/zone-users/${user.id}`} className="flex items-center">
-                <Eye className="mr-2 h-4 w-4 text-blue-500" />
+                <Eye className="mr-2 h-4 w-4 text-[#6F8A9D]" />
                 View Details
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/admin/zone-users/${user.id}/edit`} className="flex items-center">
-                <Pencil className="mr-2 h-4 w-4 text-green-500" />
+                <Pencil className="mr-2 h-4 w-4 text-[#82A094]" />
                 Edit Zones
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setDeleteDialogOpen(true)}
-              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              className="text-[#9E3B47] focus:text-[#9E3B47] focus:bg-[#E17F70]/10"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Remove from Zones
@@ -116,7 +116,7 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
         <Button 
           variant="ghost" 
           size="sm" 
-          className="hover:bg-gray-100 btn-touch"
+          className="hover:bg-[#AEBFC3]/20 btn-touch"
           onClick={() => setMobileMenuOpen(true)}
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -127,7 +127,7 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
       <AlertDialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <AlertDialogContent className="max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 flex items-center gap-2">
+            <AlertDialogTitle className="text-[#546A7A] flex items-center gap-2">
               <MoreHorizontal className="h-5 w-5" />
               Actions for {user.email}
             </AlertDialogTitle>
@@ -135,18 +135,18 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
           <div className="space-y-2 py-4">
             <Link 
               href={`/admin/zone-users/${user.id}`}
-              className="flex items-center w-full p-3 text-left hover:bg-blue-50 rounded-lg transition-colors"
+              className="flex items-center w-full p-3 text-left hover:bg-[#96AEC2]/10 rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Eye className="mr-3 h-5 w-5 text-blue-500" />
+              <Eye className="mr-3 h-5 w-5 text-[#6F8A9D]" />
               <span className="font-medium">View Details</span>
             </Link>
             <Link 
               href={`/admin/zone-users/${user.id}/edit`}
-              className="flex items-center w-full p-3 text-left hover:bg-green-50 rounded-lg transition-colors"
+              className="flex items-center w-full p-3 text-left hover:bg-[#A2B9AF]/10 rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Pencil className="mr-3 h-5 w-5 text-green-500" />
+              <Pencil className="mr-3 h-5 w-5 text-[#82A094]" />
               <span className="font-medium">Edit Zones</span>
             </Link>
             <button
@@ -154,7 +154,7 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
                 setMobileMenuOpen(false);
                 setDeleteDialogOpen(true);
               }}
-              className="flex items-center w-full p-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
+              className="flex items-center w-full p-3 text-left hover:bg-[#E17F70]/10 rounded-lg transition-colors text-[#9E3B47]"
             >
               <Trash2 className="mr-3 h-5 w-5" />
               <span className="font-medium">Remove from Zones</span>
@@ -174,17 +174,17 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="max-w-[95vw] sm:max-w-md mx-4">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-600 flex items-center gap-2">
+            <AlertDialogTitle className="text-[#9E3B47] flex items-center gap-2">
               <Trash2 className="h-5 w-5" />
               Remove Zone User
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogDescription className="text-[#5D6E73]">
               This action will permanently remove <span className="font-semibold">"{user.email}"</span> from all assigned service zones. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <AlertDialogCancel 
-              className="w-full sm:w-auto hover:bg-gray-100" 
+              className="w-full sm:w-auto hover:bg-[#AEBFC3]/20" 
               disabled={isDeleting}
             >
               Cancel
@@ -192,7 +192,7 @@ export function ZoneUserActions({ user, onDeleteSuccess }: ZoneUserActionsProps)
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
-              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+              className="w-full sm:w-auto bg-[#9E3B47] hover:bg-[#75242D] text-white"
             >
               {isDeleting ? 'Removing...' : 'Remove User'}
             </AlertDialogAction>

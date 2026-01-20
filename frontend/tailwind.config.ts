@@ -133,6 +133,51 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // ===================================
+        // KARDEX OFFICIAL COMPANY COLOR PALETTE
+        // ===================================
+        // Primary Blues - Main brand colors for headers, large areas
+        'kardex-blue': {
+          1: '#96AEC2',  // Light blue - primary
+          2: '#6F8A9D',  // Medium blue - secondary
+          3: '#546A7A',  // Dark blue - emphasis
+          DEFAULT: '#96AEC2',
+        },
+        // Primary Greens - Secondary brand colors
+        'kardex-green': {
+          1: '#A2B9AF',  // Light green
+          2: '#82A094',  // Medium green - success states
+          3: '#4F6A64',  // Dark green - emphasis
+          DEFAULT: '#82A094',
+        },
+        // Grey Palette - Neutral elements
+        'kardex-grey': {
+          1: '#AEBFC3',  // Light grey
+          2: '#92A2A5',  // Medium grey
+          3: '#5D6E73',  // Dark grey
+          DEFAULT: '#92A2A5',
+        },
+        // Silver Palette - Subtle backgrounds
+        'kardex-silver': {
+          1: '#ABACA9',  // Light silver
+          2: '#979796',  // Medium silver
+          3: '#757777',  // Dark silver
+          DEFAULT: '#979796',
+        },
+        // Markup Colors - CTAs, alerts, highlights
+        'kardex-red': {
+          1: '#E17F70',  // Light red - warnings, alerts
+          2: '#9E3B47',  // Medium red - errors
+          3: '#75242D',  // Dark red - critical
+          DEFAULT: '#E17F70',
+        },
+        // Sand Palette - Warm accents, highlights
+        'kardex-sand': {
+          1: '#EEC1BF',  // Light sand
+          2: '#CE9F6B',  // Medium sand - accent
+          3: '#976E44',  // Dark sand - emphasis
+          DEFAULT: '#CE9F6B',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

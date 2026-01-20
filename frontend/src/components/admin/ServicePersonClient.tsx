@@ -54,14 +54,14 @@ const ServicePersonMobileCard = ({ person, onRefresh }: { person: ServicePerson;
       <div className="space-y-4">
         {/* Header with avatar and email */}
         <div className="flex items-start gap-3">
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
             {person.email.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <Link href={`/admin/service-person/${person.id}`} className="block hover:text-blue-600 transition-colors">
-              <div className="font-semibold text-lg text-gray-900 break-all hover:text-blue-600">{person.email}</div>
+            <Link href={`/admin/service-person/${person.id}`} className="block hover:text-[#546A7A] transition-colors">
+              <div className="font-semibold text-lg text-[#546A7A] break-all hover:text-[#546A7A]">{person.email}</div>
               {(person.name || person.firstName || person.lastName) && (
-                <div className="text-sm text-gray-600 mt-1 hover:text-blue-500">
+                <div className="text-sm text-[#5D6E73] mt-1 hover:text-[#6F8A9D]">
                   {person.name || [person.firstName, person.lastName].filter(Boolean).join(' ')}
                 </div>
               )}
@@ -71,8 +71,8 @@ const ServicePersonMobileCard = ({ person, onRefresh }: { person: ServicePerson;
             <Badge 
               variant={person.isActive ? 'default' : 'secondary'}
               className={person.isActive 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+                : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
               }
             >
               {person.isActive ? 'Active' : 'Inactive'}
@@ -82,7 +82,7 @@ const ServicePersonMobileCard = ({ person, onRefresh }: { person: ServicePerson;
 
         {/* Contact Information */}
         {person.phone && (
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-[#5D6E73]">
             <Users className="h-4 w-4 mr-2 flex-shrink-0" />
             <span>{person.phone}</span>
           </div>
@@ -90,26 +90,26 @@ const ServicePersonMobileCard = ({ person, onRefresh }: { person: ServicePerson;
 
         {/* Assigned Zones */}
         <div className="space-y-2">
-          <div className="text-sm font-medium text-gray-700">Assigned Zones:</div>
+          <div className="text-sm font-medium text-[#5D6E73]">Assigned Zones:</div>
           <div className="flex flex-wrap gap-2">
             {person.serviceZones.length > 0 ? (
               person.serviceZones.map((zone) => (
                 <Badge 
                   key={zone.serviceZone.id} 
                   variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-200"
+                  className="bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2]"
                 >
                   {zone.serviceZone.name}
                 </Badge>
               ))
             ) : (
-              <span className="text-sm text-gray-400 italic">No zones assigned</span>
+              <span className="text-sm text-[#979796] italic">No zones assigned</span>
             )}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="pt-3 border-t border-gray-100">
+        <div className="pt-3 border-t border-[#AEBFC3]/30">
           <ServicePersonActions person={person} onRefresh={onRefresh} />
         </div>
       </div>
@@ -188,19 +188,19 @@ export default function ServicePersonClient({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-8 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#96AEC2]/10 to-[#6F8A9D]/20 p-8 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl w-full text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E17F70]/20">
+            <svg className="h-6 w-6 text-[#9E3B47]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Failed to load service personnel</h3>
-          <p className="mt-1 text-sm text-gray-500">{error}</p>
+          <h3 className="mt-2 text-sm font-medium text-[#546A7A]">Failed to load service personnel</h3>
+          <p className="mt-1 text-sm text-[#AEBFC3]0">{error}</p>
           <div className="mt-6">
             <button
               onClick={handleRefresh}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#6F8A9D] hover:bg-[#546A7A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#96AEC2]"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
@@ -220,8 +220,8 @@ export default function ServicePersonClient({
           disabled={isRefreshing}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${
             isRefreshing 
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-              : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+              ? 'bg-[#92A2A5]/30 text-[#AEBFC3]0 cursor-not-allowed' 
+              : 'bg-white text-[#5D6E73] hover:bg-[#AEBFC3]/10 border border-[#92A2A5]'
           }`}
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -231,56 +231,56 @@ export default function ServicePersonClient({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-[#96AEC2]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Total Personnel</p>
-                <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Total Personnel</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.total}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#96AEC2]/100 flex items-center justify-center">
                 <Users className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#A2B9AF]/20 border-[#A2B9AF]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Active</p>
-                <p className="text-2xl font-bold text-green-900">{stats.active}</p>
+                <p className="text-sm font-medium text-[#4F6A64]">Active</p>
+                <p className="text-2xl font-bold text-[#4F6A64]">{stats.active}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#A2B9AF]/100 flex items-center justify-center">
                 <UserCheck className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+        <Card className="bg-gradient-to-br from-[#EEC1BF]/10 to-[#EEC1BF]/20 border-[#CE9F6B]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600">Inactive</p>
-                <p className="text-2xl font-bold text-orange-900">{stats.inactive}</p>
+                <p className="text-sm font-medium text-[#976E44]">Inactive</p>
+                <p className="text-2xl font-bold text-[#976E44]">{stats.inactive}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#CE9F6B]/100 flex items-center justify-center">
                 <UserX className="h-6 w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#6F8A9D]/20 border-[#6F8A9D]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Zone Assignments</p>
-                <p className="text-2xl font-bold text-purple-900">{stats.totalZoneAssignments}</p>
+                <p className="text-sm font-medium text-[#546A7A]">Zone Assignments</p>
+                <p className="text-2xl font-bold text-[#546A7A]">{stats.totalZoneAssignments}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-[#6F8A9D]/100 flex items-center justify-center">
                 <MapPin className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -293,9 +293,9 @@ export default function ServicePersonClient({
 
       {/* Desktop Table View */}
       <Card className="shadow-lg hidden md:block">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-600" />
+        <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 rounded-t-lg">
+          <CardTitle className="text-[#546A7A] flex items-center gap-2">
+            <Users className="h-5 w-5 text-[#546A7A]" />
             Service Personnel ({servicePersons.length})
           </CardTitle>
           <CardDescription>
@@ -305,15 +305,15 @@ export default function ServicePersonClient({
         <CardContent className="p-0">
           {servicePersons.length === 0 ? (
             <div className="text-center py-12">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mb-4">
-                <Users className="h-12 w-12 text-blue-500" />
+              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-[#96AEC2]/20 to-[#6F8A9D]/20 flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-[#6F8A9D]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No service personnel found</h3>
-              <p className="text-gray-500 mb-6">
+              <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No service personnel found</h3>
+              <p className="text-[#AEBFC3]0 mb-6">
                 Get started by adding your first service person to the system.
               </p>
               <Link href="/admin/service-person/new">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg">
+                <Button className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Service Person
                 </Button>
@@ -323,27 +323,27 @@ export default function ServicePersonClient({
             <MobileTable>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-[#AEBFC3]/10">
                     <tr>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 min-w-[250px]">Personnel</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 w-24">Status</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 min-w-[200px]">Assigned Zones</th>
-                      <th className="text-right py-4 px-6 font-semibold text-gray-700 w-32">Actions</th>
+                      <th className="text-left py-4 px-6 font-semibold text-[#5D6E73] min-w-[250px]">Personnel</th>
+                      <th className="text-left py-4 px-6 font-semibold text-[#5D6E73] w-24">Status</th>
+                      <th className="text-left py-4 px-6 font-semibold text-[#5D6E73] min-w-[200px]">Assigned Zones</th>
+                      <th className="text-right py-4 px-6 font-semibold text-[#5D6E73] w-32">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {servicePersons.map((person) => (
-                      <tr key={person.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
+                      <tr key={person.id} className="hover:bg-gradient-to-r hover:from-[#96AEC2]/10/50 hover:to-[#6F8A9D]/10/50 transition-all duration-200">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] flex items-center justify-center text-white font-semibold">
                               {person.email.charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0">
-                              <Link href={`/admin/service-person/${person.id}`} className="block hover:text-blue-600 transition-colors">
-                                <div className="font-semibold text-gray-900 break-all hover:text-blue-600">{person.email}</div>
+                              <Link href={`/admin/service-person/${person.id}`} className="block hover:text-[#546A7A] transition-colors">
+                                <div className="font-semibold text-[#546A7A] break-all hover:text-[#546A7A]">{person.email}</div>
                                 {(person.name || person.firstName || person.lastName) && (
-                                  <div className="text-sm text-gray-600 mt-1 hover:text-blue-500">
+                                  <div className="text-sm text-[#5D6E73] mt-1 hover:text-[#6F8A9D]">
                                     {person.name || [person.firstName, person.lastName].filter(Boolean).join(' ')}
                                   </div>
                                 )}
@@ -355,8 +355,8 @@ export default function ServicePersonClient({
                           <Badge 
                             variant={person.isActive ? 'default' : 'secondary'}
                             className={person.isActive 
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                              : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
                             }
                           >
                             {person.isActive ? 'Active' : 'Inactive'}
@@ -369,13 +369,13 @@ export default function ServicePersonClient({
                                 <Badge 
                                   key={zone.serviceZone.id} 
                                   variant="outline"
-                                  className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                                  className="bg-[#96AEC2]/10 text-[#546A7A] border-[#96AEC2] hover:bg-[#96AEC2]/20"
                                 >
                                   {zone.serviceZone.name}
                                 </Badge>
                               ))
                             ) : (
-                              <span className="text-sm text-gray-400 italic">No zones assigned</span>
+                              <span className="text-sm text-[#979796] italic">No zones assigned</span>
                             )}
                           </div>
                         </td>
@@ -395,22 +395,22 @@ export default function ServicePersonClient({
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
         <div className="flex items-center gap-2 mb-4">
-          <Users className="h-5 w-5 text-blue-600" />
-          <h2 className="text-lg font-semibold text-gray-800">
+          <Users className="h-5 w-5 text-[#546A7A]" />
+          <h2 className="text-lg font-semibold text-[#546A7A]">
             Service Personnel ({servicePersons.length})
           </h2>
         </div>
         {servicePersons.length === 0 ? (
           <MobileCard className="text-center py-8">
-            <div className="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mb-4">
-              <Users className="h-10 w-10 text-blue-500" />
+            <div className="mx-auto h-20 w-20 rounded-full bg-gradient-to-br from-[#96AEC2]/20 to-[#6F8A9D]/20 flex items-center justify-center mb-4">
+              <Users className="h-10 w-10 text-[#6F8A9D]" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No service personnel found</h3>
-            <p className="text-gray-500 mb-6 text-sm">
+            <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No service personnel found</h3>
+            <p className="text-[#AEBFC3]0 mb-6 text-sm">
               Get started by adding your first service person to the system.
             </p>
             <Link href="/admin/service-person/new">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg w-full">
+              <Button className="bg-gradient-to-r from-[#546A7A] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg w-full">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Service Person
               </Button>

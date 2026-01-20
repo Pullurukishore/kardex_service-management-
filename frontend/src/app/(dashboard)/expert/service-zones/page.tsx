@@ -31,17 +31,17 @@ export default async function ServiceZonesPage({ searchParams }: ServiceZonesPag
   return (
     <div className="space-y-6">
       {/* Desktop Header with Gradient */}
-      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-green-600 via-teal-600 to-green-800 p-6 text-white">
+      <div className="hidden md:block relative overflow-hidden rounded-lg bg-gradient-to-r from-[#82A094] via-[#82A094] to-green-800 p-6 text-white">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Service Zones</h1>
-            <p className="text-green-100">
+            <p className="text-[#A2B9AF]">
               Manage service zones for organizing customer locations
             </p>
           </div>
           <Link href="/expert/service-zones/new">
-            <Button className="bg-white text-green-600 hover:bg-green-50 shadow-lg">
+            <Button className="bg-white text-[#4F6A64] hover:bg-[#A2B9AF]/10 shadow-lg">
               <Plus className="mr-2 h-4 w-4" />
               Add Service Zone
             </Button>
@@ -56,7 +56,7 @@ export default async function ServiceZonesPage({ searchParams }: ServiceZonesPag
           description="Manage service zones for organizing customer locations"
           action={
             <Link href="/expert/service-zones/new">
-              <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg">
+              <Button className="bg-[#4F6A64] hover:bg-[#4F6A64] text-white shadow-lg">
                 <Plus className="mr-2 h-4 w-4" /> Add
               </Button>
             </Link>

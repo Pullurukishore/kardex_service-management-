@@ -12,10 +12,10 @@ const alertVariants = cva(
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
         success:
-          "border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-500",
-        info: "border-blue-500/50 text-blue-700 dark:text-blue-400 [&>svg]:text-blue-500",
+          "border-[#82A094]/50 text-[#4F6A64] dark:text-[#82A094] [&>svg]:text-[#82A094]",
+        info: "border-[#6F8A9D]/50 text-[#546A7A] dark:text-[#6F8A9D] [&>svg]:text-[#6F8A9D]",
         warning:
-          "border-yellow-500/50 text-yellow-700 dark:text-yellow-400 [&>svg]:text-yellow-500",
+          "border-yellow-500/50 text-[#976E44] dark:text-[#CE9F6B] [&>svg]:text-[#CE9F6B]",
       },
     },
     defaultVariants: {

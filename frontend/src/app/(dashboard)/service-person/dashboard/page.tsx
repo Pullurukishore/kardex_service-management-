@@ -24,15 +24,15 @@ function DashboardLoading() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/40 to-[#96AEC2]/10/30"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(99,102,241,0.06),_transparent_50%)]"></div>
       
       {/* Floating orbs */}
-      <div className="fixed top-20 left-10 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
-      <div className="fixed bottom-32 right-10 w-80 h-80 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse pointer-events-none" style={{ animationDelay: '1s' }}></div>
+      <div className="fixed top-20 left-10 w-64 h-64 bg-gradient-to-br from-[#96AEC2]/10 to-indigo-400/10 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+      <div className="fixed bottom-32 right-10 w-80 h-80 bg-gradient-to-br from-purple-400/10 to-[#EEC1BF]/10 rounded-full blur-3xl animate-pulse pointer-events-none" style={{ animationDelay: '1s' }}></div>
       
-      {/* Header Skeleton */}
-      <div className="relative bg-gradient-to-r from-[#3d5a78] via-[#507295] to-[#6889ab] px-4 py-6 sm:px-6 sm:py-8">
+      {/* Header Skeleton - Coral gradient */}
+      <div className="relative bg-gradient-to-r from-[#9E3B47] via-[#E17F70] to-[#CE9F6B] px-4 py-6 sm:px-6 sm:py-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl animate-pulse"></div>
@@ -55,10 +55,10 @@ function DashboardLoading() {
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl"></div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#AEBFC3]/40 to-[#AEBFC3]/60 rounded-xl"></div>
                   <div className="space-y-2">
-                    <div className="h-3 w-12 bg-gray-200 rounded"></div>
-                    <div className="h-6 w-8 bg-gray-300 rounded"></div>
+                    <div className="h-3 w-12 bg-[#92A2A5]/30 rounded"></div>
+                    <div className="h-6 w-8 bg-[#92A2A5] rounded"></div>
                   </div>
                 </div>
               </div>
@@ -77,10 +77,10 @@ function DashboardLoading() {
               style={{ animationDelay: `${i * 150}ms` }}
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl sm:rounded-2xl"></div>
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#AEBFC3]/40 to-[#AEBFC3]/60 rounded-xl sm:rounded-2xl"></div>
                 <div className="space-y-2 flex-1">
-                  <div className="h-5 w-40 bg-gray-200 rounded-lg"></div>
-                  <div className="h-3 w-28 bg-gray-100 rounded"></div>
+                  <div className="h-5 w-40 bg-[#92A2A5]/30 rounded-lg"></div>
+                  <div className="h-3 w-28 bg-[#AEBFC3]/20 rounded"></div>
                 </div>
               </div>
             </div>

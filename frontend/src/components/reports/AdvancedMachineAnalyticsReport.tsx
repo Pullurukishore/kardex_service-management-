@@ -130,65 +130,65 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
     <div className="space-y-6">
       {/* Executive Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+        <Card className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Machines</p>
+                <p className="text-[#96AEC2] text-sm font-medium">Total Machines</p>
                 <p className="text-3xl font-bold mt-2">{totalMachines}</p>
-                <p className="text-blue-100 text-xs mt-1">All assets tracked</p>
+                <p className="text-[#96AEC2] text-xs mt-1">All assets tracked</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg"><Settings className="h-8 w-8" /></div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <Card className="bg-gradient-to-br from-[#82A094] to-[#4F6A64] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Healthy</p>
+                <p className="text-[#A2B9AF] text-sm font-medium">Healthy</p>
                 <p className="text-3xl font-bold mt-2">{totalMachinesWithoutIssues}</p>
-                <p className="text-green-100 text-xs mt-1">No issues</p>
+                <p className="text-[#A2B9AF] text-xs mt-1">No issues</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg"><CheckCircle className="h-8 w-8" /></div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
+        <Card className="bg-gradient-to-br from-[#E17F70] to-red-600 text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-100 text-sm font-medium">With Issues</p>
+                <p className="text-[#E17F70] text-sm font-medium">With Issues</p>
                 <p className="text-3xl font-bold mt-2">{totalMachinesWithIssues}</p>
-                <p className="text-red-100 text-xs mt-1">{totalIncidents} incidents</p>
+                <p className="text-[#E17F70] text-xs mt-1">{totalIncidents} incidents</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg"><AlertCircle className="h-8 w-8" /></div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+        <Card className="bg-gradient-to-br from-[#CE9F6B] to-[#976E44] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-100 text-sm font-medium">Total Downtime</p>
+                <p className="text-[#EEC1BF] text-sm font-medium">Total Downtime</p>
                 <p className="text-3xl font-bold mt-2">{totalDowntimeHours.toFixed(1)}h</p>
-                <p className="text-amber-100 text-xs mt-1">Business hours</p>
+                <p className="text-[#EEC1BF] text-xs mt-1">Business hours</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg"><Clock className="h-8 w-8" /></div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+        <Card className="bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Resolution Rate</p>
+                <p className="text-[#6F8A9D] text-sm font-medium">Resolution Rate</p>
                 <p className="text-3xl font-bold mt-2">{resolutionRate}%</p>
-                <p className="text-purple-100 text-xs mt-1">{totalResolvedIncidents} resolved</p>
+                <p className="text-[#6F8A9D] text-xs mt-1">{totalResolvedIncidents} resolved</p>
               </div>
               <div className="bg-white/20 p-3 rounded-lg"><Activity className="h-8 w-8" /></div>
             </div>
@@ -201,7 +201,7 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-600" />
+              <Activity className="h-5 w-5 text-[#546A7A]" />
               Downtime Distribution by Severity
             </CardTitle>
             <CardDescription>Breakdown of machines by total downtime hours</CardDescription>
@@ -222,9 +222,9 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
             </ResponsiveContainer>
             <div className="mt-4 grid grid-cols-2 gap-2">
               {downtimeDistribution.map((item) => (
-                <div key={item.name} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-600">{item.name}</span>
-                  <span className="font-semibold text-gray-900">{item.value}</span>
+                <div key={item.name} className="flex items-center justify-between p-2 bg-[#AEBFC3]/10 rounded">
+                  <span className="text-sm text-[#5D6E73]">{item.name}</span>
+                  <span className="font-semibold text-[#546A7A]">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -234,7 +234,7 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-green-600" />
+              <Target className="h-5 w-5 text-[#4F6A64]" />
               Machine Health Distribution
             </CardTitle>
             <CardDescription>Health status based on downtime performance</CardDescription>
@@ -255,9 +255,9 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
             </ResponsiveContainer>
             <div className="mt-4 space-y-2">
               {healthScoreData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-600">{item.name}</span>
-                  <span className="font-semibold text-gray-900">{item.value} machines</span>
+                <div key={item.name} className="flex items-center justify-between p-2 bg-[#AEBFC3]/10 rounded">
+                  <span className="text-sm text-[#5D6E73]">{item.name}</span>
+                  <span className="font-semibold text-[#546A7A]">{item.value} machines</span>
                 </div>
               ))}
             </div>
@@ -270,7 +270,7 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-600" />
+              <AlertCircle className="h-5 w-5 text-[#9E3B47]" />
               Top 10 Machines by Downtime
             </CardTitle>
             <CardDescription>Machines requiring immediate attention</CardDescription>
@@ -287,9 +287,9 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
                     return (
                       <div className="bg-white p-3 border rounded-lg shadow-lg">
                         <p className="font-semibold">{data.fullName}</p>
-                        <p className="text-sm text-gray-600">Customer: {data.customer}</p>
-                        <p className="text-sm text-red-600">Downtime: {data.downtime.toFixed(1)} hours</p>
-                        <p className="text-sm text-amber-600">Incidents: {data.incidents}</p>
+                        <p className="text-sm text-[#5D6E73]">Customer: {data.customer}</p>
+                        <p className="text-sm text-[#9E3B47]">Downtime: {data.downtime.toFixed(1)} hours</p>
+                        <p className="text-sm text-[#976E44]">Incidents: {data.incidents}</p>
                       </div>
                     );
                   }
@@ -311,20 +311,20 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Factory className="h-5 w-5 text-blue-600" />
+              <Factory className="h-5 w-5 text-[#546A7A]" />
               Customer Downtime Analysis
             </CardTitle>
             <CardDescription>Total downtime hours by customer</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-600 font-medium">Total Customers</p>
-                <p className="text-3xl font-bold text-blue-900">{customerNames.length}</p>
+              <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+                <p className="text-sm text-[#546A7A] font-medium">Total Customers</p>
+                <p className="text-3xl font-bold text-[#546A7A]">{customerNames.length}</p>
               </div>
-              <div className="p-4 bg-red-50 rounded-lg">
-                <p className="text-sm text-red-600 font-medium">Total Downtime</p>
-                <p className="text-3xl font-bold text-red-900">{(totalCustomerDowntime / 60).toFixed(1)}h</p>
+              <div className="p-4 bg-[#E17F70]/10 rounded-lg">
+                <p className="text-sm text-[#9E3B47] font-medium">Total Downtime</p>
+                <p className="text-3xl font-bold text-[#75242D]">{(totalCustomerDowntime / 60).toFixed(1)}h</p>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>
@@ -341,23 +341,23 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-6">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">All Customers Breakdown</h4>
+              <h4 className="text-sm font-semibold text-[#5D6E73] mb-3">All Customers Breakdown</h4>
               <div className="max-h-96 overflow-y-auto space-y-2">
                 {customerChartData.map((customer, index) => {
                   const percentage = totalCustomerDowntime > 0 ? ((customer.value / totalCustomerDowntime) * 100).toFixed(1) : '0';
                   return (
-                    <div key={customer.fullName} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-transparent rounded-lg hover:from-blue-100 transition-colors">
+                    <div key={customer.fullName} className="flex items-center justify-between p-3 bg-gradient-to-r from-[#96AEC2]/10 to-transparent rounded-lg hover:from-[#96AEC2]/20 transition-colors">
                       <div className="flex items-center gap-3 flex-1">
                         <div className="w-4 h-4 rounded-full flex-shrink-0" 
                           style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }} />
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-900">{customer.fullName}</span>
-                          <span className="text-xs text-gray-500">{customer.machineCount} machines</span>
+                          <span className="font-medium text-[#546A7A]">{customer.fullName}</span>
+                          <span className="text-xs text-[#AEBFC3]0">{customer.machineCount} machines</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-sm text-gray-500">{percentage}%</span>
-                        <span className="font-bold text-red-600 min-w-[80px] text-right">
+                        <span className="text-sm text-[#AEBFC3]0">{percentage}%</span>
+                        <span className="font-bold text-[#9E3B47] min-w-[80px] text-right">
                           {(customer.value / 60).toFixed(1)}h
                         </span>
                       </div>
@@ -374,7 +374,7 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-purple-600" />
+            <Target className="h-5 w-5 text-[#546A7A]" />
             Overall Machine Performance Metrics
           </CardTitle>
           <CardDescription>360° view of equipment performance and reliability</CardDescription>
@@ -391,28 +391,28 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
             </RadarChart>
           </ResponsiveContainer>
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-600 font-medium">Strengths</p>
+            <div className="p-4 bg-[#A2B9AF]/10 rounded-lg">
+              <p className="text-sm text-[#4F6A64] font-medium">Strengths</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-green-800">✓ {totalMachinesWithoutIssues} machines running perfectly</li>
-                <li className="text-sm text-green-800">✓ High resolution rate ({resolutionRate}%)</li>
-                <li className="text-sm text-green-800">✓ {totalMachines} total assets tracked</li>
+                <li className="text-sm text-[#4F6A64]">✓ {totalMachinesWithoutIssues} machines running perfectly</li>
+                <li className="text-sm text-[#4F6A64]">✓ High resolution rate ({resolutionRate}%)</li>
+                <li className="text-sm text-[#4F6A64]">✓ {totalMachines} total assets tracked</li>
               </ul>
             </div>
-            <div className="p-4 bg-yellow-50 rounded-lg">
-              <p className="text-sm text-yellow-600 font-medium">Areas to Improve</p>
+            <div className="p-4 bg-[#EEC1BF]/10 rounded-lg">
+              <p className="text-sm text-[#976E44] font-medium">Areas to Improve</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-yellow-800">→ {totalMachinesWithIssues} machines need attention</li>
-                {totalOpenIncidents > 0 && <li className="text-sm text-yellow-800">→ Close {totalOpenIncidents} open incidents</li>}
-                {avgDowntimePerMachine > 0 && <li className="text-sm text-yellow-800">→ Reduce avg downtime ({avgDowntimePerMachine.toFixed(1)}h)</li>}
+                <li className="text-sm text-[#976E44]">→ {totalMachinesWithIssues} machines need attention</li>
+                {totalOpenIncidents > 0 && <li className="text-sm text-[#976E44]">→ Close {totalOpenIncidents} open incidents</li>}
+                {avgDowntimePerMachine > 0 && <li className="text-sm text-[#976E44]">→ Reduce avg downtime ({avgDowntimePerMachine.toFixed(1)}h)</li>}
               </ul>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-600 font-medium">Recommendations</p>
+            <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+              <p className="text-sm text-[#546A7A] font-medium">Recommendations</p>
               <ul className="mt-2 space-y-1">
-                <li className="text-sm text-blue-800">• Preventive maintenance schedule</li>
-                <li className="text-sm text-blue-800">• Equipment health monitoring</li>
-                <li className="text-sm text-blue-800">• Regular asset performance reviews</li>
+                <li className="text-sm text-[#546A7A]">• Preventive maintenance schedule</li>
+                <li className="text-sm text-[#546A7A]">• Equipment health monitoring</li>
+                <li className="text-sm text-[#546A7A]">• Regular asset performance reviews</li>
               </ul>
             </div>
           </div>
@@ -423,7 +423,7 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
       <Card className="border-t-4 border-t-purple-500">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-purple-600" />
+            <Award className="h-5 w-5 text-[#546A7A]" />
             Key Insights
           </CardTitle>
           <CardDescription>Automated insights from your machine performance data</CardDescription>
@@ -431,40 +431,40 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
         <CardContent>
           {topMachines.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 bg-[#E17F70]/10 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-[#9E3B47] mt-0.5" />
                 <div>
-                  <p className="font-medium text-red-900">Highest Downtime Machine</p>
-                  <p className="text-sm text-red-700 mt-1">
+                  <p className="font-medium text-[#75242D]">Highest Downtime Machine</p>
+                  <p className="text-sm text-[#75242D] mt-1">
                     {topMachines[0].fullName} - {topMachines[0].downtime.toFixed(1)} hours
                   </p>
                 </div>
               </div>
               {customerChartData.length > 0 && customerChartData[0].value > 0 && (
-                <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                  <Factory className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-[#96AEC2]/10 rounded-lg">
+                  <Factory className="h-5 w-5 text-[#546A7A] mt-0.5" />
                   <div>
-                    <p className="font-medium text-blue-900">Most Affected Customer</p>
-                    <p className="text-sm text-blue-700 mt-1">
+                    <p className="font-medium text-[#546A7A]">Most Affected Customer</p>
+                    <p className="text-sm text-[#546A7A] mt-1">
                       {customerChartData[0].fullName} - {(customerChartData[0].value / 60).toFixed(1)} hours downtime
                     </p>
                   </div>
                 </div>
               )}
-              <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 bg-[#A2B9AF]/10 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-[#4F6A64] mt-0.5" />
                 <div>
-                  <p className="font-medium text-green-900">Resolution Success</p>
-                  <p className="text-sm text-green-700 mt-1">
+                  <p className="font-medium text-[#4F6A64]">Resolution Success</p>
+                  <p className="text-sm text-[#4F6A64] mt-1">
                     {resolutionRate}% of incidents resolved successfully
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
-                <Clock className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 bg-[#CE9F6B]/10 rounded-lg">
+                <Clock className="h-5 w-5 text-[#976E44] mt-0.5" />
                 <div>
-                  <p className="font-medium text-amber-900">Fleet Health</p>
-                  <p className="text-sm text-amber-700 mt-1">
+                  <p className="font-medium text-[#976E44]">Fleet Health</p>
+                  <p className="text-sm text-[#976E44] mt-1">
                     {totalMachinesWithoutIssues} of {totalMachines} machines ({((totalMachinesWithoutIssues / totalMachines) * 100).toFixed(1)}%) running perfectly
                   </p>
                 </div>
@@ -473,26 +473,26 @@ export function AdvancedMachineAnalyticsReport({ reportData }: AdvancedMachineAn
           ) : (
             <div className="text-center py-8">
               <div className="flex justify-center mb-4">
-                <div className="bg-green-100 p-4 rounded-full">
-                  <CheckCircle className="h-12 w-12 text-green-600" />
+                <div className="bg-[#A2B9AF]/20 p-4 rounded-full">
+                  <CheckCircle className="h-12 w-12 text-[#4F6A64]" />
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-green-900 mb-2">Excellent Performance!</h3>
-              <p className="text-green-700 mb-4">
+              <h3 className="text-lg font-semibold text-[#4F6A64] mb-2">Excellent Performance!</h3>
+              <p className="text-[#4F6A64] mb-4">
                 All {totalMachines} machines are operating optimally with no incidents reported in the selected period.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <p className="text-2xl font-bold text-green-900">{totalMachines}</p>
-                  <p className="text-sm text-green-700">Total Machines</p>
+                <div className="p-4 bg-[#A2B9AF]/10 rounded-lg">
+                  <p className="text-2xl font-bold text-[#4F6A64]">{totalMachines}</p>
+                  <p className="text-sm text-[#4F6A64]">Total Machines</p>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-2xl font-bold text-blue-900">0</p>
-                  <p className="text-sm text-blue-700">Incidents</p>
+                <div className="p-4 bg-[#96AEC2]/10 rounded-lg">
+                  <p className="text-2xl font-bold text-[#546A7A]">0</p>
+                  <p className="text-sm text-[#546A7A]">Incidents</p>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <p className="text-2xl font-bold text-purple-900">100%</p>
-                  <p className="text-sm text-purple-700">Uptime</p>
+                <div className="p-4 bg-[#6F8A9D]/10 rounded-lg">
+                  <p className="text-2xl font-bold text-[#546A7A]">100%</p>
+                  <p className="text-sm text-[#546A7A]">Uptime</p>
                 </div>
               </div>
             </div>

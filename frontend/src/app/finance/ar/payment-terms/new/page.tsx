@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arApi } from '@/lib/ar-api';
-import { ArrowLeft, Save, Loader2, CreditCard, Sparkles } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, CreditCard, Sparkles, Clock, Info } from 'lucide-react';
 
 export default function NewPaymentTermPage() {
   const router = useRouter();
@@ -59,101 +59,121 @@ export default function NewPaymentTermPage() {
       <div className="flex items-center gap-4">
         <Link 
           href="/finance/ar/payment-terms"
-          className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-amber-500/10 hover:text-white hover:border-amber-500/30 transition-all"
+          className="p-2.5 rounded-xl bg-white border-2 border-[#AEBFC3]/40 text-[#5D6E73] hover:bg-[#CE9F6B]/10 hover:border-[#CE9F6B]/40 transition-all"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-[#546A7A] flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#CE9F6B] to-[#976E44] shadow-lg shadow-[#CE9F6B]/30">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
             New Payment Term
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <Sparkles className="w-5 h-5 text-[#CE9F6B]" />
           </h1>
-          <p className="text-white/40 text-sm mt-1">Create a new payment term configuration</p>
+          <p className="text-[#92A2A5] text-sm mt-1 ml-1">Create a new payment term configuration</p>
         </div>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+          <div className="flex items-center gap-3 p-4 bg-[#E17F70]/10 border-2 border-[#E17F70]/30 rounded-xl text-[#9E3B47]">
             {error}
           </div>
         )}
 
         {/* Term Details */}
-        <div className="bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-          <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-amber-400" />
+        <div className="bg-white rounded-2xl border-2 border-[#CE9F6B]/20 p-6 shadow-lg">
+          <h3 className="text-lg font-semibold text-[#546A7A] mb-5 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-[#CE9F6B]" />
             Term Details
           </h3>
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">
-                Term Code <span className="text-amber-400">*</span>
+              <label className="block text-[#5D6E73] text-sm font-medium mb-2">
+                Term Code <span className="text-[#CE9F6B]">*</span>
               </label>
               <input
                 type="text"
                 name="termCode"
                 value={formData.termCode}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all uppercase"
+                className="w-full h-11 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#CE9F6B]/50 focus:outline-none focus:ring-2 focus:ring-[#CE9F6B]/20 transition-all uppercase"
                 placeholder="NET30"
                 required
               />
-              <p className="text-white/30 text-xs mt-1">Unique identifier (e.g., NET30, COD)</p>
+              <p className="text-[#92A2A5] text-xs mt-1">Unique identifier (e.g., NET30, COD)</p>
             </div>
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">
-                Term Name <span className="text-amber-400">*</span>
+              <label className="block text-[#5D6E73] text-sm font-medium mb-2">
+                Term Name <span className="text-[#CE9F6B]">*</span>
               </label>
               <input
                 type="text"
                 name="termName"
                 value={formData.termName}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="w-full h-11 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#CE9F6B]/50 focus:outline-none focus:ring-2 focus:ring-[#CE9F6B]/20 transition-all"
                 placeholder="Net 30 Days"
                 required
               />
             </div>
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">
-                Due Days <span className="text-amber-400">*</span>
+              <label className="block text-[#5D6E73] text-sm font-medium mb-2 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                Due Days <span className="text-[#CE9F6B]">*</span>
               </label>
               <input
                 type="number"
                 name="dueDays"
                 value={formData.dueDays}
                 onChange={handleChange}
-                className="w-full h-11 px-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="w-full h-11 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#CE9F6B]/50 focus:outline-none focus:ring-2 focus:ring-[#CE9F6B]/20 transition-all"
                 placeholder="30"
                 required
               />
-              <p className="text-white/30 text-xs mt-1">Days until payment is due (use negative for prepaid)</p>
+              <p className="text-[#92A2A5] text-xs mt-1">Days until payment is due (use negative for prepaid)</p>
             </div>
-            <div className="flex items-center">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded bg-white/5 border border-white/20 text-amber-500 focus:ring-amber-500/30"
-                />
-                <span className="text-white/70 font-medium">Active</span>
+            <div className="flex items-center pt-7">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    checked={formData.isActive}
+                    onChange={handleChange}
+                    className="sr-only"
+                  />
+                  <div className={`w-12 h-7 rounded-full transition-all ${formData.isActive ? 'bg-gradient-to-r from-[#82A094] to-[#4F6A64]' : 'bg-[#AEBFC3]/30'}`}>
+                    <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all ${formData.isActive ? 'left-[22px]' : 'left-0.5'}`} />
+                  </div>
+                </div>
+                <span className="text-[#546A7A] font-medium group-hover:text-[#82A094] transition-colors">
+                  {formData.isActive ? 'Active' : 'Inactive'}
+                </span>
               </label>
             </div>
             <div className="col-span-2">
-              <label className="block text-white/60 text-sm font-medium mb-2">Description</label>
+              <label className="block text-[#5D6E73] text-sm font-medium mb-2">Description</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#CE9F6B]/50 focus:outline-none focus:ring-2 focus:ring-[#CE9F6B]/20 transition-all resize-none"
                 placeholder="Payment due in 30 days from invoice date"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="flex items-start gap-3 p-4 bg-[#6F8A9D]/10 border-2 border-[#6F8A9D]/30 rounded-xl">
+          <Info className="w-5 h-5 text-[#6F8A9D] flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[#546A7A] font-medium text-sm">Payment Term Usage</p>
+            <p className="text-[#92A2A5] text-xs mt-1">Payment terms will be available for selection when creating or importing invoices. The due date will be calculated automatically based on the due days.</p>
           </div>
         </div>
 
@@ -161,14 +181,14 @@ export default function NewPaymentTermPage() {
         <div className="flex items-center justify-end gap-4">
           <Link
             href="/finance/ar/payment-terms"
-            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all"
+            className="px-6 py-3 rounded-xl bg-white border-2 border-[#AEBFC3]/40 text-[#5D6E73] hover:bg-[#AEBFC3]/10 transition-all font-medium"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-semibold hover:shadow-lg hover:shadow-[#82A094]/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
             {saving ? 'Saving...' : 'Create Term'}

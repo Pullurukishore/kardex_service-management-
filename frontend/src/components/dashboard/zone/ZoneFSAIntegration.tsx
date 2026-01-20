@@ -96,21 +96,22 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
+  // Kardex Company Colors for Charts
   const statusColors = {
-    'OPEN': '#ef4444',
-    'ASSIGNED': '#f97316', 
-    'IN_PROGRESS': '#eab308',
-    'RESOLVED': '#22c55e',
-    'CLOSED': '#10b981',
-    'ON_HOLD': '#6b7280',
-    'ESCALATED': '#dc2626'
+    'OPEN': '#E17F70',     // Red 1
+    'ASSIGNED': '#CE9F6B', // Sand 2
+    'IN_PROGRESS': '#EEC18F', // Sand 1
+    'RESOLVED': '#82A094', // Green 2
+    'CLOSED': '#A2B9AF',   // Green 1
+    'ON_HOLD': '#757777',  // Silver 1
+    'ESCALATED': '#9E3B47' // Red 2
   };
 
   const priorityColors = {
-    'LOW': '#22c55e',
-    'MEDIUM': '#eab308',
-    'HIGH': '#f97316',
-    'CRITICAL': '#ef4444'
+    'LOW': '#A2B9AF',      // Green 1
+    'MEDIUM': '#EEC18F',   // Sand 1
+    'HIGH': '#CE9F6B',     // Sand 2
+    'CRITICAL': '#E17F70'  // Red 1
   };
 
   const fetchFSAData = async (showSuccessMessage = false) => {
@@ -145,25 +146,25 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
 
   const getStatusBadgeColor = (status: string) => {
     const colors: Record<string, string> = {
-      'OPEN': 'bg-red-100 text-red-800 border-red-200',
-      'ASSIGNED': 'bg-orange-100 text-orange-800 border-orange-200',
-      'IN_PROGRESS': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'RESOLVED': 'bg-green-100 text-green-800 border-green-200',
-      'CLOSED': 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      'ON_HOLD': 'bg-gray-100 text-gray-800 border-gray-200',
-      'ESCALATED': 'bg-red-100 text-red-800 border-red-200'
+      'OPEN': 'bg-[#E17F70]/20 text-[#9E3B47] border-[#E17F70]/30',
+      'ASSIGNED': 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/30',
+      'IN_PROGRESS': 'bg-[#EEC18F]/20 text-[#976E44] border-[#EEC18F]/30',
+      'RESOLVED': 'bg-[#82A094]/20 text-[#4F6A64] border-[#82A094]/30',
+      'CLOSED': 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]/30',
+      'ON_HOLD': 'bg-[#979796]/20 text-[#757777] border-[#979796]/30',
+      'ESCALATED': 'bg-[#9E3B47]/20 text-[#75242D] border-[#9E3B47]/30'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[status] || 'bg-[#979796]/20 text-[#757777] border-[#979796]/30';
   };
 
   const getPriorityBadgeColor = (priority: string) => {
     const colors: Record<string, string> = {
-      'LOW': 'bg-green-100 text-green-800 border-green-200',
-      'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200', 
-      'HIGH': 'bg-orange-100 text-orange-800 border-orange-200',
-      'CRITICAL': 'bg-red-100 text-red-800 border-red-200'
+      'LOW': 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]/30',
+      'MEDIUM': 'bg-[#EEC18F]/20 text-[#976E44] border-[#EEC18F]/30', 
+      'HIGH': 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/30',
+      'CRITICAL': 'bg-[#E17F70]/20 text-[#9E3B47] border-[#E17F70]/30'
     };
-    return colors[priority] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[priority] || 'bg-[#979796]/20 text-[#757777] border-[#979796]/30';
   };
 
   const filteredTickets = fsaData?.recentActivity.tickets.filter(ticket => {
@@ -181,8 +182,8 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
             <div className="flex flex-col items-center space-y-4">
-              <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
-              <p className="text-gray-600">Loading FSA data...</p>
+              <RefreshCw className="h-8 w-8 animate-spin text-[#96AEC2]" />
+              <p className="text-[#5D6E73]">Loading FSA data...</p>
             </div>
           </div>
         </CardContent>
@@ -192,12 +193,12 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
 
   if (error && !fsaData) {
     return (
-      <Card className="shadow-lg border-red-200">
+      <Card className="shadow-lg border-[#E17F70]">
         <CardContent className="p-8">
           <div className="text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto text-red-500 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">FSA Data Unavailable</h3>
-            <p className="text-gray-600 mb-4">{error}</p>
+            <AlertTriangle className="h-12 w-12 mx-auto text-[#E17F70] mb-4" />
+            <h3 className="text-lg font-semibold text-[#546A7A] mb-2">FSA Data Unavailable</h3>
+            <p className="text-[#5D6E73] mb-4">{error}</p>
             <Button onClick={() => fetchFSAData(true)} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Try Again
@@ -212,7 +213,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
     <div className="mb-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] rounded-lg">
             <Shield className="w-6 h-6 text-white" />
           </div>
           Field Service Analytics (FSA)
@@ -244,56 +245,56 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
         <>
           {/* FSA Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <Card className="bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-blue-600">Total Tickets</p>
-                    <p className="text-3xl font-bold text-blue-700">{fsaData.overview.totalTickets}</p>
+                    <p className="text-sm font-medium text-[#6F8A9D]">Total Tickets</p>
+                    <p className="text-3xl font-bold text-[#546A7A]">{fsaData.overview.totalTickets}</p>
                   </div>
-                  <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
+                  <div className="p-3 bg-gradient-to-r from-[#96AEC2] to-[#6F8A9D] rounded-xl">
                     <Ticket className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-red-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <Card className="bg-gradient-to-br from-[#EEC18F]/10 to-[#E17F70]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-orange-600">Open Tickets</p>
-                    <p className="text-3xl font-bold text-orange-700">{fsaData.overview.openTickets}</p>
+                    <p className="text-sm font-medium text-[#CE9F6B]">Open Tickets</p>
+                    <p className="text-3xl font-bold text-[#976E44]">{fsaData.overview.openTickets}</p>
                   </div>
-                  <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
+                  <div className="p-3 bg-gradient-to-r from-[#EEC18F] to-[#E17F70] rounded-xl">
                     <AlertTriangle className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <Card className="bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-green-600">Resolution Rate</p>
-                    <p className="text-3xl font-bold text-green-700">{fsaData.overview.resolutionRate}%</p>
+                    <p className="text-sm font-medium text-[#82A094]">Resolution Rate</p>
+                    <p className="text-3xl font-bold text-[#4F6A64]">{fsaData.overview.resolutionRate}%</p>
                   </div>
-                  <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
+                  <div className="p-3 bg-gradient-to-r from-[#A2B9AF] to-[#82A094] rounded-xl">
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <Card className="bg-gradient-to-br from-[#6F8A9D]/10 to-[#546A7A]/20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-purple-600">Avg Resolution</p>
-                    <p className="text-3xl font-bold text-purple-700">{fsaData.overview.avgResolutionTime}h</p>
+                    <p className="text-sm font-medium text-[#6F8A9D]">Avg Resolution</p>
+                    <p className="text-3xl font-bold text-[#546A7A]">{fsaData.overview.avgResolutionTime}h</p>
                   </div>
-                  <div className="p-3 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl">
+                  <div className="p-3 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] rounded-xl">
                     <Clock className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -304,15 +305,15 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
           {/* FSA Analytics Tabs */}
           <Tabs defaultValue="overview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3 lg:w-[400px] bg-white shadow-lg border-0">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-[#6F8A9D] data-[state=active]:text-white">
                 <PieChart className="h-4 w-4 mr-2" />
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-[#6F8A9D] data-[state=active]:text-white">
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value="activity" className="data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+              <TabsTrigger value="activity" className="data-[state=active]:bg-[#6F8A9D] data-[state=active]:text-white">
                 <Ticket className="h-4 w-4 mr-2" />
                 Recent Activity
               </TabsTrigger>
@@ -322,7 +323,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Status Distribution */}
                 <Card className="shadow-lg border-0">
-                  <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+                  <CardHeader className="bg-gradient-to-r from-[#96AEC2] to-[#6F8A9D] text-white">
                     <CardTitle className="flex items-center">
                       <PieChart className="h-5 w-5 mr-2" />
                       Status Distribution
@@ -352,7 +353,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                         </RechartsPieChart>
                       </ResponsiveContainer>
                     ) : (
-                      <div className="flex items-center justify-center h-64 text-gray-500">
+                      <div className="flex items-center justify-center h-64 text-[#AEBFC3]0">
                         <div className="text-center">
                           <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No status data available</p>
@@ -364,7 +365,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
 
                 {/* Priority Distribution */}
                 <Card className="shadow-lg border-0">
-                  <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+                  <CardHeader className="bg-gradient-to-r from-[#A2B9AF] to-[#82A094] text-white">
                     <CardTitle className="flex items-center">
                       <BarChart3 className="h-5 w-5 mr-2" />
                       Priority Distribution
@@ -389,7 +390,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
-                      <div className="flex items-center justify-center h-64 text-gray-500">
+                      <div className="flex items-center justify-center h-64 text-[#AEBFC3]0">
                         <div className="text-center">
                           <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No priority data available</p>
@@ -405,31 +406,31 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
               <Card className="shadow-lg border-0">
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+                    <TrendingUp className="h-5 w-5 mr-2 text-[#96AEC2]" />
                     Performance Metrics
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                      <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-center p-4 bg-gradient-to-br from-[#96AEC2]/10 to-[#96AEC2]/20 rounded-xl">
+                      <div className="text-2xl font-bold text-[#6F8A9D]">
                         {fsaData.overview.resolutionRate}%
                       </div>
-                      <div className="text-sm text-blue-700 mt-1">Resolution Rate</div>
+                      <div className="text-sm text-[#546A7A] mt-1">Resolution Rate</div>
                       <Progress value={fsaData.overview.resolutionRate} className="mt-2" />
                     </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
-                      <div className="text-2xl font-bold text-green-600">
+                    <div className="text-center p-4 bg-gradient-to-br from-[#A2B9AF]/10 to-[#82A094]/20 rounded-xl">
+                      <div className="text-2xl font-bold text-[#82A094]">
                         {fsaData.overview.slaCompliance || 0}%
                       </div>
-                      <div className="text-sm text-green-700 mt-1">SLA Compliance</div>
+                      <div className="text-sm text-[#4F6A64] mt-1">SLA Compliance</div>
                       <Progress value={fsaData.overview.slaCompliance || 0} className="mt-2" />
                     </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-                      <div className="text-2xl font-bold text-purple-600">
+                    <div className="text-center p-4 bg-gradient-to-br from-[#6F8A9D]/10 to-[#546A7A]/20 rounded-xl">
+                      <div className="text-2xl font-bold text-[#6F8A9D]">
                         {fsaData.overview.avgResolutionTime}h
                       </div>
-                      <div className="text-sm text-purple-700 mt-1">Avg Resolution Time</div>
+                      <div className="text-sm text-[#546A7A] mt-1">Avg Resolution Time</div>
                     </div>
                   </div>
                 </CardContent>
@@ -441,7 +442,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Ticket className="h-5 w-5 mr-2 text-blue-600" />
+                      <Ticket className="h-5 w-5 mr-2 text-[#96AEC2]" />
                       Recent Tickets
                     </div>
                     <div className="flex items-center gap-2">
@@ -468,7 +469,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     {filteredTickets.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-[#AEBFC3]0">
                         <Ticket className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No tickets found matching your criteria</p>
                       </div>
@@ -476,15 +477,15 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                       filteredTickets.slice(0, 10).map((ticket) => (
                         <motion.div
                           key={ticket.id}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="flex items-center justify-between p-4 bg-[#AEBFC3]/10 rounded-lg hover:bg-[#AEBFC3]/20 transition-colors"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="text-sm font-mono text-gray-500">#{ticket.ticketNumber ?? ticket.id}</div>
+                            <div className="text-sm font-mono text-[#AEBFC3]0">#{ticket.ticketNumber ?? ticket.id}</div>
                             <div>
-                              <p className="font-semibold text-gray-900">{ticket.title}</p>
-                              <p className="text-sm text-gray-600">
+                              <p className="font-semibold text-[#546A7A]">{ticket.title}</p>
+                              <p className="text-sm text-[#5D6E73]">
                                 {ticket.assignedTo ? `Assigned to ${ticket.assignedTo.name}` : 'Unassigned'}
                               </p>
                             </div>

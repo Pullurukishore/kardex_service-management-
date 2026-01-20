@@ -95,33 +95,33 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
     switch (step) {
       case 'EXPERT_HELPDESK':
         return {
-          gradient: 'from-purple-600 via-fuchsia-600 to-purple-700',
-          light: 'bg-purple-50',
-          border: 'border-purple-200',
-          text: 'text-purple-700',
-          bg: 'bg-purple-100',
-          ring: 'ring-purple-500/30',
-          shadow: 'shadow-purple-500/20'
+          gradient: 'from-[#546A7A] via-fuchsia-600 to-[#546A7A]',
+          light: 'bg-[#6F8A9D]/10',
+          border: 'border-[#6F8A9D]',
+          text: 'text-[#546A7A]',
+          bg: 'bg-[#6F8A9D]/20',
+          ring: 'ring-[#6F8A9D]/30',
+          shadow: 'shadow-[#6F8A9D]/20'
         };
       case 'ZONE_USER':
         return {
-          gradient: 'from-emerald-600 via-teal-600 to-emerald-700',
-          light: 'bg-emerald-50',
-          border: 'border-emerald-200',
-          text: 'text-emerald-700',
-          bg: 'bg-emerald-100',
-          ring: 'ring-emerald-500/30',
-          shadow: 'shadow-emerald-500/20'
+          gradient: 'from-[#4F6A64] via-[#4F6A64] to-[#4F6A64]',
+          light: 'bg-[#82A094]/10',
+          border: 'border-[#82A094]/50',
+          text: 'text-[#4F6A64]',
+          bg: 'bg-[#82A094]/20',
+          ring: 'ring-[#82A094]/30',
+          shadow: 'shadow-[#82A094]/20'
         };
       case 'SERVICE_PERSON':
         return {
-          gradient: 'from-blue-600 via-indigo-600 to-blue-700',
-          light: 'bg-blue-50',
-          border: 'border-blue-200',
-          text: 'text-blue-700',
-          bg: 'bg-blue-100',
-          ring: 'ring-blue-500/30',
-          shadow: 'shadow-blue-500/20'
+          gradient: 'from-[#546A7A] via-[#546A7A] to-[#546A7A]',
+          light: 'bg-[#96AEC2]/10',
+          border: 'border-[#96AEC2]',
+          text: 'text-[#546A7A]',
+          bg: 'bg-[#96AEC2]/20',
+          ring: 'ring-[#96AEC2]/30',
+          shadow: 'shadow-[#6F8A9D]/20'
         };
     }
   };
@@ -418,27 +418,27 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
           </div>
         </div>
         
-        <div className="p-6 space-y-5 bg-gradient-to-b from-slate-50/50 to-white flex-1 overflow-y-auto">
+        <div className="p-6 space-y-5 bg-gradient-to-b from-[#AEBFC3]/10/50 to-white flex-1 overflow-y-auto">
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-2 pb-2">
             <button 
               onClick={() => { setCurrentStep('EXPERT_HELPDESK'); setSelectedUserId(''); setSearchTerm(''); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                 currentStep === 'EXPERT_HELPDESK'
-                  ? 'bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white shadow-lg shadow-purple-500/25' 
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-[#6F8A9D] to-[#E17F70] text-white shadow-lg shadow-[#6F8A9D]/25' 
+                  : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
               }`}
             >
               <Sparkles className="h-4 w-4" />
               <span className="text-sm font-medium">Expert</span>
             </button>
-            <ArrowRight className="h-4 w-4 text-slate-300" />
+            <ArrowRight className="h-4 w-4 text-[#92A2A5]" />
             <button 
               onClick={() => { setCurrentStep('ZONE_USER'); setSelectedUserId(''); setSearchTerm(''); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                 currentStep === 'ZONE_USER' 
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white shadow-lg shadow-[#82A094]/25' 
+                  : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
               }`}
             >
               <Users className="h-4 w-4" />
@@ -448,19 +448,19 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
 
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#979796]" />
             <Input
               placeholder="Search by name, email, phone, or zone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-11 h-12 bg-white border-slate-200 focus:border-slate-300 rounded-xl shadow-sm"
+              className="pl-11 h-12 bg-white border-[#92A2A5] focus:border-[#92A2A5] rounded-xl shadow-sm"
             />
             {searchTerm && (
               <button 
                 onClick={() => setSearchTerm('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-[#AEBFC3]/20 rounded-full transition-colors"
               >
-                <X className="h-4 w-4 text-slate-400" />
+                <X className="h-4 w-4 text-[#979796]" />
               </button>
             )}
           </div>
@@ -485,7 +485,7 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className={`h-6 w-6 animate-spin ${colors.text}`} />
-                  <span className="ml-2 text-sm text-slate-500">Loading users...</span>
+                  <span className="ml-2 text-sm text-[#757777]">Loading users...</span>
                 </div>
               ) : filteredUsers.length > 0 ? (
                 <div className="divide-y divide-slate-100">
@@ -493,7 +493,7 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                     <div
                       key={user.id}
                       onClick={() => setSelectedUserId(user.id)}
-                      className={`p-4 cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                      className={`p-4 cursor-pointer transition-all duration-200 hover:bg-[#AEBFC3]/10 ${
                         selectedUserId === user.id 
                           ? `${colors.light} ring-2 ${colors.ring}` 
                           : ''
@@ -508,12 +508,12 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-slate-800 text-sm">{user.name}</span>
+                            <span className="font-semibold text-[#546A7A] text-sm">{user.name}</span>
                             {user.role && (
                               <Badge 
                                 className={`text-[10px] ${
                                   user.role === 'ZONE_MANAGER' 
-                                    ? 'bg-amber-100 text-amber-700 border-amber-200' 
+                                    ? 'bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]/50' 
                                     : `${colors.bg} ${colors.text} ${colors.border}`
                                 }`}
                               >
@@ -527,7 +527,7 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                             )}
                           </div>
                           
-                          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-[#757777]">
                             <span className="flex items-center gap-1">
                               <Mail className="h-3 w-3" />
                               {user.email}
@@ -542,18 +542,18 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                           
                           {user.serviceZones && user.serviceZones.length > 0 && (
                             <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                              <MapPin className="h-3 w-3 text-slate-400" />
+                              <MapPin className="h-3 w-3 text-[#979796]" />
                               {user.serviceZones.slice(0, 3).map((zone, index) => (
                                 <Badge 
                                   key={zone?.serviceZone?.id || index}
                                   variant="outline"
-                                  className="text-[10px] bg-slate-50"
+                                  className="text-[10px] bg-[#AEBFC3]/10"
                                 >
                                   {zone?.serviceZone?.name || 'Unknown Zone'}
                                 </Badge>
                               ))}
                               {user.serviceZones.length > 3 && (
-                                <Badge variant="outline" className="text-[10px] bg-slate-50">
+                                <Badge variant="outline" className="text-[10px] bg-[#AEBFC3]/10">
                                   +{user.serviceZones.length - 3} more
                                 </Badge>
                               )}
@@ -565,17 +565,17 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-                  <Search className="h-10 w-10 text-slate-300 mb-3" />
+                <div className="flex flex-col items-center justify-center py-12 text-[#757777]">
+                  <Search className="h-10 w-10 text-[#92A2A5] mb-3" />
                   {searchTerm ? (
                     <>
                       <p className="font-medium">No users found</p>
-                      <p className="text-sm text-slate-400">Try searching with different keywords</p>
+                      <p className="text-sm text-[#979796]">Try searching with different keywords</p>
                     </>
                   ) : (
                     <>
                       <p className="font-medium">No users available</p>
-                      <p className="text-sm text-slate-400">No {currentStep.toLowerCase().replace('_', ' ')} users to display</p>
+                      <p className="text-sm text-[#979796]">No {currentStep.toLowerCase().replace('_', ' ')} users to display</p>
                     </>
                   )}
                 </div>
@@ -592,8 +592,8 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
                     <CheckCircle className={`h-5 w-5 ${colors.text}`} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-slate-800">Ready to assign to {selectedUser.name}</p>
-                    <p className="text-sm text-slate-500">
+                    <p className="font-semibold text-[#546A7A]">Ready to assign to {selectedUser.name}</p>
+                    <p className="text-sm text-[#757777]">
                       {selectedUser.email}
                     </p>
                   </div>
@@ -604,7 +604,7 @@ export function AssignTicketDialog({ open, onOpenChange, ticketId, onSuccess, zo
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-between gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 bg-[#AEBFC3]/10 border-t border-[#AEBFC3]/30 flex-shrink-0">
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
