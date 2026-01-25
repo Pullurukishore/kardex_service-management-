@@ -199,7 +199,7 @@ export default function TicketDetailPage() {
 
   if (loading || !ticket) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-purple-50/30 to-fuchsia-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#EEC1BF]/10 to-[#E17F70]/5">
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="text-center space-y-4">
             <div className="relative mx-auto w-16 h-16">
@@ -219,14 +219,14 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-purple-50/30 to-fuchsia-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#EEC1BF]/10 to-[#E17F70]/5">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Premium Header with Glassmorphism */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] via-fuchsia-600 to-[#9E3B47] rounded-2xl shadow-2xl shadow-[#6F8A9D]/20 p-6 md:p-8">
+        {/* Premium Header with Glassmorphism - Kardex Red */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#9E3B47] via-[#75242D] to-[#546A7A] rounded-2xl shadow-2xl shadow-[#9E3B47]/20 p-6 md:p-8">
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#EEC1BF]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-[#EEC1BF]/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#E17F70]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-[#E17F70]/10 rounded-full blur-2xl" />
           
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -247,7 +247,7 @@ export default function TicketDetailPage() {
                     <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                       Ticket #{ticket.ticketNumber ?? ticket.id}
                     </h1>
-                    <p className="text-[#6F8A9D] mt-1 text-sm md:text-base flex items-center gap-2">
+                    <p className="text-[#EEC1BF] mt-1 text-sm md:text-base flex items-center gap-2">
                       <Clock className="h-4 w-4" />
                       Created {formatDistanceToNow(new Date(ticket.createdAt))} ago
                     </p>
@@ -293,19 +293,19 @@ export default function TicketDetailPage() {
             {/* Quick Stats Strip */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-[#6F8A9D] text-xs font-medium uppercase tracking-wide">Priority</p>
+                <p className="text-[#EEC1BF] text-xs font-medium uppercase tracking-wide">Priority</p>
                 <p className="text-white font-bold text-lg capitalize">{ticket.priority?.toLowerCase() || 'Normal'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-[#6F8A9D] text-xs font-medium uppercase tracking-wide">Zone</p>
+                <p className="text-[#EEC1BF] text-xs font-medium uppercase tracking-wide">Zone</p>
                 <p className="text-white font-bold text-lg truncate">{ticket.zone?.name || 'Unassigned'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-[#6F8A9D] text-xs font-medium uppercase tracking-wide">Call Type</p>
+                <p className="text-[#EEC1BF] text-xs font-medium uppercase tracking-wide">Call Type</p>
                 <p className="text-white font-bold text-lg truncate">{ticket.callType === 'UNDER_MAINTENANCE_CONTRACT' ? 'Under Contract' : 'Not Under Contract'}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 border border-white/20">
-                <p className="text-[#6F8A9D] text-xs font-medium uppercase tracking-wide">Created On</p>
+                <p className="text-[#EEC1BF] text-xs font-medium uppercase tracking-wide">Created On</p>
                 <p className="text-white font-bold text-lg">{format(new Date(ticket.createdAt), 'MMM d, yyyy')}</p>
               </div>
             </div>
@@ -398,7 +398,7 @@ export default function TicketDetailPage() {
           {/* Left Column - Main Ticket Info */}
           <div className="space-y-4 md:space-y-6">
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow duration-200">
-              <CardHeader className="pb-3 bg-gradient-to-r from-[#96AEC2]/10 to-fuchsia-50/50 rounded-t-lg border-b p-4 md:p-6">
+              <CardHeader className="pb-3 bg-gradient-to-r from-[#EEC1BF]/10 to-[#E17F70]/10 rounded-t-lg border-b p-4 md:p-6">
                 <div className="space-y-3">
                   <div className="flex flex-col space-y-2">
                     <CardTitle className="text-lg md:text-xl break-words text-[#546A7A]">{ticket.title}</CardTitle>
@@ -479,7 +479,7 @@ export default function TicketDetailPage() {
           </Card>
 
           <Card className="shadow-sm border-border/50 hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 to-[#96AEC2]/10/50 rounded-t-lg border-b">
+            <CardHeader className="bg-gradient-to-r from-[#9E3B47]/10 to-[#E17F70]/10 rounded-t-lg border-b">
               <div className="flex items-center space-x-2">
                 <Activity className="h-5 w-5 text-[#546A7A]" />
                 <CardTitle className="text-[#546A7A]">Activity</CardTitle>

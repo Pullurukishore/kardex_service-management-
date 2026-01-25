@@ -133,7 +133,8 @@ export default function PinAccessPage() {
     setLoading(true); setError('');
     try {
       const res = await apiClient.post<PinValidationResponse>('/auth/validate-pin', { pin }, { headers: { 'X-Skip-Global-Error-Handler': 'true' } });
-      const data = res.data as PinValidationResponse;
+      // apiClient.post already returns response.data, so 'res' IS the response data directly
+      const data = res as unknown as PinValidationResponse;
       if (data?.success) {
         setSuccess(true); clearLockoutInfo(); setIsLocked(false);
         if (data.sessionId && data.expiresAt) setLocalSession({ sessionId: data.sessionId, expiresAt: data.expiresAt });

@@ -113,7 +113,7 @@ export default function EditExternalUserClient({ externalUser }: EditExternalUse
       </div>
 
       {/* Desktop Form */}
-      <div className="hidden md:block max-w-2xl mx-auto">
+      <div className="hidden md:block">
         <div className="bg-white rounded-xl shadow-lg border border-[#92A2A5] overflow-hidden">
           <div className="px-6 py-4 border-b border-[#92A2A5] bg-gradient-to-r from-[#AEBFC3]/10 to-[#6F8A9D]/10">
             <div className="flex items-center space-x-3">

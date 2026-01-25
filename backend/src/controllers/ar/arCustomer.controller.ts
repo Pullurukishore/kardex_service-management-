@@ -52,12 +52,21 @@ export const getAllCustomers = async (req: Request, res: Response) => {
         });
         const total = allCustomers.length;
 
-        // Get invoice counts for each customer
+        // Get invoice counts and financial totals for each customer
         const customersWithCounts = await Promise.all(
             invoices.map(async (customer) => {
-                const invoiceCount = await prisma.aRInvoice.count({
-                    where: { bpCode: customer.bpCode }
-                });
+                const [invoiceCount, financialTotals] = await Promise.all([
+                    prisma.aRInvoice.count({
+                        where: { bpCode: customer.bpCode }
+                    }),
+                    prisma.aRInvoice.aggregate({
+                        where: { bpCode: customer.bpCode },
+                        _sum: {
+                            totalAmount: true,
+                            balance: true
+                        }
+                    })
+                ]);
                 return {
                     id: customer.bpCode,
                     bpCode: customer.bpCode,
@@ -68,6 +77,8 @@ export const getAllCustomers = async (req: Request, res: Response) => {
                     region: customer.region,
                     department: customer.department,
                     personInCharge: customer.personInCharge,
+                    totalInvoiceAmount: financialTotals._sum.totalAmount || 0,
+                    outstandingBalance: financialTotals._sum.balance || 0,
                     _count: { invoices: invoiceCount }
                 };
             })

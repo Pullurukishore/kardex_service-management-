@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arApi, ARCustomer, formatARCurrency } from '@/lib/ar-api';
-import { Search, Plus, Users, ChevronLeft, ChevronRight, Building2, AlertTriangle, Eye, Edit2, Sparkles } from 'lucide-react';
+import { Search, Plus, Users, ChevronLeft, ChevronRight, Building2, AlertTriangle, Eye, Pencil, Sparkles, Receipt, TrendingUp, Wallet } from 'lucide-react';
 
 export default function ARCustomersPage() {
   const router = useRouter();
@@ -50,40 +50,41 @@ export default function ARCustomersPage() {
       <div className="absolute -bottom-40 -left-20 w-96 h-96 bg-gradient-to-tr from-[#A2B9AF]/10 to-[#82A094]/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Premium Header - Teal/Green People Theme */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#4F6A64] via-[#82A094] to-[#A2B9AF] p-6 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#4F6A64] via-[#82A094] to-[#A2B9AF] p-4 sm:p-6 shadow-xl">
         {/* Decorative Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-10 hidden sm:block">
           <div className="absolute top-4 right-12 w-32 h-32 border-4 border-white rounded-full" />
           <div className="absolute -bottom-8 right-32 w-48 h-48 border-4 border-white rounded-full" />
           <div className="absolute top-8 left-1/3 w-16 h-16 border-2 border-white rounded-full" />
         </div>
 
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-              <Users className="w-8 h-8 text-white" />
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
+              <Users className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              <h1 className="text-xl sm:text-3xl font-bold text-white flex items-center gap-2 sm:gap-3 flex-wrap">
                 Customer Master
-                <span className="px-4 py-1.5 text-sm font-bold bg-white/20 backdrop-blur-sm text-white rounded-full border border-white/30">
+                <span className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-bold bg-white/20 backdrop-blur-sm text-white rounded-full border border-white/30">
                   {total} Total
                 </span>
               </h1>
-              <p className="text-white/80 text-sm mt-1 flex items-center gap-2">
-                <Building2 className="w-4 h-4" />
-                Manage AR customer contacts and credit settings
+              <p className="text-white/80 text-xs sm:text-sm mt-1 flex items-center gap-2">
+                <Building2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Manage AR customer contacts and credit settings</span>
+                <span className="sm:hidden">Manage customers</span>
               </p>
             </div>
           </div>
           <Link 
             href="/finance/ar/customers/new"
-            className="group relative flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#4F6A64] font-bold hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-0.5 transition-all overflow-hidden"
+            className="group relative flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl bg-white text-[#4F6A64] font-bold hover:shadow-2xl hover:shadow-white/30 hover:-translate-y-0.5 transition-all overflow-hidden min-h-[44px]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             <Plus className="w-5 h-5" />
             <span className="relative">Add Customer</span>
-            <Sparkles className="w-4 h-4 text-[#82A094]" />
+            <Sparkles className="w-4 h-4 text-[#82A094] hidden sm:block" />
           </Link>
         </div>
       </div>
@@ -102,8 +103,8 @@ export default function ARCustomersPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 overflow-hidden shadow-xl">
+      {/* Desktop Table - Hidden on mobile */}
+      <div className="hidden md:block bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -111,9 +112,10 @@ export default function ARCustomersPage() {
                 <th className="text-left py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">BP Code</th>
                 <th className="text-left py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Customer Name</th>
                 <th className="text-left py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Region</th>
-                <th className="text-left py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Contact Person</th>
+                <th className="text-center py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Invoices</th>
+                <th className="text-right py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Total Invoiced</th>
+                <th className="text-right py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Balance Due</th>
                 <th className="text-center py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Risk Class</th>
-                <th className="text-right py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Credit Limit</th>
                 <th className="text-center py-5 px-6 text-xs font-bold text-white uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -121,7 +123,7 @@ export default function ARCustomersPage() {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="bg-white">
-                    {Array.from({ length: 7 }).map((_, j) => (
+                    {Array.from({ length: 8 }).map((_, j) => (
                       <td key={j} className="py-5 px-6">
                         <div 
                           className="h-5 bg-gradient-to-r from-[#AEBFC3]/30 to-[#82A094]/20 rounded-lg animate-pulse" 
@@ -133,7 +135,7 @@ export default function ARCustomersPage() {
                 ))
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-20 text-center">
+                  <td colSpan={8} className="py-20 text-center">
                     <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-[#82A094]/10 to-[#4F6A64]/10 border-2 border-[#82A094]/20 mb-5">
                       <Building2 className="w-12 h-12 text-[#82A094]" />
                     </div>
@@ -157,21 +159,32 @@ export default function ARCustomersPage() {
                     <td className="py-5 px-6 text-[#5D6E73]">
                       {customer.region || <span className="text-[#AEBFC3]">-</span>}
                     </td>
-                    <td className="py-5 px-6">
-                      <div className="text-[#5D6E73] font-medium">{customer.personInCharge || <span className="text-[#AEBFC3]">-</span>}</div>
-                      {customer.emailId && (
-                        <div className="text-xs text-[#82A094] mt-0.5">{customer.emailId}</div>
-                      )}
+                    <td className="py-5 px-6 text-center">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#82A094]/10 text-[#4F6A64]">
+                        <Receipt className="w-3.5 h-3.5" />
+                        <span className="font-bold text-sm">{customer._count?.invoices || 0}</span>
+                      </div>
+                    </td>
+                    <td className="py-5 px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <TrendingUp className="w-4 h-4 text-[#82A094]" />
+                        <span className="text-[#546A7A] font-bold">
+                          {customer.totalInvoiceAmount ? formatARCurrency(customer.totalInvoiceAmount) : <span className="text-[#AEBFC3]">₹0</span>}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-5 px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Wallet className="w-4 h-4 text-[#E17F70]" />
+                        <span className={`font-bold ${customer.outstandingBalance && customer.outstandingBalance > 0 ? 'text-[#E17F70]' : 'text-[#82A094]'}`}>
+                          {customer.outstandingBalance ? formatARCurrency(customer.outstandingBalance) : <span className="text-[#82A094]">₹0</span>}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-5 px-6 text-center">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${getRiskBadge(customer.riskClass)}`}>
                         {customer.riskClass === 'CRITICAL' && <AlertTriangle className="w-3 h-3" />}
                         {customer.riskClass}
-                      </span>
-                    </td>
-                    <td className="py-5 px-6 text-right">
-                      <span className="text-[#546A7A] font-bold">
-                        {customer.creditLimit ? formatARCurrency(customer.creditLimit) : <span className="text-[#AEBFC3]">-</span>}
                       </span>
                     </td>
                     <td className="py-5 px-6" onClick={(e) => e.stopPropagation()}>
@@ -188,7 +201,7 @@ export default function ARCustomersPage() {
                           className="p-2.5 rounded-xl bg-[#CE9F6B]/10 hover:bg-[#CE9F6B]/20 text-[#5D6E73] hover:text-[#976E44] transition-all"
                           title="Edit"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Pencil className="w-4 h-4" />
                         </Link>
                       </div>
                     </td>
@@ -224,6 +237,90 @@ export default function ARCustomersPage() {
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-[#82A094]/20 p-4 animate-pulse">
+              <div className="h-4 bg-[#AEBFC3]/20 rounded w-24 mb-2" />
+              <div className="h-3 bg-[#AEBFC3]/15 rounded w-40 mb-3" />
+              <div className="h-6 bg-[#AEBFC3]/20 rounded w-28" />
+            </div>
+          ))
+        ) : customers.length === 0 ? (
+          <div className="bg-white rounded-xl border border-[#82A094]/20 p-8 text-center">
+            <Building2 className="w-12 h-12 text-[#82A094]/50 mx-auto mb-3" />
+            <p className="text-[#546A7A] font-medium">No customers found</p>
+          </div>
+        ) : (
+          customers.map((customer, index) => (
+            <Link
+              key={customer.id}
+              href={`/finance/ar/customers/${customer.id}`}
+              className={`block bg-white rounded-xl border shadow-sm p-4 active:scale-[0.98] transition-all ${
+                customer.riskClass === 'CRITICAL' || customer.riskClass === 'HIGH'
+                  ? 'border-l-4 border-l-[#E17F70] border-[#82A094]/20'
+                  : 'border-[#82A094]/20'
+              }`}
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <span className="text-[#82A094] font-bold text-sm bg-[#82A094]/10 px-2 py-0.5 rounded">{customer.bpCode}</span>
+                  <p className="text-[#546A7A] font-semibold mt-1 truncate max-w-[200px]">{customer.customerName}</p>
+                </div>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getRiskBadge(customer.riskClass)}`}>
+                  {customer.riskClass}
+                </span>
+              </div>
+              
+              {/* Stats Row */}
+              <div className="flex items-center justify-between py-2 border-t border-b border-[#82A094]/15">
+                <div>
+                  <p className="text-xs text-[#92A2A5]">Invoices</p>
+                  <p className="font-bold text-[#546A7A]">{customer._count?.invoices || 0}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-[#92A2A5]">Balance</p>
+                  <p className={`font-bold ${customer.outstandingBalance && customer.outstandingBalance > 0 ? 'text-[#E17F70]' : 'text-[#82A094]'}`}>
+                    {customer.outstandingBalance ? formatARCurrency(customer.outstandingBalance) : '₹0'}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Total */}
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-xs text-[#5D6E73]">Total Invoiced</span>
+                <span className="text-sm font-bold text-[#546A7A]">
+                  {customer.totalInvoiceAmount ? formatARCurrency(customer.totalInvoiceAmount) : '₹0'}
+                </span>
+              </div>
+            </Link>
+          ))
+        )}
+        
+        {/* Mobile Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white rounded-xl border border-[#82A094]/20 p-4">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#82A094]/30 text-[#546A7A] disabled:opacity-40 min-h-[44px]"
+            >
+              <ChevronLeft className="w-4 h-4" /> Prev
+            </button>
+            <span className="text-sm text-[#5D6E73] font-medium">{page} / {totalPages}</span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center gap-1 px-4 py-2.5 rounded-lg border border-[#82A094]/30 text-[#546A7A] disabled:opacity-40 min-h-[44px]"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         )}
       </div>

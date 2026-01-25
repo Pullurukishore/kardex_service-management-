@@ -16,7 +16,7 @@ import {
   EyeOff,
   UserCheck,
   Crown,
-  EyeIcon as ViewIcon,
+  Eye as ViewIcon,
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';

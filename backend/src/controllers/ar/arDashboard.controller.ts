@@ -1,470 +1,387 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/db';
-import { Prisma } from '@prisma/client';
 
-// Get dashboard KPIs
+// ═══════════════════════════════════════════════════════════════════════════
+// SAFE QUERY HELPERS - Prevent crashes
+// ═══════════════════════════════════════════════════════════════════════════
+
+const safeAggregate = async <T>(query: Promise<T>, fallback: T): Promise<T> => {
+    try { return await query; }
+    catch (e) { console.error('Query failed:', e); return fallback; }
+};
+
+const safeFindMany = async <T>(query: Promise<T[]>): Promise<T[]> => {
+    try { return await query; }
+    catch (e) { console.error('Query failed:', e); return []; }
+};
+
+const safeCount = async (query: Promise<number>): Promise<number> => {
+    try { return await query; }
+    catch (e) { console.error('Query failed:', e); return 0; }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN ENDPOINT: Essential Dashboard with Performance Indicators
+// GET /ar/dashboard/essential
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const getEssentialDashboard = async (req: Request, res: Response) => {
+    try {
+        const today = new Date();
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // Parallel queries for all data
+        const [
+            totalBalance,
+            overdueBalance,
+            pendingCount,
+            collectionsMTD,
+            paidCount,
+            partialCount,
+            overdueCount,
+            allUnpaidInvoices,
+            criticalOverdue,
+            totalInvoicesThisMonth,
+            paidThisMonth,
+            allInvoicesTotal,
+            totalPaid
+        ] = await Promise.all([
+            // Total Balance (what's owed) - EXCLUDE prepaid (already paid, not receivable)
+            safeAggregate(
+                prisma.aRInvoice.aggregate({
+                    where: {
+                        status: { not: 'PAID' },
+                        invoiceType: { not: 'PREPAID' }  // Exclude prepaid - already collected
+                    },
+                    _sum: { balance: true },
+                    _count: true
+                }),
+                { _sum: { balance: null }, _count: 0 }
+            ),
+            // Overdue Balance
+            safeAggregate(
+                prisma.aRInvoice.aggregate({
+                    where: { status: 'OVERDUE' },
+                    _sum: { balance: true }
+                }),
+                { _sum: { balance: null } }
+            ),
+            // Pending Count
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PENDING' } })),
+            // Collections MTD
+            safeAggregate(
+                prisma.aRPaymentHistory.aggregate({
+                    where: { paymentDate: { gte: startOfMonth } },
+                    _sum: { amount: true },
+                    _count: true
+                }),
+                { _sum: { amount: null }, _count: 0 }
+            ),
+            // Status Counts
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PAID' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PARTIAL' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'OVERDUE' } })),
+            // All unpaid invoices for aging
+            safeFindMany(prisma.aRInvoice.findMany({
+                where: { status: { not: 'PAID' } },
+                select: { dueDate: true, balance: true, totalAmount: true }
+            })),
+            // Critical overdue (top 5)
+            safeFindMany(prisma.aRInvoice.findMany({
+                where: { status: 'OVERDUE' },
+                orderBy: { balance: 'desc' },
+                take: 5,
+                select: { id: true, invoiceNumber: true, customerName: true, balance: true, dueDate: true }
+            })),
+            // Invoices created this month (for collection rate)
+            safeCount(prisma.aRInvoice.count({ where: { invoiceDate: { gte: startOfMonth } } })),
+            // Paid this month
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PAID', updatedAt: { gte: startOfMonth } } })),
+            // Total Amount (all invoices - for reference)
+            safeAggregate(
+                prisma.aRInvoice.aggregate({
+                    _sum: { totalAmount: true },
+                    _count: true
+                }),
+                { _sum: { totalAmount: null }, _count: 0 }
+            ),
+            // Total Collected (sum of ALL payments - includes partial payments)
+            safeAggregate(
+                prisma.aRPaymentHistory.aggregate({
+                    _sum: { amount: true },
+                    _count: true
+                }),
+                { _sum: { amount: null }, _count: 0 }
+            )
+        ]);
+
+        // Calculate aging buckets
+        const aging = {
+            current: { count: 0, amount: 0 },
+            days1to30: { count: 0, amount: 0 },
+            days31to60: { count: 0, amount: 0 },
+            days61to90: { count: 0, amount: 0 },
+            over90: { count: 0, amount: 0 }
+        };
+
+        allUnpaidInvoices.forEach(inv => {
+            const dueDate = new Date(inv.dueDate);
+            const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+            const amount = Number(inv.balance ?? inv.totalAmount ?? 0);
+
+            if (daysOverdue <= 0) { aging.current.count++; aging.current.amount += amount; }
+            else if (daysOverdue <= 30) { aging.days1to30.count++; aging.days1to30.amount += amount; }
+            else if (daysOverdue <= 60) { aging.days31to60.count++; aging.days31to60.amount += amount; }
+            else if (daysOverdue <= 90) { aging.days61to90.count++; aging.days61to90.amount += amount; }
+            else { aging.over90.count++; aging.over90.amount += amount; }
+        });
+
+        // Calculate critical overdue with days
+        const criticalWithDays = criticalOverdue.map(inv => ({
+            ...inv,
+            daysOverdue: Math.max(0, Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)))
+        }));
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PERFORMANCE INDICATORS (Good/Bad Percentages)
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        const totalInvoices = pendingCount + partialCount + paidCount + overdueCount;
+        const totalInvoicedAmount = Number(allInvoicesTotal._sum?.totalAmount ?? 0);
+        const totalCollectedAmount = Number(totalPaid._sum?.amount ?? 0);
+
+        // 1. Collection Rate: % of AMOUNT collected vs invoiced (amount-based, not count-based)
+        const collectionRate = totalInvoicedAmount > 0 ? Math.round((totalCollectedAmount / totalInvoicedAmount) * 100) : 0;
+        const collectionStatus = collectionRate >= 70 ? 'GOOD' : collectionRate >= 50 ? 'AVERAGE' : 'BAD';
+
+        // 2. Overdue Rate: % of invoices that are overdue (lower is better)
+        const overdueRate = totalInvoices > 0 ? Math.round((overdueCount / totalInvoices) * 100) : 0;
+        const overdueStatus = overdueRate <= 10 ? 'GOOD' : overdueRate <= 25 ? 'AVERAGE' : 'BAD';
+
+        // 3. On-Time Rate: % of invoices NOT overdue (higher is better)
+        const onTimeRate = 100 - overdueRate;
+        const onTimeStatus = onTimeRate >= 90 ? 'GOOD' : onTimeRate >= 75 ? 'AVERAGE' : 'BAD';
+
+        // 4. Current Invoices Rate: % of balance in "Current" aging (not yet due)
+        const totalAgingAmount = aging.current.amount + aging.days1to30.amount + aging.days31to60.amount + aging.days61to90.amount + aging.over90.amount;
+        const currentRate = totalAgingAmount > 0 ? Math.round((aging.current.amount / totalAgingAmount) * 100) : 0;
+        const currentStatus = currentRate >= 60 ? 'GOOD' : currentRate >= 40 ? 'AVERAGE' : 'BAD';
+
+        res.json({
+            kpis: {
+                totalAmount: Number(allInvoicesTotal._sum?.totalAmount ?? 0),
+                totalAllInvoices: allInvoicesTotal._count ?? 0,
+                totalCollected: Number(totalPaid._sum?.amount ?? 0),
+                totalPayments: totalPaid._count ?? 0,
+                totalBalance: Number(totalBalance._sum?.balance ?? 0),
+                totalInvoices: totalBalance._count ?? 0,
+                overdueAmount: Number(overdueBalance._sum?.balance ?? 0),
+                pendingCount,
+                collectionsMTD: Number(collectionsMTD._sum?.amount ?? 0),
+                paymentsCount: collectionsMTD._count ?? 0
+            },
+            statusCounts: {
+                pending: pendingCount,
+                partial: partialCount,
+                paid: paidCount,
+                overdue: overdueCount,
+                total: totalInvoices
+            },
+            performance: {
+                collectionRate: { value: collectionRate, status: collectionStatus, label: 'Collection Rate' },
+                overdueRate: { value: overdueRate, status: overdueStatus, label: 'Overdue Rate' },
+                onTimeRate: { value: onTimeRate, status: onTimeStatus, label: 'On-Time Rate' },
+                currentRate: { value: currentRate, status: currentStatus, label: 'Current (Not Due)' }
+            },
+            aging,
+            criticalOverdue: criticalWithDays
+        });
+    } catch (error: any) {
+        console.error('Dashboard error:', error);
+        res.status(500).json({ error: 'Failed to load dashboard', message: error.message });
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LEGACY ENDPOINTS (Keep for backward compatibility)
+// ═══════════════════════════════════════════════════════════════════════════
+
 export const getDashboardKPIs = async (req: Request, res: Response) => {
     try {
         const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-        // Total Outstanding (sum of balance for pending/partial/overdue invoices)
-        const totalOutstanding = await prisma.aRInvoice.aggregate({
-            where: { status: { in: ['PENDING', 'PARTIAL', 'OVERDUE'] } },
-            _sum: { balance: true }
-        });
+        const [totalOutstanding, overdueData, pendingCount, collectionsMTD, allInvoices] = await Promise.all([
+            safeAggregate(prisma.aRInvoice.aggregate({ where: { status: { not: 'PAID' } }, _sum: { balance: true }, _count: true }), { _sum: { balance: null }, _count: 0 }),
+            safeAggregate(prisma.aRInvoice.aggregate({ where: { status: 'OVERDUE' }, _sum: { balance: true }, _count: true }), { _sum: { balance: null }, _count: 0 }),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PENDING' } })),
+            safeAggregate(prisma.aRPaymentHistory.aggregate({ where: { paymentDate: { gte: startOfMonth } }, _sum: { amount: true }, _count: true }), { _sum: { amount: null }, _count: 0 }),
+            safeFindMany(prisma.aRInvoice.findMany({ select: { totalAmount: true } }))
+        ]);
 
-        // Overdue Amount
-        const overdueAmount = await prisma.aRInvoice.aggregate({
-            where: { status: 'OVERDUE' },
-            _sum: { balance: true }
-        });
-
-        // Today's Collections (invoices updated to PAID today - sum of totalReceipts)
-        const collectionsToday = await prisma.aRInvoice.aggregate({
-            where: {
-                status: 'PAID',
-                updatedAt: { gte: startOfDay, lte: endOfDay }
-            },
-            _sum: { totalReceipts: true }
-        });
-
-        // Pending Invoices Count
-        const pendingCount = await prisma.aRInvoice.count({
-            where: { status: { in: ['PENDING', 'PARTIAL'] } }
-        });
-
-        // Overdue Count
-        const overdueCount = await prisma.aRInvoice.count({
-            where: { status: 'OVERDUE' }
-        });
+        const totalReceivable = Number(totalOutstanding._sum?.balance ?? 0);
+        const totalSales = allInvoices.reduce((sum, inv) => sum + Number(inv.totalAmount ?? 0), 0);
+        const dso = totalSales > 0 ? Math.round((totalReceivable / totalSales) * 90) : 0;
 
         res.json({
-            totalOutstanding: totalOutstanding._sum?.balance || 0,
-            overdueAmount: overdueAmount._sum?.balance || 0,
-            collectionsToday: collectionsToday._sum?.totalReceipts || 0,
-            pendingInvoices: pendingCount,
-            overdueInvoices: overdueCount
+            totalOutstanding: totalReceivable,
+            totalInvoices: totalOutstanding._count ?? 0,
+            overdueAmount: Number(overdueData._sum?.balance ?? 0),
+            overdueCount: overdueData._count ?? 0,
+            pendingCount,
+            collectionsMTD: Number(collectionsMTD._sum?.amount ?? 0),
+            paymentsCount: collectionsMTD._count ?? 0,
+            dso
         });
     } catch (error: any) {
-        console.error('Error fetching AR dashboard KPIs:', error);
-        res.status(500).json({ error: 'Failed to fetch dashboard data', message: error.message });
+        console.error('KPIs error:', error);
+        res.status(500).json({ error: 'Failed to fetch KPIs', message: error.message });
     }
 };
 
-// Get aging analysis
 export const getAgingAnalysis = async (req: Request, res: Response) => {
     try {
         const today = new Date();
+        const invoices = await safeFindMany(prisma.aRInvoice.findMany({
+            where: { status: { not: 'PAID' } },
+            select: { dueDate: true, balance: true, totalAmount: true }
+        }));
 
-        const invoices = await prisma.aRInvoice.findMany({
-            where: { status: { in: ['PENDING', 'PARTIAL', 'OVERDUE'] } },
-            select: {
-                dueDate: true,
-                balance: true
-            }
+        const aging = { current: { count: 0, amount: 0 }, days1to30: { count: 0, amount: 0 }, days31to60: { count: 0, amount: 0 }, days61to90: { count: 0, amount: 0 }, over90: { count: 0, amount: 0 } };
+
+        invoices.forEach(inv => {
+            const daysOverdue = Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24));
+            const amount = Number(inv.balance ?? inv.totalAmount ?? 0);
+            if (daysOverdue <= 0) { aging.current.count++; aging.current.amount += amount; }
+            else if (daysOverdue <= 30) { aging.days1to30.count++; aging.days1to30.amount += amount; }
+            else if (daysOverdue <= 60) { aging.days31to60.count++; aging.days31to60.amount += amount; }
+            else if (daysOverdue <= 90) { aging.days61to90.count++; aging.days61to90.amount += amount; }
+            else { aging.over90.count++; aging.over90.amount += amount; }
         });
-
-        const aging = {
-            current: { count: 0, amount: 0 },      // Not yet due
-            days1to30: { count: 0, amount: 0 },    // 1-30 days overdue
-            days31to60: { count: 0, amount: 0 },   // 31-60 days overdue
-            days61to90: { count: 0, amount: 0 },   // 61-90 days overdue
-            over90: { count: 0, amount: 0 }        // 90+ days overdue
-        };
-
-        for (const inv of invoices) {
-            const daysOverdue = Math.floor(
-                (today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)
-            );
-            const amount = Number(inv.balance) || 0;
-
-            if (daysOverdue <= 0) {
-                aging.current.count++;
-                aging.current.amount += amount;
-            } else if (daysOverdue <= 30) {
-                aging.days1to30.count++;
-                aging.days1to30.amount += amount;
-            } else if (daysOverdue <= 60) {
-                aging.days31to60.count++;
-                aging.days31to60.amount += amount;
-            } else if (daysOverdue <= 90) {
-                aging.days61to90.count++;
-                aging.days61to90.amount += amount;
-            } else {
-                aging.over90.count++;
-                aging.over90.amount += amount;
-            }
-        }
 
         res.json(aging);
     } catch (error: any) {
-        console.error('Error fetching AR aging analysis:', error);
-        res.status(500).json({ error: 'Failed to fetch aging analysis', message: error.message });
+        console.error('Aging error:', error);
+        res.status(500).json({ error: 'Failed to fetch aging', message: error.message });
     }
 };
 
-// Get collection trend (last 6 months)
 export const getCollectionTrend = async (req: Request, res: Response) => {
     try {
-        const months = 6;
-        const trend: { month: string; amount: number }[] = [];
-
-        for (let i = months - 1; i >= 0; i--) {
-            const date = new Date();
-            date.setMonth(date.getMonth() - i);
-            const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-            const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
-
-            const collections = await prisma.aRInvoice.aggregate({
-                where: {
-                    status: 'PAID',
-                    updatedAt: { gte: startOfMonth, lte: endOfMonth }
-                },
-                _sum: { totalReceipts: true }
-            });
-
-            trend.push({
-                month: startOfMonth.toLocaleString('default', { month: 'short' }),
-                amount: Number(collections._sum?.totalReceipts) || 0
-            });
-        }
-
-        res.json(trend);
-    } catch (error: any) {
-        console.error('Error fetching AR collection trend:', error);
-        res.status(500).json({ error: 'Failed to fetch collection trend', message: error.message });
-    }
-};
-
-// Get critical overdue invoices
-export const getCriticalOverdue = async (req: Request, res: Response) => {
-    try {
-        const limit = Number(req.query.limit) || 10;
-
-        const invoices = await prisma.aRInvoice.findMany({
-            where: { status: 'OVERDUE' },
-            orderBy: { dueDate: 'asc' },
-            take: limit,
-            select: {
-                id: true,
-                invoiceNumber: true,
-                customerName: true,
-                balance: true,
-                dueDate: true,
-                riskClass: true
-            }
-        });
-
-        const result = invoices.map(inv => {
-            const daysOverdue = Math.floor(
-                (new Date().getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)
-            );
-
-            return {
-                id: inv.id,
-                invoiceNumber: inv.invoiceNumber,
-                customerName: inv.customerName,
-                amount: inv.balance,
-                daysOverdue,
-                riskClass: inv.riskClass
-            };
-        });
-
-        res.json(result);
-    } catch (error: any) {
-        console.error('Error fetching AR critical overdue:', error);
-        res.status(500).json({ error: 'Failed to fetch critical overdue', message: error.message });
-    }
-};
-
-// Define type for customer grouping
-interface CustomerOutstandingGroup {
-    id: string;
-    bpCode: string;
-    customerName: string;
-    riskClass: string;
-    totalOutstanding: number;
-    invoiceCount: number;
-}
-
-// Get customer-wise outstanding (grouped by bpCode from invoices)
-export const getCustomerOutstanding = async (req: Request, res: Response) => {
-    try {
-        // Get all outstanding invoices grouped by customer
-        const invoices = await prisma.aRInvoice.findMany({
-            where: { status: { in: ['PENDING', 'PARTIAL', 'OVERDUE'] } },
-            select: {
-                id: true,
-                bpCode: true,
-                customerName: true,
-                balance: true,
-                riskClass: true
-            }
-        });
-
-        // Group by bpCode
-        const customerMap = new Map<string, CustomerOutstandingGroup>();
-
-        for (const inv of invoices) {
-            const existing = customerMap.get(inv.bpCode);
-            if (existing) {
-                existing.totalOutstanding += Number(inv.balance || 0);
-                existing.invoiceCount++;
-                // Keep the highest risk class
-                if (inv.riskClass === 'CRITICAL' ||
-                    (inv.riskClass === 'HIGH' && existing.riskClass !== 'CRITICAL') ||
-                    (inv.riskClass === 'MEDIUM' && existing.riskClass === 'LOW')) {
-                    existing.riskClass = inv.riskClass;
-                }
-            } else {
-                customerMap.set(inv.bpCode, {
-                    id: inv.id,
-                    bpCode: inv.bpCode,
-                    customerName: inv.customerName,
-                    riskClass: inv.riskClass,
-                    totalOutstanding: Number(inv.balance || 0),
-                    invoiceCount: 1
-                });
-            }
-        }
-
-        const result = Array.from(customerMap.values())
-            .filter((c: CustomerOutstandingGroup) => c.invoiceCount > 0)
-            .sort((a: CustomerOutstandingGroup, b: CustomerOutstandingGroup) => b.totalOutstanding - a.totalOutstanding);
-
-        res.json(result);
-    } catch (error: any) {
-        console.error('Error fetching AR customer outstanding:', error);
-        res.status(500).json({ error: 'Failed to fetch customer outstanding', message: error.message });
-    }
-};
-
-// Get recent activity (last 10 invoice updates)
-export const getRecentActivity = async (req: Request, res: Response) => {
-    try {
-        const limit = Number(req.query.limit) || 10;
-
-        const invoices = await prisma.aRInvoice.findMany({
-            orderBy: { updatedAt: 'desc' },
-            take: limit,
-            select: {
-                id: true,
-                invoiceNumber: true,
-                customerName: true,
-                totalAmount: true,
-                status: true,
-                updatedAt: true
-            }
-        });
-
-        const result = invoices.map(inv => ({
-            id: inv.id,
-            invoiceNumber: inv.invoiceNumber,
-            customerName: inv.customerName,
-            amount: inv.totalAmount,
-            status: inv.status,
-            updatedAt: inv.updatedAt,
-            action: inv.status === 'PAID' ? 'Payment Received' :
-                inv.status === 'PARTIAL' ? 'Partial Payment' :
-                    inv.status === 'OVERDUE' ? 'Marked Overdue' : 'Invoice Updated'
+        const today = new Date();
+        const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+        const payments = await safeFindMany(prisma.aRPaymentHistory.findMany({
+            where: { paymentDate: { gte: sixMonthsAgo } },
+            select: { paymentDate: true, amount: true }
         }));
 
-        res.json(result);
+        const monthlyData: { [key: string]: number } = {};
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            monthlyData[date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })] = 0;
+        }
+        payments.forEach(p => {
+            const key = new Date(p.paymentDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+            if (monthlyData[key] !== undefined) monthlyData[key] += Number(p.amount ?? 0);
+        });
+
+        res.json(Object.entries(monthlyData).map(([month, amount]) => ({ month, amount })));
     } catch (error: any) {
-        console.error('Error fetching AR recent activity:', error);
-        res.status(500).json({ error: 'Failed to fetch recent activity', message: error.message });
+        res.status(500).json({ error: 'Failed to fetch trend', message: error.message });
     }
 };
 
-// Define type for top customers
-interface TopCustomerGroup {
-    id: string;
-    bpCode: string;
-    customerName: string;
-    riskClass: string;
-    totalOutstanding: number;
-    invoiceCount: number;
-    overdueCount: number;
-}
+export const getStatusDistribution = async (req: Request, res: Response) => {
+    try {
+        const [pending, partial, paid, overdue, cancelled] = await Promise.all([
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PENDING' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PARTIAL' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'PAID' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'OVERDUE' } })),
+            safeCount(prisma.aRInvoice.count({ where: { status: 'CANCELLED' } }))
+        ]);
+        res.json({ pending, partial, paid, overdue, cancelled, total: pending + partial + paid + overdue + cancelled });
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to fetch status', message: error.message });
+    }
+};
 
-// Get top customers by outstanding amount
+export const getRiskDistribution = async (req: Request, res: Response) => {
+    try {
+        const invoices = await safeFindMany(prisma.aRInvoice.findMany({
+            where: { status: { not: 'PAID' } },
+            select: { riskClass: true, balance: true, totalAmount: true }
+        }));
+
+        const dist = { LOW: { count: 0, amount: 0 }, MEDIUM: { count: 0, amount: 0 }, HIGH: { count: 0, amount: 0 }, CRITICAL: { count: 0, amount: 0 } };
+        invoices.forEach(inv => {
+            const key = inv.riskClass || 'LOW';
+            if (dist[key]) { dist[key].count++; dist[key].amount += Number(inv.balance ?? inv.totalAmount ?? 0); }
+        });
+        res.json(dist);
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to fetch risk', message: error.message });
+    }
+};
+
+export const getCriticalOverdue = async (req: Request, res: Response) => {
+    try {
+        const limit = parseInt(req.query.limit as string) || 10;
+        const invoices = await safeFindMany(prisma.aRInvoice.findMany({
+            where: { status: 'OVERDUE' },
+            orderBy: { balance: 'desc' },
+            take: limit,
+            select: { id: true, invoiceNumber: true, bpCode: true, customerName: true, totalAmount: true, balance: true, dueDate: true, riskClass: true, status: true }
+        }));
+
+        const today = new Date();
+        res.json(invoices.map(inv => ({
+            ...inv,
+            daysOverdue: Math.max(0, Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)))
+        })));
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to fetch overdue', message: error.message });
+    }
+};
+
 export const getTopCustomers = async (req: Request, res: Response) => {
     try {
-        const limit = Number(req.query.limit) || 5;
+        const limit = parseInt(req.query.limit as string) || 5;
+        const invoices = await safeFindMany(prisma.aRInvoice.findMany({
+            where: { status: { not: 'PAID' } },
+            select: { bpCode: true, customerName: true, balance: true, totalAmount: true }
+        }));
 
-        const invoices = await prisma.aRInvoice.findMany({
-            where: { status: { in: ['PENDING', 'PARTIAL', 'OVERDUE'] } },
-            select: {
-                id: true,
-                bpCode: true,
-                customerName: true,
-                balance: true,
-                status: true,
-                riskClass: true
-            }
+        const map: { [key: string]: { bpCode: string; customerName: string; outstanding: number; invoiceCount: number } } = {};
+        invoices.forEach(inv => {
+            if (!map[inv.bpCode]) map[inv.bpCode] = { bpCode: inv.bpCode, customerName: inv.customerName, outstanding: 0, invoiceCount: 0 };
+            map[inv.bpCode].outstanding += Number(inv.balance ?? inv.totalAmount ?? 0);
+            map[inv.bpCode].invoiceCount++;
         });
 
-        // Group by bpCode
-        const customerMap = new Map<string, TopCustomerGroup>();
+        const sorted = Object.values(map).sort((a, b) => b.outstanding - a.outstanding).slice(0, limit);
+        const total = sorted.reduce((s, c) => s + c.outstanding, 0);
+        res.json(sorted.map(c => ({ ...c, percentage: total > 0 ? Math.round((c.outstanding / total) * 100) : 0 })));
+    } catch (error: any) {
+        res.status(500).json({ error: 'Failed to fetch customers', message: error.message });
+    }
+};
 
-        for (const inv of invoices) {
-            const existing = customerMap.get(inv.bpCode);
-            if (existing) {
-                existing.totalOutstanding += Number(inv.balance || 0);
-                existing.invoiceCount++;
-                if (inv.status === 'OVERDUE') {
-                    existing.overdueCount++;
-                }
-                // Keep the highest risk class
-                if (inv.riskClass === 'CRITICAL' ||
-                    (inv.riskClass === 'HIGH' && existing.riskClass !== 'CRITICAL') ||
-                    (inv.riskClass === 'MEDIUM' && existing.riskClass === 'LOW')) {
-                    existing.riskClass = inv.riskClass;
-                }
-            } else {
-                customerMap.set(inv.bpCode, {
-                    id: inv.id,
-                    bpCode: inv.bpCode,
-                    customerName: inv.customerName,
-                    riskClass: inv.riskClass,
-                    totalOutstanding: Number(inv.balance || 0),
-                    invoiceCount: 1,
-                    overdueCount: inv.status === 'OVERDUE' ? 1 : 0
-                });
-            }
-        }
+export const getRecentPayments = async (req: Request, res: Response) => {
+    try {
+        const limit = parseInt(req.query.limit as string) || 10;
+        const payments = await safeFindMany(prisma.aRPaymentHistory.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+            select: { id: true, invoiceId: true, amount: true, paymentDate: true, paymentMode: true, recordedBy: true, createdAt: true }
+        }));
 
-        const result = Array.from(customerMap.values())
-            .filter((c: TopCustomerGroup) => c.invoiceCount > 0)
-            .sort((a: TopCustomerGroup, b: TopCustomerGroup) => b.totalOutstanding - a.totalOutstanding)
-            .slice(0, limit);
-
+        const result = await Promise.all(payments.map(async p => {
+            const inv = await prisma.aRInvoice.findUnique({ where: { id: p.invoiceId }, select: { invoiceNumber: true, customerName: true } }).catch(() => null);
+            return { ...p, invoice: inv };
+        }));
         res.json(result);
     } catch (error: any) {
-        console.error('Error fetching AR top customers:', error);
-        res.status(500).json({ error: 'Failed to fetch top customers', message: error.message });
-    }
-};
-
-// Get monthly comparison (this month vs last month)
-export const getMonthlyComparison = async (req: Request, res: Response) => {
-    try {
-        const today = new Date();
-
-        // Current month
-        const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        const currentMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59);
-
-        // Last month
-        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
-
-        // Current month invoices created
-        const currentMonthInvoices = await prisma.aRInvoice.aggregate({
-            where: {
-                createdAt: { gte: currentMonthStart, lte: currentMonthEnd }
-            },
-            _count: true,
-            _sum: { totalAmount: true }
-        });
-
-        // Last month invoices created
-        const lastMonthInvoices = await prisma.aRInvoice.aggregate({
-            where: {
-                createdAt: { gte: lastMonthStart, lte: lastMonthEnd }
-            },
-            _count: true,
-            _sum: { totalAmount: true }
-        });
-
-        // Current month collections
-        const currentMonthCollections = await prisma.aRInvoice.aggregate({
-            where: {
-                status: 'PAID',
-                updatedAt: { gte: currentMonthStart, lte: currentMonthEnd }
-            },
-            _sum: { totalReceipts: true }
-        });
-
-        // Last month collections
-        const lastMonthCollections = await prisma.aRInvoice.aggregate({
-            where: {
-                status: 'PAID',
-                updatedAt: { gte: lastMonthStart, lte: lastMonthEnd }
-            },
-            _sum: { totalReceipts: true }
-        });
-
-        res.json({
-            currentMonth: {
-                invoiceCount: currentMonthInvoices._count,
-                invoiceValue: currentMonthInvoices._sum?.totalAmount || 0,
-                collections: currentMonthCollections._sum?.totalReceipts || 0,
-                monthName: currentMonthStart.toLocaleString('default', { month: 'long' })
-            },
-            lastMonth: {
-                invoiceCount: lastMonthInvoices._count,
-                invoiceValue: lastMonthInvoices._sum?.totalAmount || 0,
-                collections: lastMonthCollections._sum?.totalReceipts || 0,
-                monthName: lastMonthStart.toLocaleString('default', { month: 'long' })
-            }
-        });
-    } catch (error: any) {
-        console.error('Error fetching AR monthly comparison:', error);
-        res.status(500).json({ error: 'Failed to fetch monthly comparison', message: error.message });
-    }
-};
-
-// Get DSO (Days Sales Outstanding)
-export const getDSOMetrics = async (req: Request, res: Response) => {
-    try {
-        // Get all paid invoices in the last 90 days
-        const ninetyDaysAgo = new Date();
-        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-
-        const paidInvoices = await prisma.aRInvoice.findMany({
-            where: {
-                status: 'PAID',
-                updatedAt: { gte: ninetyDaysAgo }
-            },
-            select: {
-                invoiceDate: true,
-                updatedAt: true,
-                totalAmount: true
-            }
-        });
-
-        // Calculate weighted average DSO
-        let totalWeightedDays = 0;
-        let totalAmount = 0;
-
-        for (const inv of paidInvoices) {
-            const daysToCollect = Math.floor(
-                (new Date(inv.updatedAt).getTime() - new Date(inv.invoiceDate).getTime()) / (1000 * 60 * 60 * 24)
-            );
-            const amount = Number(inv.totalAmount) || 0;
-            totalWeightedDays += daysToCollect * amount;
-            totalAmount += amount;
-        }
-
-        const averageDSO = totalAmount > 0 ? Math.round(totalWeightedDays / totalAmount) : 0;
-
-        // Get current outstanding for DSO target calculation
-        const outstanding = await prisma.aRInvoice.aggregate({
-            where: { status: { in: ['PENDING', 'PARTIAL', 'OVERDUE'] } },
-            _sum: { balance: true }
-        });
-
-        res.json({
-            averageDSO,
-            targetDSO: 45,  // Industry standard target
-            currentOutstanding: outstanding._sum?.balance || 0,
-            invoicesAnalyzed: paidInvoices.length
-        });
-    } catch (error: any) {
-        console.error('Error fetching DSO metrics:', error);
-        res.status(500).json({ error: 'Failed to fetch DSO metrics', message: error.message });
+        res.status(500).json({ error: 'Failed to fetch payments', message: error.message });
     }
 };

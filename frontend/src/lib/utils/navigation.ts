@@ -8,6 +8,8 @@ export function getRoleBasedRedirect(role?: UserRole): string {
       return '/expert/dashboard';
     case UserRole.SERVICE_PERSON:
       return '/service-person/dashboard';
+    case UserRole.ZONE_MANAGER:
+      return '/zone-manager/dashboard';
     case UserRole.ZONE_USER:
       return '/zone/dashboard';
     case UserRole.EXTERNAL_USER:

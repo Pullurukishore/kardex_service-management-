@@ -8,7 +8,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { FinanceRole } from '@/types/user.types';
 import { 
   Plus, Building2, CreditCard, Check, X, Sparkles, 
-  Search, Eye, Edit2, Trash2, AlertCircle, Clock, Bell
+  Search, Eye, Pencil, Trash2, Clock, Bell, TrendingUp,
+  Hash, MoreHorizontal
 } from 'lucide-react';
 
 export default function BankAccountsPage() {
@@ -69,175 +70,280 @@ export default function BankAccountsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#546A7A] flex items-center gap-2">
-            Bank Accounts
-            <Sparkles className="w-5 h-5 text-[#CE9F6B]" />
-          </h1>
-          <p className="text-[#92A2A5] text-sm mt-1 font-medium">Manage vendor bank details</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {/* Pending Requests Badge (Admin only) */}
-          {isAdmin && pendingCount > 0 && (
-            <Link
-              href="/finance/bank-accounts/requests"
-              className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E17F70]/10 border border-[#E17F70]/30 text-[#E17F70] font-semibold hover:border-[#E17F70]/50 transition-all"
-            >
-              <Bell className="w-4 h-4" />
-              <span>{pendingCount} Pending</span>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#E17F70] rounded-full animate-pulse" />
-            </Link>
-          )}
-          
-          {/* My Requests (User only) */}
-          {!isAdmin && (
-            <Link
-              href="/finance/bank-accounts/requests"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/30 text-[#5D6E73] font-medium hover:border-[#CE9F6B]/30 hover:text-[#976E44] transition-all"
-            >
-              <Clock className="w-4 h-4" />
-              My Requests
-            </Link>
-          )}
-          
-          <Link 
-            href="/finance/bank-accounts/new"
-            className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white font-semibold hover:from-[#9E3B47] hover:to-[#75242D] transition-all duration-300 shadow-lg shadow-[#E17F70]/25 hover:shadow-[#E17F70]/40 hover:-translate-y-0.5"
-          >
-            <Plus className="w-4 h-4 transition-transform group-hover:rotate-90 duration-300" />
-            {isAdmin ? 'Add Account' : 'Request New'}
-          </Link>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#92A2A5]" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by vendor name, bank, account number..."
-          className="w-full pl-12 pr-4 py-3 bg-white border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] placeholder-[#92A2A5] focus:outline-none focus:border-[#CE9F6B]/50 focus:ring-2 focus:ring-[#CE9F6B]/20 transition-all"
-        />
-      </div>
-
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {loading ? (
-          Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-[#AEBFC3]/20 p-6 animate-pulse shadow-lg">
-              <div className="flex items-start justify-between mb-4">
-                <div className="h-14 w-14 bg-[#AEBFC3]/20 rounded-xl" />
-                <div className="h-6 w-16 bg-[#AEBFC3]/20 rounded-full" />
-              </div>
-              <div className="h-6 bg-[#AEBFC3]/20 rounded w-2/3 mb-3" />
-              <div className="h-4 bg-[#AEBFC3]/20 rounded w-1/2 mb-2" />
-              <div className="h-4 bg-[#AEBFC3]/20 rounded w-3/4" />
+    <div className="w-full space-y-6">
+      {/* Stats Cards Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-[#CE9F6B] to-[#976E44] rounded-2xl p-5 text-white shadow-lg shadow-[#CE9F6B]/25">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+              <Building2 className="w-6 h-6" />
             </div>
-          ))
-        ) : filteredAccounts.length === 0 ? (
-          <div className="col-span-full text-center py-16">
-            <div className="w-20 h-20 rounded-2xl bg-[#CE9F6B]/10 flex items-center justify-center mx-auto mb-4">
-              <Building2 className="w-10 h-10 text-[#CE9F6B]/50" />
-            </div>
-            <p className="text-[#92A2A5] font-medium mb-2">
-              {searchTerm ? 'No matching bank accounts found' : 'No bank accounts configured'}
-            </p>
-            <Link 
-              href="/finance/bank-accounts/new"
-              className="text-[#82A094] hover:text-[#4F6A64] text-sm font-medium transition-colors"
-            >
-              Click here to add your first bank account →
-            </Link>
+            <TrendingUp className="w-5 h-5 opacity-60" />
           </div>
-        ) : (
-          filteredAccounts.map((account, index) => (
-            <div 
-              key={account.id}
-              onClick={() => router.push(`/finance/bank-accounts/${account.id}`)}
-              className="bg-white rounded-2xl border border-[#AEBFC3]/20 p-6 hover:border-[#CE9F6B]/30 hover:shadow-xl transition-all duration-300 group relative overflow-hidden cursor-pointer shadow-lg"
-            >
-              {/* Hover gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#CE9F6B]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              {/* Action buttons */}
-              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+          <p className="text-white/70 text-sm font-medium">Total Accounts</p>
+          <p className="text-3xl font-bold">{loading ? '--' : accounts.length}</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-2xl p-5 text-white shadow-lg shadow-[#82A094]/25">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+              <Check className="w-6 h-6" />
+            </div>
+          </div>
+          <p className="text-white/70 text-sm font-medium">Active Accounts</p>
+          <p className="text-3xl font-bold">{loading ? '--' : accounts.filter(a => a.isActive).length}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-[#AEBFC3]/20 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-12 h-12 rounded-xl bg-[#6F8A9D]/10 flex items-center justify-center">
+              <Hash className="w-6 h-6 text-[#6F8A9D]" />
+            </div>
+          </div>
+          <p className="text-[#92A2A5] text-sm font-medium">Unique Banks</p>
+          <p className="text-3xl font-bold text-[#546A7A]">
+            {loading ? '--' : new Set(accounts.map(a => a.beneficiaryBankName)).size}
+          </p>
+        </div>
+
+        <Link 
+          href="/finance/bank-accounts/requests"
+          className="bg-white rounded-2xl p-5 border border-[#AEBFC3]/20 shadow-lg hover:border-[#E17F70]/40 hover:shadow-xl transition-all group"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="w-12 h-12 rounded-xl bg-[#E17F70]/10 flex items-center justify-center group-hover:bg-[#E17F70]/20 transition-colors">
+              <Clock className="w-6 h-6 text-[#E17F70]" />
+            </div>
+            {pendingCount > 0 && (
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E17F70]/10 text-[#E17F70] text-xs font-bold animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-[#E17F70]" />
+                {pendingCount}
+              </span>
+            )}
+          </div>
+          <p className="text-[#92A2A5] text-sm font-medium group-hover:text-[#E17F70] transition-colors">Pending Requests</p>
+          <p className="text-3xl font-bold text-[#546A7A] group-hover:text-[#E17F70] transition-colors">{pendingCount}</p>
+        </Link>
+      </div>
+
+      {/* Header with Search and Actions */}
+      <div className="bg-white rounded-2xl border border-[#AEBFC3]/20 p-5 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#CE9F6B] to-[#976E44] flex items-center justify-center shadow-lg shadow-[#CE9F6B]/25">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-[#546A7A] flex items-center gap-2">
+                All Bank Accounts
+                <Sparkles className="w-4 h-4 text-[#CE9F6B]" />
+              </h2>
+              <p className="text-[#92A2A5] text-sm mt-0.5">
+                {loading ? 'Loading...' : `${filteredAccounts.length} accounts found`}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Search */}
+            <div className="relative flex-1 min-w-[280px]">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#92A2A5]" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search accounts..."
+                className="w-full pl-12 pr-4 py-3 bg-[#F8FAFB] border border-[#AEBFC3]/20 rounded-xl text-[#546A7A] placeholder-[#92A2A5] focus:outline-none focus:border-[#CE9F6B]/50 focus:ring-2 focus:ring-[#CE9F6B]/20 focus:bg-white transition-all"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              {isAdmin && pendingCount > 0 && (
                 <Link
-                  href={`/finance/bank-accounts/${account.id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-2 rounded-lg bg-[#AEBFC3]/10 hover:bg-[#6F8A9D]/20 text-[#5D6E73] hover:text-[#6F8A9D] transition-all"
-                  title="View"
+                  href="/finance/bank-accounts/requests"
+                  className="relative flex items-center gap-2 px-4 py-3 rounded-xl bg-[#E17F70]/10 border border-[#E17F70]/30 text-[#E17F70] font-semibold hover:bg-[#E17F70]/20 transition-all"
                 >
-                  <Eye className="w-4 h-4" />
+                  <Bell className="w-4 h-4" />
+                  <span>{pendingCount}</span>
                 </Link>
-                <Link
-                  href={`/finance/bank-accounts/${account.id}/edit`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-2 rounded-lg bg-[#AEBFC3]/10 hover:bg-[#CE9F6B]/20 text-[#5D6E73] hover:text-[#CE9F6B] transition-all"
-                  title="Edit"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </Link>
-                {isAdmin && (
-                  <button
-                    onClick={(e) => handleDelete(account.id, e)}
-                    className="p-2 rounded-lg bg-[#AEBFC3]/10 hover:bg-[#E17F70]/20 text-[#5D6E73] hover:text-[#E17F70] transition-all"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              
-              <div className="flex items-start justify-between mb-5 relative z-10">
-                <div 
-                  className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#CE9F6B] to-[#976E44] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg"
-                >
-                  <Building2 className="w-7 h-7 text-white" />
-                </div>
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
-                  account.isActive 
-                    ? 'bg-[#82A094]/15 text-[#4F6A64] border-[#82A094]/30' 
-                    : 'bg-[#AEBFC3]/10 text-[#92A2A5] border-[#AEBFC3]/20'
-                }`}>
-                  {account.isActive ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                  {account.isActive ? 'Active' : 'Inactive'}
-                </div>
-              </div>
-              
-              <h3 className="text-lg font-bold text-[#546A7A] mb-1 relative z-10 group-hover:text-[#976E44] transition-colors line-clamp-1">
-                {account.vendorName}
-              </h3>
-              {account.nickName && (
-                <p className="text-[#CE9F6B] text-sm mb-3 relative z-10 font-medium">
-                  "{account.nickName}"
-                </p>
               )}
               
-              <div className="space-y-2 relative z-10 pt-3 border-t border-[#AEBFC3]/10">
-                <div className="flex items-center gap-2 text-sm">
-                  <CreditCard className="w-4 h-4 text-[#92A2A5] flex-shrink-0" />
-                  <span className="text-[#92A2A5]">Bank:</span>
-                  <span className="text-[#546A7A] font-medium truncate">{account.beneficiaryBankName}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-[#92A2A5] ml-6">A/C:</span>
-                  <span className="text-[#546A7A] font-mono text-xs">
-                    ****{account.accountNumber.slice(-4)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-[#92A2A5] ml-6">IFSC:</span>
-                  <span className="text-[#CE9F6B] font-mono text-xs">{account.ifscCode}</span>
+              {!isAdmin && (
+                <Link
+                  href="/finance/bank-accounts/requests"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/30 text-[#5D6E73] font-medium hover:border-[#CE9F6B]/30 transition-all"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Requests</span>
+                </Link>
+              )}
+              
+              <Link 
+                href="/finance/bank-accounts/new"
+                className="group flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-semibold hover:from-[#4F6A64] hover:to-[#3D524D] transition-all duration-300 shadow-lg shadow-[#82A094]/25 hover:shadow-[#82A094]/40"
+              >
+                <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-300" />
+                <span className="hidden sm:inline">{isAdmin ? 'Add Account' : 'Request New'}</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Accounts Table */}
+      <div className="bg-white rounded-2xl border border-[#AEBFC3]/20 overflow-hidden shadow-lg">
+        {/* Table Header */}
+        <div className="hidden lg:grid lg:grid-cols-[2fr,1.5fr,1fr,1fr,auto] gap-4 px-6 py-4 bg-[#F8FAFB] border-b border-[#AEBFC3]/10 text-sm font-semibold text-[#5D6E73]">
+          <div>Vendor Details</div>
+          <div>Bank Information</div>
+          <div>Account Number</div>
+          <div>Status</div>
+          <div className="text-right w-20">Actions</div>
+        </div>
+
+        {/* Table Body */}
+        <div className="divide-y divide-[#AEBFC3]/10">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="px-6 py-5 animate-pulse">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#AEBFC3]/20 rounded-xl" />
+                  <div className="flex-1">
+                    <div className="h-5 bg-[#AEBFC3]/20 rounded w-1/3 mb-2" />
+                    <div className="h-4 bg-[#AEBFC3]/20 rounded w-1/4" />
+                  </div>
                 </div>
               </div>
+            ))
+          ) : filteredAccounts.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="w-20 h-20 rounded-2xl bg-[#CE9F6B]/10 flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-10 h-10 text-[#CE9F6B]/50" />
+              </div>
+              <p className="text-[#92A2A5] font-medium mb-2">
+                {searchTerm ? 'No matching bank accounts found' : 'No bank accounts configured'}
+              </p>
+              <Link 
+                href="/finance/bank-accounts/new"
+                className="inline-flex items-center gap-2 text-[#82A094] hover:text-[#4F6A64] text-sm font-semibold transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add your first bank account
+              </Link>
             </div>
-          ))
-        )}
+          ) : (
+            filteredAccounts.map((account) => (
+              <div 
+                key={account.id}
+                onClick={() => router.push(`/finance/bank-accounts/${account.id}`)}
+                className="group px-6 py-5 hover:bg-[#CE9F6B]/5 cursor-pointer transition-all"
+              >
+                {/* Mobile/Tablet Card View */}
+                <div className="lg:hidden space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#CE9F6B] to-[#976E44] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <Building2 className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-[#546A7A] group-hover:text-[#976E44] transition-colors">
+                          {account.vendorName}
+                        </h3>
+                        {account.nickName && (
+                          <p className="text-sm text-[#CE9F6B]">"{account.nickName}"</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                      account.isActive 
+                        ? 'bg-[#82A094]/15 text-[#4F6A64]' 
+                        : 'bg-[#AEBFC3]/10 text-[#92A2A5]'
+                    }`}>
+                      {account.isActive ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      {account.isActive ? 'Active' : 'Inactive'}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-[#92A2A5]">Bank:</span>
+                      <span className="ml-2 text-[#546A7A] font-medium">{account.beneficiaryBankName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#92A2A5]">A/C:</span>
+                      <span className="ml-2 text-[#546A7A] font-mono">****{account.accountNumber.slice(-4)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop Table Row */}
+                <div className="hidden lg:grid lg:grid-cols-[2fr,1.5fr,1fr,1fr,auto] gap-4 items-center">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#CE9F6B] to-[#976E44] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#546A7A] group-hover:text-[#976E44] transition-colors">
+                        {account.vendorName}
+                      </h3>
+                      {account.nickName && (
+                        <p className="text-sm text-[#CE9F6B]">"{account.nickName}"</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium text-[#546A7A]">{account.beneficiaryBankName}</p>
+                    <p className="text-sm text-[#CE9F6B] font-mono">{account.ifscCode}</p>
+                  </div>
+
+                  <div className="font-mono text-[#546A7A] tracking-wide">
+                    ****{account.accountNumber.slice(-4)}
+                  </div>
+
+                  <div>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                      account.isActive 
+                        ? 'bg-[#82A094]/15 text-[#4F6A64]' 
+                        : 'bg-[#AEBFC3]/10 text-[#92A2A5]'
+                    }`}>
+                      {account.isActive ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                      {account.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-1 w-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link
+                      href={`/finance/bank-accounts/${account.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-lg hover:bg-[#6F8A9D]/10 text-[#92A2A5] hover:text-[#6F8A9D] transition-all"
+                      title="View"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/finance/bank-accounts/${account.id}/edit`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-lg hover:bg-[#CE9F6B]/10 text-[#92A2A5] hover:text-[#CE9F6B] transition-all"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                    {isAdmin && (
+                      <button
+                        onClick={(e) => handleDelete(account.id, e)}
+                        className="p-2 rounded-lg hover:bg-[#E17F70]/10 text-[#92A2A5] hover:text-[#E17F70] transition-all"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ import {
   Trash2,
   Crown,
   User,
-  EyeIcon
+  Eye as ViewIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -134,7 +134,7 @@ export default function FinanceUsersPage() {
       case 'FINANCE_USER':
         return <User className="h-3 w-3" />;
       case 'FINANCE_VIEWER':
-        return <EyeIcon className="h-3 w-3" />;
+        return <ViewIcon className="h-3 w-3" />;
       default:
         return <Shield className="h-3 w-3" />;
     }
@@ -302,90 +302,134 @@ export default function FinanceUsersPage() {
               </Link>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[#CE9F6B]/5 hover:bg-[#CE9F6B]/10">
-                  <TableHead className="text-[#976E44] font-semibold">User</TableHead>
-                  <TableHead className="text-[#976E44] font-semibold">Role</TableHead>
-                  <TableHead className="text-[#976E44] font-semibold">Status</TableHead>
-                  <TableHead className="text-[#976E44] font-semibold">Last Login</TableHead>
-                  <TableHead className="text-[#976E44] font-semibold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop Table - Hidden on mobile */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#CE9F6B]/5 hover:bg-[#CE9F6B]/10">
+                      <TableHead className="text-[#976E44] font-semibold">User</TableHead>
+                      <TableHead className="text-[#976E44] font-semibold">Role</TableHead>
+                      <TableHead className="text-[#976E44] font-semibold">Status</TableHead>
+                      <TableHead className="text-[#976E44] font-semibold">Last Login</TableHead>
+                      <TableHead className="text-[#976E44] font-semibold text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow 
+                        key={user.id} 
+                        className="hover:bg-[#CE9F6B]/5 cursor-pointer"
+                        onClick={() => router.push(`/finance/ar/users/${user.id}`)}
+                      >
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#976E44] to-[#CE9F6B] flex items-center justify-center text-white font-semibold">
+                              {(user.name || user.email).charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-medium text-[#546A7A]">{user.name || 'No name'}</p>
+                              <p className="text-sm text-[#5D6E73]">{user.email}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            className={`${getFinanceRoleBadgeColor(user.financeRole)} flex items-center gap-1 w-fit`}
+                          >
+                            {getRoleIcon(user.financeRole)}
+                            {getFinanceRoleDisplayName(user.financeRole)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={user.isActive ? 'default' : 'secondary'}
+                            className={user.isActive 
+                              ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
+                              : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
+                            }
+                          >
+                            {user.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-[#5D6E73]">
+                          {user.lastLoginAt 
+                            ? new Date(user.lastLoginAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : 'Never'
+                          }
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                            <Link href={`/finance/ar/users/${user.id}`}>
+                              <Button variant="ghost" size="sm" className="text-[#546A7A] hover:text-[#976E44] hover:bg-[#CE9F6B]/10">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Link href={`/finance/ar/users/${user.id}/edit`}>
+                              <Button variant="ghost" size="sm" className="text-[#546A7A] hover:text-[#976E44] hover:bg-[#CE9F6B]/10">
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-[#9E3B47] hover:text-[#75242D] hover:bg-[#E17F70]/10"
+                              onClick={() => handleDeleteClick(user)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-3 p-4">
                 {users.map((user) => (
-                  <TableRow 
-                    key={user.id} 
-                    className="hover:bg-[#CE9F6B]/5 cursor-pointer"
+                  <div
+                    key={user.id}
                     onClick={() => router.push(`/finance/ar/users/${user.id}`)}
+                    className="bg-white rounded-xl border border-[#CE9F6B]/20 p-4 shadow-sm active:scale-[0.98] transition-all cursor-pointer"
                   >
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#976E44] to-[#CE9F6B] flex items-center justify-center text-white font-semibold">
-                          {(user.name || user.email).charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="font-medium text-[#546A7A]">{user.name || 'No name'}</p>
-                          <p className="text-sm text-[#5D6E73]">{user.email}</p>
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#976E44] to-[#CE9F6B] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                        {(user.name || user.email).charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-[#546A7A] truncate">{user.name || 'No name'}</p>
+                        <p className="text-sm text-[#5D6E73] truncate">{user.email}</p>
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                          <Badge 
+                            variant="outline" 
+                            className={`${getFinanceRoleBadgeColor(user.financeRole)} flex items-center gap-1 text-xs`}
+                          >
+                            {getRoleIcon(user.financeRole)}
+                            {getFinanceRoleDisplayName(user.financeRole)}
+                          </Badge>
+                          <Badge 
+                            variant={user.isActive ? 'default' : 'secondary'}
+                            className={`text-xs ${user.isActive 
+                              ? 'bg-[#A2B9AF]/20 text-[#4F6A64]' 
+                              : 'bg-[#AEBFC3]/20 text-[#5D6E73]'
+                            }`}
+                          >
+                            {user.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={`${getFinanceRoleBadgeColor(user.financeRole)} flex items-center gap-1 w-fit`}
-                      >
-                        {getRoleIcon(user.financeRole)}
-                        {getFinanceRoleDisplayName(user.financeRole)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={user.isActive ? 'default' : 'secondary'}
-                        className={user.isActive 
-                          ? 'bg-[#A2B9AF]/20 text-[#4F6A64] hover:bg-[#82A094]/30' 
-                          : 'bg-[#AEBFC3]/20 text-[#5D6E73] hover:bg-[#92A2A5]/30'
-                        }
-                      >
-                        {user.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-[#5D6E73]">
-                      {user.lastLoginAt 
-                        ? new Date(user.lastLoginAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : 'Never'
-                      }
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                        <Link href={`/finance/ar/users/${user.id}`}>
-                          <Button variant="ghost" size="sm" className="text-[#546A7A] hover:text-[#976E44] hover:bg-[#CE9F6B]/10">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Link href={`/finance/ar/users/${user.id}/edit`}>
-                          <Button variant="ghost" size="sm" className="text-[#546A7A] hover:text-[#976E44] hover:bg-[#CE9F6B]/10">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-[#9E3B47] hover:text-[#75242D] hover:bg-[#E17F70]/10"
-                          onClick={() => handleDeleteClick(user)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

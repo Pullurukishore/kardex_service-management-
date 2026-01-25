@@ -265,11 +265,23 @@ async function checkTicketAccess(user: any, ticketId: number) {
     return { allowed: true };
   }
 
-  // Expert helpdesk can access tickets assigned to them
+  // Expert helpdesk can access tickets assigned to them, owned by them, sub-owned by them, 
+  // created by them, or tickets in zones they have access to (similar to zone users)
   if (user.role === 'EXPERT_HELPDESK') {
+    // Check if the ticket is assigned to this user
     if (ticket.assignedToId === user.id) {
       return { allowed: true };
     }
+    // Check if they own or sub-own the ticket
+    if (ticket.ownerId === user.id || ticket.subOwnerId === user.id) {
+      return { allowed: true };
+    }
+    // Check if they created the ticket
+    if (ticket.createdById === user.id) {
+      return { allowed: true };
+    }
+    // Expert helpdesk users can access all tickets (they coordinate across zones)
+    return { allowed: true };
   }
 
   // Zone user and zone manager can access tickets assigned to them

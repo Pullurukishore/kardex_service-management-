@@ -53,23 +53,18 @@ model User {
   lastActiveAt                   DateTime?
   ipAddress                      String?
   userAgent                      String?
-  resolvedValidations            AssetValidationPending[] @relation("ResolvedValidations")
   attachments                    Attachment[]             @relation("UserAttachments")
   attendance                     Attendance[]             @relation("UserAttendance")
   auditLogs                      AuditLog[]               @relation("UserAuditLogs")
   AuditLog_AuditLog_userIdToUser AuditLog[]               @relation("AuditLog_userIdToUser")
-  callLogsAsCaller               CallLog[]                @relation("CallerLogs")
-  callLogsAsReceiver             CallLog[]                @relation("ReceiverLogs")
   comments                       Comment[]                @relation("UserComments")
   createdCustomers               Customer[]               @relation("CustomerCreatedBy")
   updatedCustomers               Customer[]               @relation("CustomerUpdatedBy")
   activityLogs                   DailyActivityLog[]       @relation("UserActivityLogs")
-  activityReports                ActivityReport[]         @relation("UserActivityReports")
   notifications                  Notification[]
   onsiteVisitLogs                OnsiteVisitLog[]         @relation("UserOnsiteVisitLogs")
   approvedPOs                    PORequest[]              @relation("ApprovedPOs")
   requestedPOs                   PORequest[]              @relation("RequestedPOs")
-  serviceHistory                 ServiceHistory[]         @relation("UserServiceHistory")
   serviceZones                   ServicePersonZone[]      @relation("UserServiceZones")
   assignedTickets                Ticket[]                 @relation("AssignedTickets")
   createdTickets                 Ticket[]                 @relation("TicketCreator")
@@ -93,6 +88,7 @@ model User {
   createdUserTargets              UserTarget[]             @relation("UserTargetCreatedBy")
   updatedUserTargets              UserTarget[]             @relation("UserTargetUpdatedBy")
   stageRemarks                    StageRemark[]            @relation("StageRemarkCreatedBy")
+  arInvoiceRemarks                ARInvoiceRemark[]        @relation("ARInvoiceRemarkCreatedBy")
   
   // Activity Scheduling Relations
   scheduledActivities             ActivitySchedule[]       @relation("ScheduledActivities")
@@ -145,6 +141,9 @@ model Contact {
   customer          Customer    @relation("CustomerContacts", fields: [customerId], references: [id])
   tickets           Ticket[]    @relation("ContactTickets")
   offers            Offer[]     @relation("ContactOffers")
+
+  @@index([customerId])
+  @@index([email])
 }
 
 model ServiceZone {
@@ -183,9 +182,11 @@ model Asset {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   customer       Customer         @relation("CustomerAssets", fields: [customerId], references: [id])
-  serviceHistory ServiceHistory[] @relation("TicketServiceHistory")
   tickets        Ticket[]         @relation("AssetTickets")
   offerAssets    OfferAsset[]     @relation("AssetToOffers")
+
+  @@index([customerId])
+  @@index([status])
 }
 
 model Ticket {
@@ -243,13 +244,11 @@ model Ticket {
   assignmentNotes         String?
   attachments             Attachment[]          @relation("TicketAttachments")
   auditLogs               AuditLog[]            @relation("TicketAuditLogs")
-  callLogs                CallLog[]             @relation("TicketCallLogs")
   comments                Comment[]             @relation("TicketComments")
   activityLogs            DailyActivityLog[]    @relation("TicketActivityLogs")
   onsiteVisitLogs         OnsiteVisitLog[]      @relation("TicketOnsiteVisitLogs")
   poRequests              PORequest?            @relation("TicketPORequests")
   rating                  Rating?               @relation("TicketRating")
-  serviceHistory          ServiceHistory[]      @relation("TicketServiceHistory")
   asset                   Asset                 @relation("AssetTickets", fields: [assetId], references: [id])
   assignedTo              User?                 @relation("AssignedTickets", fields: [assignedToId], references: [id])
   contact                 Contact               @relation("ContactTickets", fields: [contactId], references: [id])
@@ -284,6 +283,9 @@ model Attachment {
   createdAt    DateTime @default(now())
   ticket       Ticket   @relation("TicketAttachments", fields: [ticketId], references: [id])
   uploadedBy   User     @relation("UserAttachments", fields: [uploadedById], references: [id])
+
+  @@index([ticketId])
+  @@index([uploadedById])
 }
 
 model TicketNote {
@@ -295,20 +297,6 @@ model TicketNote {
   updatedAt DateTime @updatedAt
   author    User     @relation("UserTicketNotes", fields: [authorId], references: [id])
   ticket    Ticket   @relation("TicketNotes", fields: [ticketId], references: [id])
-}
-
-model CallLog {
-  id         Int      @id @default(autoincrement())
-  ticketId   Int
-  callerId   Int
-  receiverId Int?
-  callType   String
-  duration   Int?
-  notes      String?
-  recordedAt DateTime @default(now())
-  caller     User     @relation("CallerLogs", fields: [callerId], references: [id])
-  receiver   User?    @relation("ReceiverLogs", fields: [receiverId], references: [id])
-  ticket     Ticket   @relation("TicketCallLogs", fields: [ticketId], references: [id])
 }
 
 model PORequest {
@@ -326,22 +314,6 @@ model PORequest {
   approvedBy    User?     @relation("ApprovedPOs", fields: [approvedById], references: [id])
   requestedBy   User      @relation("RequestedPOs", fields: [requestedById], references: [id])
   ticket        Ticket    @relation("TicketPORequests", fields: [ticketId], references: [id])
-}
-
-model ServiceHistory {
-  id            Int      @id @default(autoincrement())
-  ticketId      Int
-  assetId       Int
-  serviceType   String
-  description   String
-  performedById Int
-  performedAt   DateTime @default(now())
-  duration      Int?
-  notes         String?
-  createdAt     DateTime @default(now())
-  asset         Asset    @relation("TicketServiceHistory", fields: [assetId], references: [id])
-  performedBy   User     @relation("UserServiceHistory", fields: [performedById], references: [id])
-  ticket        Ticket   @relation("TicketServiceHistory", fields: [ticketId], references: [id])
 }
 
 model AuditLog {
@@ -378,16 +350,6 @@ model AuditLog {
   @@index([offerId])
 }
 
-model SLAPolicy {
-  id             Int      @id @default(autoincrement())
-  priority       Priority @unique
-  responseTime   Int
-  resolutionTime Int
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
 model TicketFeedback {
   id            Int      @id @default(autoincrement())
   ticketId      Int
@@ -416,22 +378,6 @@ model Comment {
 
   @@index([ticketId])
   @@index([userId])
-}
-
-model AssetValidationPending {
-  id           Int       @id @default(autoincrement())
-  machineId    String
-  model        String?
-  serialNo     String?
-  customerId   Int?
-  customerName String?
-  status       String    @default("PENDING")
-  resolvedById Int?
-  resolvedAt   DateTime?
-  notes        String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  resolvedBy   User?     @relation("ResolvedValidations", fields: [resolvedById], references: [id])
 }
 
 model TicketStatusHistory {
@@ -549,7 +495,6 @@ model DailyActivityLog {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   ActivityStage ActivityStage[]
-  reports       ActivityReport[]
   ticket        Ticket?          @relation("TicketActivityLogs", fields: [ticketId], references: [id], onDelete: Cascade)
   user          User             @relation("UserActivityLogs", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -624,27 +569,6 @@ model ActivityStage {
 
   @@index([activityId, startTime])
   @@index([stage])
-}
-
-model ActivityReport {
-  id           Int              @id @default(autoincrement())
-  activityId   Int
-  reportType   ReportType       @default(COMPLETION)
-  fileName     String
-  fileSize     Int
-  fileType     String
-  filePath     String
-  description  String?
-  uploadedById Int
-  metadata     Json?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  activity     DailyActivityLog @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  uploadedBy   User             @relation("UserActivityReports", fields: [uploadedById], references: [id])
-
-  @@index([activityId])
-  @@index([uploadedById])
-  @@index([createdAt])
 }
 
 // Offer Funnel Models
@@ -1119,6 +1043,20 @@ enum ARDeliveryStatus {
   ACKNOWLEDGED
 }
 
+// Invoice Type for distinguishing regular vs prepaid invoices
+enum ARInvoiceType {
+  REGULAR
+  PREPAID
+}
+
+// Prepaid Invoice Status - tracks delivery against prepayment
+enum ARPrepaidStatus {
+  AWAITING_DELIVERY    // Payment received, delivery pending
+  PARTIALLY_DELIVERED  // Some items delivered
+  FULLY_DELIVERED      // All items delivered
+  EXPIRED              // Prepaid period expired without delivery
+}
+
 // AR Payment Terms Master
 model ARPaymentTerms {
   id          String   @id @default(uuid())
@@ -1187,13 +1125,41 @@ model ARInvoice {
   status              ARInvoiceStatus @default(PENDING)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INVOICE TYPE & PREPAID FIELDS
+  // ═══════════════════════════════════════════════════════════════════════════
+  invoiceType         ARInvoiceType @default(REGULAR) // REGULAR, PREPAID, CREDIT_NOTE
+  advanceReceivedDate DateTime?     // When prepayment was received (for prepaid)
+  deliveryDueDate     DateTime?     // Expected delivery date (for prepaid)
+  prepaidStatus       ARPrepaidStatus? // Status for prepaid invoices
+  
+  // Remarks relation
+  remarks             ARInvoiceRemark[]
 
   @@index([bpCode])
   @@index([status])
   @@index([dueDate])
   @@index([invoiceDate])
   @@index([riskClass])
+  @@index([invoiceType])
   @@map("ar_invoices")
+}
+
+// AR Invoice Remarks - Trackable comments with who/when
+model ARInvoiceRemark {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  content     String   @db.Text
+  createdById Int
+  createdAt   DateTime @default(now())
+  
+  invoice     ARInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdBy   User      @relation("ARInvoiceRemarkCreatedBy", fields: [createdById], references: [id])
+
+  @@index([invoiceId])
+  @@index([createdAt])
+  @@map("ar_invoice_remarks")
 }
 
 // AR Import History
@@ -1224,9 +1190,55 @@ model ARPaymentHistory {
   recordedBy      String?   // User who recorded this payment
   createdAt       DateTime  @default(now())
   
-  // Relation to Invoice (using loose relation since ARInvoice is denormalized)
+  // Note: Loose relation - invoiceId references ar_invoices but not enforced
+  // This allows flexibility with denormalized AR data
+
   @@index([invoiceId])
   @@map("ar_payment_history")
+}
+
+// AR Invoice Activity Log - Comprehensive audit trail for compliance and fraud prevention
+model ARInvoiceActivityLog {
+  id            String   @id @default(uuid())
+  invoiceId     String
+  action        String   // CREATED, UPDATED, PAYMENT_ADDED, STATUS_CHANGED, DELIVERY_UPDATED, REMARK_ADDED, DELETED
+  description   String   // Human-readable description of the action
+  fieldName     String?  // Field that was changed (for updates)
+  oldValue      String?  // Previous value (JSON stringified if complex)
+  newValue      String?  // New value (JSON stringified if complex)
+  performedById Int?
+  performedBy   String?  // User name (denormalized for display)
+  ipAddress     String?
+  userAgent     String?
+  metadata      Json?    // Additional context data
+  createdAt     DateTime @default(now())
+
+  @@index([invoiceId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([performedById])
+  @@map("ar_invoice_activity_logs")
+}
+
+// AR Session Activity Log - Track login/logout events for audit trail
+model ARSessionActivityLog {
+  id            String   @id @default(uuid())
+  action        String   // LOGIN, LOGOUT, LOGIN_FAILED, SESSION_EXPIRED, PASSWORD_RESET
+  userId        Int?
+  userName      String?  // Denormalized for display
+  userEmail     String?
+  userRole      String?  // FSM role
+  financeRole   String?  // Finance module role
+  ipAddress     String?
+  userAgent     String?
+  deviceInfo    String?  // Parsed browser/OS info
+  metadata      Json?    // Additional context
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("ar_session_activity_logs")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

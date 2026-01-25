@@ -156,10 +156,10 @@ app.use(cookieParser());
 // Ensure storage directories exist and serve storage files with CORS headers
 initializeStorage();
 
-// Global rate limiting for 100+ users
+// Global rate limiting - Industry standard
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3000, // Limit each IP to 3000 requests per window
+  max: 1000, // Limit each IP to 1000 requests per window (industry standard)
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

@@ -358,43 +358,43 @@ export default function AdminTicketsPage() {
     <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Compact Header with Stats - Vibrant Coral & Blue Gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#9E3B47] via-[#E17F70] to-[#6F8A9D] rounded-2xl shadow-xl p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#9E3B47] via-[#E17F70] to-[#6F8A9D] rounded-2xl shadow-xl p-4 sm:p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#546A7A]/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
-          <div className="relative z-10 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl ring-2 ring-white/40 shadow-lg">
-                <Ticket className="h-8 w-8" />
+          <div className="relative z-10 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2.5 sm:p-3 bg-white/25 backdrop-blur-sm rounded-xl ring-2 ring-white/40 shadow-lg">
+                <Ticket className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold drop-shadow-md">Support Tickets</h1>
-                <p className="text-white/90 mt-1">Manage and track all support tickets</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold drop-shadow-md">Support Tickets</h1>
+                <p className="text-white/90 text-sm sm:text-base mt-1">Manage and track all support tickets</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="grid grid-cols-5 gap-3">
-                <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
-                  <p className="text-white/90 text-xs font-medium">Total</p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                <div className="bg-white/20 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-[10px] sm:text-xs font-medium">Total</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="bg-[#CE9F6B]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
-                  <p className="text-white/90 text-xs font-medium">Open</p>
-                  <p className="text-2xl font-bold">{stats.open}</p>
+                <div className="bg-[#CE9F6B]/40 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-[10px] sm:text-xs font-medium">Open</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.open}</p>
                 </div>
-                <div className="bg-[#6F8A9D]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
-                  <p className="text-white/90 text-xs font-medium">In Progress</p>
-                  <p className="text-2xl font-bold">{stats.inProgress}</p>
+                <div className="bg-[#6F8A9D]/40 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/30 text-center shadow-lg">
+                  <p className="text-white/90 text-[10px] sm:text-xs font-medium">In Progress</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.inProgress}</p>
                 </div>
-                <div className="bg-[#82A094]/40 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
-                  <p className="text-white/90 text-xs font-medium">Closed</p>
-                  <p className="text-2xl font-bold">{stats.closed}</p>
+                <div className="bg-[#82A094]/40 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/30 text-center shadow-lg hidden sm:block">
+                  <p className="text-white/90 text-[10px] sm:text-xs font-medium">Closed</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.closed}</p>
                 </div>
-                <div className="bg-[#75242D]/50 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 text-center shadow-lg">
-                  <p className="text-white/90 text-xs font-medium">Critical</p>
-                  <p className="text-2xl font-bold">{stats.critical}</p>
+                <div className="bg-[#75242D]/50 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/30 text-center shadow-lg hidden sm:block">
+                  <p className="text-white/90 text-[10px] sm:text-xs font-medium">Critical</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.critical}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/admin/tickets/create')} className="bg-white text-[#9E3B47] hover:bg-[#EEC1BF] hover:text-[#75242D] shadow-lg hover:shadow-xl transition-all font-semibold">
+              <Button onClick={() => router.push('/admin/tickets/create')} className="bg-white text-[#9E3B47] hover:bg-[#EEC1BF] hover:text-[#75242D] shadow-lg hover:shadow-xl transition-all font-semibold w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Ticket
               </Button>
@@ -402,55 +402,59 @@ export default function AdminTicketsPage() {
           </div>
         </div>
 
-        {/* View Tabs - Kardex Colors */}
-        <div className="flex gap-2 flex-wrap">
+        {/* View Tabs - Kardex Colors - Mobile Scrollable */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           <Button
             variant={selectedView === 'All' ? 'default' : 'outline'}
             onClick={() => setSelectedView('All')}
-            className={selectedView === 'All' ? 'bg-[#546A7A] hover:bg-[#5D6E73]' : 'hover:bg-[#96AEC2]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'All' ? 'bg-[#546A7A] hover:bg-[#5D6E73]' : 'hover:bg-[#96AEC2]/10'}`}
           >
-            <AlertCircle className="mr-2 h-4 w-4" />
+            <AlertCircle className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
             All
           </Button>
           <Button
             variant={selectedView === 'Unassigned' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Unassigned')}
-            className={selectedView === 'Unassigned' ? 'bg-[#CE9F6B] hover:bg-[#976E44]' : 'hover:bg-[#EEC18F]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'Unassigned' ? 'bg-[#CE9F6B] hover:bg-[#976E44]' : 'hover:bg-[#EEC18F]/10'}`}
           >
-            <Clock className="mr-2 h-4 w-4" />
+            <Clock className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Unassigned
           </Button>
           <Button
             variant={selectedView === 'Assigned to Zone' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Zone')}
-            className={selectedView === 'Assigned to Zone' ? 'bg-[#96AEC2] hover:bg-[#6F8A9D]' : 'hover:bg-[#96AEC2]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'Assigned to Zone' ? 'bg-[#96AEC2] hover:bg-[#6F8A9D]' : 'hover:bg-[#96AEC2]/10'}`}
           >
-            <Users className="mr-2 h-4 w-4" />
-            Zone Users
+            <Users className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Zone Users</span>
+            <span className="sm:hidden">Zone</span>
           </Button>
           <Button
             variant={selectedView === 'Assigned to Service Person' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Service Person')}
-            className={selectedView === 'Assigned to Service Person' ? 'bg-[#82A094] hover:bg-[#4F6A64]' : 'hover:bg-[#A2B9AF]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'Assigned to Service Person' ? 'bg-[#82A094] hover:bg-[#4F6A64]' : 'hover:bg-[#A2B9AF]/10'}`}
           >
-            <Wrench className="mr-2 h-4 w-4" />
-            Service Person
+            <Wrench className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Service Person</span>
+            <span className="sm:hidden">Service</span>
           </Button>
           <Button
             variant={selectedView === 'Assigned to Zone Manager' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Zone Manager')}
-            className={selectedView === 'Assigned to Zone Manager' ? 'bg-[#6F8A9D] hover:bg-[#546A7A]' : 'hover:bg-[#6F8A9D]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'Assigned to Zone Manager' ? 'bg-[#6F8A9D] hover:bg-[#546A7A]' : 'hover:bg-[#6F8A9D]/10'}`}
           >
-            <Shield className="mr-2 h-4 w-4" />
-            Zone Manager
+            <Shield className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Zone Manager</span>
+            <span className="sm:hidden">Manager</span>
           </Button>
           <Button
             variant={selectedView === 'Assigned to Expert Helpdesk' ? 'default' : 'outline'}
             onClick={() => setSelectedView('Assigned to Expert Helpdesk')}
-            className={selectedView === 'Assigned to Expert Helpdesk' ? 'bg-[#92A2A5] hover:bg-[#757777]' : 'hover:bg-[#92A2A5]/10'}
+            className={`flex-shrink-0 text-xs sm:text-sm ${selectedView === 'Assigned to Expert Helpdesk' ? 'bg-[#92A2A5] hover:bg-[#757777]' : 'hover:bg-[#92A2A5]/10'}`}
           >
-            <Headphones className="mr-2 h-4 w-4" />
-            Expert Helpdesk
+            <Headphones className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Expert Helpdesk</span>
+            <span className="sm:hidden">Expert</span>
           </Button>
         </div>
 

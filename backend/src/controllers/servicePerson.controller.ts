@@ -304,16 +304,17 @@ export const deleteServicePerson = async (req: Request, res: Response) => {
       });
     }
 
-    // If there are service zone assignments, clean them up first
-    if (serviceZonesCount > 0) {
-      await prisma.servicePersonZone.deleteMany({
+    // Use transaction for atomicity - cleanup zones and delete user together
+    await prisma.$transaction([
+      // Clean up service zone assignments first
+      prisma.servicePersonZone.deleteMany({
         where: { userId: Number(id) }
-      });
-    }
-
-    await prisma.user.delete({
-      where: { id: Number(id) }
-    });
+      }),
+      // Delete the user
+      prisma.user.delete({
+        where: { id: Number(id) }
+      })
+    ]);
 
     res.json({
       message: 'Service person deleted successfully',

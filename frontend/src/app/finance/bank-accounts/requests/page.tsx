@@ -2,31 +2,42 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { arApi, BankAccountChangeRequest } from '@/lib/ar-api';
 import { useAuth } from '@/contexts/AuthContext';
 import { FinanceRole } from '@/types/user.types';
 import { 
   ArrowLeft, Sparkles, Clock, CheckCircle2, XCircle, 
-  AlertCircle, Building2, Plus, Trash2, Edit2, Eye,
-  MessageSquare, Loader2, ChevronDown
+  AlertCircle, Building2, Plus, Trash2, Pencil, Eye,
+  MessageSquare, Loader2, ChevronDown, Square, CheckSquare,
+  ArrowRight, ExternalLink
 } from 'lucide-react';
 
 export default function BankAccountRequestsPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const [requests, setRequests] = useState<BankAccountChangeRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL'>('PENDING');
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [rejectModal, setRejectModal] = useState<{ open: boolean; requestId: string | null; notes: string }>({
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [rejectModal, setRejectModal] = useState<{ open: boolean; requestId: string | null; notes: string; isBulk?: boolean }>({
     open: false,
     requestId: null,
-    notes: ''
+    notes: '',
+    isBulk: false
   });
 
   const isAdmin = user?.financeRole === FinanceRole.FINANCE_ADMIN;
 
   useEffect(() => {
     loadRequests();
+  }, [filter]);
+
+  useEffect(() => {
+    // Clear selections when filter changes
+    setSelectedIds(new Set());
   }, [filter]);
 
   const loadRequests = async () => {
@@ -64,20 +75,74 @@ export default function BankAccountRequestsPage() {
   };
 
   const handleReject = async () => {
-    if (!rejectModal.requestId || !rejectModal.notes.trim()) {
+    if (!rejectModal.notes.trim()) {
       alert('Please provide a reason for rejection');
       return;
     }
     
     try {
-      setProcessingId(rejectModal.requestId);
-      await arApi.rejectRequest(rejectModal.requestId, rejectModal.notes);
-      setRejectModal({ open: false, requestId: null, notes: '' });
+      if (rejectModal.isBulk) {
+        setBulkProcessing(true);
+        const ids = Array.from(selectedIds);
+        for (const id of ids) {
+          await arApi.rejectRequest(id, rejectModal.notes);
+        }
+        setSelectedIds(new Set());
+      } else if (rejectModal.requestId) {
+        setProcessingId(rejectModal.requestId);
+        await arApi.rejectRequest(rejectModal.requestId, rejectModal.notes);
+      }
+      setRejectModal({ open: false, requestId: null, notes: '', isBulk: false });
       await loadRequests();
     } catch (error: any) {
       alert(error.message || 'Failed to reject request');
     } finally {
       setProcessingId(null);
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    const count = selectedIds.size;
+    if (!confirm(`Approve ${count} request${count > 1 ? 's' : ''}?`)) return;
+    
+    try {
+      setBulkProcessing(true);
+      const ids = Array.from(selectedIds);
+      for (const id of ids) {
+        await arApi.approveRequest(id);
+      }
+      setSelectedIds(new Set());
+      await loadRequests();
+    } catch (error: any) {
+      alert(error.message || 'Failed to approve requests');
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkReject = () => {
+    setRejectModal({ open: true, requestId: null, notes: '', isBulk: true });
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const pendingRequests = requests.filter(r => r.status === 'PENDING');
+    if (selectedIds.size === pendingRequests.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(pendingRequests.map(r => r.id)));
     }
   };
 
@@ -94,7 +159,7 @@ export default function BankAccountRequestsPage() {
   const getRequestIcon = (type: string) => {
     switch (type) {
       case 'CREATE': return <Plus className="w-4 h-4" />;
-      case 'UPDATE': return <Edit2 className="w-4 h-4" />;
+      case 'UPDATE': return <Pencil className="w-4 h-4" />;
       case 'DELETE': return <Trash2 className="w-4 h-4" />;
       default: return <AlertCircle className="w-4 h-4" />;
     }
@@ -116,6 +181,10 @@ export default function BankAccountRequestsPage() {
       default: return 'bg-[#CE9F6B]/15 text-[#976E44]';
     }
   };
+
+  const pendingRequests = requests.filter(r => r.status === 'PENDING');
+  const hasSelection = selectedIds.size > 0;
+  const allPendingSelected = pendingRequests.length > 0 && selectedIds.size === pendingRequests.length;
 
   return (
     <div className="space-y-6">
@@ -155,6 +224,55 @@ export default function BankAccountRequestsPage() {
         </div>
       </div>
 
+      {/* Bulk Actions Bar (Admin only, when there are pending requests) */}
+      {isAdmin && filter === 'PENDING' && pendingRequests.length > 0 && (
+        <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#AEBFC3]/20 shadow-sm">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSelectAll}
+              className="flex items-center gap-2 text-sm text-[#5D6E73] hover:text-[#546A7A] transition-colors"
+            >
+              {allPendingSelected ? (
+                <CheckSquare className="w-5 h-5 text-[#CE9F6B]" />
+              ) : (
+                <Square className="w-5 h-5" />
+              )}
+              {allPendingSelected ? 'Deselect All' : 'Select All'}
+            </button>
+            {hasSelection && (
+              <span className="text-sm text-[#92A2A5]">
+                {selectedIds.size} selected
+              </span>
+            )}
+          </div>
+
+          {hasSelection && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleBulkApprove}
+                disabled={bulkProcessing}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#82A094]/15 border border-[#82A094]/30 text-[#4F6A64] font-medium hover:bg-[#82A094]/20 transition-all disabled:opacity-50"
+              >
+                {bulkProcessing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" />
+                )}
+                Approve All ({selectedIds.size})
+              </button>
+              <button
+                onClick={handleBulkReject}
+                disabled={bulkProcessing}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#E17F70]/15 border border-[#E17F70]/30 text-[#E17F70] font-medium hover:bg-[#E17F70]/20 transition-all disabled:opacity-50"
+              >
+                <XCircle className="w-4 h-4" />
+                Reject All
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Requests List */}
       <div className="space-y-4">
         {loading ? (
@@ -183,18 +301,38 @@ export default function BankAccountRequestsPage() {
           requests.map((request) => (
             <div 
               key={request.id} 
-              className="bg-white rounded-2xl border border-[#AEBFC3]/20 overflow-hidden hover:border-[#CE9F6B]/30 transition-all shadow-lg"
+              className={`bg-white rounded-2xl border overflow-hidden hover:border-[#CE9F6B]/30 transition-all shadow-lg cursor-pointer group ${
+                selectedIds.has(request.id) ? 'border-[#CE9F6B] ring-2 ring-[#CE9F6B]/20' : 'border-[#AEBFC3]/20'
+              }`}
+              onClick={() => router.push(`/finance/bank-accounts/requests/${request.id}`)}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
+                    {/* Selection Checkbox (Admin, Pending only) */}
+                    {isAdmin && request.status === 'PENDING' && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSelection(request.id);
+                        }}
+                        className="mt-1 p-1 rounded-lg hover:bg-[#AEBFC3]/10 transition-colors"
+                      >
+                        {selectedIds.has(request.id) ? (
+                          <CheckSquare className="w-5 h-5 text-[#CE9F6B]" />
+                        ) : (
+                          <Square className="w-5 h-5 text-[#92A2A5]" />
+                        )}
+                      </button>
+                    )}
+
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${getRequestColor(request.requestType)}`}>
                       {getRequestIcon(request.requestType)}
                     </div>
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-lg font-semibold text-[#546A7A]">
+                        <h3 className="text-lg font-semibold text-[#546A7A] group-hover:text-[#CE9F6B] transition-colors">
                           {request.requestType === 'CREATE' ? 'New Account Request' :
                            request.requestType === 'UPDATE' ? 'Update Request' :
                            'Delete Request'}
@@ -240,40 +378,44 @@ export default function BankAccountRequestsPage() {
                     </div>
                   </div>
 
-                  {isAdmin && request.status === 'PENDING' && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleApprove(request.id)}
-                        disabled={processingId === request.id}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#82A094]/15 border border-[#82A094]/30 text-[#4F6A64] font-medium hover:bg-[#82A094]/20 transition-all disabled:opacity-50"
-                      >
-                        {processingId === request.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <CheckCircle2 className="w-4 h-4" />
-                        )}
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => setRejectModal({ open: true, requestId: request.id, notes: '' })}
-                        disabled={processingId === request.id}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#E17F70]/15 border border-[#E17F70]/30 text-[#E17F70] font-medium hover:bg-[#E17F70]/20 transition-all disabled:opacity-50"
-                      >
-                        <XCircle className="w-4 h-4" />
-                        Reject
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {isAdmin && request.status === 'PENDING' && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleApprove(request.id);
+                          }}
+                          disabled={processingId === request.id}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#82A094]/15 border border-[#82A094]/30 text-[#4F6A64] font-medium hover:bg-[#82A094]/20 transition-all disabled:opacity-50"
+                        >
+                          {processingId === request.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          Approve
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRejectModal({ open: true, requestId: request.id, notes: '', isBulk: false });
+                          }}
+                          disabled={processingId === request.id}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#E17F70]/15 border border-[#E17F70]/30 text-[#E17F70] font-medium hover:bg-[#E17F70]/20 transition-all disabled:opacity-50"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </>
+                    )}
 
-                  {request.bankAccountId && request.status !== 'PENDING' && (
-                    <Link
-                      href={`/finance/bank-accounts/${request.bankAccountId}`}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/30 text-[#5D6E73] font-medium hover:bg-[#AEBFC3]/20 transition-all"
-                    >
-                      <Eye className="w-4 h-4" />
-                      View
-                    </Link>
-                  )}
+                    {/* View Details Arrow */}
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-[#92A2A5] group-hover:text-[#CE9F6B] transition-all">
+                      <ExternalLink className="w-4 h-4" />
+                      <span className="text-sm font-medium">Details</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -287,10 +429,10 @@ export default function BankAccountRequestsPage() {
           <div className="bg-white rounded-2xl border border-[#AEBFC3]/20 w-full max-w-md p-6 space-y-4 shadow-2xl">
             <h3 className="text-xl font-bold text-[#546A7A] flex items-center gap-2">
               <XCircle className="w-5 h-5 text-[#E17F70]" />
-              Reject Request
+              {rejectModal.isBulk ? `Reject ${selectedIds.size} Request${selectedIds.size > 1 ? 's' : ''}` : 'Reject Request'}
             </h3>
             <p className="text-[#92A2A5] text-sm">
-              Please provide a reason for rejecting this request.
+              Please provide a reason for rejection. {rejectModal.isBulk && 'This note will be applied to all selected requests.'}
             </p>
             <textarea
               value={rejectModal.notes}
@@ -300,22 +442,22 @@ export default function BankAccountRequestsPage() {
             />
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setRejectModal({ open: false, requestId: null, notes: '' })}
+                onClick={() => setRejectModal({ open: false, requestId: null, notes: '', isBulk: false })}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-[#AEBFC3]/10 border border-[#AEBFC3]/30 text-[#5D6E73] font-medium hover:bg-[#AEBFC3]/20 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReject}
-                disabled={!rejectModal.notes.trim() || processingId === rejectModal.requestId}
+                disabled={!rejectModal.notes.trim() || processingId === rejectModal.requestId || bulkProcessing}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#E17F70] text-white font-semibold hover:bg-[#9E3B47] transition-all disabled:opacity-50"
               >
-                {processingId === rejectModal.requestId ? (
+                {(processingId === rejectModal.requestId || bulkProcessing) ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <XCircle className="w-4 h-4" />
                 )}
-                Reject
+                Reject{rejectModal.isBulk ? ` (${selectedIds.size})` : ''}
               </button>
             </div>
           </div>

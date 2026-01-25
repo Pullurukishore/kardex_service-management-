@@ -4,8 +4,10 @@ import * as XLSX from 'xlsx';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { logInvoiceActivity, getUserFromRequest, getIpFromRequest } from './arActivityLog.controller';
 
 const prisma = new PrismaClient();
+
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -102,7 +104,13 @@ function parseDecimal(value: any): number {
 function getValue(row: SAPImportRow, ...keys: string[]): any {
     for (const key of keys) {
         if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
-            return row[key];
+            let value = row[key];
+            // Sanitization: Prevent CSV/Formula Injection
+            // If the value starts with risky characters, prepend a single quote
+            if (typeof value === 'string' && /^[=+\-@]/.test(value)) {
+                value = `'${value}`;
+            }
+            return value;
         }
     }
     return null;
@@ -232,6 +240,16 @@ export const previewExcel = async (req: Request, res: Response) => {
             });
         }
 
+        // Potential Resource Exhaustion Check (Hole #3)
+        const MAX_ROWS = 5000;
+        if (rows.length > MAX_ROWS) {
+            return res.status(400).json({
+                success: false,
+                message: 'File too large',
+                details: `The file contains ${rows.length} rows, which exceeds the limit of ${MAX_ROWS} per import.`
+            });
+        }
+
         if (rows.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -313,6 +331,9 @@ export const importFromExcel = async (req: Request, res: Response) => {
         }
 
         const fileName = req.file.originalname;
+        const user = getUserFromRequest(req);
+        const ipAddress = getIpFromRequest(req);
+        const userAgent = req.headers['user-agent'] || null;
 
         // Read the Excel file from buffer (memoryStorage)
         const workbook = XLSX.read(req.file.buffer, { cellDates: true });
@@ -329,99 +350,161 @@ export const importFromExcel = async (req: Request, res: Response) => {
             });
         }
 
-        let successCount = 0;
-        let failedCount = 0;
+        // Potential Resource Exhaustion Check (Hole #3)
+        const MAX_ROWS = 5000;
+        if (rows.length > MAX_ROWS) {
+            return res.status(400).json({
+                success: false,
+                message: 'File too large',
+                details: `The file contains ${rows.length} rows, which exceeds the limit of ${MAX_ROWS} per import.`
+            });
+        }
+
+        // Phase 1: Validate all rows and prepare data (outside transaction)
+        const validRows: Array<{
+            rowNumber: number;
+            invoiceNumber: string;
+            bpCode: string;
+            customerName: string;
+            poNo: string | null;
+            totalAmount: number;
+            netAmount: number;
+            taxAmount: number;
+            invoiceDate: Date;
+            finalDueDate: Date;
+            dueByDays: number;
+            riskClass: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+            balance: number;
+        }> = [];
         const errors: string[] = [];
 
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const rowNumber = i + 2; // Excel rows are 1-indexed, plus header row
 
-            try {
-                // Extract mandatory fields with flexible column name matching
-                const invoiceNumber = getValue(row, 'Doc. No.', 'Doc No', 'DocNo', 'Invoice No', 'InvoiceNo')?.toString()?.trim();
-                const bpCode = getValue(row, 'Customer Code', 'CustomerCode', 'BP Code', 'BPCode')?.toString()?.trim();
-                const customerName = getValue(row, 'Customer Name', 'CustomerName')?.toString()?.trim();
-                const poNo = getValue(row, 'Customer Ref. No.', 'Customer Ref No', 'CustomerRefNo', 'PO No', 'PONo')?.toString()?.trim();
-                const totalAmount = parseDecimal(getValue(row, 'Amount', 'Total Amount', 'TotalAmount'));
-                const netAmount = parseDecimal(getValue(row, 'Net', 'Net Amount', 'NetAmount'));
-                const taxAmount = parseDecimal(getValue(row, 'Tax', 'Tax Amount', 'TaxAmount'));
-                const invoiceDate = parseExcelDate(getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate'));
-                // Due date is calculated automatically (30 days from invoice date)
+            // Extract mandatory fields with flexible column name matching
+            const invoiceNumber = getValue(row, 'Doc. No.', 'Doc No', 'DocNo', 'Invoice No', 'InvoiceNo')?.toString()?.trim();
+            const bpCode = getValue(row, 'Customer Code', 'CustomerCode', 'BP Code', 'BPCode')?.toString()?.trim();
+            const customerName = getValue(row, 'Customer Name', 'CustomerName')?.toString()?.trim();
+            const poNo = getValue(row, 'Customer Ref. No.', 'Customer Ref No', 'CustomerRefNo', 'PO No', 'PONo')?.toString()?.trim();
+            const totalAmount = parseDecimal(getValue(row, 'Amount', 'Total Amount', 'TotalAmount'));
+            const netAmount = parseDecimal(getValue(row, 'Net', 'Net Amount', 'NetAmount'));
+            const taxAmount = parseDecimal(getValue(row, 'Tax', 'Tax Amount', 'TaxAmount'));
+            const invoiceDate = parseExcelDate(getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate'));
 
-                // Validate mandatory fields
-                if (!invoiceNumber) {
-                    errors.push(`Row ${rowNumber}: Missing Doc. No. (Invoice Number)`);
-                    failedCount++;
-                    continue;
-                }
-
-                if (!bpCode) {
-                    errors.push(`Row ${rowNumber}: Missing Customer Code (BP Code)`);
-                    failedCount++;
-                    continue;
-                }
-
-                if (!customerName) {
-                    errors.push(`Row ${rowNumber}: Missing Customer Name`);
-                    failedCount++;
-                    continue;
-                }
-
-                if (!invoiceDate) {
-                    errors.push(`Row ${rowNumber}: Missing or invalid Document Date`);
-                    failedCount++;
-                    continue;
-                }
-
-                // Calculate due date (30 days from invoice date)
-                const finalDueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-                // Calculate due by days and risk class
-                const dueByDays = calculateDueByDays(finalDueDate);
-                const riskClass = calculateRiskClass(dueByDays);
-
-                // Calculate balance (totalAmount - totalReceipts, initially totalAmount)
-                const balance = totalAmount;
-
-                // Upsert invoice (insert or update based on invoice number)
-                await prisma.aRInvoice.upsert({
-                    where: { invoiceNumber },
-                    create: {
-                        invoiceNumber,
-                        bpCode,
-                        customerName,
-                        poNo: poNo || null,
-                        totalAmount,
-                        netAmount,
-                        taxAmount,
-                        invoiceDate,
-                        dueDate: finalDueDate,
-                        balance,
-                        riskClass,
-                        dueByDays,
-                        status: dueByDays > 0 ? 'OVERDUE' : 'PENDING'
-                    },
-                    update: {
-                        bpCode,
-                        customerName,
-                        poNo: poNo || null,
-                        totalAmount,
-                        netAmount,
-                        taxAmount,
-                        invoiceDate,
-                        dueDate: finalDueDate,
-                        riskClass,
-                        dueByDays,
-                        status: dueByDays > 0 ? 'OVERDUE' : 'PENDING'
-                    }
-                });
-
-                successCount++;
-            } catch (error: any) {
-                errors.push(`Row ${rowNumber}: ${error.message}`);
-                failedCount++;
+            // Validate mandatory fields
+            if (!invoiceNumber) {
+                errors.push(`Row ${rowNumber}: Missing Doc. No. (Invoice Number)`);
+                continue;
             }
+            if (!bpCode) {
+                errors.push(`Row ${rowNumber}: Missing Customer Code (BP Code)`);
+                continue;
+            }
+            if (!customerName) {
+                errors.push(`Row ${rowNumber}: Missing Customer Name`);
+                continue;
+            }
+            if (!invoiceDate) {
+                errors.push(`Row ${rowNumber}: Missing or invalid Document Date`);
+                continue;
+            }
+
+            // Calculate due date (30 days from invoice date)
+            const finalDueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+            const dueByDays = calculateDueByDays(finalDueDate);
+            const riskClass = calculateRiskClass(dueByDays);
+            const balance = totalAmount;
+
+            validRows.push({
+                rowNumber,
+                invoiceNumber,
+                bpCode,
+                customerName,
+                poNo: poNo || null,
+                totalAmount,
+                netAmount,
+                taxAmount,
+                invoiceDate,
+                finalDueDate,
+                dueByDays,
+                riskClass,
+                balance
+            });
+        }
+
+        const failedCount = errors.length;
+        let successCount = 0;
+        const importedInvoices: Array<{ id: string; invoiceNumber: string; totalAmount: number; rowNumber: number }> = [];
+
+        // Phase 2: Execute all upserts in a single transaction for atomicity
+        if (validRows.length > 0) {
+            try {
+                await prisma.$transaction(async (tx) => {
+                    for (const row of validRows) {
+                        const upsertedInvoice = await tx.aRInvoice.upsert({
+                            where: { invoiceNumber: row.invoiceNumber },
+                            create: {
+                                invoiceNumber: row.invoiceNumber,
+                                bpCode: row.bpCode,
+                                customerName: row.customerName,
+                                poNo: row.poNo,
+                                totalAmount: row.totalAmount,
+                                netAmount: row.netAmount,
+                                taxAmount: row.taxAmount,
+                                invoiceDate: row.invoiceDate,
+                                dueDate: row.finalDueDate,
+                                balance: row.balance,
+                                riskClass: row.riskClass,
+                                dueByDays: row.dueByDays,
+                                status: row.dueByDays > 0 ? 'OVERDUE' : 'PENDING'
+                            },
+                            update: {
+                                bpCode: row.bpCode,
+                                customerName: row.customerName,
+                                poNo: row.poNo,
+                                totalAmount: row.totalAmount,
+                                netAmount: row.netAmount,
+                                taxAmount: row.taxAmount,
+                                invoiceDate: row.invoiceDate,
+                                dueDate: row.finalDueDate,
+                                riskClass: row.riskClass,
+                                dueByDays: row.dueByDays,
+                                status: row.dueByDays > 0 ? 'OVERDUE' : 'PENDING'
+                            }
+                        });
+                        importedInvoices.push({
+                            id: upsertedInvoice.id,
+                            invoiceNumber: row.invoiceNumber,
+                            totalAmount: row.totalAmount,
+                            rowNumber: row.rowNumber
+                        });
+                    }
+                }, { timeout: 60000 }); // 60 second timeout for large imports
+
+                successCount = importedInvoices.length;
+            } catch (txError: any) {
+                // Transaction failed - all upserts rolled back
+                errors.push(`Transaction failed: ${txError.message}`);
+                // All valid rows failed due to transaction rollback
+                for (const row of validRows) {
+                    errors.push(`Row ${row.rowNumber}: Rolled back due to transaction failure`);
+                }
+            }
+        }
+
+        // Phase 3: Log activity for imported invoices (outside transaction - non-critical)
+        for (const inv of importedInvoices) {
+            await logInvoiceActivity({
+                invoiceId: inv.id,
+                action: 'INVOICE_IMPORTED',
+                description: `Invoice ${inv.invoiceNumber} imported from SAP Excel - Amount: ₹${inv.totalAmount.toLocaleString()}`,
+                performedById: user.id,
+                performedBy: user.name || 'System Import',
+                ipAddress,
+                userAgent,
+                metadata: { fileName, rowNumber: inv.rowNumber, source: 'SAP_IMPORT' }
+            });
         }
 
         // Log import history
@@ -430,18 +513,18 @@ export const importFromExcel = async (req: Request, res: Response) => {
                 fileName,
                 recordsCount: rows.length,
                 successCount,
-                failedCount,
+                failedCount: rows.length - successCount,
                 importedBy: (req as any).user?.name || 'System',
-                status: failedCount === 0 ? 'COMPLETED' : failedCount === rows.length ? 'FAILED' : 'PARTIAL',
+                status: successCount === rows.length ? 'COMPLETED' : successCount === 0 ? 'FAILED' : 'PARTIAL',
                 errorLog: errors.length > 0 ? errors.slice(0, 50).join('\n') : null
             }
         });
 
         return res.status(200).json({
-            message: `Import completed: ${successCount} records imported, ${failedCount} failed`,
+            message: `Import completed: ${successCount} records imported, ${rows.length - successCount} failed`,
             total: rows.length,
             success: successCount,
-            failed: failedCount,
+            failed: rows.length - successCount,
             errors: errors.slice(0, 20)
         });
 
@@ -454,6 +537,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
         });
     }
 };
+
 
 /**
  * Get import history
@@ -545,43 +629,96 @@ export const downloadTemplate = async (req: Request, res: Response) => {
 
 /**
  * Recalculate all invoice balances and risk classes
+ * Uses cursor-based pagination and batched transactions for consistency and performance
  */
 export const recalculateAll = async (req: Request, res: Response) => {
     try {
-        const invoices = await prisma.aRInvoice.findMany();
-
+        const FETCH_BATCH_SIZE = 500; // Fetch invoices in batches to avoid memory issues
+        const UPDATE_BATCH_SIZE = 100;
         let updatedCount = 0;
+        let cursor: string | undefined = undefined;
+        let hasMore = true;
 
-        for (const invoice of invoices) {
-            const receipts = Number(invoice.receipts) || 0;
-            const adjustments = Number(invoice.adjustments) || 0;
-            const totalReceipts = receipts + adjustments;
-            const balance = Number(invoice.totalAmount) - totalReceipts;
-            const dueByDays = calculateDueByDays(invoice.dueDate);
-            const riskClass = calculateRiskClass(dueByDays);
+        while (hasMore) {
+            // Fetch invoices in batches using cursor pagination
+            const invoices: {
+                id: string;
+                receipts: any;
+                adjustments: any;
+                totalAmount: any;
+                dueDate: Date;
+            }[] = await prisma.aRInvoice.findMany({
+                take: FETCH_BATCH_SIZE,
+                ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+                orderBy: { id: 'asc' },
+                select: {
+                    id: true,
+                    receipts: true,
+                    adjustments: true,
+                    totalAmount: true,
+                    dueDate: true
+                }
+            });
 
-            // Determine status
-            let status: 'PENDING' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED' = 'PENDING';
-            if (balance <= 0) {
-                status = 'PAID';
-            } else if (totalReceipts > 0) {
-                status = 'PARTIAL';
-            } else if (dueByDays > 0) {
-                status = 'OVERDUE';
+            if (invoices.length === 0) {
+                hasMore = false;
+                break;
             }
 
-            await prisma.aRInvoice.update({
-                where: { id: invoice.id },
-                data: {
+            // Update cursor for next iteration
+            cursor = invoices[invoices.length - 1].id;
+            hasMore = invoices.length === FETCH_BATCH_SIZE;
+
+            // Prepare update data for this batch
+            const updateData = invoices.map(invoice => {
+                const receipts = Number(invoice.receipts) || 0;
+                const adjustments = Number(invoice.adjustments) || 0;
+                const totalReceipts = receipts + adjustments;
+                const balance = Number(invoice.totalAmount) - totalReceipts;
+                const dueByDays = calculateDueByDays(invoice.dueDate);
+                const riskClass = calculateRiskClass(dueByDays);
+
+                // Determine status
+                let status: 'PENDING' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED' = 'PENDING';
+                if (balance <= 0) {
+                    status = 'PAID';
+                } else if (totalReceipts > 0) {
+                    status = 'PARTIAL';
+                } else if (dueByDays > 0) {
+                    status = 'OVERDUE';
+                }
+
+                return {
+                    id: invoice.id,
                     totalReceipts,
                     balance,
                     dueByDays,
                     riskClass,
                     status
-                }
+                };
             });
 
-            updatedCount++;
+            // Process updates in smaller batches within transactions
+            for (let i = 0; i < updateData.length; i += UPDATE_BATCH_SIZE) {
+                const batch = updateData.slice(i, i + UPDATE_BATCH_SIZE);
+
+                await prisma.$transaction(
+                    batch.map((data: { id: string; totalReceipts: number; balance: number; dueByDays: number; riskClass: any; status: 'PENDING' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED' }) =>
+                        prisma.aRInvoice.update({
+                            where: { id: data.id },
+                            data: {
+                                totalReceipts: data.totalReceipts,
+                                balance: data.balance,
+                                dueByDays: data.dueByDays,
+                                riskClass: data.riskClass,
+                                status: data.status
+                            }
+                        })
+                    )
+                );
+
+                updatedCount += batch.length;
+            }
         }
 
         return res.status(200).json({
@@ -599,3 +736,4 @@ export const recalculateAll = async (req: Request, res: Response) => {
         });
     }
 };
+

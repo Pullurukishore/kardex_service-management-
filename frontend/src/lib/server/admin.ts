@@ -57,10 +57,10 @@ async function serverFetch(endpoint: string) {
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
   const userRole = cookieStore.get('userRole')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -143,7 +143,7 @@ export async function getServiceZones(params: {
     });
 
     const response = await serverFetch(`/service-zones?${searchParams}`);
-    
+
     return {
       data: response.data || [],
       pagination: response.pagination || {
@@ -187,7 +187,7 @@ export async function getZoneUsers(params: {
     });
 
     const response = await serverFetch(`/zone-users?${searchParams}`);
-    
+
     // Handle the response structure from our new admin endpoint
     const responseData = response.data || response;
     const zoneUsers = responseData.zoneUsers || responseData || [];
@@ -225,10 +225,10 @@ export async function deleteServicePerson(id: number): Promise<void> {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   if (!authToken) {
     throw new Error('No access token found');
   }
@@ -251,10 +251,10 @@ export async function deleteServiceZone(id: number): Promise<void> {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   if (!authToken) {
     throw new Error('No access token found');
   }
@@ -277,10 +277,10 @@ export async function deleteZoneUser(id: number): Promise<void> {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   if (!authToken) {
     throw new Error('No access token found');
   }
@@ -327,7 +327,7 @@ export async function getAdmins(params: {
     });
 
     const response = await serverFetch(`/admin/users?${searchParams}`);
-    
+
     return {
       data: response.users || [],
       pagination: response.pagination || {
@@ -363,32 +363,11 @@ export async function getAdminStats(admins: Admin[]) {
 // Get admin by ID
 export async function getAdminById(id: string): Promise<Admin | null> {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get('token')?.value;
-
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store'
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch admin: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await serverFetch(`/admin/${id}`);
     // Backend returns { user: adminData }, so we need to extract the user
     return data.user || data;
   } catch (error) {
+    // Return null if fetch fails (e.g. 404 or auth error), consistent with other getById functions returning null on failure
     return null;
   }
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arApi, ARInvoice, formatARCurrency } from '@/lib/ar-api';
-import { ArrowLeft, Save, Loader2, FileText, User, Calendar, IndianRupee, Truck, MessageSquare, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, FileText, User, Calendar, IndianRupee, Truck, MessageSquare, Shield, Sparkles, Wallet } from 'lucide-react';
 
 export default function EditInvoicePage() {
   const params = useParams();
@@ -39,8 +39,12 @@ export default function EditInvoicePage() {
     sentHandoverDate: '',
     deliveryStatus: 'PENDING',
     impactDate: '',
-    comments: '',
     status: 'PENDING',
+    // Prepaid fields
+    invoiceType: 'REGULAR' as 'REGULAR' | 'PREPAID',
+    advanceReceivedDate: '',
+    deliveryDueDate: '',
+    prepaidStatus: '' as '' | 'AWAITING_DELIVERY' | 'PARTIALLY_DELIVERED' | 'FULLY_DELIVERED' | 'EXPIRED',
   });
 
   useEffect(() => {
@@ -80,8 +84,12 @@ export default function EditInvoicePage() {
         sentHandoverDate: data.sentHandoverDate ? data.sentHandoverDate.split('T')[0] : '',
         deliveryStatus: data.deliveryStatus || 'PENDING',
         impactDate: data.impactDate ? data.impactDate.split('T')[0] : '',
-        comments: data.comments || '',
         status: data.status || 'PENDING',
+        // Prepaid fields
+        invoiceType: data.invoiceType || 'REGULAR',
+        advanceReceivedDate: data.advanceReceivedDate ? data.advanceReceivedDate.split('T')[0] : '',
+        deliveryDueDate: data.deliveryDueDate ? data.deliveryDueDate.split('T')[0] : '',
+        prepaidStatus: data.prepaidStatus || '',
       });
     } catch (err) {
       console.error('Failed to load invoice:', err);
@@ -129,9 +137,13 @@ export default function EditInvoicePage() {
         sentHandoverDate: formData.sentHandoverDate || undefined,
         deliveryStatus: formData.deliveryStatus as any,
         impactDate: formData.impactDate || undefined,
-        comments: formData.comments || undefined,
         status: formData.status as any,
-      });
+        // Prepaid fields
+        invoiceType: formData.invoiceType as any,
+        advanceReceivedDate: formData.advanceReceivedDate || undefined,
+        deliveryDueDate: formData.deliveryDueDate || undefined,
+        prepaidStatus: formData.prepaidStatus || undefined,
+      } as any);
       
       router.push(`/finance/ar/invoices/${encodeURIComponent(formData.invoiceNumber)}`);
     } catch (err: any) {
@@ -509,22 +521,77 @@ export default function EditInvoicePage() {
           </div>
         </div>
 
-        {/* Comments */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#6F8A9D]/20 p-6 shadow-lg">
+        {/* Invoice Type */}
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-lg">
           <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-[#6F8A9D] to-[#546A7A]">
-              <MessageSquare className="w-5 h-5 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#CE9F6B] to-[#976E44]">
+              <Wallet className="w-5 h-5 text-white" />
             </div>
-            Comments & Remarks
+            Invoice Type
           </h3>
-          <textarea
-            name="comments"
-            value={formData.comments}
-            onChange={handleChange}
-            placeholder="Add any comments or remarks..."
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#E17F70]/50 focus:outline-none focus:ring-4 focus:ring-[#E17F70]/10 transition-all resize-none font-medium"
-          />
+          
+          {/* Type Selector */}
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            {[
+              { value: 'REGULAR', label: 'Regular', desc: 'Standard invoice' },
+              { value: 'PREPAID', label: 'Prepaid', desc: 'Advance payment' },
+            ].map((type) => (
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, invoiceType: type.value as any }))}
+                className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                  formData.invoiceType === type.value
+                    ? 'border-[#CE9F6B] bg-gradient-to-br from-[#CE9F6B]/10 to-[#E17F70]/5 shadow-lg'
+                    : 'border-[#AEBFC3]/30 hover:border-[#CE9F6B]/50 hover:bg-[#CE9F6B]/5'
+                }`}
+              >
+                {formData.invoiceType === type.value && (
+                  <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-gradient-to-br from-[#CE9F6B] to-[#E17F70]" />
+                )}
+                <p className={`font-bold ${formData.invoiceType === type.value ? 'text-[#976E44]' : 'text-[#546A7A]'}`}>
+                  {type.label}
+                </p>
+                <p className="text-xs text-[#92A2A5] mt-1">{type.desc}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Prepaid-specific fields */}
+          {formData.invoiceType === 'PREPAID' && (
+            <div className="grid grid-cols-3 gap-5 pt-4 border-t border-[#CE9F6B]/20">
+              <div>
+                <label className={labelClass}>Advance Received Date</label>
+                <input
+                  type="date"
+                  name="advanceReceivedDate"
+                  value={formData.advanceReceivedDate}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Expected Delivery Date</label>
+                <input
+                  type="date"
+                  name="deliveryDueDate"
+                  value={formData.deliveryDueDate}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Prepaid Status</label>
+                <select name="prepaidStatus" value={formData.prepaidStatus} onChange={handleChange} className={selectClass}>
+                  <option value="">Select Status</option>
+                  <option value="AWAITING_DELIVERY">Awaiting Delivery</option>
+                  <option value="PARTIALLY_DELIVERED">Partially Delivered</option>
+                  <option value="FULLY_DELIVERED">Fully Delivered</option>
+                  <option value="EXPIRED">Expired</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions */}

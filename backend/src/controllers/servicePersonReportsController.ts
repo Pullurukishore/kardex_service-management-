@@ -40,7 +40,7 @@ export const servicePersonReportsController = {
         return res.status(401).json({ success: false, error: 'User not authenticated' });
       }
 
-      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON'].includes(userRole)) {
+      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON', 'EXPERT_HELPDESK'].includes(userRole)) {
         return res.status(403).json({ success: false, error: 'Insufficient permissions' });
       }
 
@@ -209,13 +209,13 @@ export const servicePersonReportsController = {
             let totalHours = 0;
             let hasAutoCheckout = false;
             let hasOpenSession = false;
-            
+
             dayAttendances.forEach(att => {
               if (att.checkInAt && att.checkOutAt) {
                 const checkIn = new Date(att.checkInAt);
                 const checkOut = new Date(att.checkOutAt);
                 let sessionHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
-                
+
                 // Cap session hours at 24 hours max (prevent multi-day session issues)
                 // If someone is checked in for > 24 hours, it's likely a data quality issue
                 if (sessionHours > 24) {
@@ -228,7 +228,7 @@ export const servicePersonReportsController = {
                   // Handle negative hours (data issue)
                   return; // Skip this session
                 }
-                
+
                 totalHours += sessionHours;
               } else if (att.checkInAt) {
                 hasOpenSession = true;
@@ -315,7 +315,7 @@ export const servicePersonReportsController = {
 
           // Initialize flags array for this service person
           const servicePersonFlags: any[] = [];
-          
+
           // Add late check-in flag if applicable
           if (lateCheckIns > 0) {
             servicePersonFlags.push({
@@ -377,8 +377,8 @@ export const servicePersonReportsController = {
         },
       });
     } catch (error) {
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -395,7 +395,7 @@ export const servicePersonReportsController = {
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON'].includes(userRole)) {
+      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON', 'EXPERT_HELPDESK'].includes(userRole)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
@@ -407,17 +407,17 @@ export const servicePersonReportsController = {
 
       // Build where clause based on user role and filters
       let userWhereClause: any = {};
-      
+
       if (userRole === 'ZONE_USER' || userRole === 'ZONE_MANAGER') {
         const zoneUser = await prisma.user.findUnique({
           where: { id: userId },
           include: { serviceZones: true },
         });
-        
+
         if (!zoneUser?.serviceZones?.length) {
           return res.status(403).json({ error: 'No zones assigned to user' });
         }
-        
+
         userWhereClause.serviceZones = {
           some: {
             serviceZoneId: { in: zoneUser.serviceZones.map(z => z.serviceZoneId) }
@@ -476,7 +476,7 @@ export const servicePersonReportsController = {
           userId: true,
         },
       });
-      
+
       // Calculate hours with 24h cap per session (prevent multi-day session inflation)
       let totalHoursSum = 0;
       allAttendanceForHours.forEach(att => {
@@ -484,18 +484,18 @@ export const servicePersonReportsController = {
           const checkIn = new Date(att.checkInAt);
           const checkOut = new Date(att.checkOutAt);
           let sessionHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
-          
+
           // Apply 24h cap (same as individual reports)
           if (sessionHours > 24) {
             sessionHours = 24;
           } else if (sessionHours < 0) {
             sessionHours = 0; // Skip negative hours
           }
-          
+
           totalHoursSum += sessionHours;
         }
       });
-      
+
       const totalHoursResult = { _sum: { totalHours: totalHoursSum } };
 
       // Get total activities logged
@@ -557,7 +557,7 @@ export const servicePersonReportsController = {
       if (mostActiveUserResult.length > 0) {
         const mostActiveUserId = mostActiveUserResult[0].userId;
         const activityCount = mostActiveUserResult[0]._count.id;
-        
+
         const userDetails = await prisma.user.findUnique({
           where: { id: mostActiveUserId },
           select: {
@@ -578,19 +578,19 @@ export const servicePersonReportsController = {
       // Calculate average hours per person per day - use SAME records as hours calculation
       // (only closed sessions with checkOutAt, matching individual reports)
       const allAttendanceRecords = allAttendanceForHours; // Reuse the same query results
-      
+
       // Count unique WORKING days per person (Monday-Saturday only, exclude Sundays)
       const userPresentDays = new Map<number, Set<string>>();
       allAttendanceRecords.forEach(att => {
         if (att.checkInAt) {
           const checkInDate = new Date(att.checkInAt);
           const dayOfWeek = checkInDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-          
+
           // Skip Sundays (matching individual report logic)
           if (dayOfWeek === 0) {
             return; // Skip this record
           }
-          
+
           const dateKey = formatDate(att.checkInAt, 'yyyy-MM-dd');
           if (!userPresentDays.has(att.userId)) {
             userPresentDays.set(att.userId, new Set());
@@ -598,14 +598,14 @@ export const servicePersonReportsController = {
           userPresentDays.get(att.userId)!.add(dateKey);
         }
       });
-      
+
       // Sum unique days across all persons
       let totalUniquePresentDays = 0;
       userPresentDays.forEach(daysSet => {
         totalUniquePresentDays += daysSet.size;
       });
-      
-      const averageHoursPerDay = totalUniquePresentDays > 0 
+
+      const averageHoursPerDay = totalUniquePresentDays > 0
         ? Number((Number(totalHoursResult._sum.totalHours || 0) / totalUniquePresentDays).toFixed(2))
         : 0;
 
@@ -635,23 +635,23 @@ export const servicePersonReportsController = {
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON'].includes(userRole)) {
+      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON', 'EXPERT_HELPDESK'].includes(userRole)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
       // Build where clause based on user role
       let whereClause: any = { role: 'SERVICE_PERSON' };
-      
+
       if (userRole === 'ZONE_USER' || userRole === 'ZONE_MANAGER') {
         const zoneUser = await prisma.user.findUnique({
           where: { id: userId },
           include: { serviceZones: true },
         });
-        
+
         if (!zoneUser?.serviceZones?.length) {
           return res.status(403).json({ error: 'No zones assigned to user' });
         }
-        
+
         whereClause.serviceZones = {
           some: {
             serviceZoneId: { in: zoneUser.serviceZones.map(z => z.serviceZoneId) }
@@ -711,22 +711,22 @@ export const servicePersonReportsController = {
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON'].includes(userRole)) {
+      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON', 'EXPERT_HELPDESK'].includes(userRole)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
       let whereClause: any = {};
-      
+
       if (userRole === 'ZONE_USER' || userRole === 'ZONE_MANAGER') {
         const zoneUser = await prisma.user.findUnique({
           where: { id: userId },
           include: { serviceZones: true },
         });
-        
+
         if (!zoneUser?.serviceZones?.length) {
           return res.status(403).json({ error: 'No zones assigned to user' });
         }
-        
+
         whereClause.id = { in: zoneUser.serviceZones.map(z => z.serviceZoneId) };
       } else if (userRole === 'SERVICE_PERSON') {
         // Service person can only see their assigned zones
@@ -734,11 +734,11 @@ export const servicePersonReportsController = {
           where: { id: userId },
           include: { serviceZones: true },
         });
-        
+
         if (!servicePerson?.serviceZones?.length) {
           return res.json({ success: true, data: [] });
         }
-        
+
         whereClause.id = { in: servicePerson.serviceZones.map(z => z.serviceZoneId) };
       }
 
@@ -765,7 +765,7 @@ export const servicePersonReportsController = {
   async exportServicePersonReports(req: Request, res: Response) {
     try {
       const { reportType = 'performance' } = req.query;
-      
+
       // Route to appropriate export function based on reportType
       if (reportType === 'attendance') {
         return await servicePersonReportsController.exportServicePersonAttendanceReports(req, res);
@@ -782,12 +782,12 @@ export const servicePersonReportsController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
 
-      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON'].includes(userRole)) {
+      if (!userRole || !['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'SERVICE_PERSON', 'EXPERT_HELPDESK'].includes(userRole)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
@@ -796,7 +796,7 @@ export const servicePersonReportsController = {
       // Parse date range
       const startDate = fromDate ? new Date(fromDate as string) : subDays(new Date(), 30);
       const endDate = toDate ? new Date(toDate as string) : new Date();
-      
+
       const fromDateTime = startOfDay(startDate);
       const toDateTime = endOfDay(endDate);
 
@@ -825,7 +825,7 @@ export const servicePersonReportsController = {
 
       // Service person filtering (only for ADMIN, ZONE_USER, and ZONE_MANAGER)
       if (userRole !== 'SERVICE_PERSON' && servicePersonIds && servicePersonIds !== 'all') {
-        const personIds = Array.isArray(servicePersonIds) 
+        const personIds = Array.isArray(servicePersonIds)
           ? servicePersonIds.map(id => parseInt(id as string))
           : (servicePersonIds as string).split(',').map(id => parseInt(id.trim()));
         servicePersonWhere.id = { in: personIds };
@@ -971,11 +971,11 @@ export const servicePersonReportsController = {
       if (format === 'excel') {
         const { generateExcel, getExcelColumns } = await import('../utils/excelGenerator');
         const excelColumns = getExcelColumns('service-person-performance');
-        
+
         if (!performanceData || !Array.isArray(performanceData)) {
           throw new Error('Performance data is undefined or not an array');
         }
-        
+
         await generateExcel(res, performanceData, excelColumns, 'Service Person Performance Report', filters);
       } else {
         await generatePdf(res, performanceData, columns, 'Service Person Performance Report', filters);
@@ -990,7 +990,7 @@ export const servicePersonReportsController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
@@ -1004,7 +1004,7 @@ export const servicePersonReportsController = {
       // Parse date range
       const startDate = fromDate ? new Date(fromDate as string) : subDays(new Date(), 30);
       const endDate = toDate ? new Date(toDate as string) : new Date();
-      
+
       const fromDateTime = startOfDay(startDate);
       const toDateTime = endOfDay(endDate);
 
@@ -1030,7 +1030,7 @@ export const servicePersonReportsController = {
       }
 
       if (userRole !== 'SERVICE_PERSON' && servicePersonIds && servicePersonIds !== 'all') {
-        const personIds = Array.isArray(servicePersonIds) 
+        const personIds = Array.isArray(servicePersonIds)
           ? servicePersonIds.map(id => parseInt(id as string))
           : (servicePersonIds as string).split(',').map(id => parseInt(id.trim()));
         servicePersonWhere.id = { in: personIds };
@@ -1200,7 +1200,7 @@ export const servicePersonReportsController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
@@ -1214,7 +1214,7 @@ export const servicePersonReportsController = {
       // Parse date range
       const startDate = fromDate ? new Date(fromDate as string) : subDays(new Date(), 30);
       const endDate = toDate ? new Date(toDate as string) : new Date();
-      
+
       const fromDateTime = startOfDay(startDate);
       const toDateTime = endOfDay(endDate);
 
@@ -1261,7 +1261,7 @@ export const servicePersonReportsController = {
 
       const dayWiseData = daysInRange.map((day) => {
         const dayKey = formatDate(day, 'yyyy-MM-dd');
-        
+
         const dayAttendances = attendanceRecords.filter(att => {
           const checkInDay = att.checkInAt ? formatDate(att.checkInAt, 'yyyy-MM-dd') : null;
           return checkInDay === dayKey;
@@ -1287,7 +1287,7 @@ export const servicePersonReportsController = {
         const checkInTime = dayAttendances[0]?.checkInAt || null;
         const checkOutTime = dayAttendances[dayAttendances.length - 1]?.checkOutAt || null;
         const status = dayAttendances.length > 0 ? (checkOutTime ? 'Present' : 'Checked In') : 'Absent';
-        
+
         return {
           date: dayKey,
           dayName: formatDate(day, 'EEE'),
@@ -1344,7 +1344,7 @@ export const servicePersonReportsController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
@@ -1506,17 +1506,17 @@ async function calculateServicePersonTicketMetrics(
         const returnEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_COMPLETED');
 
         let ticketTravelTime = 0;
-        
+
         // Going travel time
         if (goingStart && goingEnd && goingStart.changedAt < goingEnd.changedAt) {
           ticketTravelTime += differenceInMinutes(goingEnd.changedAt, goingStart.changedAt);
         }
-        
+
         // Return travel time
         if (returnStart && returnEnd && returnStart.changedAt < returnEnd.changedAt) {
           ticketTravelTime += differenceInMinutes(returnEnd.changedAt, returnStart.changedAt);
         }
-        
+
         if (ticketTravelTime > 0) {
           travelTimes.push(ticketTravelTime);
         }
@@ -1524,7 +1524,7 @@ async function calculateServicePersonTicketMetrics(
         // Onsite work time: ONSITE_VISIT_IN_PROGRESS to ONSITE_VISIT_RESOLVED
         const onsiteStart = statusHistory.find(h => h.status === 'ONSITE_VISIT_IN_PROGRESS');
         const onsiteEnd = statusHistory.find(h => h.status === 'ONSITE_VISIT_RESOLVED');
-        
+
         if (onsiteStart && onsiteEnd && onsiteStart.changedAt < onsiteEnd.changedAt) {
           const onsiteTime = differenceInMinutes(onsiteEnd.changedAt, onsiteStart.changedAt);
           if (onsiteTime > 0) {
@@ -1535,14 +1535,14 @@ async function calculateServicePersonTicketMetrics(
     }
 
     // Calculate averages in hours (rounded to 1 decimal place)
-    const averageResolutionTimeHours = resolutionTimes.length > 0 
+    const averageResolutionTimeHours = resolutionTimes.length > 0
       ? Math.round((resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length) / 60 * 10) / 10
       : 0;
-    
+
     const averageTravelTimeHours = travelTimes.length > 0
       ? Math.round((travelTimes.reduce((sum, time) => sum + time, 0) / travelTimes.length) / 60 * 10) / 10
       : 0;
-    
+
     const averageOnsiteTimeHours = onsiteTimes.length > 0
       ? Math.round((onsiteTimes.reduce((sum, time) => sum + time, 0) / onsiteTimes.length) / 60 * 10) / 10
       : 0;
@@ -1550,20 +1550,20 @@ async function calculateServicePersonTicketMetrics(
     // Calculate performance score (0-100)
     // Factors: resolution rate (40%), speed (30%), efficiency (30%)
     const resolutionRate = totalTickets > 0 ? (ticketsResolved / totalTickets) * 100 : 0;
-    
+
     // Speed score: inverse of resolution time (faster = better score)
     // Assume 4 hours as baseline good resolution time
-    const speedScore = averageResolutionTimeHours > 0 
+    const speedScore = averageResolutionTimeHours > 0
       ? Math.max(0, Math.min(100, 100 - (averageResolutionTimeHours - 4) * 6))
       : 50;
-    
+
     // Efficiency score: combination of travel and onsite time efficiency
     // Assume 1 hour travel + 2 hours onsite as baseline (3 hours total)
     const totalWorkTimeHours = averageTravelTimeHours + averageOnsiteTimeHours;
     const efficiencyScore = totalWorkTimeHours > 0
       ? Math.max(0, Math.min(100, 100 - (totalWorkTimeHours - 3) * 10))
       : 50;
-    
+
     const performanceScore = Math.round(
       (resolutionRate * 0.4) + (speedScore * 0.3) + (efficiencyScore * 0.3)
     );

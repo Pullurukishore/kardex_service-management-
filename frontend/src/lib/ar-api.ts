@@ -23,6 +23,8 @@ export interface ARCustomer {
     emailId?: string;
     riskClass: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
     creditLimit?: number;
+    totalInvoiceAmount?: number;
+    outstandingBalance?: number;
     createdAt: string;
     _count?: { invoices: number };
 }
@@ -72,6 +74,11 @@ export interface ARInvoice {
     paymentHistory?: ARPaymentHistory[];
     createdAt?: string;
     updatedAt?: string;
+    // Prepaid Invoice Fields
+    invoiceType?: 'REGULAR' | 'PREPAID';
+    advanceReceivedDate?: string;
+    deliveryDueDate?: string;
+    prepaidStatus?: 'AWAITING_DELIVERY' | 'PARTIALLY_DELIVERED' | 'FULLY_DELIVERED' | 'EXPIRED';
 }
 
 export interface ARPaymentHistory {
@@ -102,9 +109,74 @@ export interface ARAgingData {
     over90: { count: number; amount: number };
 }
 
+// Activity types for AR Total Activity Dashboard
+export interface ARActivity {
+    id: string;
+    type: 'INVOICE' | 'SESSION';
+    action: string;
+    description?: string;
+    // Invoice-specific
+    invoiceId?: string;
+    invoiceNumber?: string;
+    customerName?: string;
+    fieldName?: string;
+    oldValue?: string;
+    newValue?: string;
+    // Session-specific
+    userId?: number;
+    userName?: string;
+    userEmail?: string;
+    userRole?: string;
+    financeRole?: string;
+    deviceInfo?: string;
+    // Common
+    performedBy?: string;
+    performedById?: number;
+    ipAddress?: string;
+    userAgent?: string;
+    metadata?: any;
+    createdAt: string;
+}
+
+export interface ARActivityStats {
+    total: number;
+    today: number;
+    thisWeek: number;
+    thisMonth: number;
+    byType: { invoice: number; session: number };
+    byAction: Record<string, number>;
+    todayBreakdown: { invoice: number; session: number };
+}
+
+export interface ARActivityFilters {
+    fromDate?: string;
+    toDate?: string;
+    action?: string;
+    activityType?: 'INVOICE' | 'SESSION' | 'ALL';
+    userId?: number;
+    invoiceId?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+}
+
+
 // API Functions
 export const arApi = {
-    // Dashboard
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Essential Dashboard with Performance Indicators
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async getEssentialDashboard(): Promise<any> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/essential`);
+        if (!res.ok) throw new Error('Failed to fetch dashboard');
+        return res.json();
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Legacy Dashboard Endpoints
+    // ═══════════════════════════════════════════════════════════════════════════
+
     async getDashboardKPIs(): Promise<ARDashboardKPIs> {
         const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/kpis`);
         if (!res.ok) throw new Error('Failed to fetch KPIs');
@@ -117,6 +189,17 @@ export const arApi = {
         return res.json();
     },
 
+    async getStatusDistribution(): Promise<any> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/status-distribution`);
+        if (!res.ok) throw new Error('Failed to fetch status distribution');
+        return res.json();
+    },
+
+    async getRiskDistribution(): Promise<any> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/risk-distribution`);
+        if (!res.ok) throw new Error('Failed to fetch risk distribution');
+        return res.json();
+    },
 
     async getCollectionTrend(): Promise<{ month: string; amount: number }[]> {
         const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/collection-trend`);
@@ -125,14 +208,14 @@ export const arApi = {
     },
 
     async getCriticalOverdue(limit = 10): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/critical-overdue?limit=${limit}`);
+        const res = await fetchWithAuth(`${AR_API_BASE}/api/ar/dashboard/critical-overdue?limit=${limit}`);
         if (!res.ok) throw new Error('Failed to fetch overdue');
         return res.json();
     },
 
-    async getRecentActivity(limit = 10): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/recent-activity?limit=${limit}`);
-        if (!res.ok) throw new Error('Failed to fetch activity');
+    async getRecentPayments(limit = 10): Promise<any[]> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/recent-payments?limit=${limit}`);
+        if (!res.ok) throw new Error('Failed to fetch payments');
         return res.json();
     },
 
@@ -154,6 +237,7 @@ export const arApi = {
         return res.json();
     },
 
+   
     // Customers
     async getCustomers(params?: { search?: string; page?: number; limit?: number }) {
         const query = new URLSearchParams(params as any).toString();
@@ -236,7 +320,7 @@ export const arApi = {
     },
 
     // Invoices
-    async getInvoices(params?: { search?: string; status?: string; customerId?: string; page?: number; limit?: number }) {
+    async getInvoices(params?: { search?: string; status?: string; customerId?: string; invoiceType?: string; page?: number; limit?: number }) {
         const query = new URLSearchParams(params as any).toString();
         const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices?${query}`);
         if (!res.ok) throw new Error('Failed to fetch invoices');
@@ -273,12 +357,17 @@ export const arApi = {
     },
 
     async createInvoice(data: Partial<ARInvoice>): Promise<ARInvoice> {
+        console.log('Creating invoice with data:', data);
         const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        if (!res.ok) throw new Error('Failed to create invoice');
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            console.error('Create invoice API error:', res.status, errorData);
+            throw new Error(errorData.error || errorData.message || 'Failed to create invoice');
+        }
         return res.json();
     },
 
@@ -289,7 +378,52 @@ export const arApi = {
         if (!res.ok) throw new Error('Failed to delete invoice');
     },
 
-    // Import
+    async getInvoiceRemarks(invoiceId: string): Promise<any[]> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/remarks`);
+        if (!res.ok) throw new Error('Failed to fetch remarks');
+        return res.json();
+    },
+
+    async addInvoiceRemark(invoiceId: string, content: string): Promise<any> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/remarks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+        });
+        if (!res.ok) throw new Error('Failed to add remark');
+        return res.json();
+    },
+
+    async getInvoiceActivityLog(invoiceId: string): Promise<any[]> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/activity`);
+        if (!res.ok) throw new Error('Failed to fetch activity log');
+        return res.json();
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TOTAL ACTIVITIES - Combined invoice and session activities
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async getAllActivities(params?: ARActivityFilters): Promise<{ data: ARActivity[]; pagination: any }> {
+        const query = new URLSearchParams(params as any).toString();
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities?${query}`);
+        if (!res.ok) throw new Error('Failed to fetch activities');
+        return res.json();
+    },
+
+    async getActivityStats(): Promise<ARActivityStats> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities/stats`);
+        if (!res.ok) throw new Error('Failed to fetch activity stats');
+        return res.json();
+    },
+
+    async getRecentActivities(limit = 10): Promise<ARActivity[]> {
+        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities/recent?limit=${limit}`);
+        if (!res.ok) throw new Error('Failed to fetch recent activities');
+        return res.json();
+    },
+
+
     async importExcel(file: File, mapping?: any) {
         const formData = new FormData();
         formData.append('file', file);

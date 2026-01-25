@@ -816,42 +816,45 @@ export class OfferController {
         updates.offerClosedInCrm = new Date();
       }
 
-      // Handle spare parts update if provided
+      // Handle spare parts update if provided - wrap in transaction for atomicity
       if (updates.spareParts && Array.isArray(updates.spareParts)) {
-        // Delete existing spare parts for this offer
-        await prisma.offerSparePart.deleteMany({
-          where: { offerId: parseInt(id) }
+        await prisma.$transaction(async (tx) => {
+          // Delete existing spare parts for this offer
+          await tx.offerSparePart.deleteMany({
+            where: { offerId: parseInt(id) }
+          });
+
+          // Create new spare parts entries if any are provided
+          if (updates.spareParts.length > 0) {
+            const sparePartEntries = updates.spareParts.map((part: any) => {
+              const quantity = parseInt(part.quantity) || 1;
+              const unitPrice = parseFloat(part.unitPrice) || 0;
+              const totalPrice = parseFloat(part.totalPrice) || (quantity * unitPrice);
+
+              return {
+                offerId: parseInt(id),
+                sparePartId: parseInt(part.sparePartId),
+                quantity: quantity,
+                unitPrice: unitPrice,
+                totalPrice: totalPrice,
+                notes: part.notes || null,
+              };
+            });
+
+            await tx.offerSparePart.createMany({
+              data: sparePartEntries,
+            });
+
+            logger.info(`Updated ${sparePartEntries.length} spare part entries for offer ${id}`);
+          } else {
+            logger.info(`Cleared all spare parts for offer ${id}`);
+          }
         });
-
-        // Create new spare parts entries if any are provided
-        if (updates.spareParts.length > 0) {
-          const sparePartEntries = updates.spareParts.map((part: any) => {
-            const quantity = parseInt(part.quantity) || 1;
-            const unitPrice = parseFloat(part.unitPrice) || 0;
-            const totalPrice = parseFloat(part.totalPrice) || (quantity * unitPrice);
-
-            return {
-              offerId: parseInt(id),
-              sparePartId: parseInt(part.sparePartId),
-              quantity: quantity,
-              unitPrice: unitPrice,
-              totalPrice: totalPrice,
-              notes: part.notes || null,
-            };
-          });
-
-          await prisma.offerSparePart.createMany({
-            data: sparePartEntries,
-          });
-
-          logger.info(`Updated ${sparePartEntries.length} spare part entries for offer ${id}`);
-        } else {
-          logger.info(`Cleared all spare parts for offer ${id}`);
-        }
 
         // Remove spareParts from updates as it's not a direct field on Offer model
         delete updates.spareParts;
       }
+
 
       const offer = await prisma.offer.update({
         where: { id: parseInt(id) },

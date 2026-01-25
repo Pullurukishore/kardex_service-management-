@@ -43,9 +43,9 @@ async function makeServerRequest(endpoint: string) {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   const authToken = accessToken || token;
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -66,7 +66,7 @@ async function makeServerRequest(endpoint: string) {
 export async function getExpertHelpdesk(params: GetExpertHelpdeskParams = {}): Promise<GetExpertHelpdeskResponse> {
   try {
     const { page = 1, limit = 20, search } = params;
-    
+
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -75,7 +75,7 @@ export async function getExpertHelpdesk(params: GetExpertHelpdeskParams = {}): P
     });
 
     const data = await makeServerRequest(`/admin/users?${queryParams.toString()}`);
-    
+
     return {
       data: data.data?.users || data.users || [],
       pagination: data.data?.pagination || data.pagination || {
@@ -113,32 +113,7 @@ export async function getExpertHelpdeskStats(experts: ExpertHelpdesk[]): Promise
 
 export async function getExpertHelpdeskById(id: number): Promise<ExpertHelpdesk | null> {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('accessToken')?.value;
-    const token = cookieStore.get('token')?.value;
-    
-    const authToken = accessToken || token;
-    
-    if (!authToken) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch expert helpdesk: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await makeServerRequest(`/admin/${id}`);
     return data.user || data;
   } catch (error) {
     return null;

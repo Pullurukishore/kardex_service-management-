@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { ARInvoiceStatus } from '@prisma/client';
 import prisma from '../../config/db';
+import { logInvoiceActivity, getUserFromRequest, getIpFromRequest, logFieldChanges } from './arActivityLog.controller';
+
 
 // Get all invoices with filters
 export const getAllInvoices = async (req: Request, res: Response) => {
@@ -12,6 +14,7 @@ export const getAllInvoices = async (req: Request, res: Response) => {
             fromDate,
             toDate,
             overdueOnly,
+            invoiceType, // NEW: Filter by invoice type (REGULAR, PREPAID, CREDIT_NOTE)
             page = 1,
             limit = 20
         } = req.query;
@@ -43,6 +46,11 @@ export const getAllInvoices = async (req: Request, res: Response) => {
 
         if (overdueOnly === 'true') {
             where.status = 'OVERDUE';
+        }
+
+        // Filter by invoice type (REGULAR, PREPAID, CREDIT_NOTE)
+        if (invoiceType) {
+            where.invoiceType = String(invoiceType);
         }
 
         const skip = (Number(page) - 1) * Number(limit);
@@ -112,16 +120,19 @@ export const getInvoiceById = async (req: Request, res: Response) => {
             orderBy: { paymentDate: 'desc' }
         });
 
-        // Calculate days overdue
+        // Calculate days dynamically: positive = overdue, negative = days remaining
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const dueDate = new Date(invoice.dueDate);
-        const daysOverdue = Math.max(0, Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)));
-        const isOverdue = daysOverdue > 0 && invoice.status !== 'PAID';
+        dueDate.setHours(0, 0, 0, 0);
+        const diffTime = today.getTime() - dueDate.getTime();
+        const dueByDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const isOverdue = dueByDays > 0 && invoice.status !== 'PAID';
 
         res.json({
             ...invoice,
             paymentHistory,
-            daysOverdue,
+            dueByDays,
             isOverdue
         });
     } catch (error: any) {
@@ -136,66 +147,93 @@ export const addPaymentRecord = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { amount, paymentDate, paymentTime, paymentMode, referenceNo, notes } = req.body;
 
-        const invoice = await prisma.aRInvoice.findUnique({ where: { id } });
-        if (!invoice) {
-            return res.status(404).json({ error: 'Invoice not found' });
-        }
-
-        // Get current user name from request
+        // Get current user name from request (outside transaction)
         const recordedBy = (req as any).user?.name || (req as any).user?.email || 'System';
+        const user = getUserFromRequest(req);
+        const ipAddress = getIpFromRequest(req);
+        const userAgent = req.headers['user-agent'] || null;
+        const parsedAmount = parseFloat(amount);
 
-        // Create payment record
-        const payment = await prisma.aRPaymentHistory.create({
-            data: {
-                invoiceId: id,
-                amount: parseFloat(amount),
-                paymentDate: new Date(paymentDate),
-                paymentTime: paymentTime || null,
-                paymentMode,
-                referenceNo,
-                notes,
-                recordedBy
+        // Wrap all DB operations in a transaction to prevent race conditions
+        const result = await prisma.$transaction(async (tx) => {
+            // Read invoice within transaction for isolation
+            const invoice = await tx.aRInvoice.findUnique({ where: { id } });
+            if (!invoice) {
+                throw new Error('INVOICE_NOT_FOUND');
             }
+
+            // Create payment record
+            const payment = await tx.aRPaymentHistory.create({
+                data: {
+                    invoiceId: id,
+                    amount: parsedAmount,
+                    paymentDate: new Date(paymentDate),
+                    paymentTime: paymentTime || null,
+                    paymentMode,
+                    referenceNo,
+                    notes,
+                    recordedBy
+                }
+            });
+
+            // Calculate updated totals
+            const receipts = Number(invoice.receipts || 0);
+            const adjustments = Number(invoice.adjustments || 0);
+
+            let newReceipts = receipts;
+            let newAdjustments = adjustments;
+
+            if (paymentMode === 'ADJUSTMENT' || paymentMode === 'CREDIT_NOTE') {
+                newAdjustments += parsedAmount;
+            } else {
+                newReceipts += parsedAmount;
+            }
+
+            const totalReceipts = newReceipts + newAdjustments;
+            const balance = Number(invoice.totalAmount) - totalReceipts;
+
+            let status = invoice.status;
+            if (balance <= 0) status = 'PAID';
+            else if (totalReceipts > 0) status = 'PARTIAL';
+
+            // Update invoice within same transaction
+            await tx.aRInvoice.update({
+                where: { id },
+                data: {
+                    receipts: newReceipts,
+                    adjustments: newAdjustments,
+                    totalReceipts,
+                    balance,
+                    status
+                }
+            });
+
+            return { payment, balance, status };
         });
 
-        // Update invoice totals
-        const receipts = Number(invoice.receipts || 0);
-        const adjustments = Number(invoice.adjustments || 0);
-
-        let newReceipts = receipts;
-        let newAdjustments = adjustments;
-
-        if (paymentMode === 'ADJUSTMENT' || paymentMode === 'CREDIT_NOTE') {
-            newAdjustments += parseFloat(amount);
-        } else {
-            newReceipts += parseFloat(amount);
-        }
-
-        const totalReceipts = newReceipts + newAdjustments;
-        const balance = Number(invoice.totalAmount) - totalReceipts;
-
-        let status = invoice.status;
-        if (balance <= 0) status = 'PAID';
-        else if (totalReceipts > 0) status = 'PARTIAL';
-
-        // Update invoice
-        await prisma.aRInvoice.update({
-            where: { id },
-            data: {
-                receipts: newReceipts,
-                adjustments: newAdjustments,
-                totalReceipts,
-                balance,
-                status
-            }
+        // Log payment activity (outside transaction - non-critical)
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'PAYMENT_RECORDED',
+            description: `Payment of ₹${parsedAmount.toLocaleString()} recorded via ${paymentMode}${referenceNo ? ` (Ref: ${referenceNo})` : ''}`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress,
+            userAgent,
+            metadata: { amount: parsedAmount, paymentMode, referenceNo, newBalance: result.balance, newStatus: result.status }
         });
 
-        res.json(payment);
+        res.json(result.payment);
     } catch (error: any) {
         console.error('Error adding payment record:', error);
+        if (error.message === 'INVOICE_NOT_FOUND') {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
         res.status(500).json({ error: 'Failed to add payment', message: error.message });
     }
 };
+
+
 
 // Create invoice
 export const createInvoice = async (req: Request, res: Response) => {
@@ -219,12 +257,16 @@ export const createInvoice = async (req: Request, res: Response) => {
             taxAmount,
             originalAmount,
             amountReceived,
-            actualPaymentTerms
+            actualPaymentTerms,
+            // Prepaid fields
+            invoiceType,
+            advanceReceivedDate,
+            deliveryDueDate
         } = req.body;
 
-        if (!invoiceNumber || !customerId || !invoiceDate || !dueDate || !totalAmount) {
+        if (!invoiceNumber || !customerId || !invoiceDate || !totalAmount) {
             return res.status(400).json({
-                error: 'Invoice Number, Customer, Invoice Date, Due Date, and Total Amount are required'
+                error: 'Invoice Number, Customer, Invoice Date, and Total Amount are required'
             });
         }
 
@@ -235,9 +277,12 @@ export const createInvoice = async (req: Request, res: Response) => {
             status = 'PAID';
         } else if (parseFloat(amountReceived) > 0) {
             status = 'PARTIAL';
-        } else if (new Date(dueDate) < new Date()) {
+        } else if (dueDate && new Date(dueDate) < new Date()) {
             status = 'OVERDUE';
         }
+
+        // Calculate due date: use provided or default to 30 days from invoice date
+        const calculatedDueDate = dueDate ? new Date(dueDate) : new Date(new Date(invoiceDate).getTime() + 30 * 24 * 60 * 60 * 1000);
 
         const invoice = await prisma.aRInvoice.create({
             data: {
@@ -246,13 +291,31 @@ export const createInvoice = async (req: Request, res: Response) => {
                 customerName: req.body.customerName || '',
                 poNo,
                 invoiceDate: new Date(invoiceDate),
-                dueDate: new Date(dueDate),
+                dueDate: calculatedDueDate,
                 totalAmount: parseFloat(totalAmount),
                 netAmount: netAmount ? parseFloat(netAmount) : parseFloat(totalAmount),
                 taxAmount: taxAmount ? parseFloat(taxAmount) : null,
                 actualPaymentTerms,
-                status
+                status,
+                // Prepaid fields
+                invoiceType: invoiceType || 'REGULAR',
+                advanceReceivedDate: advanceReceivedDate ? new Date(advanceReceivedDate) : null,
+                deliveryDueDate: deliveryDueDate ? new Date(deliveryDueDate) : null,
+                prepaidStatus: invoiceType === 'PREPAID' ? 'AWAITING_DELIVERY' : null
             }
+        });
+
+        // Log activity
+        const user = getUserFromRequest(req);
+        await logInvoiceActivity({
+            invoiceId: invoice.id,
+            action: 'INVOICE_CREATED',
+            description: `Invoice ${invoiceNumber} created for ${req.body.customerName || customerId} - Amount: ₹${parseFloat(totalAmount).toLocaleString()}`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null,
+            metadata: { invoiceType: invoiceType || 'REGULAR', totalAmount: parseFloat(totalAmount) }
         });
 
         res.status(201).json(invoice);
@@ -265,11 +328,17 @@ export const createInvoice = async (req: Request, res: Response) => {
     }
 };
 
+
 // Update invoice
 export const updateInvoice = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const updateData = { ...req.body };
+
+        // Prepare user info outside transaction
+        const user = getUserFromRequest(req);
+        const ipAddress = getIpFromRequest(req);
+        const userAgent = req.headers['user-agent'] || null;
 
         // Convert date strings to Date objects
         if (updateData.dueDate) {
@@ -299,10 +368,16 @@ export const updateInvoice = async (req: Request, res: Response) => {
             updateData.balance = parseFloat(updateData.balance) || 0;
         }
 
-        // Recalculate balance and status if amounts changed
-        if (updateData.totalAmount !== undefined || updateData.totalReceipts !== undefined) {
-            const existingInvoice = await prisma.aRInvoice.findUnique({ where: { id } });
-            if (existingInvoice) {
+        // Wrap DB operations in transaction to prevent race conditions
+        const result = await prisma.$transaction(async (tx) => {
+            // Fetch existing invoice within transaction for isolation
+            const existingInvoice = await tx.aRInvoice.findUnique({ where: { id } });
+            if (!existingInvoice) {
+                throw new Error('INVOICE_NOT_FOUND');
+            }
+
+            // Recalculate balance and status if amounts changed
+            if (updateData.totalAmount !== undefined || updateData.totalReceipts !== undefined) {
                 const totalAmount = updateData.totalAmount !== undefined
                     ? parseFloat(updateData.totalAmount)
                     : Number(existingInvoice.totalAmount);
@@ -318,22 +393,79 @@ export const updateInvoice = async (req: Request, res: Response) => {
                     updateData.status = 'PARTIAL';
                 }
             }
-        }
 
-        const invoice = await prisma.aRInvoice.update({
-            where: { id },
-            data: updateData
+            const invoice = await tx.aRInvoice.update({
+                where: { id },
+                data: updateData
+            });
+
+            return { invoice, existingInvoice };
         });
 
-        res.json(invoice);
+        // Log detailed activity for each changed field (outside transaction - non-critical)
+        const fieldLabels: Record<string, string> = {
+            actualPaymentTerms: 'Payment Terms',
+            dueDate: 'Due Date',
+            status: 'Status',
+            deliveryStatus: 'Delivery Status',
+            poNo: 'PO Number',
+            totalAmount: 'Total Amount',
+            netAmount: 'Net Amount',
+            taxAmount: 'Tax Amount',
+            balance: 'Balance',
+            receipts: 'Receipts',
+            adjustments: 'Adjustments',
+            riskClass: 'Risk Class',
+            invoiceType: 'Invoice Type',
+            modeOfDelivery: 'Mode of Delivery',
+            comments: 'Comments',
+            prepaidStatus: 'Prepaid Status'
+        };
+
+        // Build detailed change description
+        const changes: string[] = [];
+        for (const key of Object.keys(updateData)) {
+            if (key === 'updatedAt') continue;
+            const oldVal = (result.existingInvoice as any)[key];
+            const newVal = updateData[key];
+
+            // Compare values (handle dates and numbers)
+            const oldStr = oldVal instanceof Date ? oldVal.toISOString().split('T')[0] : String(oldVal ?? 'N/A');
+            const newStr = newVal instanceof Date ? newVal.toISOString().split('T')[0] : String(newVal ?? 'N/A');
+
+            if (oldStr !== newStr) {
+                const label = fieldLabels[key] || key;
+                changes.push(`${label}: ${oldStr} → ${newStr}`);
+            }
+        }
+
+        const description = changes.length > 0
+            ? `Invoice updated:\n• ${changes.join('\n• ')}`
+            : 'Invoice updated (no changes detected)';
+
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'INVOICE_UPDATED',
+            description,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress,
+            userAgent,
+            metadata: { changes, updateData }
+        });
+
+        res.json(result.invoice);
     } catch (error: any) {
         console.error('Error updating AR invoice:', error);
-        if (error.code === 'P2025') {
+        if (error.message === 'INVOICE_NOT_FOUND' || error.code === 'P2025') {
             return res.status(404).json({ error: 'Invoice not found' });
         }
         res.status(500).json({ error: 'Failed to update invoice', message: error.message });
     }
+
 };
+
+
 
 // Update delivery tracking (updates delivery fields on the invoice directly)
 export const updateDeliveryTracking = async (req: Request, res: Response) => {
@@ -351,6 +483,19 @@ export const updateDeliveryTracking = async (req: Request, res: Response) => {
             }
         });
 
+        // Log delivery update activity
+        const user = getUserFromRequest(req);
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'DELIVERY_UPDATED',
+            description: `Delivery status updated to ${deliveryStatus}${modeOfDelivery ? ` via ${modeOfDelivery}` : ''}`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null,
+            metadata: { deliveryStatus, modeOfDelivery, sentHandoverDate, impactDate }
+        });
+
         res.json(invoice);
     } catch (error: any) {
         console.error('Error updating AR delivery tracking:', error);
@@ -361,13 +506,34 @@ export const updateDeliveryTracking = async (req: Request, res: Response) => {
     }
 };
 
+
 // Delete invoice
 export const deleteInvoice = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
+        // Get invoice details before deletion for logging
+        const invoiceToDelete = await prisma.aRInvoice.findUnique({
+            where: { id },
+            select: { invoiceNumber: true, customerName: true, totalAmount: true }
+        });
+
         await prisma.aRInvoice.delete({
             where: { id }
+        });
+
+        // Log deletion (note: this won't be visible in invoice view since invoice is deleted,
+        // but useful for audit purposes if we have a global activity log)
+        const user = getUserFromRequest(req);
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'INVOICE_DELETED',
+            description: `Invoice ${invoiceToDelete?.invoiceNumber || id} deleted - Customer: ${invoiceToDelete?.customerName}, Amount: ₹${invoiceToDelete?.totalAmount}`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null,
+            metadata: { deletedInvoice: invoiceToDelete }
         });
 
         res.json({ message: 'Invoice deleted successfully' });
@@ -379,6 +545,7 @@ export const deleteInvoice = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to delete invoice', message: error.message });
     }
 };
+
 
 // Update overdue status for all invoices (batch job)
 export const updateOverdueStatus = async (req: Request, res: Response) => {
@@ -400,5 +567,147 @@ export const updateOverdueStatus = async (req: Request, res: Response) => {
     } catch (error: any) {
         console.error('Error updating AR overdue status:', error);
         res.status(500).json({ error: 'Failed to update overdue status', message: error.message });
+    }
+};
+
+// Get invoice remarks
+export const getInvoiceRemarks = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Resolve invoice ID - support both UUID and invoice number
+        let invoiceId = id;
+
+        // Try to find by UUID first, then by invoice number
+        let invoice = await prisma.aRInvoice.findUnique({
+            where: { id },
+            select: { id: true }
+        });
+
+        if (!invoice) {
+            invoice = await prisma.aRInvoice.findUnique({
+                where: { invoiceNumber: id },
+                select: { id: true }
+            });
+        }
+
+        if (!invoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        invoiceId = invoice.id;
+
+        const remarks = await prisma.aRInvoiceRemark.findMany({
+            where: { invoiceId },
+            include: {
+                createdBy: {
+                    select: { id: true, name: true, email: true }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json(remarks);
+    } catch (error: any) {
+        console.error('Error fetching invoice remarks:', error);
+        res.status(500).json({ error: 'Failed to fetch remarks', message: error.message });
+    }
+};
+
+// Add invoice remark
+export const addInvoiceRemark = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+        const userId = (req as any).user?.id;
+
+        if (!content || !content.trim()) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        // Resolve invoice ID - support both UUID and invoice number
+        let invoice = await prisma.aRInvoice.findUnique({
+            where: { id },
+            select: { id: true }
+        });
+
+        if (!invoice) {
+            invoice = await prisma.aRInvoice.findUnique({
+                where: { invoiceNumber: id },
+                select: { id: true }
+            });
+        }
+
+        if (!invoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const remark = await prisma.aRInvoiceRemark.create({
+            data: {
+                invoiceId: invoice.id,
+                content: content.trim(),
+                createdById: userId
+            },
+            include: {
+                createdBy: {
+                    select: { id: true, name: true, email: true }
+                }
+            }
+        });
+
+        // Log remark activity
+        await logInvoiceActivity({
+            invoiceId: invoice.id,
+            action: 'REMARK_ADDED',
+            description: `Remark added: "${content.trim().substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+            performedById: userId,
+            performedBy: remark.createdBy?.name || null,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null
+        });
+
+        res.status(201).json(remark);
+    } catch (error: any) {
+        console.error('Error adding invoice remark:', error);
+        res.status(500).json({ error: 'Failed to add remark', message: error.message });
+    }
+};
+
+
+// Get invoice activity log
+export const getInvoiceActivityLog = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        // Resolve invoice ID - support both UUID and invoice number
+        let invoice = await prisma.aRInvoice.findUnique({
+            where: { id },
+            select: { id: true }
+        });
+
+        if (!invoice) {
+            invoice = await prisma.aRInvoice.findUnique({
+                where: { invoiceNumber: id },
+                select: { id: true }
+            });
+        }
+
+        if (!invoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const activityLogs = await prisma.aRInvoiceActivityLog.findMany({
+            where: { invoiceId: invoice.id },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        res.json(activityLogs);
+    } catch (error: any) {
+        console.error('Error fetching invoice activity log:', error);
+        res.status(500).json({ error: 'Failed to fetch activity log', message: error.message });
     }
 };

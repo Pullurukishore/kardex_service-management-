@@ -511,42 +511,93 @@
 }
 
 /* Custom Toast Styles */
+/* Custom Toast Styles - Bright Kardex Theme */
 [data-sonner-toast] {
   background: #ffffff !important;
-  color: #82A094 !important;
-  /* Green 2 */
-  border: 1px solid #82A094 !important;
+  color: #546A7A !important;
+  border: 1px solid #92A2A5 !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 500 !important;
 }
 
+[data-sonner-toast] [data-title] {
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  margin-bottom: 2px !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-size: 0.85rem !important;
+  opacity: 0.9 !important;
+  color: #5D6E73 !important;
+}
+
+/* Success: Bright Green Border + Text */
 [data-sonner-toast][data-type="success"] {
   background: #ffffff !important;
-  color: #82A094 !important;
+  border: 2px solid #82A094 !important;
   /* Green 2 */
-  border-color: #82A094 !important;
+  border-left: 6px solid #82A094 !important;
 }
 
+[data-sonner-toast][data-type="success"] [data-title] {
+  color: #4F6A64 !important;
+  /* Green 3 */
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #82A094 !important;
+}
+
+/* Error: Bright Red Border + Text */
 [data-sonner-toast][data-type="error"] {
   background: #ffffff !important;
-  color: #E17F70 !important;
-  /* Red 1 */
-  border-color: #E17F70 !important;
+  border: 2px solid #E17F70 !important;
+  /* Red 1 (Brightest) */
+  border-left: 6px solid #E17F70 !important;
 }
 
+[data-sonner-toast][data-type="error"] [data-title] {
+  color: #E17F70 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: #E17F70 !important;
+}
+
+/* Warning: Bright Sand/Gold Border + Text */
 [data-sonner-toast][data-type="warning"] {
   background: #ffffff !important;
-  color: #EEC18F !important;
-  /* Sand 1 */
-  border-color: #CE9F6B !important;
+  border: 2px solid #CE9F6B !important;
   /* Sand 2 */
+  border-left: 6px solid #CE9F6B !important;
 }
 
+[data-sonner-toast][data-type="warning"] [data-title] {
+  color: #976E44 !important;
+  /* Sand 3 */
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: #CE9F6B !important;
+}
+
+/* Info: Bright Blue Border + Text */
 [data-sonner-toast][data-type="info"] {
   background: #ffffff !important;
+  border: 2px solid #96AEC2 !important;
+  /* Blue 1 (Bright) */
+  border-left: 6px solid #96AEC2 !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-title] {
+  color: #546A7A !important;
+  /* Blue 3 */
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] {
   color: #96AEC2 !important;
-  /* Blue 1 */
-  border-color: #96AEC2 !important;
 }
 
 /* ============================================

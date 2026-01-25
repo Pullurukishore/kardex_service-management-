@@ -3,18 +3,7 @@ import type { NextRequest } from 'next/server';
 import { UserRole } from '@/types/user.types';
 import { isRouteAccessible, shouldRedirectToLogin } from './lib/utils/navigation';
 
-function getRoleBasedRedirect(role?: UserRole): string {
-  switch (role) {
-    case UserRole.ADMIN:
-      return '/admin/dashboard';
-    case UserRole.ZONE_USER:
-      return '/zone/dashboard';
-    case UserRole.SERVICE_PERSON:
-      return '/service-person/dashboard';
-    default:
-      return '/auth/login';
-  }
-}
+import { getRoleBasedRedirect } from './lib/utils/navigation';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

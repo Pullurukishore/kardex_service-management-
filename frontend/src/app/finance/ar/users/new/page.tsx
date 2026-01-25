@@ -16,7 +16,7 @@ import {
   Sparkles,
   Users,
   Crown,
-  EyeIcon
+  Eye as ViewIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,7 +66,7 @@ const financeRoles: { value: FinanceRoleType; label: string; description: string
     value: 'FINANCE_VIEWER', 
     label: 'Finance Viewer', 
     description: 'Read-only access to finance data and reports',
-    icon: <EyeIcon className="h-5 w-5" />
+    icon: <ViewIcon className="h-5 w-5" />
   },
 ];
 

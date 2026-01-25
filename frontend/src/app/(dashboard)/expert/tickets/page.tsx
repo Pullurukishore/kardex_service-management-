@@ -104,6 +104,43 @@ export default function ExpertTicketsPage() {
     return () => clearTimeout(timeoutId)
   }, [searchTerm, selectedStatus, selectedPriority, pagination.page, authLoading, isAuthenticated, user?.role])
 
+  // Sort tickets - MUST be before any conditional returns
+  const sortedTickets = useMemo(() => {
+    if (!sortField) return tickets
+    
+    return [...tickets].sort((a, b) => {
+      let aValue = a[sortField]
+      let bValue = b[sortField]
+      
+      // Handle nested properties
+      if (sortField === 'customer') {
+        aValue = a.customer?.companyName || ''
+        bValue = b.customer?.companyName || ''
+      } else if (sortField === 'zone') {
+        aValue = a.zone?.name || ''
+        bValue = b.zone?.name || ''
+      } else if (sortField === 'assignedTo') {
+        aValue = a.assignedTo?.name || ''
+        bValue = b.assignedTo?.name || ''
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [tickets, sortField, sortDirection])
+
+  // Calculate statistics - MUST be before any conditional returns
+  const stats = useMemo(() => ({
+    total: pagination.total,
+    open: tickets.filter(t => t.status === 'OPEN').length,
+    inProgress: tickets.filter(t => ['ASSIGNED', 'IN_PROGRESS', 'ONSITE_VISIT_PLANNED', 'ONSITE_VISIT'].includes(t.status)).length,
+    closed: tickets.filter(t => ['CLOSED', 'CLOSED_PENDING'].includes(t.status)).length,
+    critical: tickets.filter(t => t.priority === 'CRITICAL').length,
+  }), [pagination.total, tickets])
+
+  const hasActiveFilters = searchTerm || selectedStatus !== 'All Status' || selectedPriority !== 'All Priority'
+
   // Show loading state while auth is being checked
   if (authLoading) {
     return (
@@ -160,34 +197,6 @@ export default function ExpertTicketsPage() {
     setPagination(prev => ({ ...prev, page: 1 }))
   }
 
-  const hasActiveFilters = searchTerm || selectedStatus !== 'All Status' || selectedPriority !== 'All Priority'
-
-  // Sort tickets
-  const sortedTickets = useMemo(() => {
-    if (!sortField) return tickets
-    
-    return [...tickets].sort((a, b) => {
-      let aValue = a[sortField]
-      let bValue = b[sortField]
-      
-      // Handle nested properties
-      if (sortField === 'customer') {
-        aValue = a.customer?.companyName || ''
-        bValue = b.customer?.companyName || ''
-      } else if (sortField === 'zone') {
-        aValue = a.zone?.name || ''
-        bValue = b.zone?.name || ''
-      } else if (sortField === 'assignedTo') {
-        aValue = a.assignedTo?.name || ''
-        bValue = b.assignedTo?.name || ''
-      }
-      
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [tickets, sortField, sortDirection])
-
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -195,15 +204,6 @@ export default function ExpertTicketsPage() {
       setSortField(field)
       setSortDirection('asc')
     }
-  }
-
-  // Calculate statistics
-  const stats = {
-    total: pagination.total,
-    open: tickets.filter(t => t.status === 'OPEN').length,
-    inProgress: tickets.filter(t => ['ASSIGNED', 'IN_PROGRESS', 'ONSITE_VISIT_PLANNED', 'ONSITE_VISIT'].includes(t.status)).length,
-    closed: tickets.filter(t => ['CLOSED', 'CLOSED_PENDING'].includes(t.status)).length,
-    critical: tickets.filter(t => t.priority === 'CRITICAL').length,
   }
 
   const getStatusStyle = (status: string) => {
@@ -289,46 +289,46 @@ export default function ExpertTicketsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-purple-50/30 to-fuchsia-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-[#EEC1BF]/10 to-[#E17F70]/5">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Premium Header with Glassmorphism */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#6F8A9D] via-fuchsia-600 to-[#9E3B47] rounded-2xl shadow-2xl shadow-[#6F8A9D]/20 p-6 text-white">
+        {/* Premium Header with Glassmorphism - Kardex Red */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#9E3B47] via-[#75242D] to-[#546A7A] rounded-2xl shadow-2xl shadow-[#9E3B47]/20 p-4 sm:p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#EEC1BF]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-          <div className="relative z-10 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
-                <Headphones className="h-8 w-8" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#E17F70]/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+          <div className="relative z-10 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2.5 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
+                <Headphones className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">My Assigned Tickets</h1>
-                <p className="text-[#6F8A9D] mt-1">Tickets assigned to you as Expert Helpdesk</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">My Assigned Tickets</h1>
+                <p className="text-[#EEC1BF] text-sm sm:text-base mt-1">Tickets assigned to you as Expert Helpdesk</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="grid grid-cols-5 gap-3">
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-[#6F8A9D] text-xs font-medium">Total</p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
+                  <p className="text-[#EEC1BF] text-[10px] sm:text-xs font-medium">Total</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-[#6F8A9D] text-xs font-medium">Open</p>
-                  <p className="text-2xl font-bold">{stats.open}</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
+                  <p className="text-[#EEC1BF] text-[10px] sm:text-xs font-medium">Open</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.open}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-[#6F8A9D] text-xs font-medium">In Progress</p>
-                  <p className="text-2xl font-bold">{stats.inProgress}</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
+                  <p className="text-[#EEC1BF] text-[10px] sm:text-xs font-medium">In Progress</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.inProgress}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-[#6F8A9D] text-xs font-medium">Closed</p>
-                  <p className="text-2xl font-bold">{stats.closed}</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center hidden sm:block">
+                  <p className="text-[#EEC1BF] text-[10px] sm:text-xs font-medium">Closed</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.closed}</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 border border-white/20 text-center">
-                  <p className="text-[#6F8A9D] text-xs font-medium">Critical</p>
-                  <p className="text-2xl font-bold">{stats.critical}</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center hidden sm:block">
+                  <p className="text-[#EEC1BF] text-[10px] sm:text-xs font-medium">Critical</p>
+                  <p className="text-lg sm:text-2xl font-bold">{stats.critical}</p>
                 </div>
               </div>
-              <Button onClick={() => router.push('/expert/tickets/create')} className="bg-white text-[#546A7A] hover:bg-[#6F8A9D]/10 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={() => router.push('/expert/tickets/create')} className="bg-white text-[#546A7A] hover:bg-[#6F8A9D]/10 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Ticket
               </Button>
@@ -422,7 +422,7 @@ export default function ExpertTicketsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-[#546A7A] via-fuchsia-700 to-purple-800 text-white">
+                <tr className="bg-gradient-to-r from-[#9E3B47] via-[#75242D] to-[#546A7A] text-white">
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-[#546A7A]/50 transition-colors" onClick={() => handleSort('id')}>
                     <div className="flex items-center gap-1.5">
                       Ticket #
@@ -636,7 +636,7 @@ export default function ExpertTicketsPage() {
           
           {/* Pagination */}
           {!loading && tickets.length > 0 && (
-            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-purple-50 to-fuchsia-50/30 px-6 py-4 border-t border-[#92A2A5]">
+            <div className="bg-gradient-to-r from-[#AEBFC3]/10 via-[#EEC1BF]/10 to-[#E17F70]/5 px-6 py-4 border-t border-[#92A2A5]">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-[#5D6E73] font-medium">
                   Showing <span className="font-bold text-[#546A7A]">{((pagination.page - 1) * pagination.limit) + 1}</span> to <span className="font-semibold">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of <span className="font-semibold">{pagination.total}</span> results

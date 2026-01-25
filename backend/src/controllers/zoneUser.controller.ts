@@ -316,15 +316,17 @@ export const deleteZoneUser = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Remove all zone assignments first (foreign key constraint)
-    await prisma.servicePersonZone.deleteMany({
-      where: { userId: userId }
-    });
-
-    // Delete the user
-    await prisma.user.delete({
-      where: { id: userId }
-    });
+    // Use transaction to ensure atomicity - either both succeed or both fail
+    await prisma.$transaction([
+      // Remove all zone assignments first (foreign key constraint)
+      prisma.servicePersonZone.deleteMany({
+        where: { userId: userId }
+      }),
+      // Delete the user
+      prisma.user.delete({
+        where: { id: userId }
+      })
+    ]);
 
     res.json({
       success: true,
@@ -337,6 +339,7 @@ export const deleteZoneUser = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const createZoneUserWithZones = async (req: Request, res: Response) => {
   const { name, email, phone, password, serviceZoneIds, isActive = true, role = 'ZONE_USER' } = req.body;

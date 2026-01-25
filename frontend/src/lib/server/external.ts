@@ -46,10 +46,10 @@ async function makeServerRequest(endpoint: string) {
   const cookieStore = cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const token = cookieStore.get('token')?.value;
-  
+
   // Check for either accessToken or token (based on authentication inconsistencies)
   const authToken = accessToken || token;
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Authorization': authToken ? `Bearer ${authToken}` : '',
@@ -70,7 +70,7 @@ async function makeServerRequest(endpoint: string) {
 export async function getExternalUsers(params: GetExternalUsersParams = {}): Promise<GetExternalUsersResponse> {
   try {
     const { page = 1, limit = 20, search } = params;
-    
+
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
@@ -79,7 +79,7 @@ export async function getExternalUsers(params: GetExternalUsersParams = {}): Pro
     });
 
     const data = await makeServerRequest(`/admin/users?${queryParams.toString()}`);
-    
+
     return {
       data: data.data?.users || data.users || [],
       pagination: data.data?.pagination || data.pagination || {
@@ -117,32 +117,7 @@ export async function getExternalUserStats(externalUsers: ExternalUser[]): Promi
 
 export async function getExternalUserById(id: number): Promise<ExternalUser | null> {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('accessToken')?.value;
-    const token = cookieStore.get('token')?.value;
-    
-    const authToken = accessToken || token;
-    
-    if (!authToken) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch external user: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await makeServerRequest(`/admin/${id}`);
     // Backend returns { user: userData }, so we need to extract the user
     return data.user || data;
   } catch (error) {

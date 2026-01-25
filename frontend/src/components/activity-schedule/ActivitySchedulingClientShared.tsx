@@ -162,14 +162,14 @@ export default function ActivitySchedulingClient() {
 
   const fetchFilterData = async () => {
     try {
-      // Fetch zones
-      const zonesResponse = await apiClient.get('/service-zones');
+      // Fetch zones from service-person-reports endpoint
+      const zonesResponse = await apiClient.get('/service-person-reports/service-zones');
       if (zonesResponse.success && zonesResponse.data) {
         setZones(Array.isArray(zonesResponse.data) ? zonesResponse.data : []);
       }
       
-      // Fetch service persons
-      const servicePersonsResponse = await apiClient.get('/service-persons');
+      // Fetch service persons from service-person-reports endpoint
+      const servicePersonsResponse = await apiClient.get('/service-person-reports/service-persons');
       if (servicePersonsResponse.success && servicePersonsResponse.data) {
         setServicePersons(Array.isArray(servicePersonsResponse.data) ? servicePersonsResponse.data : []);
       }

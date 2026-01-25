@@ -48,10 +48,10 @@ const validateRequest = (validations: any[]) => {
 };
 const router = Router();
 
-// Rate limiting for login endpoint to prevent brute force attacks
+// Rate limiting for login endpoint to prevent brute force attacks - Industry standard
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 login attempts per window
+  max: 5, // Limit each IP to 5 login attempts per window (industry standard)
   message: {
     success: false,
     message: 'Too many login attempts. Please try again after 15 minutes.',

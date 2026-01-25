@@ -7,6 +7,7 @@ import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { JWT_CONFIG, REFRESH_TOKEN_CONFIG, generateRefreshToken, verifyRefreshToken } from '../config/auth';
 import { sendEmail } from '../utils/email';
 import prisma from '../config/db';
+import { logSessionActivity, getIpFromRequest as getSessionIp } from './ar/arSessionActivity.controller';
 
 // Type for user data that's safe to return to the client
 type SafeUser = {
@@ -357,6 +358,20 @@ export const login = async (req: Request, res: Response) => {
     // Return user data without sensitive information
     const { password: _, refreshToken: _oldRefreshToken, tokenVersion: tv, ...userData } = user;
 
+    // Log successful login activity only if user has a finance role
+    if (financeRoleUser?.financeRole) {
+      await logSessionActivity({
+        action: 'LOGIN',
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        userRole: user.role,
+        financeRole: financeRoleUser.financeRole,
+        ipAddress: getSessionIp(req),
+        userAgent: req.headers['user-agent'] || null
+      });
+    }
+
     // For backward compatibility, include both token and accessToken
     res.json({
       success: true,
@@ -480,7 +495,21 @@ export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) =
 
 export const logout = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    let userDetails: { name: string | null; email: string; role: string | null; financeRole: string | null } | null = null;
+
     if (req.user?.id) {
+      // Fetch user details BEFORE clearing refresh token (for activity logging)
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: {
+          name: true,
+          email: true,
+          role: true,
+          financeRole: true
+        }
+      });
+      userDetails = user;
+
       // Clear refresh token from database
       await prisma.user.update({
         where: { id: req.user.id },
@@ -509,6 +538,20 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
       sameSite: 'lax' as const
     };
     res.clearCookie('userRole', clientCookieOptions);
+
+    // Log logout activity with fetched user details only if user has a finance role
+    if (req.user?.id && userDetails && userDetails.financeRole) {
+      await logSessionActivity({
+        action: 'LOGOUT',
+        userId: req.user.id,
+        userName: userDetails.name || userDetails.email?.split('@')[0] || null,
+        userEmail: userDetails.email || null,
+        userRole: userDetails.role || null,
+        financeRole: userDetails.financeRole,
+        ipAddress: getSessionIp(req),
+        userAgent: req.headers['user-agent'] || null
+      });
+    }
 
     res.json({ message: 'Logged out successfully' });
   } catch (error) {

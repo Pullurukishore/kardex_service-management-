@@ -4,12 +4,13 @@ import multer from 'multer';
 // Import controllers
 import * as invoiceController from '../../controllers/ar/arInvoice.controller';
 import * as customerController from '../../controllers/ar/arCustomer.controller';
-import * as dashboardController from '../../controllers/ar/arDashboard.controller';
 import * as paymentTermsController from '../../controllers/ar/arPaymentTerms.controller';
 import * as importController from '../../controllers/ar/arImport.controller';
 import * as bankAccountController from '../../controllers/ar/bankAccount.controller';
 import * as bankAccountRequestController from '../../controllers/ar/bankAccountRequest.controller';
 import * as financeUserController from '../../controllers/ar/financeUser.controller';
+import * as dashboardController from '../../controllers/ar/arDashboard.controller';
+import * as activityController from '../../controllers/ar/arTotalActivity.controller';
 
 // Import auth middleware
 import { authenticate } from '../../middleware/auth.middleware';
@@ -32,25 +33,30 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.use(authenticate);
 router.use(requireFinanceAccess);
 
+// ═══════════════════════════════════════════════════════════════════════════
+// DASHBOARD ROUTES
+// View: All finance users
+// ═══════════════════════════════════════════════════════════════════════════
+// NEW: Essential dashboard with performance indicators
+router.get('/dashboard/essential', requireFinanceRead, dashboardController.getEssentialDashboard);
 
-// ═══════════════════════════════════════════════════════════════════════════
-// DASHBOARD ROUTES - All finance users can view
-// ═══════════════════════════════════════════════════════════════════════════
+// Legacy endpoints (backward compatibility)
 router.get('/dashboard/kpis', requireFinanceRead, dashboardController.getDashboardKPIs);
 router.get('/dashboard/aging', requireFinanceRead, dashboardController.getAgingAnalysis);
 router.get('/dashboard/collection-trend', requireFinanceRead, dashboardController.getCollectionTrend);
+router.get('/dashboard/status-distribution', requireFinanceRead, dashboardController.getStatusDistribution);
+router.get('/dashboard/risk-distribution', requireFinanceRead, dashboardController.getRiskDistribution);
 router.get('/dashboard/critical-overdue', requireFinanceRead, dashboardController.getCriticalOverdue);
-router.get('/dashboard/customer-outstanding', requireFinanceRead, dashboardController.getCustomerOutstanding);
-router.get('/dashboard/recent-activity', requireFinanceRead, dashboardController.getRecentActivity);
 router.get('/dashboard/top-customers', requireFinanceRead, dashboardController.getTopCustomers);
-router.get('/dashboard/monthly-comparison', requireFinanceRead, dashboardController.getMonthlyComparison);
-router.get('/dashboard/dso-metrics', requireFinanceRead, dashboardController.getDSOMetrics);
+router.get('/dashboard/recent-payments', requireFinanceRead, dashboardController.getRecentPayments);
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INVOICE ROUTES
 // View: All | Create/Edit: Admin & User | Delete: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
 router.get('/invoices', requireFinanceRead, invoiceController.getAllInvoices);
+
 router.get('/invoices/:id', requireFinanceRead, invoiceController.getInvoiceById);
 router.post('/invoices', requireFinanceWrite, invoiceController.createInvoice);
 router.put('/invoices/:id', requireFinanceWrite, invoiceController.updateInvoice);
@@ -58,6 +64,10 @@ router.delete('/invoices/:id', requireFinanceDelete, invoiceController.deleteInv
 router.put('/invoices/:id/delivery', requireFinanceWrite, invoiceController.updateDeliveryTracking);
 router.post('/invoices/update-overdue', requireFinanceWrite, invoiceController.updateOverdueStatus);
 router.post('/invoices/:id/payments', requireFinanceWrite, invoiceController.addPaymentRecord);
+router.get('/invoices/:id/remarks', requireFinanceRead, invoiceController.getInvoiceRemarks);
+router.post('/invoices/:id/remarks', requireFinanceWrite, invoiceController.addInvoiceRemark);
+router.get('/invoices/:id/activity', requireFinanceRead, invoiceController.getInvoiceActivityLog);
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CUSTOMER ROUTES
@@ -80,10 +90,11 @@ router.get('/payment-terms/:id', requireFinanceRead, paymentTermsController.getP
 router.put('/payment-terms/:id', requireFinanceAdmin, paymentTermsController.updatePaymentTerm);
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BANK ACCOUNT ROUTES - Admin only
+// BANK ACCOUNT ROUTES
+// View: All finance users | Create/Update/Delete: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/bank-accounts', requireFinanceAdmin, bankAccountController.getAllBankAccounts);
-router.get('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.getBankAccountById);
+router.get('/bank-accounts', requireFinanceRead, bankAccountController.getAllBankAccounts);
+router.get('/bank-accounts/:id', requireFinanceRead, bankAccountController.getBankAccountById);
 router.post('/bank-accounts', requireFinanceAdmin, bankAccountController.createBankAccount);
 router.put('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.updateBankAccount);
 router.delete('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.deleteBankAccount);
@@ -92,7 +103,7 @@ router.delete('/bank-accounts/:id', requireFinanceAdmin, bankAccountController.d
 // BANK ACCOUNT CHANGE REQUEST ROUTES
 // View own requests: All | Approve/Reject: Admin only
 // ═══════════════════════════════════════════════════════════════════════════
-router.get('/bank-accounts/requests/stats', requireFinanceAdmin, bankAccountRequestController.getRequestStats);
+router.get('/bank-accounts/requests/stats', requireFinanceRead, bankAccountRequestController.getRequestStats);
 router.get('/bank-accounts/requests/pending', requireFinanceAdmin, bankAccountRequestController.getPendingRequests);
 router.get('/bank-accounts/requests/my', requireFinanceRead, bankAccountRequestController.getMyRequests);
 router.get('/bank-accounts/requests/:id', requireFinanceRead, bankAccountRequestController.getRequestById);
@@ -118,5 +129,12 @@ router.get('/finance-users/:id', requireFinanceAdmin, financeUserController.getF
 router.post('/finance-users', requireFinanceAdmin, financeUserController.createFinanceUser);
 router.put('/finance-users/:id', requireFinanceAdmin, financeUserController.updateFinanceUser);
 router.delete('/finance-users/:id', requireFinanceAdmin, financeUserController.deleteFinanceUser);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTIVITY LOG ROUTES - Admin only
+// ═══════════════════════════════════════════════════════════════════════════
+router.get('/activities', requireFinanceAdmin, activityController.getAllActivities);
+router.get('/activities/stats', requireFinanceAdmin, activityController.getActivityStats);
+router.get('/activities/recent', requireFinanceAdmin, activityController.getRecentActivities);
 
 export default router;
