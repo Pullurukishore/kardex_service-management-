@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation';
 import { UserRole } from '@/types/user.types';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 // Kardex brand colors - official palette
@@ -37,7 +36,14 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isOnline, setIsOnline] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   
+  useEffect(() => {
+    // Animate in on mount
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -155,15 +161,14 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
   };
 
   return (
-    <motion.header
-      initial={{ y: -10, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+    <header
       className={cn(
-        'relative z-50',
+        'sticky top-0 z-50 flex-shrink-0',
         'bg-white/95 backdrop-blur-2xl',
         'border-b border-[#96AEC2]/15',
         'shadow-[0_4px_30px_-4px_rgba(111,138,157,0.12)]',
+        'transition-all duration-300 ease-out',
+        isVisible ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0',
         className
       )}
       suppressHydrationWarning
@@ -185,11 +190,12 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
         isMobile ? "h-18 px-5" : "h-[76px] px-8"
       )}>
         {/* Left section */}
-        <motion.div 
-          className="flex items-center gap-4"
-          initial={{ x: -10, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.2, delay: 0.05 }}
+        <div 
+          className={cn(
+            "flex items-center gap-4 transition-all duration-200 ease-out",
+            isVisible ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0"
+          )}
+          style={{ transitionDelay: '50ms' }}
         >
           {showSidebar && (
             <Button
@@ -236,14 +242,15 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right section */}
-        <motion.div 
-          className="flex items-center gap-4"
-          initial={{ x: 10, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.2, delay: 0.1 }}
+        <div 
+          className={cn(
+            "flex items-center gap-4 transition-all duration-200 ease-out",
+            isVisible ? "translate-x-0 opacity-100" : "translate-x-3 opacity-0"
+          )}
+          style={{ transitionDelay: '100ms' }}
         >
           {/* User dropdown */}
           <DropdownMenu>
@@ -488,8 +495,8 @@ export function Header({ onMenuClick, className, isMobile = false, sidebarOpen =
               </ScrollArea>
             </DropdownMenuContent>
           </DropdownMenu>
-        </motion.div>
+        </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

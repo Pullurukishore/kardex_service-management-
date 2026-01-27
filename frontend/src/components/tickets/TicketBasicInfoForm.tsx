@@ -76,6 +76,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
                 <Input 
                   placeholder="e.g., Machine not starting, Error code E501, Routine maintenance needed..." 
                   {...field} 
+                  onChange={(e) => field.onChange(e.target.value)}
                   disabled={isSubmitting}
                   className="h-12 text-base border-[#92A2A5] focus:ring-2 focus:ring-[#96AEC2] focus:border-[#6F8A9D] transition-all placeholder:text-[#979796]"
                 />
@@ -107,6 +108,7 @@ export function TicketBasicInfoForm({ control, zones, isSubmitting, hideZoneSele
                   className="min-h-[140px] text-base border-[#92A2A5] focus:ring-2 focus:ring-[#6F8A9D] focus:border-[#6F8A9D] transition-all resize-none placeholder:text-[#979796]"
                   disabled={isSubmitting}
                   {...field}
+                  onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>
               <FormDescription className="text-[#AEBFC3]0 text-sm">

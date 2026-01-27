@@ -3,7 +3,6 @@
 import * as React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types/user.types";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,6 @@ import {
   LogOut,
   ChevronRight,
   X,
-  User,
-  Circle,
   RefreshCw,
 } from "lucide-react";
 import { getNavigationForRoleAndSubModule, type NavItem, type SubModule } from "./navigationConfig";
@@ -27,14 +24,6 @@ import { getNavigationForRoleAndSubModule, type NavItem, type SubModule } from "
 const MOBILE_BREAKPOINT = 1024;
 const INITIAL_LOAD_DELAY = 20;
 
-// Kardex brand colors - official palette
-const KARDEX_BLUE = "#6F8A9D"; // Primary blue
-const KARDEX_BLUE_LIGHT = "#96AEC2"; // Light blue
-const KARDEX_BLUE_DARK = "#546A7A"; // Dark blue
-const KARDEX_GREEN = "#82A094"; // Primary green
-const KARDEX_GREEN_LIGHT = "#A2B9AF"; // Light green  
-const KARDEX_GREEN_DARK = "#4F6A64"; // Dark green
-
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   userRole?: UserRole;
   collapsed?: boolean;
@@ -42,7 +31,7 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
 }
 
-// Memoized Nav Item Component
+// Memoized Nav Item Component - using CSS transitions instead of framer-motion
 const MemoizedNavItem = React.memo(({ 
   item, 
   pathname, 
@@ -76,20 +65,19 @@ const MemoizedNavItem = React.memo(({
       <div className={cn("relative", {
         "mb-1": hasChildren && isExpanded
       })}>
-        <motion.button
+        <button
           onClick={(e) => hasChildren ? onSectionToggle(item.href) : onItemClick(e, item)}
           onMouseEnter={() => !isMobile && preloadRoute(item.href)}
           aria-current={isActive && !hasChildren ? 'page' : undefined}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={item.title}
-          whileHover={{ x: collapsed ? 0 : 3, scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
           className={cn(
-            "group relative flex items-center rounded-xl transition-all duration-300 ease-out w-full focus:outline-none focus:ring-2 focus:ring-[#6F8A9D]/50 focus:ring-offset-2 focus:ring-offset-transparent",
+            "group relative flex items-center rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-[#6F8A9D]/50 focus:ring-offset-2 focus:ring-offset-transparent",
+            "transition-all duration-200 ease-out hover:translate-x-[3px] active:scale-[0.98]",
             isMobile ? "px-3 py-3 text-base font-medium min-h-[56px]" : "px-2.5 py-2.5 text-sm font-medium",
             isActive && !hasChildren
               ? "bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#96AEC2] text-white shadow-lg shadow-[#6F8A9D]/30"
-              : "text-[#5D6E73] hover:text-white hover:bg-gradient-to-r hover:from-[#E17F70] hover:to-[#CE9F6B] hover:shadow-lg hover:shadow-[#E17F70]/30",
+              : "text-[#4F5B5F] hover:text-white hover:bg-gradient-to-r hover:from-[#E17F70] hover:to-[#CE9F6B] hover:shadow-lg hover:shadow-[#E17F70]/30",
             level > 0 && !isMobile ? `pl-${level * 2 + 2.5}` : "",
             isMobile ? "touch-manipulation" : ""
           )}
@@ -97,10 +85,8 @@ const MemoizedNavItem = React.memo(({
         >
           {/* Active indicator line */}
           {!hasChildren && isActive && (
-            <motion.div
-              layoutId="sidebar-active"
-              className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-white/80 shadow-lg shadow-white/50"
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            <div
+              className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-white/80 shadow-lg shadow-white/50 transition-all duration-300"
             />
           )}
           
@@ -136,16 +122,17 @@ const MemoizedNavItem = React.memo(({
               </span>
               
               {hasChildren && (
-                <motion.span
-                  animate={{ rotate: isExpanded ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="ml-2"
+                <span
+                  className={cn(
+                    "ml-2 transition-transform duration-200",
+                    isExpanded ? "rotate-180" : "rotate-0"
+                  )}
                 >
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-colors",
-                    isActive ? "text-white/70" : "text-[#979796]"
+                    isActive ? "text-white/70" : "text-[#757777]"
                   )} />
-                </motion.span>
+                </span>
               )}
               
               {item.badge && (
@@ -169,39 +156,35 @@ const MemoizedNavItem = React.memo(({
               <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#546A7A] rotate-45" />
             </div>
           )}
-        </motion.button>
+        </button>
       </div>
       
-      {/* Children items */}
-      <AnimatePresence>
-        {hasChildren && isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={cn("overflow-hidden", {
-              "ml-4 pl-3 border-l-2 border-[#6F8A9D]/20": !isMobile
-            })}
-          >
-            <div className="pt-1 space-y-0.5">
-              {item.children?.map((child) => (
-                <MemoizedNavItem
-                  key={child.href}
-                  item={child}
-                  pathname={pathname}
-                  collapsed={collapsed}
-                  isMobile={isMobile}
-                  level={level + 1}
-                  onItemClick={onItemClick}
-                  onSectionToggle={onSectionToggle}
-                  expandedSections={expandedSections}
-                />
-              ))}
-            </div>
-          </motion.div>
+      {/* Children items - using CSS transitions instead of AnimatePresence */}
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-200",
+          hasChildren && isExpanded ? "opacity-100 max-h-[1000px]" : "opacity-0 max-h-0",
+          !isMobile && "ml-4 pl-3 border-l-2 border-[#6F8A9D]/20"
         )}
-      </AnimatePresence>
+      >
+        {hasChildren && (
+          <div className="pt-1 space-y-0.5">
+            {item.children?.map((child) => (
+              <MemoizedNavItem
+                key={child.href}
+                item={child}
+                pathname={pathname}
+                collapsed={collapsed}
+                isMobile={isMobile}
+                level={level + 1}
+                onItemClick={onItemClick}
+                onSectionToggle={onSectionToggle}
+                expandedSections={expandedSections}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 });
@@ -221,15 +204,25 @@ export function Sidebar({
   const [isMobile, setIsMobile] = React.useState(false);
   const [isInitialLoad, setIsInitialLoad] = React.useState(true);
   const [subModule, setSubModule] = React.useState<SubModule>(null);
+  const [isVisible, setIsVisible] = React.useState(false);
 
   React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+      // Debounce resize event for better performance
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+      }, 100);
     };
     
-    checkMobile();
+    // Initial check (immediate)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   React.useEffect(() => {
@@ -239,14 +232,27 @@ export function Sidebar({
     return () => clearTimeout(timer);
   }, []);
 
+  // Animate in on mount
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Read sub-module selection from localStorage (with storage event listener)
+  // Use ref to avoid re-reading on every render
+  const lastStoredSubModule = React.useRef<string | null>(null);
+  
   React.useEffect(() => {
     const updateSubModule = () => {
       const stored = localStorage.getItem('selectedSubModule');
-      if (stored === 'tickets' || stored === 'offers') {
-        setSubModule(stored);
-      } else {
-        setSubModule(null);
+      // Only update state if value actually changed
+      if (stored !== lastStoredSubModule.current) {
+        lastStoredSubModule.current = stored;
+        if (stored === 'tickets' || stored === 'offers') {
+          setSubModule(stored);
+        } else {
+          setSubModule(null);
+        }
       }
     };
     
@@ -264,8 +270,9 @@ export function Sidebar({
     if (!pathname) return;
     
     // Define which paths belong to which module
-    const ticketPaths = ['/tickets', '/customers', '/service-zones', '/service-person', '/service-persons', '/zone-users', '/activity-scheduling', '/attendance', '/attendence', '/dashboard'];
-    const offerPaths = ['/offers', '/targets', '/spare-parts', '/forecast'];
+    const commonPaths = ['/customers', '/service-zones', '/zone-users', '/reports'];
+    const ticketPaths = ['/tickets', '/service-person', '/service-persons', '/activity-scheduling', '/attendance', '/attendence', '/dashboard', ...commonPaths];
+    const offerPaths = ['/offers', '/targets', '/spare-parts', '/forecast', ...commonPaths];
     
     // Check if current path matches a ticket module path
     const isTicketPath = ticketPaths.some(path => pathname.includes(path));
@@ -355,44 +362,14 @@ export function Sidebar({
     );
   }, [filteredNavItems, pathname, collapsed, isMobile, isInitialLoad, handleItemClick, toggleSection, expandedSections]);
 
-  const getUserDisplayName = () => {
-    if (!user) return 'User';
-    const name = user.name?.trim();
-    if (name && name !== '' && name !== 'null' && name !== 'undefined' && name !== 'User') {
-      return name;
-    }
-    if (user.email) {
-      return user.email.split('@')[0];
-    }
-    return 'User';
-  };
-
-  const getRoleDisplayName = (role?: UserRole) => {
-    if (!role) return 'User';
-    return role
-      .toLowerCase()
-      .split('_')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
-  };
-
-  const getEmailInitial = () => {
-    if (!user?.email) return 'U';
-    return user.email[0].toUpperCase();
-  };
-
   return (
-    <motion.div
-      initial={{ x: -10, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
+    <div
       className={cn(
-        "fixed left-0 top-0 z-[60] flex h-screen flex-col",
-        "bg-gradient-to-b from-[#AEBFC3]/10/95 via-white/90 to-[#AEBFC3]/20/95",
-        "backdrop-blur-xl",
+        "fixed left-0 top-0 z-[60] flex h-screen flex-col transition-all duration-300 ease-out",
+        isVisible ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0",
+        isMobile ? "bg-white shadow-2xl border-none" : "bg-white/95 backdrop-blur-xl",
         "border-r border-[#6F8A9D]/15",
         "shadow-xl shadow-[#6F8A9D]/10",
-        "transition-all duration-300 ease-out",
         isMobile 
           ? "w-80"
           : collapsed ? "w-[72px]" : "w-64",
@@ -413,7 +390,7 @@ export function Sidebar({
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 opacity-[0.015] pointer-events-none" 
         style={{
-          backgroundImage: `radial-gradient(${KARDEX_BLUE} 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(#6F8A9D 1px, transparent 1px)`,
           backgroundSize: '20px 20px'
         }} 
       />
@@ -426,11 +403,7 @@ export function Sidebar({
       )}>
         <div suppressHydrationWarning className="flex-1 flex items-center justify-center">
           {(!collapsed || isMobile) && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-2.5"
-            >
+            <div className="flex items-center gap-2.5 transition-all duration-300">
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-br from-[#96AEC2]/20 to-[#82A094]/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <Image 
@@ -454,14 +427,10 @@ export function Sidebar({
                 style={{ width: 'auto', height: 'auto' }}
                 priority
               />
-            </motion.div>
+            </div>
           )}
           {collapsed && !isMobile && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="relative group"
-            >
+            <div className="relative group transition-all duration-300">
               <div className="absolute -inset-1 bg-gradient-to-br from-[#96AEC2]/20 to-[#82A094]/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
               <Image 
                 src="/favicon-circle.svg" 
@@ -474,7 +443,7 @@ export function Sidebar({
               <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-full border-2 border-white shadow-sm">
                 <div className="absolute inset-0 bg-[#82A094] rounded-full animate-ping opacity-40" style={{ animationDuration: '2s' }} />
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
 
@@ -506,7 +475,7 @@ export function Sidebar({
           "px-5 pt-4 pb-2",
           isMobile ? "px-6" : "px-4"
         )}>
-          <p className="text-[10px] font-bold text-[#6F8A9D]/50 uppercase tracking-widest">
+          <p className="text-[10px] font-bold text-[#6F8A9D]/70 uppercase tracking-widest">
             Navigation
           </p>
         </div>
@@ -520,9 +489,7 @@ export function Sidebar({
               "space-y-1",
               isMobile ? "px-4" : "px-3"
             )}>
-              <AnimatePresence mode="wait">
-                {navItems}
-              </AnimatePresence>
+              {navItems}
             </nav>
           ) : (
             /* Collapsed icons only */
@@ -531,14 +498,13 @@ export function Sidebar({
                 const Icon = item.icon;
                 const isActive = pathname?.startsWith(item.href);
                 return (
-                  <motion.button
+                  <button
                     key={item.href}
                     onClick={(e) => handleItemClick(e, item)}
                     onMouseEnter={() => preloadRoute(item.href)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
                     className={cn(
-                      "group relative flex items-center justify-center w-full h-12 rounded-xl transition-all duration-300",
+                      "group relative flex items-center justify-center w-full h-12 rounded-xl transition-all duration-200",
+                      "hover:scale-110 active:scale-95",
                       isActive
                         ? "bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#96AEC2] text-white shadow-lg shadow-[#6F8A9D]/30"
                         : cn(item.iconBgColor, "hover:bg-gradient-to-r hover:from-[#E17F70] hover:to-[#CE9F6B] hover:shadow-lg hover:shadow-[#E17F70]/30")
@@ -558,7 +524,7 @@ export function Sidebar({
                       {item.title}
                       <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#546A7A] rotate-45" />
                     </div>
-                  </motion.button>
+                  </button>
                 );
               })}
             </nav>
@@ -573,15 +539,14 @@ export function Sidebar({
           "bg-white/90 backdrop-blur-xl",
           isMobile ? "px-4 py-2" : "px-3 py-2"
         )}>
-          <motion.button
+          <button
             onClick={() => router.push('/fsm/select')}
-            whileHover={{ x: collapsed ? 0 : 4 }}
-            whileTap={{ scale: 0.98 }}
             aria-label="Switch Module"
             className={cn(
-              "group w-full flex items-center rounded-xl transition-all duration-300",
+              "group w-full flex items-center rounded-xl transition-all duration-200",
               "focus:outline-none focus:ring-2 focus:ring-[#6F8A9D]/50 focus:ring-offset-2",
-              "hover:bg-gradient-to-r hover:from-[#96AEC2]/10 hover:to-[#82A094]/10 hover:shadow-md hover:shadow-[#96AEC2]/10 text-[#5D6E73] hover:text-[#6F8A9D]",
+              "hover:bg-gradient-to-r hover:from-[#96AEC2]/10 hover:to-[#82A094]/10 hover:shadow-md hover:shadow-[#96AEC2]/10 text-[#4F5B5F] hover:text-[#6F8A9D]",
+              "hover:translate-x-1 active:scale-[0.98]",
               isMobile ? "px-3 py-3 text-base" : collapsed ? "justify-center py-2.5" : "px-2.5 py-2.5 text-sm"
             )}
           >
@@ -612,7 +577,7 @@ export function Sidebar({
                 <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#546A7A] rotate-45" />
               </div>
             )}
-          </motion.button>
+          </button>
         </div>
       )}
 
@@ -622,15 +587,14 @@ export function Sidebar({
         "bg-white/90 backdrop-blur-xl",
         isMobile ? "px-4 py-4" : "px-3 py-3"
       )}>
-        <motion.button
+        <button
           onClick={() => logout?.()}
-          whileHover={{ x: collapsed ? 0 : 4 }}
-          whileTap={{ scale: 0.98 }}
           aria-label="Logout"
           className={cn(
-            "group w-full flex items-center rounded-xl transition-all duration-300",
+            "group w-full flex items-center rounded-xl transition-all duration-200",
             "focus:outline-none focus:ring-2 focus:ring-[#E17F70]/50 focus:ring-offset-2",
-            "hover:bg-gradient-to-r hover:from-[#E17F70]/10 hover:to-[#EEC1BF]/10 hover:shadow-md hover:shadow-red-200/30 text-[#5D6E73] hover:text-[#9E3B47]",
+            "hover:bg-gradient-to-r hover:from-[#E17F70]/10 hover:to-[#EEC1BF]/10 hover:shadow-md hover:shadow-red-200/30 text-[#4F5B5F] hover:text-[#9E3B47]",
+            "hover:translate-x-1 active:scale-[0.98]",
             isMobile ? "px-3 py-3 text-base" : collapsed ? "justify-center py-2.5" : "px-2.5 py-2.5 text-sm"
           )}
         >
@@ -661,8 +625,8 @@ export function Sidebar({
               <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#546A7A] rotate-45" />
             </div>
           )}
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 } 

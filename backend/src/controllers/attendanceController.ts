@@ -6,7 +6,7 @@ import prisma from '../config/db';
 // Enhanced validation functions with coordinate range checks
 const validateCheckIn = (data: any) => {
   const errors: string[] = [];
-  
+
   // Location is now mandatory for check-in
   if (!data.latitude || typeof data.latitude !== 'number') {
     errors.push('Latitude is required and must be a number');
@@ -20,7 +20,7 @@ const validateCheckIn = (data: any) => {
       errors.push('Latitude must be a valid finite number');
     }
   }
-  
+
   if (!data.longitude || typeof data.longitude !== 'number') {
     errors.push('Longitude is required and must be a number');
   } else {
@@ -33,11 +33,11 @@ const validateCheckIn = (data: any) => {
       errors.push('Longitude must be a valid finite number');
     }
   }
-  
+
   if (data.address && typeof data.address !== 'string') {
     errors.push('Address must be a string');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors
@@ -46,7 +46,7 @@ const validateCheckIn = (data: any) => {
 
 const validateCheckOut = (data: any) => {
   const errors: string[] = [];
-  
+
   if (data.latitude) {
     if (typeof data.latitude !== 'number') {
       errors.push('Latitude must be a number');
@@ -61,7 +61,7 @@ const validateCheckOut = (data: any) => {
       }
     }
   }
-  
+
   if (data.longitude) {
     if (typeof data.longitude !== 'number') {
       errors.push('Longitude must be a number');
@@ -76,11 +76,11 @@ const validateCheckOut = (data: any) => {
       }
     }
   }
-  
+
   if (data.address && typeof data.address !== 'string') {
     errors.push('Address must be a string');
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors
@@ -98,12 +98,12 @@ export const attendanceController = {
 
       const validation = validateCheckIn(req.body);
       if (!validation.isValid) {
-        return res.status(400).json({ 
-          error: 'Validation failed', 
-          details: validation.errors 
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: validation.errors
         });
       }
-      
+
       const { latitude, longitude, address, notes, locationSource } = req.body;
 
       // Get real address from coordinates using geocoding service
@@ -134,10 +134,10 @@ export const attendanceController = {
       });
 
       if (existingAttendance) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: 'Already checked in',
           message: 'You are currently checked in. Please check out first before checking in again.',
-          attendance: existingAttendance 
+          attendance: existingAttendance
         });
       }
 
@@ -189,7 +189,7 @@ export const attendanceController = {
         attendance,
       });
     } catch (error) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to check in',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -206,62 +206,57 @@ export const attendanceController = {
 
       const validation = validateCheckOut(req.body);
       if (!validation.isValid) {
-        return res.status(400).json({ 
-          error: 'Validation failed', 
-          details: validation.errors 
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: validation.errors
         });
       }
-      
-      const { latitude, longitude, address, notes, attendanceId, isEarlyCheckout, confirmEarlyCheckout, locationSource } = req.body;
-      // Get real address from coordinates using geocoding service
-      // Only geocode if location source is GPS, not manual entry
-      let checkOutAddress = address;
-      if (latitude && longitude && locationSource !== 'manual') {
-        try {
-          const { address: geocodedAddress } = await GeocodingService.reverseGeocode(latitude, longitude);
-          checkOutAddress = geocodedAddress || `${latitude}, ${longitude}`;
-        } catch (error) {
-          // Fallback to coordinates if geocoding fails
-          checkOutAddress = address || `${latitude}, ${longitude}`;
-        }
-      } else if (locationSource === 'manual') {
-        // For manual entry, use the provided address as-is
-        checkOutAddress = address;
-      }
+
+      const { latitude, longitude, address, notes, attendanceId, confirmEarlyCheckout, locationSource } = req.body;
 
       // Validate attendanceId
       if (!attendanceId) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: 'Attendance ID is required',
           message: 'Please provide a valid attendance ID for checkout.'
         });
       }
 
-      const attendance = await prisma.attendance.findFirst({
-        where: {
-          id: attendanceId,
-          userId,
-          status: 'CHECKED_IN',
-        },
-      });
+      // 1. Parallelize Geocoding and Initial Attendance Check
+      const [geocodingResponse, attendance] = await Promise.all([
+        // Only geocode if we have coordinates and it's not a manual entry
+        (latitude && longitude && locationSource !== 'manual')
+          ? GeocodingService.reverseGeocode(latitude, longitude).catch(() => null)
+          : Promise.resolve(null),
+
+        prisma.attendance.findFirst({
+          where: {
+            id: Number(attendanceId), // Ensure it's a number
+            userId,
+            status: 'CHECKED_IN',
+          },
+        })
+      ]);
+
+      const checkOutAddress = (geocodingResponse?.address) || address || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : null);
 
       if (!attendance) {
         // Check if attendance record exists but with different status
         const existingAttendance = await prisma.attendance.findFirst({
           where: {
-            id: attendanceId,
+            id: Number(attendanceId),
             userId,
           },
         });
 
         if (existingAttendance) {
-          return res.status(400).json({ 
+          return res.status(400).json({
             error: 'Cannot checkout',
             message: `Attendance record found but status is '${existingAttendance.status}'. Only 'CHECKED_IN' records can be checked out.`
           });
         }
 
-        return res.status(404).json({ 
+        return res.status(404).json({
           error: 'Active attendance record not found',
           message: 'No active check-in record found for this user. Please check in first.'
         });
@@ -274,9 +269,9 @@ export const attendanceController = {
       // Check for early checkout (before 7 PM)
       const sevenPM = new Date();
       sevenPM.setHours(19, 0, 0, 0); // 7 PM
-      
+
       if (checkOutTime < sevenPM && !confirmEarlyCheckout) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: 'Early checkout confirmation required',
           message: 'You are checking out before 7 PM. Do you really want to checkout?',
           requiresConfirmation: true,
@@ -285,41 +280,31 @@ export const attendanceController = {
         });
       }
 
-      // Find all active activities for this user today (activities without endTime)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-
+      // 2. Find ALL active activities for this user (not restricted to "today" to handle midnight-crossing shifts)
       const activeActivities = await prisma.dailyActivityLog.findMany({
         where: {
           userId,
-          startTime: {
-            gte: today,
-            lt: tomorrow,
-          },
-          endTime: null, // Only activities that haven't been ended
+          endTime: null,
         },
       });
 
-      // Auto-complete all active activities with checkout time
-      const autoCompletedActivities = [];
-      for (const activity of activeActivities) {
+      // 3. Prepare all updates for a single Transaction to ensure speed and consistency
+      const transactionItems: any[] = [];
+
+      // Add activity updates and audit logs
+      activeActivities.forEach(activity => {
         const activityStartTime = new Date(activity.startTime);
         const durationMinutes = Math.round((checkOutTime.getTime() - activityStartTime.getTime()) / (1000 * 60));
-        
-        const updatedActivity = await prisma.dailyActivityLog.update({
+
+        transactionItems.push(prisma.dailyActivityLog.update({
           where: { id: activity.id },
           data: {
             endTime: checkOutTime,
             duration: durationMinutes,
           },
-        });
+        }));
 
-        autoCompletedActivities.push(updatedActivity);
-
-        // Create audit log for auto-completed activity
-        await prisma.auditLog.create({
+        transactionItems.push(prisma.auditLog.create({
           data: {
             action: 'ACTIVITY_LOG_UPDATED',
             entityType: 'ACTIVITY_LOG',
@@ -339,10 +324,11 @@ export const attendanceController = {
             userAgent: req.get('User-Agent'),
             status: 'SUCCESS',
           },
-        });
-      }
+        }));
+      });
 
-      const updatedAttendance = await prisma.attendance.update({
+      // Add the main attendance update
+      transactionItems.push(prisma.attendance.update({
         where: { id: attendance.id },
         data: {
           checkOutAt: checkOutTime,
@@ -362,18 +348,18 @@ export const attendanceController = {
             },
           },
         },
-      });
+      }));
 
-      // Create audit log for check-out
-      await prisma.auditLog.create({
+      // Add audit log for check-out
+      transactionItems.push(prisma.auditLog.create({
         data: {
           action: 'ATTENDANCE_CHECKED_OUT',
           entityType: 'ATTENDANCE',
           entityId: attendance.id,
           userId: userId,
           performedById: userId,
-          performedAt: new Date(),
-          updatedAt: new Date(),
+          performedAt: checkOutTime,
+          updatedAt: checkOutTime,
           details: {
             checkOutAt: checkOutTime,
             location: checkOutAddress,
@@ -381,24 +367,31 @@ export const attendanceController = {
             totalHours: Math.round(totalHours * 100) / 100,
             isEarlyCheckout: checkOutTime < sevenPM,
             notes: notes || null,
-            autoCompletedActivities: autoCompletedActivities.length,
+            autoCompletedActivities: activeActivities.length,
           },
           ipAddress: req.ip,
           userAgent: req.get('User-Agent'),
           status: 'SUCCESS',
         },
-      });
+      }));
+
+      // 4. Execute all queries in a single transaction
+      const results = await prisma.$transaction(transactionItems);
+
+      // The updated attendance is the second to last item in the transaction results
+      const updatedAttendance = results[results.length - 2];
 
       res.json({
         message: 'Successfully checked out',
         attendance: updatedAttendance,
-        autoCompletedActivities: autoCompletedActivities.length,
-        ...(autoCompletedActivities.length > 0 && {
-          info: `${autoCompletedActivities.length} active ${autoCompletedActivities.length === 1 ? 'activity was' : 'activities were'} automatically completed.`
+        autoCompletedActivities: activeActivities.length,
+        ...(activeActivities.length > 0 && {
+          info: `${activeActivities.length} active ${activeActivities.length === 1 ? 'activity was' : 'activities were'} automatically completed.`
         }),
       });
     } catch (error) {
-      return res.status(500).json({ 
+
+      return res.status(500).json({
         error: 'Failed to check out',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -545,10 +538,10 @@ export const attendanceController = {
       }
 
       const { period = 'month' } = req.query;
-      
+
       let startDate = new Date();
       let endDate = new Date();
-      
+
       if (period === 'day') {
         // For day period, get today's records only
         startDate.setHours(0, 0, 0, 0);
@@ -562,7 +555,7 @@ export const attendanceController = {
       }
 
       // For day period, include both CHECKED_OUT and CHECKED_IN records
-      const statusFilter = period === 'day' 
+      const statusFilter = period === 'day'
         ? { in: ['CHECKED_OUT', 'CHECKED_IN', 'EARLY_CHECKOUT'] }
         : 'CHECKED_OUT';
 
@@ -590,7 +583,7 @@ export const attendanceController = {
       });
 
       let totalHours = 0;
-      
+
       // Calculate total hours, including current session for day period
       attendanceRecords.forEach(record => {
         if (record.totalHours) {
@@ -625,7 +618,7 @@ export const attendanceController = {
         })
       });
     } catch (error) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to get attendance stats',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -642,22 +635,32 @@ export const attendanceController = {
 
       const validation = validateCheckIn(req.body);
       if (!validation.isValid) {
-        return res.status(400).json({ 
-          error: 'Validation failed', 
-          details: validation.errors 
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: validation.errors
         });
       }
-      
+
       const { latitude, longitude, address, notes, attendanceId, locationSource } = req.body;
 
-      // Find the attendance record to re-check-in
-      const attendance = await prisma.attendance.findFirst({
-        where: {
-          id: attendanceId,
-          userId,
-          status: { in: ['CHECKED_OUT', 'EARLY_CHECKOUT'] },
-        },
-      });
+      if (!attendanceId) {
+        return res.status(400).json({ error: 'Attendance ID is required' });
+      }
+
+      // 1. Parallelize Geocoding and Attendance Record Lookup
+      const [geocodingResponse, attendance] = await Promise.all([
+        (latitude && longitude && locationSource !== 'manual')
+          ? GeocodingService.reverseGeocode(latitude, longitude).catch(() => null)
+          : Promise.resolve(null),
+
+        prisma.attendance.findFirst({
+          where: {
+            id: Number(attendanceId),
+            userId,
+            status: { in: ['CHECKED_OUT', 'EARLY_CHECKOUT'] },
+          },
+        })
+      ]);
 
       if (!attendance) {
         return res.status(404).json({ error: 'Attendance record not found or not eligible for re-check-in' });
@@ -673,74 +676,69 @@ export const attendanceController = {
         return res.status(400).json({ error: 'Can only re-check-in for today\'s attendance' });
       }
 
-      // Get real address from coordinates using geocoding service
-      // Only geocode if location source is GPS, not manual entry
-      let checkInAddress = address;
-      if (latitude && longitude && locationSource !== 'manual') {
-        try {
-          const { address: geocodedAddress } = await GeocodingService.reverseGeocode(latitude, longitude);
-          checkInAddress = geocodedAddress || `${latitude}, ${longitude}`;
-        } catch (error) {
-          checkInAddress = address || `${latitude}, ${longitude}`;
-        }
-      } else if (locationSource === 'manual') {
-        // For manual entry, use the provided address as-is
-        checkInAddress = address;
-      }
+      const checkInAddress = (geocodingResponse?.address) || address || (latitude && longitude ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` : null);
 
-      const updatedAttendance = await prisma.attendance.update({
-        where: { id: attendance.id },
-        data: {
-          checkOutAt: null,
-          checkOutLatitude: null,
-          checkOutLongitude: null,
-          checkOutAddress: null,
-          totalHours: null,
-          status: 'CHECKED_IN',
-          notes: notes || attendance.notes,
-          updatedAt: new Date(),
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
+      const reCheckInTime = new Date();
+
+      // 2. Perform updates in a transaction for atomicity and speed
+      const transactionItems = [
+        prisma.attendance.update({
+          where: { id: attendance.id },
+          data: {
+            checkOutAt: null,
+            checkOutLatitude: null,
+            checkOutLongitude: null,
+            checkOutAddress: null,
+            totalHours: null,
+            status: 'CHECKED_IN',
+            notes: notes || attendance.notes,
+            updatedAt: reCheckInTime,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
             },
           },
-        },
-      });
-
-      // Create audit log for re-check-in
-      await prisma.auditLog.create({
-        data: {
-          action: 'ATTENDANCE_RE_CHECKED_IN',
-          entityType: 'ATTENDANCE',
-          entityId: attendance.id,
-          userId: userId,
-          performedById: userId,
-          performedAt: new Date(),
-          updatedAt: new Date(),
-          details: {
-            attendanceId: attendance.id,
-            reCheckInTime: new Date().toISOString(),
-            location: checkInAddress,
-            latitude: latitude,
-            longitude: longitude,
-            notes: notes,
-            reason: 'User re-checked in after mistaken checkout'
+        }),
+        prisma.auditLog.create({
+          data: {
+            action: 'ATTENDANCE_RE_CHECKED_IN',
+            entityType: 'ATTENDANCE',
+            entityId: attendance.id,
+            userId: userId,
+            performedById: userId,
+            performedAt: reCheckInTime,
+            updatedAt: reCheckInTime,
+            details: {
+              attendanceId: attendance.id,
+              reCheckInTime: reCheckInTime.toISOString(),
+              location: checkInAddress,
+              latitude: latitude,
+              longitude: longitude,
+              notes: notes,
+              reason: 'User re-checked in after mistaken checkout'
+            },
+            ipAddress: req.ip,
+            userAgent: req.get('User-Agent'),
+            status: 'SUCCESS',
           },
-          ipAddress: req.ip || req.connection.remoteAddress,
-          userAgent: req.get('User-Agent'),
-        },
-      });
+        })
+      ];
+
+      const results = await prisma.$transaction(transactionItems);
+      const updatedAttendance = results[0];
 
       res.json({
         message: 'Successfully re-checked in',
         attendance: updatedAttendance,
       });
     } catch (error) {
-      return res.status(500).json({ 
+
+      return res.status(500).json({
         error: 'Failed to re-check-in',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -778,13 +776,14 @@ export const attendanceController = {
       const autoCheckoutTime = new Date();
       autoCheckoutTime.setHours(19, 0, 0, 0); // 7 PM
 
-      const updatedAttendances = [];
+      const operations: any[] = [];
+      const updatedAttendances: any[] = [];
 
       for (const attendance of activeAttendances) {
         const checkInTime = new Date(attendance.checkInAt);
         const totalHours = (autoCheckoutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
 
-        // Auto-complete all active activities for this user
+        // Find active activities for this user
         const activeActivities = await prisma.dailyActivityLog.findMany({
           where: {
             userId: attendance.userId,
@@ -796,21 +795,19 @@ export const attendanceController = {
           },
         });
 
-        let autoCompletedCount = 0;
         for (const activity of activeActivities) {
           const activityStartTime = new Date(activity.startTime);
           const durationMinutes = Math.round((autoCheckoutTime.getTime() - activityStartTime.getTime()) / (1000 * 60));
-          
-          await prisma.dailyActivityLog.update({
+
+          operations.push(prisma.dailyActivityLog.update({
             where: { id: activity.id },
             data: {
               endTime: autoCheckoutTime,
               duration: durationMinutes,
             },
-          });
+          }));
 
-          // Create audit log for auto-completed activity
-          await prisma.auditLog.create({
+          operations.push(prisma.auditLog.create({
             data: {
               action: 'ACTIVITY_LOG_UPDATED',
               entityType: 'ACTIVITY_LOG',
@@ -827,12 +824,10 @@ export const attendanceController = {
               },
               status: 'SUCCESS',
             },
-          });
-
-          autoCompletedCount++;
+          }));
         }
 
-        const updated = await prisma.attendance.update({
+        operations.push(prisma.attendance.update({
           where: { id: attendance.id },
           data: {
             checkOutAt: autoCheckoutTime,
@@ -840,19 +835,9 @@ export const attendanceController = {
             status: 'CHECKED_OUT',
             notes: attendance.notes ? `${attendance.notes} | Auto-checkout at 7 PM` : 'Auto-checkout at 7 PM',
           },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        });
+        }));
 
-        // Create audit log for auto-checkout
-        await prisma.auditLog.create({
+        operations.push(prisma.auditLog.create({
           data: {
             action: 'AUTO_CHECKOUT_PERFORMED',
             entityType: 'ATTENDANCE',
@@ -865,21 +850,23 @@ export const attendanceController = {
               totalHours: Math.round(totalHours * 100) / 100,
               reason: 'Automatic checkout at 7 PM',
               originalCheckInAt: attendance.checkInAt,
-              autoCompletedActivities: autoCompletedCount,
+              autoCompletedActivities: activeActivities.length,
             },
             status: 'SUCCESS',
           },
-        });
+        }));
+      }
 
-        updatedAttendances.push(updated);
+      // Execute all operations in a single transaction
+      if (operations.length > 0) {
+        await prisma.$transaction(operations);
       }
 
       res.json({
-        message: `Auto-checkout completed for ${updatedAttendances.length} users`,
-        attendances: updatedAttendances,
+        message: `Auto-checkout completed for ${activeAttendances.length} users`,
       });
     } catch (error) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to perform auto-checkout',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
@@ -891,7 +878,7 @@ export const attendanceController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }
@@ -900,13 +887,13 @@ export const attendanceController = {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 
-      const { 
-        startDate, 
-        endDate, 
-        zoneId, 
+      const {
+        startDate,
+        endDate,
+        zoneId,
         status,
-        page = 1, 
-        limit = 20 
+        page = 1,
+        limit = 20
       } = req.query;
 
       const skip = (Number(page) - 1) * Number(limit);
@@ -993,7 +980,7 @@ export const attendanceController = {
     try {
       const userId = req.user?.id;
       const userRole = req.user?.role;
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'User not authenticated' });
       }

@@ -12,14 +12,16 @@ import {
   getServicePersonAvailability,
   suggestOptimalSchedule,
 } from '../controllers/activityScheduleController';
+import { requireRole } from '../middleware/auth.middleware';
+import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(authenticate);
 
-// Create activity schedule
-router.post('/', createActivitySchedule);
+// Create activity schedule (Admin or Zone users only)
+router.post('/', requireRole(['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'EXPERT_HELPDESK'] as UserRole[]), createActivitySchedule);
 
 // Get all activity schedules (with filters)
 router.get('/', getActivitySchedules);

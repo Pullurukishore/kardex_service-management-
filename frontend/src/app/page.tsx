@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { getRoleBasedRedirect } from '@/lib/utils/navigation';
 import { Loader2, Shield, Zap, ArrowRight, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
@@ -43,51 +44,11 @@ export default function Home() {
       // Only redirect after auth state is fully initialized
       if (!isLoading) {
         if (isAuthenticated && user) {
-          // Check for finance role first
-          if (user.financeRole) {
-             if (typeof window !== 'undefined') {
-                // If user has a selected module, might want to go there, but safe default is select
-                // or check localStorage for last accessed module if we wanted to be fancy
-                const selectedModule = localStorage.getItem('selectedModule');
-                if (selectedModule === 'finance') {
-                    window.location.href = '/finance/select'; // Or specific finance dashboard
-                } else {
-                    window.location.href = '/finance/select';
-                }
-             }
-             return;
-          }
-
-          // Redirect authenticated FSM users to their dashboard
-          const getRoleBasedRedirect = (role: string | null | undefined): string => {
-            if (!role) return '/auth/login';
-            const normalizedRole = role.toUpperCase();
-            switch (normalizedRole) {
-              case 'ADMIN':
-                return '/admin/dashboard';
-              case 'ZONE_MANAGER':
-                return '/zone-manager/dashboard';
-              case 'ZONE_USER':
-                return '/zone/dashboard';
-              case 'SERVICE_PERSON':
-                return '/service-person/dashboard';
-              case 'EXPERT_HELPDESK':
-                return '/expert/dashboard';
-              case 'EXTERNAL_USER':
-                return '/external/tickets';
-              default:
-                return '/auth/login';
-            }
-          };
-          
-          const redirectPath = getRoleBasedRedirect(user.role);
-          // Use window.location for more reliable redirect
+          const redirectPath = getRoleBasedRedirect(user.role as any, user.financeRole as any);
           if (typeof window !== 'undefined') {
             window.location.href = redirectPath;
           }
         } else {
-          // Redirect unauthenticated users to login
-          // Use window.location for more reliable redirect
           if (typeof window !== 'undefined') {
             window.location.href = '/auth/login';
           }

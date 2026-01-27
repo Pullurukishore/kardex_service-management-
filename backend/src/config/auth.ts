@@ -36,7 +36,7 @@ export const OTP_CONFIG = {
 
 export const JWT_CONFIG = {
   secret: JWT_SECRET,
-  expiresIn: '7d' as const // Extended from 1d for better UX
+  expiresIn: '1h' as const // Reduced from 7d for better security
 };
 
 export const REFRESH_TOKEN_CONFIG = {

@@ -1,7 +1,8 @@
 import { Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { logger } from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
+import { ActivityController } from './activityController';
 
 export class SparePartController {
   // Wrapper methods for routes without authentication
@@ -200,6 +201,21 @@ export class SparePartController {
 
       logger.info(`Spare part created: ${sparePart.partNumber} by ${req.user?.email || 'unknown'}`);
 
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'SPARE_PART_CREATED',
+        entityType: 'SparePart',
+        entityId: sparePart.id.toString(),
+        details: {
+          name: sparePart.name,
+          partNumber: sparePart.partNumber,
+          basePrice: sparePart.basePrice
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       res.status(201).json({ sparePart });
       return;
     } catch (error) {
@@ -270,6 +286,17 @@ export class SparePartController {
 
       logger.info(`Spare part updated: ${sparePart.partNumber} by ${req.user?.email || 'unknown'}`);
 
+      // Log activity
+      await ActivityController.logSparePartUpdate({
+        sparePartId: sparePart.id,
+        partNumber: sparePart.partNumber,
+        oldData: existingSparePart,
+        newData: updates,
+        userId: req.user!.id,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       res.json({ sparePart });
       return;
     } catch (error) {
@@ -302,6 +329,20 @@ export class SparePartController {
       });
 
       logger.info(`Spare part updated: ${updatedSparePart.partNumber} by ${req.user?.email || 'unknown'}`);
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'SPARE_PART_DELETED',
+        entityType: 'SparePart',
+        entityId: id,
+        details: {
+          name: updatedSparePart.name,
+          partNumber: updatedSparePart.partNumber
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       res.json({ message: 'Spare part deleted successfully' });
       return;
@@ -353,32 +394,39 @@ export class SparePartController {
         return res.status(400).json({ error: 'Updates array is required' });
       }
 
-      const results = [];
+      const updatedResults = await prisma.$transaction(
+        updates
+          .filter(update => update.id && update.basePrice)
+          .map(update =>
+            prisma.sparePart.update({
+              where: { id: parseInt(update.id) },
+              data: {
+                basePrice: parseFloat(update.basePrice),
+                updatedById: req.user!.id,
+              },
+            })
+          )
+      );
 
-      for (const update of updates) {
-        if (!update.id || !update.basePrice) {
-          continue;
-        }
+      logger.info(`Bulk price update completed by ${req.user?.email || 'unknown'}. ${updatedResults.length} parts updated.`);
 
-        try {
-          const sparePart = await prisma.sparePart.update({
-            where: { id: parseInt(update.id) },
-            data: {
-              basePrice: parseFloat(update.basePrice),
-              updatedById: req.user!.id,
-            },
-          });
-          results.push(sparePart);
-        } catch (error) {
-          logger.error(`Failed to update spare part ${update.id}:`, error);
-        }
-      }
-
-      logger.info(`Bulk price update completed by ${req.user?.email || 'unknown'}`);
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'BULK_PRICE_UPDATED',
+        entityType: 'SparePart',
+        entityId: 'SYSTEM',
+        details: {
+          count: updatedResults.length,
+          updates: updates.map(u => ({ id: u.id, price: u.basePrice }))
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       res.json({
-        message: `Successfully updated ${results.length} spare parts`,
-        updatedParts: results
+        message: `Successfully updated ${updatedResults.length} spare parts`,
+        updatedParts: updatedResults
       });
       return;
     } catch (error) {

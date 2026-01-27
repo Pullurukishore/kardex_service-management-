@@ -1,8 +1,9 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { logger } from '../utils/logger';
 import { Prisma } from '@prisma/client';
+import { ActivityController } from './activityController';
 
 /**
  * Helper function to properly convert Prisma Decimal to JavaScript number
@@ -165,6 +166,24 @@ export class TargetController {
       }
 
       logger.info(`Zone target ${existingTarget ? 'updated' : 'created'} for zone ${serviceZoneId} by ${req.user?.email}`);
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: existingTarget ? 'ZONE_TARGET_UPDATED' : 'ZONE_TARGET_SET',
+        entityType: 'ZoneTarget',
+        entityId: target.id.toString(),
+        details: {
+          zoneId: serviceZoneId,
+          zoneName: target.serviceZone.name,
+          period: targetPeriod,
+          periodType,
+          productType,
+          value: targetValue
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       return res.json({
         success: true,
@@ -520,6 +539,22 @@ export class TargetController {
 
       logger.info(`Zone target ${targetId} updated by ${req.user?.email}`);
 
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'ZONE_TARGET_UPDATED',
+        entityType: 'ZoneTarget',
+        entityId: targetId,
+        details: {
+          zoneId: target.serviceZoneId,
+          zoneName: target.serviceZone.name,
+          targetValue,
+          targetOfferCount
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       return res.json({
         success: true,
         message: 'Target updated successfully',
@@ -546,6 +581,19 @@ export class TargetController {
       });
 
       logger.info(`Zone target ${targetId} deleted by ${req.user?.email}`);
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'ZONE_TARGET_DELETED',
+        entityType: 'ZoneTarget',
+        entityId: targetId,
+        details: {
+          targetId
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       return res.json({
         success: true,
@@ -646,6 +694,24 @@ export class TargetController {
       }
 
       logger.info(`User target ${existingTarget ? 'updated' : 'created'} for user ${userId} by ${req.user?.email}`);
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: existingTarget ? 'USER_TARGET_UPDATED' : 'USER_TARGET_SET',
+        entityType: 'UserTarget',
+        entityId: target.id.toString(),
+        details: {
+          targetUserId: userId,
+          targetUserName: target.user.name,
+          period: targetPeriod,
+          periodType,
+          productType,
+          value: targetValue
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       return res.json({
         success: true,
@@ -1039,6 +1105,22 @@ export class TargetController {
 
       logger.info(`User target ${targetId} updated by ${req.user?.email}`);
 
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'USER_TARGET_UPDATED',
+        entityType: 'UserTarget',
+        entityId: targetId,
+        details: {
+          targetUserId: target.userId,
+          targetUserName: target.user.name,
+          targetValue,
+          targetOfferCount
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
+
       return res.json({
         success: true,
         message: 'Target updated successfully',
@@ -1065,6 +1147,19 @@ export class TargetController {
       });
 
       logger.info(`User target ${targetId} deleted by ${req.user?.email}`);
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'USER_TARGET_DELETED',
+        entityType: 'UserTarget',
+        entityId: targetId,
+        details: {
+          targetId
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent']
+      });
 
       return res.json({
         success: true,

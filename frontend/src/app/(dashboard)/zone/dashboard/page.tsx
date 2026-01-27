@@ -19,7 +19,7 @@ function ClientRedirect({ role }: { role: string }) {
       dangerouslySetInnerHTML={{
         __html: `
           (function() {
-            const role = '${role}';
+            const role = ${JSON.stringify(role)};
             let redirectPath = '/auth/login';
             
             switch (role) {
@@ -77,11 +77,11 @@ export default async function ZoneDashboardPage() {
       return <ClientRedirect role={normalizedUserRole} />;
     }
 
-    // Fetch initial data on the server
-    const { zoneDashboardData } = await getAllZoneDashboardData();
+    // For performance, we don't fetch data on the server side
+    // ZoneDashboardClient will fetch data after hydration
+    // This removes the server-side blocking delay and makes reloads feel instant
+    const safeZoneDashboardData: ZoneDashboardData | null = null;
 
-    // Pass the actual data from backend (or null to trigger client-side fetch)
-    const safeZoneDashboardData: ZoneDashboardData | null = zoneDashboardData || null;
     
     return (
       <>
@@ -93,8 +93,8 @@ export default async function ZoneDashboardPage() {
             __html: `
               // Preload critical dashboard resources
               const preloadLinks = [
-                { rel: 'preconnect', href: '${apiHref}' },
-                { rel: 'dns-prefetch', href: '${apiHref}' }
+                { rel: 'preconnect', href: ${JSON.stringify(apiHref)} },
+                { rel: 'dns-prefetch', href: ${JSON.stringify(apiHref)} }
               ];
               preloadLinks.forEach(link => {
                 const linkEl = document.createElement('link');

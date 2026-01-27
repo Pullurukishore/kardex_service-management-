@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { GeocodingService } from '../services/geocoding.service';
 
 type OnsiteVisitEvent = 'STARTED' | 'REACHED' | 'ENDED' | 'REACHED_BACK';
@@ -90,4 +90,3 @@ export const backOnsiteVisit = async (req: TypedRequest, res: Response) => {
     return res.status(500).json({ error: 'Failed to record onsite reached back' });
   }
 };
-

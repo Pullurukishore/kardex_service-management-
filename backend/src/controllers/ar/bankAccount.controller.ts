@@ -39,7 +39,7 @@ export const getAllBankAccounts = async (req: Request, res: Response) => {
 
         res.json(accounts);
     } catch (error: any) {
-        console.error('Error fetching bank accounts:', error);
+
         res.status(500).json({ error: 'Failed to fetch bank accounts', message: error.message });
     }
 };
@@ -65,7 +65,7 @@ export const getBankAccountById = async (req: Request, res: Response) => {
 
         res.json(account);
     } catch (error: any) {
-        console.error('Error fetching bank account:', error);
+
         res.status(500).json({ error: 'Failed to fetch bank account', message: error.message });
     }
 };
@@ -107,7 +107,7 @@ export const createBankAccount = async (req: Request, res: Response) => {
 
         res.status(201).json(account);
     } catch (error: any) {
-        console.error('Error creating bank account:', error);
+
         if (error.code === 'P2002') {
             return res.status(400).json({ error: 'Account number already exists' });
         }
@@ -153,7 +153,7 @@ export const updateBankAccount = async (req: Request, res: Response) => {
 
         res.json(account);
     } catch (error: any) {
-        console.error('Error updating bank account:', error);
+
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Bank account not found' });
         }
@@ -186,7 +186,7 @@ export const deleteBankAccount = async (req: Request, res: Response) => {
 
         res.json({ message: 'Bank account deleted successfully', account });
     } catch (error: any) {
-        console.error('Error deleting bank account:', error);
+
         res.status(500).json({ error: 'Failed to delete bank account', message: error.message });
     }
 };
@@ -202,7 +202,7 @@ export const permanentDeleteBankAccount = async (req: Request, res: Response) =>
 
         res.json({ message: 'Bank account permanently deleted' });
     } catch (error: any) {
-        console.error('Error permanently deleting bank account:', error);
+
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Bank account not found' });
         }

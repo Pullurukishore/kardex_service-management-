@@ -1,15 +1,7 @@
-const AR_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003';
+import api from '@/lib/api/axios';
 
-// Helper function to make authenticated requests
-const fetchWithAuth = async (url: string, options: RequestInit = {}): Promise<Response> => {
-    return fetch(url, {
-        ...options,
-        credentials: 'include', // Send cookies with request
-        headers: {
-            ...options.headers,
-        },
-    });
-};
+// The centralized axios instance already has the correct baseURL set to includes /api
+// So we can use relative paths like '/ar/...'
 
 // Types
 export interface ARCustomer {
@@ -168,9 +160,8 @@ export const arApi = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     async getEssentialDashboard(): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/essential`);
-        if (!res.ok) throw new Error('Failed to fetch dashboard');
-        return res.json();
+        const res = await api.get('/ar/dashboard/essential');
+        return res.data;
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -178,226 +169,145 @@ export const arApi = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     async getDashboardKPIs(): Promise<ARDashboardKPIs> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/kpis`);
-        if (!res.ok) throw new Error('Failed to fetch KPIs');
-        return res.json();
+        const res = await api.get('/ar/dashboard/kpis');
+        return res.data;
     },
 
     async getAgingAnalysis(): Promise<ARAgingData> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/aging`);
-        if (!res.ok) throw new Error('Failed to fetch aging');
-        return res.json();
+        const res = await api.get('/ar/dashboard/aging');
+        return res.data;
     },
 
     async getStatusDistribution(): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/status-distribution`);
-        if (!res.ok) throw new Error('Failed to fetch status distribution');
-        return res.json();
+        const res = await api.get('/ar/dashboard/status-distribution');
+        return res.data;
     },
 
     async getRiskDistribution(): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/risk-distribution`);
-        if (!res.ok) throw new Error('Failed to fetch risk distribution');
-        return res.json();
+        const res = await api.get('/ar/dashboard/risk-distribution');
+        return res.data;
     },
 
     async getCollectionTrend(): Promise<{ month: string; amount: number }[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/collection-trend`);
-        if (!res.ok) throw new Error('Failed to fetch trend');
-        return res.json();
+        const res = await api.get('/ar/dashboard/collection-trend');
+        return res.data;
     },
 
     async getCriticalOverdue(limit = 10): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/api/ar/dashboard/critical-overdue?limit=${limit}`);
-        if (!res.ok) throw new Error('Failed to fetch overdue');
-        return res.json();
+        const res = await api.get(`/ar/dashboard/critical-overdue?limit=${limit}`);
+        return res.data;
     },
 
     async getRecentPayments(limit = 10): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/recent-payments?limit=${limit}`);
-        if (!res.ok) throw new Error('Failed to fetch payments');
-        return res.json();
+        const res = await api.get(`/ar/dashboard/recent-payments?limit=${limit}`);
+        return res.data;
     },
 
     async getTopCustomers(limit = 5): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/top-customers?limit=${limit}`);
-        if (!res.ok) throw new Error('Failed to fetch top customers');
-        return res.json();
+        const res = await api.get(`/ar/dashboard/top-customers?limit=${limit}`);
+        return res.data;
     },
 
     async getMonthlyComparison(): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/monthly-comparison`);
-        if (!res.ok) throw new Error('Failed to fetch comparison');
-        return res.json();
+        const res = await api.get('/ar/dashboard/monthly-comparison');
+        return res.data;
     },
 
     async getDSOMetrics(): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/dashboard/dso-metrics`);
-        if (!res.ok) throw new Error('Failed to fetch DSO');
-        return res.json();
+        const res = await api.get('/ar/dashboard/dso-metrics');
+        return res.data;
     },
 
-   
+
     // Customers
     async getCustomers(params?: { search?: string; page?: number; limit?: number }) {
-        const query = new URLSearchParams(params as any).toString();
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/customers?${query}`);
-        if (!res.ok) throw new Error('Failed to fetch customers');
-        return res.json();
+        const res = await api.get('/ar/customers', { params });
+        return res.data;
     },
 
     async createCustomer(data: Partial<ARCustomer>): Promise<ARCustomer> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/customers`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error('Failed to create customer');
-        return res.json();
+        const res = await api.post('/ar/customers', data);
+        return res.data;
     },
 
     async updateCustomer(id: string, data: Partial<ARCustomer>): Promise<ARCustomer> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/customers/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to update customer');
-        }
-        return res.json();
+        const res = await api.put(`/ar/customers/${id}`, data);
+        return res.data;
     },
 
     async getCustomerById(id: string): Promise<ARCustomer & { invoices?: any[] }> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/customers/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch customer');
-        return res.json();
+        const res = await api.get(`/ar/customers/${id}`);
+        return res.data;
     },
 
     // Payment Terms
     async getPaymentTerms(activeOnly = false): Promise<ARPaymentTerm[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/payment-terms?activeOnly=${activeOnly}`);
-        if (!res.ok) throw new Error('Failed to fetch payment terms');
-        return res.json();
+        const res = await api.get('/ar/payment-terms', { params: { activeOnly } });
+        return res.data;
     },
 
     async seedPaymentTerms(): Promise<void> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/payment-terms/seed`, { method: 'POST' });
-        if (!res.ok) throw new Error('Failed to seed payment terms');
+        await api.post('/ar/payment-terms/seed');
     },
 
     async getPaymentTermById(id: string): Promise<ARPaymentTerm> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/payment-terms/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch payment term');
-        return res.json();
+        const res = await api.get(`/ar/payment-terms/${id}`);
+        return res.data;
     },
 
     async createPaymentTerm(data: Partial<ARPaymentTerm>): Promise<ARPaymentTerm> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/payment-terms`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to create payment term');
-        }
-        return res.json();
+        const res = await api.post('/ar/payment-terms', data);
+        return res.data;
     },
 
     async updatePaymentTerm(id: string, data: Partial<ARPaymentTerm>): Promise<ARPaymentTerm> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/payment-terms/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to update payment term');
-        }
-        return res.json();
+        const res = await api.put(`/ar/payment-terms/${id}`, data);
+        return res.data;
     },
 
     // Invoices
     async getInvoices(params?: { search?: string; status?: string; customerId?: string; invoiceType?: string; page?: number; limit?: number }) {
-        const query = new URLSearchParams(params as any).toString();
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices?${query}`);
-        if (!res.ok) throw new Error('Failed to fetch invoices');
-        return res.json();
+        const res = await api.get('/ar/invoices', { params });
+        return res.data;
     },
 
     async getInvoiceById(id: string): Promise<ARInvoice> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch invoice');
-        return res.json();
+        const res = await api.get(`/ar/invoices/${id}`);
+        return res.data;
     },
 
     async updateInvoice(id: string, data: Partial<ARInvoice>): Promise<ARInvoice> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error('Failed to update invoice');
-        return res.json();
+        const res = await api.put(`/ar/invoices/${id}`, data);
+        return res.data;
     },
 
     async addPayment(invoiceId: string, data: any): Promise<ARPaymentHistory> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/payments`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to record payment');
-        }
-        return res.json();
+        const res = await api.post(`/ar/invoices/${invoiceId}/payments`, data);
+        return res.data;
     },
 
     async createInvoice(data: Partial<ARInvoice>): Promise<ARInvoice> {
-        console.log('Creating invoice with data:', data);
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            console.error('Create invoice API error:', res.status, errorData);
-            throw new Error(errorData.error || errorData.message || 'Failed to create invoice');
-        }
-        return res.json();
+        const res = await api.post('/ar/invoices', data);
+        return res.data;
     },
 
     async deleteInvoice(id: string): Promise<void> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${id}`, {
-            method: 'DELETE',
-        });
-        if (!res.ok) throw new Error('Failed to delete invoice');
+        await api.delete(`/ar/invoices/${id}`);
     },
 
     async getInvoiceRemarks(invoiceId: string): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/remarks`);
-        if (!res.ok) throw new Error('Failed to fetch remarks');
-        return res.json();
+        const res = await api.get(`/ar/invoices/${invoiceId}/remarks`);
+        return res.data;
     },
 
     async addInvoiceRemark(invoiceId: string, content: string): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/remarks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content })
-        });
-        if (!res.ok) throw new Error('Failed to add remark');
-        return res.json();
+        const res = await api.post(`/ar/invoices/${invoiceId}/remarks`, { content });
+        return res.data;
     },
 
     async getInvoiceActivityLog(invoiceId: string): Promise<any[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/invoices/${invoiceId}/activity`);
-        if (!res.ok) throw new Error('Failed to fetch activity log');
-        return res.json();
+        const res = await api.get(`/ar/invoices/${invoiceId}/activity`);
+        return res.data;
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -405,22 +315,18 @@ export const arApi = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     async getAllActivities(params?: ARActivityFilters): Promise<{ data: ARActivity[]; pagination: any }> {
-        const query = new URLSearchParams(params as any).toString();
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities?${query}`);
-        if (!res.ok) throw new Error('Failed to fetch activities');
-        return res.json();
+        const res = await api.get('/ar/activities', { params });
+        return res.data;
     },
 
     async getActivityStats(): Promise<ARActivityStats> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities/stats`);
-        if (!res.ok) throw new Error('Failed to fetch activity stats');
-        return res.json();
+        const res = await api.get('/ar/activities/stats');
+        return res.data;
     },
 
     async getRecentActivities(limit = 10): Promise<ARActivity[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/activities/recent?limit=${limit}`);
-        if (!res.ok) throw new Error('Failed to fetch recent activities');
-        return res.json();
+        const res = await api.get(`/ar/activities/recent?limit=${limit}`);
+        return res.data;
     },
 
 
@@ -429,40 +335,25 @@ export const arApi = {
         formData.append('file', file);
         if (mapping) formData.append('mapping', JSON.stringify(mapping));
 
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/import/excel`, {
-            method: 'POST',
-            body: formData
+        const res = await api.post('/ar/import/excel', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
         });
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            const error = new Error(errorData.message || 'Failed to import file') as any;
-            error.response = { data: errorData };
-            throw error;
-        }
-        return res.json();
+        return res.data;
     },
 
     async previewExcel(file: File) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/import/preview`, {
-            method: 'POST',
-            body: formData
+        const res = await api.post('/ar/import/preview', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
         });
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            const error = new Error(errorData.message || 'Failed to preview file') as any;
-            error.response = { data: errorData };
-            throw error;
-        }
-        return res.json();
+        return res.data;
     },
 
     async getImportHistory() {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/import/history`);
-        if (!res.ok) throw new Error('Failed to fetch history');
-        return res.json();
+        const res = await api.get('/ar/import/history');
+        return res.data;
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -470,49 +361,27 @@ export const arApi = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     async getBankAccounts(params?: { search?: string; activeOnly?: boolean }) {
-        const query = new URLSearchParams(params as any).toString();
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts?${query}`);
-        if (!res.ok) throw new Error('Failed to fetch bank accounts');
-        return res.json();
+        const res = await api.get('/ar/bank-accounts', { params });
+        return res.data;
     },
 
     async getBankAccountById(id: string): Promise<BankAccount> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch bank account');
-        return res.json();
+        const res = await api.get(`/ar/bank-accounts/${id}`);
+        return res.data;
     },
 
     async createBankAccount(data: Partial<BankAccount>): Promise<BankAccount> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to create bank account');
-        }
-        return res.json();
+        const res = await api.post('/ar/bank-accounts', data);
+        return res.data;
     },
 
     async updateBankAccount(id: string, data: Partial<BankAccount>): Promise<BankAccount> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to update bank account');
-        }
-        return res.json();
+        const res = await api.put(`/ar/bank-accounts/${id}`, data);
+        return res.data;
     },
 
     async deleteBankAccount(id: string): Promise<void> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/${id}`, {
-            method: 'DELETE',
-        });
-        if (!res.ok) throw new Error('Failed to delete bank account');
+        await api.delete(`/ar/bank-accounts/${id}`);
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -524,67 +393,38 @@ export const arApi = {
         requestType: 'CREATE' | 'UPDATE' | 'DELETE';
         requestedData: Partial<BankAccount>;
     }): Promise<BankAccountChangeRequest> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to create request');
-        }
-        return res.json();
+        const res = await api.post('/ar/bank-accounts/requests', data);
+        return res.data;
     },
 
     async getPendingRequests(status?: string): Promise<BankAccountChangeRequest[]> {
-        const query = status ? `?status=${status}` : '';
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/pending${query}`);
-        if (!res.ok) throw new Error('Failed to fetch pending requests');
-        return res.json();
+        const res = await api.get('/ar/bank-accounts/requests/pending', { params: { status } });
+        return res.data;
     },
 
     async getMyRequests(): Promise<BankAccountChangeRequest[]> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/my`);
-        if (!res.ok) throw new Error('Failed to fetch requests');
-        return res.json();
+        const res = await api.get('/ar/bank-accounts/requests/my');
+        return res.data;
     },
 
     async getRequestById(id: string): Promise<BankAccountChangeRequest> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch request');
-        return res.json();
+        const res = await api.get(`/ar/bank-accounts/requests/${id}`);
+        return res.data;
     },
 
     async approveRequest(id: string, reviewNotes?: string): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/${id}/approve`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reviewNotes })
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to approve request');
-        }
-        return res.json();
+        const res = await api.post(`/ar/bank-accounts/requests/${id}/approve`, { reviewNotes });
+        return res.data;
     },
 
     async rejectRequest(id: string, reviewNotes: string): Promise<any> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/${id}/reject`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reviewNotes })
-        });
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to reject request');
-        }
-        return res.json();
+        const res = await api.post(`/ar/bank-accounts/requests/${id}/reject`, { reviewNotes });
+        return res.data;
     },
 
     async getRequestStats(): Promise<{ pending: number; approved: number; rejected: number; total: number }> {
-        const res = await fetchWithAuth(`${AR_API_BASE}/ar/bank-accounts/requests/stats`);
-        if (!res.ok) throw new Error('Failed to fetch stats');
-        return res.json();
+        const res = await api.get('/ar/bank-accounts/requests/stats');
+        return res.data;
     }
 };
 

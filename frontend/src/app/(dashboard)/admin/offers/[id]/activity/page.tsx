@@ -110,6 +110,34 @@ const ACTION_CONFIG: Record<string, {
     color: 'text-[#5D6E73]',
     bgColor: 'bg-[#AEBFC3]/20',
     description: 'User logged out of the system'
+  },
+  'SPARE_PART_ADDED': {
+    label: 'Spare Part Added',
+    icon: Package,
+    color: 'text-[#4F6A64]',
+    bgColor: 'bg-[#A2B9AF]/20',
+    description: 'A spare part was added to the offer'
+  },
+  'SPARE_PART_UPDATED': {
+    label: 'Spare Part Updated',
+    icon: Package,
+    color: 'text-[#546A7A]',
+    bgColor: 'bg-[#96AEC2]/20',
+    description: 'Spare part details were updated'
+  },
+  'SPARE_PART_DELETED': {
+    label: 'Spare Part Deleted',
+    icon: Trash2,
+    color: 'text-[#9E3B47]',
+    bgColor: 'bg-[#E17F70]/20',
+    description: 'A spare part was removed'
+  },
+  'ZONE_TARGET_SET': {
+    label: 'Zone Target Set',
+    icon: TrendingUp,
+    color: 'text-[#4F6A64]',
+    bgColor: 'bg-[#A2B9AF]/20',
+    description: 'A new target was set for the zone'
   }
 }
 
@@ -291,6 +319,14 @@ export default function OfferActivityPage() {
         return `Deleted offer ${activity.details?.offerReferenceNumber || ''}`
       case 'OFFER_NOTE_ADDED':
         return 'Added a note to the offer'
+      case 'SPARE_PART_ADDED':
+        return `Added spare part ${activity.details?.partNumber || ''}`
+      case 'SPARE_PART_UPDATED':
+        return `Updated spare part ${activity.details?.partNumber || ''}`
+      case 'SPARE_PART_DELETED':
+        return `Deleted spare part ${activity.details?.partNumber || ''}`
+      case 'ZONE_TARGET_SET':
+        return `Set target for zone ${activity.details?.zoneName || ''}`
       default:
         return activity.action.replace(/_/g, ' ').toLowerCase()
     }

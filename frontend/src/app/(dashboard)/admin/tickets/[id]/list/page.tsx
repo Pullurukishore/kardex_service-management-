@@ -38,6 +38,7 @@ import api from '@/lib/api/axios';
 import { StatusBadge } from '@/components/tickets/StatusBadge';
 import { PriorityBadge } from '@/components/tickets/PriorityBadge';
 import { TicketActivity } from '@/components/tickets/TicketActivity';
+import { ActivityLogTimeline } from '@/components/activity/ActivityLogTimeline';
 import { TicketComments } from '@/components/tickets/TicketComments';
 import { TicketDetails } from '@/components/tickets/TicketDetails';
 import { AssignTicketDialog } from '@/components/tickets/AssignTicketDialog';
@@ -54,7 +55,9 @@ export default function TicketDetailPage() {
   const { user } = useAuth();
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'details' | 'activity' | 'comments' | 'reports' | 'photos'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'activity' | 'comments' | 'reports' | 'photos' | 'activitylog'>('details');
+  const [activityLogData, setActivityLogData] = useState<any[]>([]);
+  const [activityLogLoading, setActivityLogLoading] = useState(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [assignmentStep, setAssignmentStep] = useState<'ZONE_USER' | 'SERVICE_PERSON' | 'EXPERT_HELPDESK'>('ZONE_USER');
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
@@ -70,6 +73,24 @@ export default function TicketDetailPage() {
       setLoading(false);
     }
   };
+
+  const fetchActivityLog = async () => {
+    try {
+      setActivityLogLoading(true);
+      const response = await api.get(`/tickets/${id}/activity`);
+      setActivityLogData(response.data);
+    } catch (error) {
+      console.error('Failed to load activity log');
+    } finally {
+      setActivityLogLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'activitylog' && id) {
+      fetchActivityLog();
+    }
+  }, [activeTab, id]);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -593,6 +614,7 @@ export default function TicketDetailPage() {
               <div className="flex flex-wrap gap-2 mt-4">
                 {[
                   { id: 'details', label: 'Details', icon: FileText },
+                  { id: 'activitylog', label: 'Activity Log', icon: Activity },
                   { id: 'comments', label: 'Comments', icon: MessageSquare },
                   { id: 'reports', label: 'Reports', icon: Upload },
                   { id: 'photos', label: 'Photos', icon: Camera },
@@ -624,6 +646,14 @@ export default function TicketDetailPage() {
                     } catch (error) {
                     }
                   }} />
+                ) : activeTab === 'activitylog' ? (
+                  <ActivityLogTimeline 
+                    entityType="ticket" 
+                    activities={activityLogData}
+                    loading={activityLogLoading}
+                    onRefresh={fetchActivityLog}
+                    emptyMessage="No activity recorded yet"
+                  />
                 ) : activeTab === 'reports' ? (
                   <TicketReports ticketId={ticket.id.toString()} />
                 ) : activeTab === 'photos' ? (

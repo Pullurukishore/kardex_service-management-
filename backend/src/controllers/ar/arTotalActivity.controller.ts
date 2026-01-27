@@ -207,7 +207,7 @@ export const getAllActivities = async (req: Request, res: Response) => {
             }
         });
     } catch (error: any) {
-        console.error('Error fetching activities:', error);
+
         res.status(500).json({ error: 'Failed to fetch activities', message: error.message });
     }
 };
@@ -283,7 +283,7 @@ export const getActivityStats = async (req: Request, res: Response) => {
             }
         });
     } catch (error: any) {
-        console.error('Error fetching activity stats:', error);
+
         res.status(500).json({ error: 'Failed to fetch stats', message: error.message });
     }
 };
@@ -342,7 +342,7 @@ export const getRecentActivities = async (req: Request, res: Response) => {
 
         res.json(combined);
     } catch (error: any) {
-        console.error('Error fetching recent activities:', error);
+
         res.status(500).json({ error: 'Failed to fetch activities', message: error.message });
     }
 };

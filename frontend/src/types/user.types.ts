@@ -63,18 +63,12 @@ export function hasModuleAccess(user: User | null, module: ModuleType): boolean 
     return user.allowedModules.includes(module);
   }
 
-  // If user has financeRole, they are a FINANCE user (not FSM)
-  const isFinanceUser = user.financeRole !== undefined && user.financeRole !== null;
-
-  // If user doesn't have financeRole, they are an FSM user
-  const isFSMUser = !isFinanceUser;
-
   if (module === 'fsm') {
-    return isFSMUser;
+    return !!user.role;
   }
 
   if (module === 'finance') {
-    return isFinanceUser;
+    return !!user.financeRole;
   }
 
   return false;

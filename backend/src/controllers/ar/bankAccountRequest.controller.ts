@@ -82,7 +82,7 @@ export const createChangeRequest = async (req: Request, res: Response) => {
 
         res.status(201).json(changeRequest);
     } catch (error: any) {
-        console.error('Error creating change request:', error);
+
         res.status(500).json({ error: 'Failed to create change request', message: error.message });
     }
 };
@@ -122,7 +122,7 @@ export const getPendingRequests = async (req: Request, res: Response) => {
 
         res.json(enrichedRequests);
     } catch (error: any) {
-        console.error('Error fetching pending requests:', error);
+
         res.status(500).json({ error: 'Failed to fetch pending requests', message: error.message });
     }
 };
@@ -142,7 +142,7 @@ export const getMyRequests = async (req: Request, res: Response) => {
 
         res.json(requests);
     } catch (error: any) {
-        console.error('Error fetching user requests:', error);
+
         res.status(500).json({ error: 'Failed to fetch requests', message: error.message });
     }
 };
@@ -183,7 +183,7 @@ export const getRequestById = async (req: Request, res: Response) => {
             reviewedBy
         });
     } catch (error: any) {
-        console.error('Error fetching request:', error);
+
         res.status(500).json({ error: 'Failed to fetch request', message: error.message });
     }
 };
@@ -292,7 +292,7 @@ export const approveRequest = async (req: Request, res: Response) => {
             request: await prisma.bankAccountChangeRequest.findUnique({ where: { id } })
         });
     } catch (error: any) {
-        console.error('Error approving request:', error);
+
         if (error.code === 'P2002') {
             return res.status(400).json({ error: 'Account number already exists' });
         }
@@ -341,7 +341,7 @@ export const rejectRequest = async (req: Request, res: Response) => {
             request: updatedRequest
         });
     } catch (error: any) {
-        console.error('Error rejecting request:', error);
+
         res.status(500).json({ error: 'Failed to reject request', message: error.message });
     }
 };
@@ -362,7 +362,7 @@ export const getRequestStats = async (req: Request, res: Response) => {
             total: pending + approved + rejected
         });
     } catch (error: any) {
-        console.error('Error fetching request stats:', error);
+
         res.status(500).json({ error: 'Failed to fetch stats', message: error.message });
     }
 };

@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { logger } from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { ActivityController } from './activityController';
@@ -44,6 +44,10 @@ export class OfferController {
 
   static async getOfferForQuoteAdminWrapper(req: any, res: Response) {
     return OfferController.getOfferForQuoteAdmin(req as AuthenticatedRequest, res);
+  }
+
+  static async getOfferActivityLogWrapper(req: any, res: Response) {
+    return OfferController.getOfferActivityLog(req as AuthenticatedRequest, res);
   }
 
   // Get next offer reference number (for preview)
@@ -260,7 +264,7 @@ export class OfferController {
       const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
       const take = parseInt(limit as string);
 
-      const [offers, total] = await Promise.all([
+      const [offers, total, stats] = await Promise.all([
         prisma.offer.findMany({
           where,
           include: {
@@ -313,7 +317,31 @@ export class OfferController {
           take,
         }),
         prisma.offer.count({ where }),
+        prisma.offer.aggregate({
+          where,
+          _sum: {
+            offerValue: true
+          },
+          _count: {
+            id: true
+          }
+        }),
       ]);
+
+      // Get counts for specific stages for the whole filtered set
+      const wonCount = await prisma.offer.count({
+        where: {
+          ...where,
+          stage: 'WON'
+        }
+      });
+
+      const lostCount = await prisma.offer.count({
+        where: {
+          ...where,
+          stage: 'LOST'
+        }
+      });
 
       res.json({
         offers,
@@ -323,6 +351,12 @@ export class OfferController {
           limit: parseInt(limit as string),
           pages: Math.ceil(total / parseInt(limit as string)),
         },
+        summary: {
+          totalValue: stats._sum.offerValue || 0,
+          wonCount,
+          lostCount,
+          totalCount: total
+        }
       });
       return;
     } catch (error) {
@@ -1242,4 +1276,218 @@ export class OfferController {
       return;
     }
   }
+
+  // Get offer activity log (comprehensive audit trail)
+  static async getOfferActivityLog(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const offerId = parseInt(id);
+
+      if (isNaN(offerId)) {
+        return res.status(400).json({ error: 'Invalid offer ID' });
+      }
+
+      // Check if offer exists
+      const offer = await prisma.offer.findUnique({
+        where: { id: offerId },
+        select: { id: true, zoneId: true, offerReferenceNumber: true }
+      });
+
+      if (!offer) {
+        return res.status(404).json({ error: 'Offer not found' });
+      }
+
+      // Zone users and zone managers can only access offers in their zones
+      if ((req.user?.role === 'ZONE_USER' || req.user?.role === 'ZONE_MANAGER')) {
+        const userZoneIds = req.user.zoneIds || (req.user.zoneId ? [Number(req.user.zoneId)] : []);
+        if (!userZoneIds.includes(offer.zoneId)) {
+          return res.status(403).json({ error: 'Access denied: offer not in your authorized zones' });
+        }
+      }
+
+      // Fetch audit logs and stage remarks
+      const [auditLogs, stageRemarks] = await Promise.all([
+        prisma.auditLog.findMany({
+          where: { offerId },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            performedBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true
+              }
+            }
+          }
+        }),
+        prisma.stageRemark.findMany({
+          where: { offerId },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true
+              }
+            }
+          }
+        })
+      ]);
+
+      // Define activity type
+      type Activity = {
+        id: string;
+        type: string;
+        action: string;
+        description: string;
+        fieldName?: string;
+        oldValue?: string | null;
+        newValue?: string | null;
+        data: Record<string, any>;
+        performedBy: string | null;
+        performedById: number | null;
+        ipAddress?: string | null;
+        userAgent?: string | null;
+        createdAt: Date;
+      };
+
+      // Map action to user-friendly description
+      const getActionDescription = (action: string, details: any): string => {
+        switch (action) {
+          case 'OFFER_CREATED':
+            return `Offer created: ${details?.title || offer.offerReferenceNumber}`;
+          case 'OFFER_UPDATED':
+            if (details?.changes) {
+              const changedFields = Object.keys(details.changes);
+              if (changedFields.length === 1) {
+                const field = changedFields[0];
+                const change = details.changes[field];
+                return `${formatFieldName(field)} changed from "${formatValue(change.from)}" to "${formatValue(change.to)}"`;
+              }
+              return `Updated ${changedFields.length} fields: ${changedFields.map(f => formatFieldName(f)).join(', ')}`;
+            }
+            return 'Offer details updated';
+          case 'STAGE_CHANGED':
+            return `Stage changed from ${details?.oldStage || 'unknown'} to ${details?.newStage || 'unknown'}`;
+          case 'OFFER_ASSIGNED':
+            return `Assigned to ${details?.assigneeName || 'user'}`;
+          case 'OFFER_WON':
+            return `Offer won${details?.poNumber ? ` (PO: ${details.poNumber})` : ''}`;
+          case 'OFFER_LOST':
+            return `Offer lost${details?.reason ? `: ${details.reason}` : ''}`;
+          case 'REMARK_ADDED':
+            return 'Remark added';
+          default:
+            return action.replace(/_/g, ' ').toLowerCase().replace(/^./, s => s.toUpperCase());
+        }
+      };
+
+      // Format field name for display
+      const formatFieldName = (field: string): string => {
+        const fieldMap: Record<string, string> = {
+          title: 'Title',
+          description: 'Description',
+          productType: 'Product Type',
+          lead: 'Lead',
+          status: 'Status',
+          stage: 'Stage',
+          priority: 'Priority',
+          offerValue: 'Offer Value',
+          offerMonth: 'Offer Month',
+          poExpectedMonth: 'PO Expected Month',
+          probabilityPercentage: 'Probability',
+          poNumber: 'PO Number',
+          poDate: 'PO Date',
+          poValue: 'PO Value',
+          poReceivedMonth: 'PO Received Month',
+          assignedToId: 'Assigned To',
+          remarks: 'Remarks',
+          openFunnel: 'Open Funnel',
+          company: 'Company',
+          location: 'Location',
+          department: 'Department',
+          contactPersonName: 'Contact Person',
+          contactNumber: 'Contact Number',
+          email: 'Email',
+          machineSerialNumber: 'Machine Serial Number'
+        };
+        return fieldMap[field] || field.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+      };
+
+      // Format value for display
+      const formatValue = (value: any): string => {
+        if (value === null || value === undefined) return 'N/A';
+        if (value instanceof Date) return value.toISOString().split('T')[0];
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+      };
+
+      // Combine audit logs and stage remarks
+      const activities: Activity[] = [
+        // Map audit logs
+        ...auditLogs.map((log: any) => {
+          const details = log.details || {};
+          let fieldChanges: { fieldName?: string; oldValue?: string; newValue?: string } = {};
+
+          // Extract field changes if it's an update
+          if (log.action === 'OFFER_UPDATED' && details.changes) {
+            const changedFields = Object.keys(details.changes);
+            if (changedFields.length === 1) {
+              const field = changedFields[0];
+              const change = details.changes[field];
+              fieldChanges = {
+                fieldName: formatFieldName(field),
+                oldValue: formatValue(change.from),
+                newValue: formatValue(change.to)
+              };
+            }
+          }
+
+          return {
+            id: `audit_${log.id}`,
+            type: 'AUDIT',
+            action: log.action,
+            description: getActionDescription(log.action, details),
+            ...fieldChanges,
+            data: {
+              details: log.details,
+              metadata: log.metadata,
+              oldValue: log.oldValue,
+              newValue: log.newValue
+            },
+            performedBy: log.performedBy?.name || log.performedBy?.email?.split('@')[0] || 'System',
+            performedById: log.performedBy?.id || log.userId,
+            ipAddress: log.ipAddress,
+            userAgent: log.userAgent,
+            createdAt: log.createdAt
+          };
+        }),
+        // Map stage remarks
+        ...stageRemarks.map((remark: any) => ({
+          id: `remark_${remark.id}`,
+          type: 'REMARK',
+          action: 'REMARK_ADDED',
+          description: `Stage remark for ${remark.stage}: ${remark.remarks.substring(0, 100)}${remark.remarks.length > 100 ? '...' : ''}`,
+          data: {
+            stage: remark.stage,
+            remarks: remark.remarks
+          },
+          performedBy: remark.createdBy?.name || remark.createdBy?.email?.split('@')[0] || 'Unknown',
+          performedById: remark.createdBy?.id || remark.createdById,
+          createdAt: remark.createdAt
+        }))
+      ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      res.json(activities);
+      return;
+    } catch (error) {
+      logger.error('Get offer activity log error:', error);
+      res.status(500).json({ error: 'Failed to fetch offer activity log' });
+      return;
+    }
+  }
 }
+

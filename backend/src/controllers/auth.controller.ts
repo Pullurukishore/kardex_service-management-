@@ -8,6 +8,7 @@ import { JWT_CONFIG, REFRESH_TOKEN_CONFIG, generateRefreshToken, verifyRefreshTo
 import { sendEmail } from '../utils/email';
 import prisma from '../config/db';
 import { logSessionActivity, getIpFromRequest as getSessionIp } from './ar/arSessionActivity.controller';
+import { logUserActivity, getIpFromRequest as getActivityIp } from './activityLog.controller';
 
 // Type for user data that's safe to return to the client
 type SafeUser = {
@@ -25,11 +26,37 @@ type SafeUser = {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, role, name, phone, companyName } = req.body;
+    const { email, password, role, financeRole, name, phone, companyName } = req.body;
 
-    // Validate required fields
-    if (!email || !password || !role) {
-      return res.status(400).json({ message: 'Email, password and role are required' });
+    // Validate required fields - must have email, password, and at least one role
+    if (!email || !password || (!role && !financeRole)) {
+      return res.status(400).json({ message: 'Email, password and at least one role (FSM or Finance) are required' });
+    }
+
+    // Security check: require the requester to be an ADMIN for all internal roles
+    const authHeader = req.headers.authorization;
+    const accessToken = req.cookies.accessToken || req.cookies.token;
+
+    let requesterRole: string | undefined;
+
+    try {
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_CONFIG.secret) as any;
+        requesterRole = decoded.role;
+      } else if (accessToken) {
+        const decoded = jwt.verify(accessToken, JWT_CONFIG.secret) as any;
+        requesterRole = decoded.role;
+      }
+    } catch (err) {
+      // Token verification failed or not provided
+    }
+
+    if (requesterRole !== 'ADMIN') {
+      return res.status(403).json({
+        message: 'Access denied. Only administrators can register users.',
+        code: 'FORBIDDEN_USER_CREATION'
+      });
     }
 
     // Check if user already exists
@@ -45,67 +72,13 @@ export const register = async (req: Request, res: Response) => {
     const userData: any = {
       email,
       password: hashedPassword,
-      role,
-      isActive: true,
+      role: role || undefined,
+      financeRole: financeRole || undefined,
+      isActive: true, // Auto-activate
       tokenVersion: '0' // Initialize token version as string
     };
 
-    // Handle customer owner registration
-    if (role === 'CUSTOMER_OWNER' && companyName) {
-      // Get admin user or system user ID for createdBy/updatedBy
-      const adminUser = await prisma.user.findFirst({
-        where: { role: 'ADMIN' },
-        select: { id: true }
-      });
-
-      const systemUserId = adminUser?.id || 1; // Fallback to 1 if no admin found
-
-      // Get the first active service zone or create a default one if none exists
-      let serviceZone = await prisma.serviceZone.findFirst({
-        where: { isActive: true }
-      });
-
-      if (!serviceZone) {
-        // Create a default service zone if none exists
-        serviceZone = await prisma.serviceZone.create({
-          data: {
-            name: 'Default Service Zone',
-            description: 'Default service zone for new customers',
-            isActive: true
-          }
-        });
-      }
-
-      // Create customer with the service zone
-      const customer = await prisma.customer.create({
-        data: {
-          companyName,
-          isActive: true,
-          serviceZone: {
-            connect: { id: serviceZone.id }
-          },
-          createdBy: {
-            connect: { id: systemUserId }
-          },
-          updatedBy: {
-            connect: { id: systemUserId }
-          }
-        }
-      });
-
-      // Create contact
-      await prisma.contact.create({
-        data: {
-          name: name || '',
-          email,
-          phone: phone || '',
-          role: 'ACCOUNT_OWNER',
-          customerId: customer.id
-        }
-      });
-
-      userData.customerId = customer.id;
-    }
+    // Normal user registration logic follows (no special customer owner handling)
 
     // Create user
     const user = await prisma.user.create({
@@ -114,6 +87,7 @@ export const register = async (req: Request, res: Response) => {
         id: true,
         email: true,
         role: true,
+        financeRole: true,
         customerId: true,
         isActive: true,
         customer: {
@@ -130,7 +104,7 @@ export const register = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: user.id, role: user.role, customerId: user.customerId },
       JWT_CONFIG.secret,
-      { expiresIn: '7d' }
+      { expiresIn: JWT_CONFIG.expiresIn }
     );
 
     const refreshToken = jwt.sign(
@@ -150,15 +124,17 @@ export const register = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour (matches JWT expiry)
       path: '/'
     });
+
+
 
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour
       path: '/'
     });
 
@@ -167,6 +143,15 @@ export const register = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/'
+    });
+
+    // Set userRole as non-httpOnly so client can see it
+    res.cookie('userRole', user.role, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour
       path: '/'
     });
 
@@ -195,17 +180,12 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Find user with customer info
+    // Find user with customer info
     const user = await prisma.user.findUnique({
       where: { email },
       include: {
         customer: true
       }
-    });
-
-    // Get financeRole separately since include doesn't return all scalar fields
-    const financeRoleUser = await prisma.user.findUnique({
-      where: { email },
-      select: { financeRole: true }
     });
 
     if (!user) {
@@ -302,7 +282,7 @@ export const login = async (req: Request, res: Response) => {
         version: tokenVersion
       },
       JWT_CONFIG.secret,
-      { expiresIn: '7d' }
+      { expiresIn: JWT_CONFIG.expiresIn }
     );
 
     const refreshToken = jwt.sign(
@@ -344,7 +324,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax', // Using 'lax' for better compatibility
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for access token
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour for access token (matches JWT expiry)
       path: '/'
     };
 
@@ -355,20 +335,46 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days for refresh token
     });
 
+    // Set userRole as non-httpOnly so client can see it
+    // Set userRole as non-httpOnly so client can see it
+    if (user.role) {
+      res.cookie('userRole', user.role, {
+        ...cookieOptions,
+        httpOnly: false
+      });
+    }
+
+    if (user.financeRole) {
+      res.cookie('financeRole', user.financeRole, {
+        ...cookieOptions,
+        httpOnly: false
+      });
+    }
+
     // Return user data without sensitive information
     const { password: _, refreshToken: _oldRefreshToken, tokenVersion: tv, ...userData } = user;
 
-    // Log successful login activity only if user has a finance role
-    if (financeRoleUser?.financeRole) {
+    // Log successful login activity only if user has a finance role (for AR module)
+    if (user.financeRole) {
       await logSessionActivity({
         action: 'LOGIN',
         userId: user.id,
         userName: user.name,
         userEmail: user.email,
-        userRole: user.role,
-        financeRole: financeRoleUser.financeRole,
+        financeRole: user.financeRole,
         ipAddress: getSessionIp(req),
         userAgent: req.headers['user-agent'] || null
+      });
+    }
+
+    // Log login to AuditLog only for FSM users (shown in Ticket/Offer Activity Logs)
+    if (user.role) {
+      await logUserActivity({
+        action: 'USER_LOGIN',
+        userId: user.id,
+        ipAddress: getActivityIp(req),
+        userAgent: req.headers['user-agent'] || null,
+        module: 'SYSTEM'
       });
     }
 
@@ -377,7 +383,7 @@ export const login = async (req: Request, res: Response) => {
       success: true,
       user: {
         ...userData,
-        financeRole: financeRoleUser?.financeRole || null,
+        financeRole: user.financeRole || null,
         customer: user.customer
       },
       token, // For backward compatibility
@@ -529,6 +535,7 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
     res.clearCookie('token', clearCookieOptions);
     res.clearCookie('refreshToken', clearCookieOptions);
     res.clearCookie('userRole', clearCookieOptions);
+    res.clearCookie('financeRole', clearCookieOptions);
 
     // Also clear non-httpOnly cookies that might be set on client side
     const clientCookieOptions = {
@@ -538,18 +545,29 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
       sameSite: 'lax' as const
     };
     res.clearCookie('userRole', clientCookieOptions);
+    res.clearCookie('financeRole', clientCookieOptions);
 
-    // Log logout activity with fetched user details only if user has a finance role
+    // Log logout activity with fetched user details only if user has a finance role (for AR module)
     if (req.user?.id && userDetails && userDetails.financeRole) {
       await logSessionActivity({
         action: 'LOGOUT',
         userId: req.user.id,
         userName: userDetails.name || userDetails.email?.split('@')[0] || null,
         userEmail: userDetails.email || null,
-        userRole: userDetails.role || null,
         financeRole: userDetails.financeRole,
         ipAddress: getSessionIp(req),
         userAgent: req.headers['user-agent'] || null
+      });
+    }
+
+    // Log logout to AuditLog only for FSM users (shown in Ticket/Offer Activity Logs)
+    if (req.user?.id && userDetails && userDetails.role) {
+      await logUserActivity({
+        action: 'USER_LOGOUT',
+        userId: req.user.id,
+        ipAddress: getActivityIp(req),
+        userAgent: req.headers['user-agent'] || null,
+        module: 'SYSTEM'
       });
     }
 
@@ -596,6 +614,7 @@ export const refreshToken = async (req: Request, res: Response) => {
         id: true,
         email: true,
         role: true,
+        financeRole: true,
         customerId: true,
         isActive: true,
         refreshToken: true,
@@ -705,13 +724,27 @@ export const refreshToken = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax' as const,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for access token
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour for access token (matches JWT expiry)
       path: '/'
     };
 
     res.cookie('accessToken', newToken, cookieOptions);
     res.cookie('token', newToken, cookieOptions);
-    res.cookie('userRole', user.role, cookieOptions);
+
+    // Set userRole as non-httpOnly so client can see it
+    if (user.role) {
+      res.cookie('userRole', user.role, {
+        ...cookieOptions,
+        httpOnly: false
+      });
+    }
+
+    if (user.financeRole) {
+      res.cookie('financeRole', user.financeRole, {
+        ...cookieOptions,
+        httpOnly: false
+      });
+    }
 
     if (shouldRotateRefreshToken) {
       res.cookie('refreshToken', newRefreshToken, {
@@ -726,6 +759,7 @@ export const refreshToken = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        financeRole: user.financeRole,
         customerId: user.customerId
       }
     };

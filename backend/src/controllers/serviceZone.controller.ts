@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Prisma, ServiceZone, TicketStatus, PrismaClient, ServicePersonZone } from '@prisma/client';
+import { Prisma, ServiceZone, TicketStatus, ServicePersonZone } from '@prisma/client';
 import prisma from '../config/db';
 import { AuthUser } from '../types/express';
 

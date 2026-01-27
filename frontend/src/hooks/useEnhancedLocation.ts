@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { EnhancedGPSService, GPSValidationResult, GPSLocation } from '@/services/gps-validation.service';
 import { SimpleLocationData } from '@/components/location/SimpleAddressEntry';
@@ -363,11 +363,11 @@ export const useEnhancedLocation = (options: UseEnhancedLocationOptions = {}) =>
   }, []);
 
   // Auto-capture on mount if enabled
-  // useEffect(() => {
-  //   if (autoCapture) {
-  //     captureGPSLocation();
-  //   }
-  // }, [autoCapture, captureGPSLocation]);
+  useEffect(() => {
+    if (autoCapture) {
+      captureGPSLocation();
+    }
+  }, [autoCapture, captureGPSLocation]);
 
   return {
     // State

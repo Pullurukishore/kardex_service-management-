@@ -8,7 +8,7 @@ import DashboardErrorFallback from '@/components/dashboard/DashboardErrorFallbac
 
 // Page metadata for SEO and browser tabs
 export const metadata: Metadata = {
-  title: 'Dashboard | Service Person | KardexCare',
+  title: 'Dashboard | Service Person | KardexRemstar',
   description: 'Service person dashboard for managing attendance, activities, and tickets',
   robots: 'noindex, nofollow',
 };

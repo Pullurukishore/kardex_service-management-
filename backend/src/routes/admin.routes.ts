@@ -15,6 +15,13 @@ import {
   toggleUserStatus,
   getUserById
 } from '../controllers/admin.controller';
+import {
+  getTicketActivityLogs,
+  getTicketActivityStats,
+  getOfferActivityLogs,
+  getOfferActivityStats,
+  getActivityLogUsers
+} from '../controllers/activityLog.controller';
 
 const router = express.Router();
 
@@ -102,7 +109,33 @@ router.post('/users', authenticate, (req, res, next) => {
   return createUser(authReq, res).catch(next);
 });
 
-// Get user by ID - this comes after the specific /users route
+// Activity Log Routes (Admin, Zone Manager, Expert Helpdesk)
+// These must come BEFORE /:id routes
+router.get('/ticket-activity-log', authenticate, (req, res, next) => {
+  const authReq = req as any;
+  return getTicketActivityLogs(authReq, res).catch(next);
+});
+
+router.get('/ticket-activity-log/stats', authenticate, (req, res, next) => {
+  const authReq = req as any;
+  return getTicketActivityStats(authReq, res).catch(next);
+});
+
+router.get('/offer-activity-log', authenticate, (req, res, next) => {
+  const authReq = req as any;
+  return getOfferActivityLogs(authReq, res).catch(next);
+});
+
+router.get('/offer-activity-log/stats', authenticate, (req, res, next) => {
+  const authReq = req as any;
+  return getOfferActivityStats(authReq, res).catch(next);
+});
+
+router.get('/activity-log/users', authenticate, (req, res, next) => {
+  const authReq = req as any;
+  return getActivityLogUsers(authReq, res).catch(next);
+});
+
 router.get('/:id', authenticate, (req, res, next) => {
   const authReq = req as any;
   return getUserById(authReq, res).catch(next);

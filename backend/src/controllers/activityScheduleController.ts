@@ -231,7 +231,7 @@ export const createActivitySchedule = async (req: Request, res: Response) => {
       data: schedules.length === 1 ? schedules[0] : schedules,
     });
   } catch (error: any) {
-    console.error('Error creating activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create activity schedule',
@@ -404,7 +404,7 @@ export const getActivitySchedules = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Error fetching activity schedules:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch activity schedules',
@@ -416,6 +416,7 @@ export const getActivitySchedules = async (req: Request, res: Response) => {
 export const getActivityScheduleById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const user = (req as any).user;
 
     const schedule = await prisma.activitySchedule.findUnique({
       where: { id: Number(id) },
@@ -449,6 +450,7 @@ export const getActivityScheduleById = async (req: Request, res: Response) => {
             phone: true,
           },
         },
+        scheduledById: true,
         scheduledBy: {
           select: {
             id: true,
@@ -502,6 +504,28 @@ export const getActivityScheduleById = async (req: Request, res: Response) => {
         },
       },
     });
+
+    if (!schedule) {
+      return res.status(404).json({
+        success: false,
+        message: 'Activity schedule not found',
+      });
+    }
+
+    // --- PERMISSION CHECK (IDOR PROTECTION) ---
+    const isAdmin = user.role === 'ADMIN' || user.role === 'EXPERT_HELPDESK';
+    const isSubject = schedule.servicePersonId === user.id;
+    const isCreator = schedule.scheduledById === user.id;
+    const userZoneIds = user.zoneIds || [];
+    const isInMyZone = schedule.zoneId && userZoneIds.includes(schedule.zoneId);
+
+    if (!isAdmin && !isSubject && !isCreator && !isInMyZone) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to view this schedule',
+      });
+    }
+    // --- END PERMISSION CHECK ---
 
     // Fetch related activities for this schedule (activities linked via metadata.activityScheduleId)
     let relatedActivities: any[] = [];
@@ -716,7 +740,7 @@ export const getActivityScheduleById = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Error fetching activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch activity schedule',
@@ -816,7 +840,7 @@ export const updateActivitySchedule = async (req: Request, res: Response) => {
       data: updated,
     });
   } catch (error: any) {
-    console.error('Error updating activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to update activity schedule',
@@ -886,7 +910,7 @@ export const acceptActivitySchedule = async (req: Request, res: Response) => {
       data: updated,
     });
   } catch (error: any) {
-    console.error('Error accepting activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to accept activity schedule',
@@ -958,7 +982,7 @@ export const rejectActivitySchedule = async (req: Request, res: Response) => {
       data: updated,
     });
   } catch (error: any) {
-    console.error('Error rejecting activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to reject activity schedule',
@@ -1019,7 +1043,7 @@ export const completeActivitySchedule = async (req: Request, res: Response) => {
       data: updated,
     });
   } catch (error: any) {
-    console.error('Error completing activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to complete activity schedule',
@@ -1081,7 +1105,7 @@ export const cancelActivitySchedule = async (req: Request, res: Response) => {
       data: updated,
     });
   } catch (error: any) {
-    console.error('Error cancelling activity schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to cancel activity schedule',
@@ -1124,7 +1148,7 @@ export const getServicePersonAvailability = async (req: Request, res: Response) 
       },
     });
   } catch (error: any) {
-    console.error('Error getting service person availability:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to get service person availability',
@@ -1193,7 +1217,7 @@ export const suggestOptimalSchedule = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Error suggesting optimal schedule:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to suggest optimal schedule',

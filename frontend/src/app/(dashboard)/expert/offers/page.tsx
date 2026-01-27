@@ -62,8 +62,18 @@ import {
   Sparkles,
   Users
 } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
+
+const DynamicOfferStats = dynamic(() => import('@/components/offers/OfferStats'), {
+  loading: () => <div className="h-32 w-full animate-pulse bg-gray-100 rounded-2xl mb-6" />,
+  ssr: false
+})
+
+const DynamicEditOfferDialog = dynamic(() => import('@/components/offers/EditOfferDialog'), {
+  ssr: false
+})
 
 // Note: PO_RECEIVED leads directly to WON (ORDER_BOOKED stage removed)
 const stages = ['All Stage', 'INITIAL', 'PROPOSAL_SENT', 'NEGOTIATION', 'PO_RECEIVED', 'WON', 'LOST']
@@ -81,6 +91,7 @@ export default function OfferManagement() {
   const [editingOffer, setEditingOffer] = useState<any>(null)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, pages: 0 })
+  const [summary, setSummary] = useState<any>(null)
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('')
@@ -105,6 +116,51 @@ export default function OfferManagement() {
     }
   }, [authLoading, isAuthenticated, user?.role, router])
 
+  // Debounce search to prevent excessive API calls
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return
+    const timeoutId = setTimeout(() => {
+      fetchOffers()
+    }, searchTerm ? 500 : 0) // 500ms delay for search, immediate for other filters
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, selectedZone, selectedStage, selectedUser, selectedProductType, pagination.page, authLoading, isAuthenticated])
+
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return
+    fetchZones()
+    fetchUsers()
+  }, [authLoading, isAuthenticated])
+
+  // Sort offers
+  const sortedOffers = useMemo(() => {
+    if (!sortField) return offers
+    
+    return [...offers].sort((a, b) => {
+      let aValue = a[sortField]
+      let bValue = b[sortField]
+      
+      // Handle nested properties
+      if (sortField === 'customer') {
+        aValue = a.customer?.companyName || a.company || ''
+        bValue = b.customer?.companyName || b.company || ''
+      } else if (sortField === 'zone') {
+        aValue = a.zone?.name || ''
+        bValue = b.zone?.name || ''
+      } else if (sortField === 'createdBy') {
+        aValue = a.createdBy?.name || ''
+        bValue = b.createdBy?.name || ''
+      } else if (sortField === 'offerValue') {
+        aValue = Number(a.offerValue || 0)
+        bValue = Number(b.offerValue || 0)
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [offers, sortField, sortDirection])
+
   // Show loading state while auth is being checked
   if (authLoading) {
     return (
@@ -121,20 +177,6 @@ export default function OfferManagement() {
   if (!isAuthenticated || (user?.role !== UserRole.EXPERT_HELPDESK && user?.role !== UserRole.ADMIN)) {
     return null
   }
-
-  // Debounce search to prevent excessive API calls
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchOffers()
-    }, searchTerm ? 500 : 0) // 500ms delay for search, immediate for other filters
-
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, selectedZone, selectedStage, selectedUser, selectedProductType, pagination.page])
-
-  useEffect(() => {
-    fetchZones()
-    fetchUsers()
-  }, [])
 
   const fetchZones = async () => {
     try {
@@ -153,7 +195,10 @@ export default function OfferManagement() {
       const response = await apiService.getUsers({ isActive: 'true' })
       // Handle both response formats: { data: { users: [...] } } and direct array
       const usersData = response.data?.users || response.users || response.data || response || []
-      setUsers(Array.isArray(usersData) ? usersData : [])
+      const filteredUsers = Array.isArray(usersData) 
+        ? usersData.filter((u: any) => u.role === UserRole.ZONE_USER || u.role === UserRole.ZONE_MANAGER)
+        : []
+      setUsers(filteredUsers)
     } catch (error: any) {
       console.error('Failed to fetch users:', error)
       toast.error(error.response?.data?.message || 'Failed to fetch users')
@@ -183,6 +228,7 @@ export default function OfferManagement() {
       const response = await apiService.getOffers(params)
       setOffers(response.offers || [])
       setPagination(response.pagination || { page: 1, limit: 100, total: 0, pages: 0 })
+      setSummary(response.summary || null)
     } catch (error: any) {
       console.error('Failed to fetch offers:', error)
       toast.error(error.response?.data?.error || 'Failed to fetch offers')
@@ -231,35 +277,6 @@ export default function OfferManagement() {
 
   const hasActiveFilters = searchTerm || selectedZone !== 'All Zones' || selectedStage !== 'All Stage' || selectedUser !== 'All Users' || selectedProductType !== 'All Product Types'
 
-  // Sort offers
-  const sortedOffers = useMemo(() => {
-    if (!sortField) return offers
-    
-    return [...offers].sort((a, b) => {
-      let aValue = a[sortField]
-      let bValue = b[sortField]
-      
-      // Handle nested properties
-      if (sortField === 'customer') {
-        aValue = a.customer?.companyName || a.company || ''
-        bValue = b.customer?.companyName || b.company || ''
-      } else if (sortField === 'zone') {
-        aValue = a.zone?.name || ''
-        bValue = b.zone?.name || ''
-      } else if (sortField === 'createdBy') {
-        aValue = a.createdBy?.name || ''
-        bValue = b.createdBy?.name || ''
-      } else if (sortField === 'offerValue') {
-        aValue = Number(a.offerValue || 0)
-        bValue = Number(b.offerValue || 0)
-      }
-      
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [offers, sortField, sortDirection])
-
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -271,57 +288,20 @@ export default function OfferManagement() {
 
   // Calculate statistics
   const stats = {
-    total: pagination.total,
-    active: offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
-    won: offers.filter(o => o.stage === 'WON').length,
-    lost: offers.filter(o => o.stage === 'LOST').length,
-    totalValue: offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
-    avgValue: offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0,
-    conversionRate: pagination.total > 0 ? ((offers.filter(o => o.stage === 'WON').length / pagination.total) * 100) : 0
+    total: summary?.totalCount || pagination.total,
+    active: summary ? (summary.totalCount - summary.wonCount - summary.lostCount) : offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
+    won: summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length,
+    lost: summary ? summary.lostCount : offers.filter(o => o.stage === 'LOST').length,
+    totalValue: summary ? summary.totalValue : offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
+    avgValue: summary ? (summary.totalCount > 0 ? summary.totalValue / summary.totalCount : 0) : (offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0),
+    conversionRate: (summary?.totalCount || pagination.total) > 0 ? (((summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length) / (summary?.totalCount || pagination.total)) * 100) : 0
   }
 
   return (
     <div className="min-h-screen bg-[#AEBFC3]/10">
       <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Compact Header with Stats */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#82A094] via-[#82A094] to-[#546A7A] rounded-2xl shadow-xl p-4 sm:p-6 text-white">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="relative z-10 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="p-2.5 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl ring-2 ring-white/30">
-                <Sparkles className="h-6 w-6 sm:h-8 sm:w-8" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Offer Management</h1>
-                <p className="text-emerald-100 text-sm sm:text-base mt-1">Track, manage, and convert offers to orders</p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
-                  <p className="text-emerald-100 text-[10px] sm:text-xs font-medium">Total</p>
-                  <p className="text-lg sm:text-2xl font-bold">{stats.total}</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
-                  <p className="text-emerald-100 text-[10px] sm:text-xs font-medium">Won</p>
-                  <p className="text-lg sm:text-2xl font-bold">{stats.won}</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
-                  <p className="text-emerald-100 text-[10px] sm:text-xs font-medium">Win Rate</p>
-                  <p className="text-lg sm:text-2xl font-bold">{stats.conversionRate.toFixed(0)}%</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg px-2 sm:px-4 py-2 border border-white/20 text-center">
-                  <p className="text-emerald-100 text-[10px] sm:text-xs font-medium">Value</p>
-                  <p className="text-base sm:text-xl font-bold">{formatCurrency(stats.totalValue).replace('₹', '₹')}</p>
-                </div>
-              </div>
-              <Button onClick={() => router.push('/expert/offers/new')} className="bg-white text-[#4F6A64] hover:bg-[#82A094]/10 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                Create New
-              </Button>
-            </div>
-          </div>
-        </div>
+        <DynamicOfferStats stats={stats} />
 
         {/* Filters */}
         <Card className="border-0 shadow-lg bg-white" style={{backgroundColor: 'white'}}>
@@ -728,46 +708,11 @@ export default function OfferManagement() {
         </Card>
 
         {/* Edit Dialog */}
-        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit Offer</DialogTitle>
-              <DialogDescription>
-                Make changes to the offer details here.
-              </DialogDescription>
-            </DialogHeader>
-            {editingOffer && (
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="customer" className="text-right">
-                    Customer
-                  </Label>
-                  <Input
-                    id="customer"
-                    defaultValue={editingOffer.customer}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="value" className="text-right">
-                    Value
-                  </Label>
-                  <Input
-                    id="value"
-                    type="number"
-                    defaultValue={editingOffer.value}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button type="submit" onClick={() => setShowEditDialog(false)}>
-                Save changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <DynamicEditOfferDialog 
+          open={showEditDialog} 
+          onOpenChange={setShowEditDialog} 
+          editingOffer={editingOffer} 
+        />
       </div>
     </div>
   )

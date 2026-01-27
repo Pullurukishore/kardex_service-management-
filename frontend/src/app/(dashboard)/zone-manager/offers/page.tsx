@@ -73,6 +73,7 @@ export default function ZoneManagerOffers() {
   const [userZone, setUserZone] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, pages: 0 })
+  const [summary, setSummary] = useState<any>(null)
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('')
@@ -128,6 +129,7 @@ export default function ZoneManagerOffers() {
       const response = await apiService.getOffers(params)
       setOffers(response.offers || [])
       setPagination(response.pagination || { page: 1, limit: 100, total: 0, pages: 0 })
+      setSummary(response.summary || null)
     } catch (error: any) {
       console.error('Failed to fetch offers:', error)
       toast.error(error.response?.data?.error || 'Failed to fetch offers')
@@ -195,13 +197,13 @@ export default function ZoneManagerOffers() {
 
   // Calculate statistics
   const stats = {
-    total: pagination.total,
-    active: offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
-    won: offers.filter(o => o.stage === 'WON').length,
-    lost: offers.filter(o => o.stage === 'LOST').length,
-    totalValue: offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
-    avgValue: offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0,
-    conversionRate: pagination.total > 0 ? ((offers.filter(o => o.stage === 'WON').length / pagination.total) * 100) : 0
+    total: summary?.totalCount || pagination.total,
+    active: summary ? (summary.totalCount - summary.wonCount - summary.lostCount) : offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
+    won: summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length,
+    lost: summary ? summary.lostCount : offers.filter(o => o.stage === 'LOST').length,
+    totalValue: summary ? summary.totalValue : offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
+    avgValue: summary ? (summary.totalCount > 0 ? summary.totalValue / summary.totalCount : 0) : (offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0),
+    conversionRate: (summary?.totalCount || pagination.total) > 0 ? (((summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length) / (summary?.totalCount || pagination.total)) * 100) : 0
   }
 
   return (

@@ -71,17 +71,7 @@ export const canManageContacts = (req: Request, res: Response, next: NextFunctio
       return next();
     }
 
-    // CUSTOMER_OWNER can only manage contacts for their own customer
-    if (role === 'CUSTOMER_OWNER') {
-      if (!userCustomerId || userCustomerId !== customerId) {
-        return res.status(403).json({
-          success: false,
-          error: 'You can only manage contacts for your own customer',
-          code: 'FORBIDDEN'
-        });
-      }
-      return next();
-    }
+    // SERVICE_PERSON and other roles cannot manage contacts
 
     // CUSTOMER_CONTACT and SERVICE_PERSON cannot manage contacts
     return res.status(403).json({
@@ -127,10 +117,7 @@ export const canViewCustomers = (req: Request, res: Response, next: NextFunction
       return next();
     }
 
-    // CUSTOMER_OWNER and CUSTOMER_CONTACT can only view their own customer
-    if (role === 'CUSTOMER_OWNER' || role === 'CUSTOMER_CONTACT') {
-      return next();
-    }
+    // Other roles without explicit access are denied
 
     return res.status(403).json({
       success: false,

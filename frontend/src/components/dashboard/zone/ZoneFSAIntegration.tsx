@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Shield, 
   Ticket, 
@@ -474,12 +473,10 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                         <p>No tickets found matching your criteria</p>
                       </div>
                     ) : (
-                      filteredTickets.slice(0, 10).map((ticket) => (
-                        <motion.div
+                        filteredTickets.slice(0, 10).map((ticket) => (
+                        <div
                           key={ticket.id}
                           className="flex items-center justify-between p-4 bg-[#AEBFC3]/10 rounded-lg hover:bg-[#AEBFC3]/20 transition-colors"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
                         >
                           <div className="flex items-center gap-4">
                             <div className="text-sm font-mono text-[#AEBFC3]0">#{ticket.ticketNumber ?? ticket.id}</div>
@@ -498,7 +495,7 @@ export default function ZoneFSAIntegration({ zoneDashboardData }: ZoneFSAIntegra
                               {ticket.status}
                             </Badge>
                           </div>
-                        </motion.div>
+                        </div>
                       ))
                     )}
                   </div>

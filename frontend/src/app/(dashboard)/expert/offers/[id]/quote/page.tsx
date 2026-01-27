@@ -132,6 +132,11 @@ interface EditableData {
   signatureImage: string | null
   items: OfferItem[]
   machineDetails: MachineDetails
+  // Customer details for the quote
+  customerName: string
+  customerAddress: string
+  customerCity: string
+  customerState: string
 }
 
 // ==================== Constants ====================
@@ -168,7 +173,8 @@ const DEFAULT_MACHINE_DETAILS: MachineDetails = {
 
 // ==================== Helper Functions ====================
 const calculateItemTotal = (unitPrice: string, quantity: number): number => {
-  const price = parseFloat(unitPrice) || 0
+  const cleanPrice = typeof unitPrice === 'string' ? unitPrice.replace(/,/g, '') : unitPrice
+  const price = parseFloat(cleanPrice as string) || 0
   return price * quantity
 }
 
@@ -210,8 +216,8 @@ const PageFooter = ({ pageNumber, totalPages = 11 }: PageFooterProps) => (
   <div className="page-footer">
     <div className="footer-content">
       <span>{pageNumber} / {totalPages}</span>
-      <span>Service Care Vertrag</span>
-      <span>{format(new Date(), 'yyyy/MM/dd')}</span>
+      <span>Service Care Contract</span>
+      <span>{format(new Date(), 'dd/MM/yyyy')}</span>
     </div>
   </div>
 )
@@ -342,7 +348,11 @@ export default function QuoteGenerationPage() {
     contactPersonEmail: '',
     signatureImage: null,
     items: [DEFAULT_ITEM],
-    machineDetails: DEFAULT_MACHINE_DETAILS
+    machineDetails: DEFAULT_MACHINE_DETAILS,
+    customerName: '',
+    customerAddress: '',
+    customerCity: '',
+    customerState: ''
   })
 
   // ==================== Data Fetching ====================
@@ -411,7 +421,11 @@ export default function QuoteGenerationPage() {
           serialNumber: firstAsset?.machineSerialNumber || offerData.machineSerialNumber || '',
           owner: machineOwner,
           department: offerData.department || offerData.location || ''
-        }
+        },
+        customerName: offerData.customer?.companyName || offerData.company || '',
+        customerAddress: offerData.customer?.address || '',
+        customerCity: offerData.customer?.city || '',
+        customerState: offerData.customer?.state || ''
       })
     } catch (error: any) {
       console.error('❌ Failed to fetch offer:', error)
@@ -677,7 +691,7 @@ export default function QuoteGenerationPage() {
 
               {/* Customer Details */}
               <div className="customer-details">
-                <div className="font-semibold text-[#546A7A]">M/s {offer.customer?.companyName || offer.company}</div>
+                <div className="font-semibold text-[#546A7A]">M/s {editableData.customerName.startsWith('M/s') ? editableData.customerName.replace(/^M\/s\s*/, '') : (editableData.customerName || offer?.customer?.companyName || offer?.company || '')}</div>
                 {offer.customer?.address && <div className="text-[#5D6E73]">{offer.customer.address}</div>}
                 {(offer.customer?.city || offer.customer?.state) && (
                   <div className="text-[#5D6E73]">
@@ -825,9 +839,23 @@ export default function QuoteGenerationPage() {
                       />
                     ))}
                     <tr className="total-row">
-                      <td colSpan={6} className="text-right">TOTAL</td>
-                      <td className="text-right">
+                      <td colSpan={6} className="text-right font-semibold">SUB TOTAL</td>
+                      <td className="text-right font-semibold">
                         {formatCurrency(subtotal)}
+                      </td>
+                      {isEditMode && <td className="print:hidden"></td>}
+                    </tr>
+                    <tr className="tax-row-display">
+                      <td colSpan={6} className="text-right text-xs">GST ({editableData.gstRate}%)</td>
+                      <td className="text-right text-xs">
+                        {formatCurrency(subtotal * (editableData.gstRate / 100))}
+                      </td>
+                      {isEditMode && <td className="print:hidden"></td>}
+                    </tr>
+                    <tr className="grand-total-row bg-[#4472C4]/5">
+                      <td colSpan={6} className="text-right font-bold text-[#4472C4]">GRAND TOTAL</td>
+                      <td className="text-right font-bold text-[#4472C4]">
+                        {formatCurrency(subtotal * (1 + editableData.gstRate / 100))}
                       </td>
                       {isEditMode && <td className="print:hidden"></td>}
                     </tr>
@@ -2090,16 +2118,24 @@ export default function QuoteGenerationPage() {
           padding-left: 16px;
         }
 
-        /* Pages 6-11 specific - compact two-column layout */
+        /* Pages 6-9 specific - SINGLE COLUMN COMPACT layout */
         .page-6 .terms-content,
         .page-7 .terms-content,
         .page-8 .terms-content,
-        .page-9 .terms-content,
+        .page-9 .terms-content {
+          font-size: 8.5px;
+          line-height: 1.25;
+          display: block;
+        }
+
+        /* Pages 10-11 specific - TWO COLUMN layout for structured look */
         .page-10 .terms-content,
         .page-11 .terms-content {
-          font-size: 9px;
-          line-height: 1.35;
-          gap: 14px;
+          font-size: 7.5px;
+          line-height: 1.2;
+          column-count: 2;
+          column-gap: 16px;
+          display: block;
         }
 
         .page-6 .terms-content h3,
@@ -2228,7 +2264,7 @@ export default function QuoteGenerationPage() {
         /* ==================== PAGE FOOTER ==================== */
         .page-footer {
           position: absolute;
-          bottom: 15mm;
+          bottom: 12mm;
           left: 20mm;
           right: 20mm;
           border-top: 1px solid #d1d5db;
@@ -2236,88 +2272,93 @@ export default function QuoteGenerationPage() {
         }
 
         .footer-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 10px;
-          color: #6b7280;
+          display: flex !important;
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          width: 100% !important;
+          font-size: 10px !important;
+          color: #6b7280 !important;
+        }
+
+        .footer-content span {
+          flex: 1;
+        }
+
+        .footer-content span:nth-child(2) {
+          text-align: center;
+          flex: 2;
+        }
+
+        .footer-content span:last-child {
+          text-align: right;
         }
 
         /* ==================== PRINT STYLES ==================== */
         @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
           body {
             margin: 0;
             padding: 0;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            color-adjust: exact !important;
+            background: white !important;
+            width: 210mm !important;
           }
 
-          .print\\:hidden {
+          .print\:hidden {
             display: none !important;
           }
 
-          @page {
-            margin: 0;
-            size: A4;
+          .quotation-document {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: white !important;
+          }
+
+          .document-container {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            max-width: 210mm !important;
+            overflow: visible !important;
+            background: white !important;
           }
 
           .page {
-            page-break-after: always !important;
-            break-after: page !important;
-            margin: 0;
-            box-shadow: none;
-            min-height: 297mm;
+            margin: 0 !important;
+            padding: 15mm 20mm 20mm 20mm !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            position: relative !important;
+            background: white !important;
+            box-shadow: none !important;
+            overflow: hidden !important;
           }
 
-          .page:last-child {
-            page-break-after: avoid !important;
-            break-after: avoid !important;
+          .page + .page {
+            page-break-before: always !important;
+            break-before: page !important;
           }
 
-          /* Ensure tables break properly */
-          .data-table {
-            page-break-inside: auto;
-          }
-
-          .data-table tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-          }
-
-          .data-table thead {
-            display: table-header-group;
-          }
-
-          .data-table tbody {
-            display: table-row-group;
-          }
-
-          /* Ensure service products don't break */
-          .service-product {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-          }
-
-          /* Hide screen-only elements */
-          .signature-upload,
-          .upload-controls,
-          .remove-signature {
-            display: none !important;
-          }
-
-          /* Color preservation */
-          .data-table th {
-            background-color: #4472C4 !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          .total-row td {
-            background-color: #f9fafb !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+          /* Footer positioning */
+          .page-footer {
+            position: absolute !important;
+            bottom: 12mm !important;
+            left: 20mm !important;
+            right: 20mm !important;
+            z-index: 100 !important;
+            display: flex !important;
+            background: white !important;
+            border-top: 1px solid #d1d5db !important;
+            padding-top: 8px !important;
           }
         }
 

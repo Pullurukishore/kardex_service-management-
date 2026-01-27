@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient, Prisma, OnsiteVisitEvent } from '@prisma/client';
+import { Prisma, OnsiteVisitEvent } from '@prisma/client';
 import { subDays, startOfDay, endOfDay, differenceInMinutes, format, getDay, setHours, setMinutes, setSeconds, setMilliseconds, addDays, isBefore, isAfter } from 'date-fns';
+import { calculateBusinessHoursInMinutes } from '../utils/dateUtils';
 
 import prisma from '../config/db';
 
@@ -45,7 +46,10 @@ interface DashboardData {
       name: string;
       totalTickets: number;
       servicePersonCount: number;
+      zoneManagerCount: number;
+      zoneUserCount: number;
       customerCount: number;
+      assetCount: number;
       avgResolutionTimeHours: number;
     }>;
   };
@@ -60,65 +64,7 @@ interface DashboardData {
   }>;
 }
 
-// Helper function to calculate business hours between two dates (9 AM to 5 PM, excluding Sundays)
-function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number {
-  if (startDate >= endDate) return 0;
 
-  let totalMinutes = 0;
-  let currentDate = new Date(startDate);
-  const finalDate = new Date(endDate);
-
-  // Business hours: 9 AM to 5:30 PM (8.5 hours per day)
-  const BUSINESS_START_HOUR = 9;
-  const BUSINESS_END_HOUR = 17;
-  const BUSINESS_END_MINUTE = 30;
-  const BUSINESS_MINUTES_PER_DAY = (BUSINESS_END_HOUR - BUSINESS_START_HOUR) * 60 + BUSINESS_END_MINUTE; // 510 minutes (8.5 hours)
-
-  while (currentDate < finalDate) {
-    const dayOfWeek = getDay(currentDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
-    // Skip Sundays (dayOfWeek === 0)
-    if (dayOfWeek !== 0) {
-      // Create business hours for this day
-      const businessStart = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_START_HOUR), 0), 0), 0);
-      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), BUSINESS_END_MINUTE), 0), 0);
-
-      // Determine the actual start and end times for this day
-      let dayStart = businessStart;
-      let dayEnd = businessEnd;
-
-      // If this is the first day, use the actual start time if it's after business start
-      if (currentDate.toDateString() === startDate.toDateString()) {
-        if (startDate > businessStart) {
-          dayStart = startDate;
-        }
-      }
-
-      // If this is the last day, use the actual end time if it's before business end
-      if (currentDate.toDateString() === finalDate.toDateString()) {
-        if (finalDate < businessEnd) {
-          dayEnd = finalDate;
-        }
-      }
-
-      // Only count time if it falls within business hours
-      if (dayStart < businessEnd && dayEnd > businessStart) {
-        // Ensure we don't go outside business hours
-        if (dayStart < businessStart) dayStart = businessStart;
-        if (dayEnd > businessEnd) dayEnd = businessEnd;
-
-        if (dayStart < dayEnd) {
-          totalMinutes += differenceInMinutes(dayEnd, dayStart);
-        }
-      }
-    }
-
-    // Move to next day
-    currentDate = addDays(startOfDay(currentDate), 1);
-  }
-
-  return totalMinutes;
-}
 
 export const getDashboardData = async (req: Request, res: Response) => {
   try {
@@ -938,226 +884,182 @@ async function calculateSLACompliance(startDate: Date, endDate: Date) {
   }
 }
 
-// Helper function to get zone-wise ticket data with real average resolution time
+// Significantly optimized helper function to get zone-wise ticket data without N+1 queries
 async function getZoneWiseTicketData() {
   try {
+    const today = new Date();
+    const ninetyDaysAgo = subDays(today, 90);
+
+    // 1. Fetch all active zones with basic counts in one go
     const zones = await prisma.serviceZone.findMany({
       where: { isActive: true },
       include: {
-        tickets: {
-          where: {
-            status: {
-              in: [
-                'OPEN',
-                'ASSIGNED',
-                'IN_PROGRESS',
-                'IN_PROCESS',
-                'WAITING_CUSTOMER',
-                'ONSITE_VISIT',
-                'ONSITE_VISIT_PLANNED',
-                'ONSITE_VISIT_STARTED',
-                'ONSITE_VISIT_REACHED',
-                'ONSITE_VISIT_IN_PROGRESS',
-                'ONSITE_VISIT_RESOLVED',
-                'ONSITE_VISIT_PENDING',
-                'ONSITE_VISIT_COMPLETED',
-                'PO_NEEDED',
-                'PO_RECEIVED',
-                'PO_REACHED',
-                'SPARE_PARTS_NEEDED',
-                'SPARE_PARTS_BOOKED',
-                'SPARE_PARTS_DELIVERED',
-                'REOPENED',
-                'ON_HOLD',
-                'ESCALATED',
-                'PENDING',
-                'RESOLVED',
-                'CLOSED_PENDING'
-              ]
-            }
-          }
-        },
-        servicePersons: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                isActive: true
-              }
-            }
-          }
-        },
-        customers: {
-          where: { isActive: true },
-          include: {
-            assets: {
+        _count: {
+          select: {
+            tickets: {
               where: {
-                status: 'ACTIVE'
+                status: {
+                  notIn: ['CLOSED', 'CANCELLED'] as any // removed invalid REJECTED status
+                }
               }
+            },
+            customers: {
+              where: { isActive: true }
             }
           }
         }
       }
     });
 
-    // Calculate average resolution time for each zone
-    const zoneDataWithResolutionTime = await Promise.all(
-      zones.map(async (zone: any) => {
-        // Get CLOSED tickets for this zone to calculate average resolution time (consistent with main dashboard)
-        const closedTickets = await prisma.ticket.findMany({
-          where: {
-            zoneId: zone.id,
-            status: 'CLOSED',
-            // Get tickets from last 90 days for better average calculation
-            createdAt: {
-              gte: subDays(new Date(), 90)
-            }
-          },
-          select: {
-            createdAt: true,
-            updatedAt: true
-          }
-        });
+    // 2. Fetch all closed tickets for all zones from the last 90 days in ONE query
+    const allClosedTickets = await prisma.ticket.findMany({
+      where: {
+        status: 'CLOSED',
+        createdAt: { gte: ninetyDaysAgo },
+        zoneId: { in: zones.map(z => z.id) }
+      },
+      select: {
+        zoneId: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
 
-        let avgResolutionTimeHours = 0;
+    // Group closed tickets by zone for average calculation
+    const closedTicketsByZone = new Map<number, any[]>();
+    allClosedTickets.forEach(t => {
+      if (!closedTicketsByZone.has(t.zoneId)) closedTicketsByZone.set(t.zoneId, []);
+      closedTicketsByZone.get(t.zoneId)!.push(t);
+    });
 
-        if (closedTickets.length > 0) {
-          // Calculate resolution times in business hours (time from creation to CLOSED)
-          const resolutionTimes = closedTickets.map((ticket: any) =>
-            calculateBusinessHoursInMinutes(ticket.createdAt, ticket.updatedAt)
-          ).filter(time => time > 0); // Filter out negative times
+    // 3. Fetch all active users for these zones in ONE query
+    const allZoneUsers = await prisma.user.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { zoneId: { in: zones.map(z => String(z.id)) } },
+          { serviceZones: { some: { serviceZoneId: { in: zones.map(z => z.id) } } } }
+        ]
+      },
+      select: {
+        id: true,
+        role: true,
+        zoneId: true,
+        serviceZones: { select: { serviceZoneId: true } }
+      }
+    });
 
-          if (resolutionTimes.length > 0) {
-            const avgMinutes = resolutionTimes.reduce((sum, time) => sum + time, 0) / resolutionTimes.length;
-            // Convert to hours (keep decimal for proper display of sub-hour values)
-            avgResolutionTimeHours = Math.round((avgMinutes / 60) * 10) / 10; // Round to 1 decimal place
-          }
-        } else {
-          // If no closed tickets, check if there are any tickets at all
-          const allZoneTickets = await prisma.ticket.findMany({
-            where: {
-              zoneId: zone.id,
-              createdAt: {
-                gte: subDays(new Date(), 90)
-              }
-            },
-            select: {
-              createdAt: true,
-              updatedAt: true
-            }
-          });
-
-          if (allZoneTickets.length > 0) {
-            // Use average age of all tickets as estimation (business hours)
-            const avgAge = allZoneTickets.reduce((sum, ticket) =>
-              sum + calculateBusinessHoursInMinutes(ticket.createdAt, ticket.updatedAt), 0
-            ) / allZoneTickets.length;
-            // Convert to hours (keep decimal for proper display of sub-hour values)
-            avgResolutionTimeHours = Math.round((avgAge / 60) * 10) / 10; // Round to 1 decimal place
-          } else {
-            // Default to 0 hours if no data available
-            avgResolutionTimeHours = 0;
-          }
+    // 4. Fetch asset counts for all zone customers in ONE query
+    const assetCountsByZone = await prisma.asset.groupBy({
+      by: ['customerId'],
+      where: {
+        status: { in: ['ACTIVE', 'active', 'Active'] },
+        customer: {
+          serviceZoneId: { in: zones.map(z => z.id) }
         }
+      },
+      _count: {
+        id: true
+      }
+    });
 
-        // Count users from ServicePersonZone junction table
-        const usersFromJunction = zone.servicePersons
-          .filter((sp: any) => sp.user?.isActive !== false)
-          .map((sp: any) => sp.user);
+    // Get customer-to-zone mapping
+    const customerZoneMapping = await prisma.customer.findMany({
+      where: {
+        serviceZoneId: { in: zones.map(z => z.id) }
+      },
+      select: {
+        id: true,
+        serviceZoneId: true
+      }
+    });
 
-        // Also count users who have zoneId field set to this zone
-        const usersFromZoneId = await prisma.user.findMany({
-          where: {
-            zoneId: String(zone.id),
-            isActive: true
-          },
-          select: {
-            id: true,
-            role: true
-          }
-        });
+    // Group asset counts by zone
+    const assetsByZone = new Map<number, number>();
+    assetCountsByZone.forEach(item => {
+      const customer = customerZoneMapping.find(c => c.id === item.customerId);
+      if (customer && customer.serviceZoneId) {
+        const currentCount = assetsByZone.get(customer.serviceZoneId) || 0;
+        const assetCount = typeof item._count === 'object' ? item._count.id : 0;
+        assetsByZone.set(customer.serviceZoneId, currentCount + assetCount);
+      }
+    });
 
-        // Combine both sources and deduplicate by user id
-        const allUserIds = new Set<number>();
-        const allUsers: Array<{ id: number; role: string }> = [];
+    // 5. Map everything together
+    return zones.map((zone: any) => {
+      const closedTickets = closedTicketsByZone.get(zone.id) || [];
+      let avgResolutionTimeHours = 0;
 
-        // Add junction users
-        usersFromJunction.forEach((user: any) => {
-          if (user && !allUserIds.has(user.id)) {
-            allUserIds.add(user.id);
-            allUsers.push({ id: user.id, role: user.role });
-          }
-        });
+      if (closedTickets.length > 0) {
+        const totalBusMins = closedTickets.reduce((sum, t) =>
+          sum + calculateBusinessHoursInMinutes(t.createdAt, t.updatedAt), 0);
+        avgResolutionTimeHours = Math.round((totalBusMins / closedTickets.length / 60) * 10) / 10;
+      }
 
-        // Add zoneId users
-        usersFromZoneId.forEach((user: any) => {
-          if (!allUserIds.has(user.id)) {
-            allUserIds.add(user.id);
-            allUsers.push({ id: user.id, role: user.role });
-          }
-        });
+      // Filter users for this specific zone
+      const usersInZone = allZoneUsers.filter(u =>
+        u.zoneId === String(zone.id) ||
+        u.serviceZones.some((sz: any) => sz.serviceZoneId === zone.id)
+      );
 
-        // Count by role
-        const zoneManagerCount = allUsers.filter(u => u.role === 'ZONE_MANAGER').length;
-        const zoneUserCount = allUsers.filter(u => u.role === 'ZONE_USER').length;
-        const servicePersonCount = allUsers.filter(u => u.role === 'SERVICE_PERSON').length;
-
-        // Count total assets in zone
-        const assetCount = zone.customers.reduce((sum: number, customer: any) =>
-          sum + (customer.assets?.length || 0), 0);
-
-        return {
-          id: zone.id,
-          name: zone.name,
-          totalTickets: zone.tickets.length,
-          servicePersonCount: servicePersonCount,
-          zoneManagerCount: zoneManagerCount,
-          zoneUserCount: zoneUserCount,
-          customerCount: zone.customers.length,
-          assetCount: assetCount,
-          avgResolutionTimeHours
-        };
-      })
-    );
-
-    return zoneDataWithResolutionTime;
+      return {
+        id: zone.id,
+        name: zone.name,
+        totalTickets: zone._count?.tickets || 0,
+        customerCount: zone._count?.customers || 0,
+        assetCount: assetsByZone.get(zone.id) || 0,
+        servicePersonCount: usersInZone.filter(u => u.role === 'SERVICE_PERSON').length,
+        zoneManagerCount: usersInZone.filter(u => u.role === 'ZONE_MANAGER').length,
+        zoneUserCount: usersInZone.filter(u => u.role === 'ZONE_USER').length,
+        avgResolutionTimeHours
+      };
+    });
   } catch (error) {
+
     return [];
   }
 }
 
-// Helper function to get ticket trends
+// Optimized helper function to get ticket trends in a single query
 async function getTicketTrends(days: number = 30) {
   try {
+    const startDate = subDays(startOfDay(new Date()), days - 1);
+
+    // Group tickets by day using Prisma's queryRaw for performance on large datasets
+    // This avoids the N+1 count calls for each day
+    const results = await prisma.$queryRaw<any[]>`
+      SELECT 
+        DATE_TRUNC('day', "createdAt") as day,
+        COUNT(*) as count
+      FROM "Ticket"
+      WHERE "createdAt" >= ${startDate}
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `;
+
+    // Map results for quick lookup
+    const trendsMap = new Map();
+    results.forEach(r => {
+      // Handle potential differences in date format from Raw Query
+      const dateKey = format(new Date(r.day), 'yyyy-MM-dd');
+      trendsMap.set(dateKey, Number(r.count));
+    });
+
     const trends = [];
     const today = new Date();
-
     for (let i = days - 1; i >= 0; i--) {
       const date = subDays(today, i);
-      const start = startOfDay(date);
-      const end = endOfDay(date);
-
-      const count = await prisma.ticket.count({
-        where: {
-          createdAt: {
-            gte: start,
-            lte: end
-          }
-        }
-      });
-
+      const dateStr = format(date, 'yyyy-MM-dd');
       trends.push({
-        date: format(date, 'yyyy-MM-dd'),
-        count,
-        status: 'ALL' // You could break this down by status if needed
+        date: dateStr,
+        count: trendsMap.get(dateStr) || 0,
+        status: 'ALL'
       });
     }
 
     return trends;
   } catch (error) {
+
     return [];
   }
 }
@@ -1716,7 +1618,7 @@ export const getTeamMembers = async (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching team members:', error);
+
     res.status(500).json({ error: 'Failed to fetch team members' });
   }
 };

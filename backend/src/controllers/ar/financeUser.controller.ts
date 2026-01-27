@@ -82,7 +82,7 @@ export const getFinanceUsers = async (req: Request, res: Response) => {
             stats,
         });
     } catch (error: any) {
-        console.error('Error fetching finance users:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to fetch finance users',
@@ -138,7 +138,7 @@ export const getFinanceUserById = async (req: Request, res: Response) => {
             data: user,
         });
     } catch (error: any) {
-        console.error('Error fetching finance user:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to fetch finance user',
@@ -213,7 +213,7 @@ export const createFinanceUser = async (req: Request, res: Response) => {
             message: 'Finance user created successfully',
         });
     } catch (error: any) {
-        console.error('Error creating finance user:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to create finance user',
@@ -313,7 +313,7 @@ export const updateFinanceUser = async (req: Request, res: Response) => {
             message: 'Finance user updated successfully',
         });
     } catch (error: any) {
-        console.error('Error updating finance user:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to update finance user',
@@ -364,7 +364,7 @@ export const deleteFinanceUser = async (req: Request, res: Response) => {
             message: 'Finance user deleted successfully',
         });
     } catch (error: any) {
-        console.error('Error deleting finance user:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to delete finance user',
@@ -400,7 +400,7 @@ export const getFinanceUserStats = async (req: Request, res: Response) => {
             },
         });
     } catch (error: any) {
-        console.error('Error fetching finance user stats:', error);
+
         res.status(500).json({
             success: false,
             error: 'Failed to fetch finance user stats',

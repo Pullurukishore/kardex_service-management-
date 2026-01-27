@@ -13,33 +13,45 @@ const getCookie = (name: string): string | null => {
   return null;
 };
 
-// Token management helpers
-const getToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    // Check localStorage first for backward compatibility
-    const localStorageToken = localStorage.getItem('accessToken') || localStorage.getItem('token');
-    if (localStorageToken) {
-      return localStorageToken;
-    }
+// SECURITY NOTE: In production, tokens are stored in httpOnly cookies set by the backend
+// The frontend cannot and should not access these tokens directly
+// withCredentials: true in axios ensures cookies are sent with requests
+// This getToken is only for development fallback or when backend returns token in response
 
-    // Fallback to cookies (same pattern as AuthContext)
-    const cookieToken = getCookie('accessToken') || getCookie('token') ||
-      localStorage.getItem('cookie_accessToken');
-    return cookieToken;
+const getToken = (): string | null => {
+  // In production, we rely on httpOnly cookies sent automatically by the browser
+  // This function is only used as a fallback in development
+  if (typeof window !== 'undefined') {
+    // Only check localStorage in development mode
+    if (process.env.NODE_ENV === 'development') {
+      const localStorageToken = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      if (localStorageToken) {
+        return localStorageToken;
+      }
+      const cookieToken = getCookie('accessToken') || getCookie('token') ||
+        localStorage.getItem('cookie_accessToken');
+      return cookieToken;
+    }
+    // In production, return null - auth is handled via httpOnly cookies
+    return null;
   }
   return null;
 };
 
 const setToken = (token: string): void => {
-  if (typeof window !== 'undefined') {
+  // Only store in localStorage for development fallback
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     localStorage.setItem('accessToken', token);
   }
 };
 
 const removeToken = (): void => {
   if (typeof window !== 'undefined') {
+    // Clear any development fallback tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('cookie_accessToken');
   }
 };
 

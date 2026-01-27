@@ -22,9 +22,11 @@ import rateLimit from 'express-rate-limit';
 const isUserRole = (value: unknown): value is UserRole => {
   return typeof value === 'string' &&
     (value === 'ADMIN' ||
+      value === 'ZONE_MANAGER' ||
       value === 'ZONE_USER' ||
       value === 'SERVICE_PERSON' ||
-      value === 'CUSTOMER_OWNER');
+      value === 'EXTERNAL_USER' ||
+      value === 'EXPERT_HELPDESK');
 };
 
 // Role validation middleware
@@ -139,9 +141,23 @@ router.post('/refresh-token', refreshLimiter, (req, res, next) => {
   return refreshToken(req, res).catch(next);
 });
 
+// Rate limiting for forgot password to prevent email spamming
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 forgot password requests per hour
+  message: {
+    success: false,
+    message: 'Too many password reset requests. Please try again after an hour.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Forgot password route
 router.post(
   '/forgot-password',
+  forgotPasswordLimiter,
   validateRequest([
     body('email').isEmail().normalizeEmail()
   ]),
@@ -153,6 +169,7 @@ router.post(
 // Reset password route
 router.post(
   '/reset-password',
+  forgotPasswordLimiter, // Reuse the same limiter or a similar one
   validateRequest([
     body('token').notEmpty().isString(),
     body('password').isLength({ min: 6 })

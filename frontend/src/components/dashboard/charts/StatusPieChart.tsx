@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, Sector } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StatusData {
   status: string;
@@ -22,20 +21,20 @@ const renderActiveShape = (props: any) => {
 
   return (
     <g>
-      <text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill} className="font-bold text-2xl">
+      <text x={cx} y={cy} dy={-8} textAnchor="middle" fill={fill} className="font-bold text-xl">
         {value}
       </text>
-      <text x={cx} y={cy} dy={15} textAnchor="middle" fill="#64748b" className="text-sm">
+      <text x={cx} y={cy} dy={12} textAnchor="middle" fill="#546A7A" className="text-xs font-medium">
         {payload.status}
       </text>
-      <text x={cx} y={cy} dy={35} textAnchor="middle" fill="#94a3b8" className="text-xs">
+      <text x={cx} y={cy} dy={28} textAnchor="middle" fill="#757777" className="text-[10px]">
         {`${(percent * 100).toFixed(1)}%`}
       </text>
       <Sector
         cx={cx}
         cy={cy}
         innerRadius={innerRadius}
-        outerRadius={outerRadius + 10}
+        outerRadius={outerRadius + 8}
         startAngle={startAngle}
         endAngle={endAngle}
         fill={fill}
@@ -60,79 +59,80 @@ export default function StatusPieChart({ data, title = "Status Distribution", on
   const total = data.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <Card className="bg-gradient-to-br from-white to-[#96AEC2]/10/30 border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] animate-pulse"></div>
-            {title}
-          </span>
-          <span className="text-sm font-normal text-[#5D6E73] bg-[#96AEC2]/10 px-3 py-1 rounded-full">
-            Total: <span className="font-bold text-[#546A7A]">{total}</span>
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={80}
-              outerRadius={120}
-              dataKey="count"
-              onMouseEnter={onPieEnter}
-              onClick={handleClick}
-              label={(entry) => `${entry.status}: ${entry.count}`}
-              style={{ cursor: onSegmentClick ? 'pointer' : 'default' }}
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color}
-                  stroke="#ffffff"
-                  strokeWidth={2}
-                  opacity={activeIndex === index ? 1 : 0.85}
-                />
-              ))}
-            </Pie>
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.98)', 
-                border: 'none', 
-                borderRadius: '12px',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-                padding: '12px 16px'
-              }}
-              formatter={(value: any, name: any, props: any) => {
-                const percentage = ((props.payload.count / total) * 100).toFixed(1);
-                return [
-                  <span key="value" className="font-bold text-lg" style={{ color: props.payload.color }}>
-                    {value} tickets
-                  </span>,
-                  <span key="name" className="text-[#5D6E73] capitalize text-sm">
-                    {props.payload.status} ({percentage}%)
-                  </span>
-                ];
-              }}
-            />
-            <Legend 
-              verticalAlign="bottom" 
-              height={36}
-              iconType="circle"
-              formatter={(value, entry: any) => {
-                const percentage = ((entry.payload.count / total) * 100).toFixed(1);
-                return (
-                  <span className="text-sm font-medium text-[#5D6E73] capitalize">
-                    {value} ({percentage}%)
-                  </span>
-                );
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <div className="w-full">
+      {/* Header with Kardex styling */}
+      <div className="flex items-center justify-between mb-3">
+        <span className="flex items-center gap-2 text-sm font-semibold text-[#546A7A]">
+          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#6F8A9D] to-[#546A7A]"></div>
+          {title}
+        </span>
+        <span className="text-xs font-medium text-[#5D6E73] bg-[#96AEC2]/15 px-2.5 py-1 rounded-full">
+          Total: <span className="font-bold text-[#546A7A]">{total}</span>
+        </span>
+      </div>
+      
+      {/* Chart */}
+      <ResponsiveContainer width="100%" height={280}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="45%"
+            innerRadius={60}
+            outerRadius={95}
+            dataKey="count"
+            onMouseEnter={onPieEnter}
+            onClick={handleClick}
+            label={({ status, count }: any) => `${(status as string).toUpperCase()}: ${count}`}
+            labelLine={{ stroke: '#AEBFC3', strokeWidth: 1 }}
+            style={{ cursor: onSegmentClick ? 'pointer' : 'default' }}
+          >
+            {data.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={entry.color}
+                stroke="#ffffff"
+                strokeWidth={2}
+                opacity={activeIndex === index ? 1 : 0.85}
+              />
+            ))}
+          </Pie>
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.98)', 
+              border: '1px solid rgba(150, 174, 194, 0.2)', 
+              borderRadius: '10px',
+              boxShadow: '0 8px 20px -5px rgba(84, 106, 122, 0.15)',
+              padding: '10px 14px'
+            }}
+            formatter={(value: any, name: any, props: any) => {
+              const percentage = ((props.payload.count / total) * 100).toFixed(1);
+              return [
+                <span key="value" className="font-bold text-base" style={{ color: props.payload.color }}>
+                  {value} tickets
+                </span>,
+                <span key="name" className="text-[#546A7A] capitalize text-xs">
+                  {props.payload.status} ({percentage}%)
+                </span>
+              ];
+            }}
+          />
+          <Legend 
+            verticalAlign="bottom" 
+            height={32}
+            iconType="circle"
+            iconSize={8}
+            formatter={(value, entry: any) => {
+              const percentage = ((entry.payload.count / total) * 100).toFixed(1);
+              return (
+                <span className="text-xs font-medium text-[#5D6E73] capitalize">
+                  {value} ({percentage}%)
+                </span>
+              );
+            }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

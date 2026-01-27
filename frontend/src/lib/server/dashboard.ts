@@ -85,7 +85,7 @@ async function makeServerRequest(endpoint: string) {
       'Authorization': `Bearer ${authToken}`,
       'Content-Type': 'application/json',
     },
-    cache: 'no-store', // Ensure fresh data for dashboard
+    next: { revalidate: 60 }, // Cache for 60 seconds to improve performance
   });
 
   if (!response.ok) {

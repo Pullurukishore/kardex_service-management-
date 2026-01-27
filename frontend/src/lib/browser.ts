@@ -18,7 +18,7 @@ export const safeLocalStorage = {
         window.localStorage.setItem(key, value);
       }
     } catch (e) {
-      }
+    }
   },
   removeItem: (key: string): void => {
     try {
@@ -26,7 +26,7 @@ export const safeLocalStorage = {
         window.localStorage.removeItem(key);
       }
     } catch (e) {
-      }
+    }
   },
 };
 
@@ -44,7 +44,7 @@ export const safeSessionStorage = {
         window.sessionStorage.setItem(key, value);
       }
     } catch (e) {
-      }
+    }
   },
   removeItem: (key: string): void => {
     try {
@@ -52,7 +52,7 @@ export const safeSessionStorage = {
         window.sessionStorage.removeItem(key);
       }
     } catch (e) {
-      }
+    }
   },
 };
 
@@ -89,10 +89,10 @@ export const safeAddEventListener = (
         target.removeEventListener(type, listener, options);
       };
     } catch (e) {
-      return () => {};
+      return () => { };
     }
   }
-  return () => {};
+  return () => { };
 };
 
 // Helper to detect if WebGL is supported
@@ -111,14 +111,14 @@ export const isWebGLAvailable = (): boolean => {
 // Helper to check if a CSS feature is supported
 export const isFeatureSupported = (feature: string, value?: string): boolean => {
   if (!isBrowser) return false;
-  
+
   const el = document.createElement('div');
   const style = el.style as any;
-  
+
   if (value === undefined) {
     return feature in style;
   }
-  
+
   try {
     style[feature] = value;
     return style[feature] === value;
@@ -130,26 +130,34 @@ export const isFeatureSupported = (feature: string, value?: string): boolean => 
 };
 
 // Helper to preload routes for faster navigation
+// Uses a Set to track already-preloaded routes to prevent duplicate requests
+const preloadedRoutes = new Set<string>();
+
 export const preloadRoute = (href: string): void => {
   if (!isBrowser) return;
-  
+
+  // Skip if already preloaded
+  if (preloadedRoutes.has(href)) return;
+
   try {
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = href;
+    link.as = 'document';
     document.head.appendChild(link);
+    preloadedRoutes.add(href);
   } catch (e) {
-    }
+  }
 };
 
 // Helper to detect if we're in a hydration phase
 export const isHydrating = (): boolean => {
   if (!isBrowser) return false;
-  
+
   try {
-    return document.readyState === 'loading' || 
-           !document.querySelector('[data-reactroot]') ||
-           window.location.pathname !== window.history.state?.url;
+    return document.readyState === 'loading' ||
+      !document.querySelector('[data-reactroot]') ||
+      window.location.pathname !== window.history.state?.url;
   } catch (e) {
     return false;
   }

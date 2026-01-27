@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '@/contexts/AuthContext';
+import { getRoleBasedRedirect } from '@/lib/utils/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -53,18 +54,18 @@ export default function LoginPage() {
     const selectedModule = moduleParam || localStorage.getItem('selectedModule');
     if (selectedModule === 'finance') return '/finance/select';
     if (selectedModule === 'fsm') return '/fsm/select';
-    if (user?.financeRole) {
-      localStorage.setItem('selectedModule', 'finance');
-      return '/finance/select';
-    }
-    return '/module-select';
+    
+    // Fall back to role-based redirection which respects module access
+    return getRoleBasedRedirect(user?.role, user?.financeRole);
   };
 
   useEffect(() => {
-    if (isAuthenticated && user && !isLoading) {
+    // Only redirect automatically if we didn't just perform a manual login 
+    // and we are already authenticated. Manual login success is handled in onSubmit.
+    if (isAuthenticated && user && !isLoading && !loginSuccess) {
       router.replace(getModuleBasedRedirect());
     }
-  }, [isAuthenticated, user, isLoading, router, moduleParam]);
+  }, [isAuthenticated, user, isLoading, router, moduleParam, loginSuccess]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -102,7 +103,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const result = await login(values.email, values.password, values.rememberMe);
-      if (result.success) {
+      if (result.success && result.user) {
         if (values.rememberMe) {
           localStorage.setItem('rememberedEmail', values.email);
           localStorage.setItem('rememberedPassword', values.password);
@@ -112,7 +113,28 @@ export default function LoginPage() {
           localStorage.removeItem('rememberedPassword');
           localStorage.removeItem('wasRemembered');
         }
+        
+        // Mark login as successful
         setLoginSuccess(true);
+        
+        // Determine redirect path based on returned user (not React state which may have stale data)
+        const loggedInUser = result.user;
+        const selectedModule = moduleParam || localStorage.getItem('selectedModule');
+        
+        let redirectPath: string;
+        if (selectedModule === 'finance') {
+          redirectPath = '/finance/select';
+        } else if (selectedModule === 'fsm') {
+          redirectPath = '/fsm/select';
+        } else {
+          // Use the returned user's role for redirect
+          redirectPath = getRoleBasedRedirect(loggedInUser.role, loggedInUser.financeRole);
+        }
+        
+        // Quick delay to show the success animation, then redirect
+        setTimeout(() => {
+          router.replace(redirectPath);
+        }, 500);
       } else {
         triggerError(result.error || "Invalid credentials");
       }
@@ -131,21 +153,144 @@ export default function LoginPage() {
 
   if (!mounted) return null;
 
-  if (isAuthenticated && user && !isLoading) {
+  // Only show the full-page preparing dashboard if we are already authenticated 
+  // and NOT in the middle of a successful login sequence (which has its own overlay)
+  if (isAuthenticated && user && !isLoading && !loginSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] p-4">
-        <div className="text-center p-10 bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl">
-          <div className="mb-8">
-            <Image src="/kardex.png" alt="Kardex" width={180} height={72} className="mx-auto brightness-0 invert" priority />
-          </div>
-          <div className="w-24 h-24 mx-auto mb-8 relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#E17F70] via-[#CE9F6B] to-[#82A094] animate-spin" style={{ animationDuration: '2s' }}></div>
-            <div className="absolute inset-2 rounded-full bg-[#1a1a2e]"></div>
-            <Sparkles className="absolute inset-0 m-auto h-10 w-10 text-[#E17F70]" />
-          </div>
-          <h3 className="text-3xl font-bold text-white mb-3">Welcome Back!</h3>
-          <p className="text-white/60">Redirecting to your dashboard...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a1a] via-[#0f1629] to-[#0a1628] p-4 overflow-hidden">
+        {/* Animated Background Effects */}
+        <div className="absolute inset-0">
+          {/* Floating Gradient Orbs */}
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#E17F70]/15 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#CE9F6B]/15 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#82A094]/10 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '5s', animationDelay: '0.5s' }}></div>
+          
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(225,127,112,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(225,127,112,0.02)_1px,transparent_1px)] bg-[size:80px_80px]"></div>
+          
+          {/* Floating Particles */}
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full animate-float"
+              style={{
+                width: Math.random() * 6 + 2,
+                height: Math.random() * 6 + 2,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                background: i % 3 === 0 ? '#E17F70' : i % 3 === 1 ? '#CE9F6B' : '#82A094',
+                opacity: Math.random() * 0.5 + 0.2,
+                animationDelay: `${i * 0.3}s`,
+                animationDuration: `${Math.random() * 15 + 10}s`
+              }}
+            />
+          ))}
         </div>
+
+        {/* Main Card */}
+        <div className="relative">
+          {/* Outer Glow Ring */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#E17F70] via-[#CE9F6B] to-[#82A094] rounded-[2rem] opacity-30 blur-xl animate-pulse" style={{ animationDuration: '2s' }}></div>
+          
+          <div className="relative text-center p-12 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-3xl rounded-[2rem] border border-white/20 shadow-2xl overflow-hidden min-w-[380px]">
+            {/* Top Gradient Line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#E17F70] to-transparent"></div>
+            
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer"></div>
+            
+            {/* Corner Decorations */}
+            <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-[#E17F70]/20 to-transparent rounded-full blur-2xl"></div>
+            <div className="absolute bottom-4 left-4 w-20 h-20 bg-gradient-to-br from-[#82A094]/20 to-transparent rounded-full blur-2xl"></div>
+
+            {/* Logo */}
+            <div className="mb-10 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#E17F70]/20 via-transparent to-[#82A094]/20 blur-xl rounded-full"></div>
+              <Image src="/kardex.png" alt="Kardex" width={200} height={80} className="mx-auto brightness-0 invert relative z-10" priority />
+            </div>
+            
+            {/* Animated Success Icon */}
+            <div className="w-28 h-28 mx-auto mb-8 relative">
+              {/* Outer Pulsing Rings */}
+              <div className="absolute inset-0 rounded-full border-2 border-[#E17F70]/30 animate-ping" style={{ animationDuration: '2s' }}></div>
+              <div className="absolute -inset-4 rounded-full border border-[#CE9F6B]/20 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}></div>
+              
+              {/* Gradient Ring */}
+              <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-[#E17F70] via-[#CE9F6B] to-[#82A094]">
+                <div className="w-full h-full rounded-full bg-[#0f1629]"></div>
+              </div>
+              
+              {/* Spinning Gradient Overlay */}
+              <div className="absolute inset-0 rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-conic from-[#E17F70] via-[#CE9F6B] via-[#82A094] to-[#E17F70] animate-spin opacity-40" style={{ animationDuration: '3s' }}></div>
+              </div>
+              
+              {/* Inner Circle with Icon */}
+              <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[#0f1629] to-[#1a2438] flex items-center justify-center shadow-inner">
+                <div className="relative">
+                  <CheckCircle2 className="h-12 w-12 text-[#82A094] animate-bounce" style={{ animationDuration: '2s' }} />
+                  <Sparkles className="absolute -top-2 -right-2 h-5 w-5 text-[#E17F70] animate-pulse" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Welcome Text */}
+            <div className="space-y-3 mb-8">
+              <h3 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+                Welcome Back!
+              </h3>
+              <p className="text-lg text-white/60">
+                Hello, <span className="text-[#E17F70] font-semibold">{user?.name || user?.email?.split('@')[0]}</span>
+              </p>
+            </div>
+            
+            {/* Loading Indicator */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#E17F70] to-[#CE9F6B] animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s`, animationDuration: '0.8s' }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-white/40 flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-[#CE9F6B]" />
+                Preparing your dashboard...
+              </p>
+            </div>
+            
+            {/* Bottom Security Badge */}
+            <div className="mt-10 pt-6 border-t border-white/10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#82A094]/10 border border-[#82A094]/20">
+                <Shield className="h-4 w-4 text-[#82A094]" />
+                <span className="text-xs text-white/50">Secure Session Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Additional CSS for animations */}
+        <style jsx global>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-10px) translateX(-5px); }
+            75% { transform: translateY(-25px) translateX(5px); }
+          }
+          .animate-float { animation: float 15s ease-in-out infinite; }
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          .animate-shimmer { animation: shimmer 3s ease-in-out infinite; }
+          .bg-gradient-conic {
+            background: conic-gradient(from 0deg, var(--tw-gradient-stops));
+          }
+        `}</style>
       </div>
     );
   }

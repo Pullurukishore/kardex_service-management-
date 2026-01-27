@@ -334,6 +334,8 @@ model AuditLog {
   performedAt                DateTime @default(now())
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime
+  module                     String?  // 'FSM', 'TICKET', 'OFFER', 'SYSTEM' - for filtering
+  deviceInfo                 String?  // Parsed browser/OS info for login tracking
   performedBy                User?    @relation("UserAuditLogs", fields: [performedById], references: [id])
   ticket                     Ticket?  @relation("TicketAuditLogs", fields: [ticketId], references: [id], onDelete: Cascade)
   User_AuditLog_userIdToUser User?    @relation("AuditLog_userIdToUser", fields: [userId], references: [id])
@@ -348,6 +350,7 @@ model AuditLog {
   @@index([ticketId])
   @@index([userId])
   @@index([offerId])
+  @@index([module])
 }
 
 model TicketFeedback {

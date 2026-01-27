@@ -59,10 +59,8 @@ JWT_SECRET="your-super-secure-jwt-secret-key-for-production-min-32-chars"
 JWT_EXPIRES_IN=90d
 JWT_COOKIE_EXPIRES_IN=90
 
-# Cloudinary Configuration (replace with your actual values)
-CLOUDINARY_CLOUD_NAME="dyug52gwr"
-CLOUDINARY_API_KEY="129297333364842"
-CLOUDINARY_API_SECRET="your-actual-cloudinary-secret"
+# Storage Configuration
+PHOTO_UPLOAD_DIR="/home/kardexcare_user/storage/images"
 
 # LocationIQ Configuration (replace with your actual key)
 LOCATIONIQ_KEY="your-locationiq-api-key"
@@ -94,7 +92,6 @@ VM_IP=$(curl -s ifconfig.me)
 cat > .env.local << EOL
 # Frontend Environment Configuration
 NEXT_PUBLIC_API_URL="http://${VM_IP}:5000"
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyug52gwr"
 EOL
 
 # Build frontend

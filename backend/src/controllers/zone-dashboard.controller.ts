@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { JwtPayload } from '../middleware/auth.middleware';
 import { serializeBigInts } from '../utils/bigint';
-import { differenceInMinutes, getDay, addDays, startOfDay, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import prisma from '../config/db';
+import { calculateBusinessHoursInMinutes } from '../utils/dateUtils';
 
 // Custom type definitions to replace problematic Prisma exports
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'IN_PROCESS' | 'RESOLVED' | 'CLOSED' | 'CANCELLED';
@@ -77,59 +78,7 @@ interface TopIssue {
 
 // Helper functions for zone metrics
 
-// Helper function to calculate business hours between two dates (9 AM to 5:30 PM, excluding Sundays)
-function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number {
-  if (startDate >= endDate) return 0;
 
-  let totalMinutes = 0;
-  let currentDate = new Date(startDate);
-  const finalDate = new Date(endDate);
-
-  // Business hours: 9 AM to 5:30 PM (8.5 hours per day)
-  const BUSINESS_START_HOUR = 9;
-  const BUSINESS_END_HOUR = 17;
-  const BUSINESS_END_MINUTE = 30;
-  const BUSINESS_MINUTES_PER_DAY = (BUSINESS_END_HOUR - BUSINESS_START_HOUR) * 60 + BUSINESS_END_MINUTE; // 510 minutes (8.5 hours)
-
-  while (currentDate < finalDate) {
-    const dayOfWeek = getDay(currentDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
-    // Skip Sundays (dayOfWeek === 0)
-    if (dayOfWeek !== 0) {
-      // Create business hours for this day
-      const businessStart = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_START_HOUR), 0), 0), 0);
-      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), BUSINESS_END_MINUTE), 0), 0);
-
-      let dayStart = businessStart;
-      let dayEnd = businessEnd;
-
-      if (currentDate.toDateString() === startDate.toDateString()) {
-        if (startDate > businessStart) {
-          dayStart = startDate;
-        }
-      }
-
-      if (currentDate.toDateString() === finalDate.toDateString()) {
-        if (finalDate < businessEnd) {
-          dayEnd = finalDate;
-        }
-      }
-
-      if (dayStart < businessEnd && dayEnd > businessStart) {
-        if (dayStart < businessStart) dayStart = businessStart;
-        if (dayEnd > businessEnd) dayEnd = businessEnd;
-
-        if (dayStart < dayEnd) {
-          totalMinutes += differenceInMinutes(dayEnd, dayStart);
-        }
-      }
-    }
-
-    currentDate = addDays(startOfDay(currentDate), 1);
-  }
-
-  return totalMinutes;
-}
 
 async function calculateAverageResponseTime(zoneId: number): Promise<{ hours: number; minutes: number; change: number; isPositive: boolean }> {
   try {

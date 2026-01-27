@@ -8,22 +8,20 @@ interface PinGuardProps {
 }
 
 export default function PinGuard({ children }: PinGuardProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [isValidated, setIsValidated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-
-  // Routes that don't require PIN validation
-  const publicRoutes = ['/pin-access', '/admin/pin-management'];
 
   useEffect(() => {
-    // Prevent multiple checks
-    if (hasChecked) return;
-
     const checkPinAccess = async () => {
-      // Skip PIN check for public routes
-      const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+      if (!pathname) return;
+
+      const publicRoutes = ['/pin-access', '/admin/pin-management', '/favicon.ico', '/_next', '/api/auth', '/auth'];
+      const isPublicRoute = pathname === '/' || publicRoutes.some(route => route !== '/' && pathname.startsWith(route));
+
       if (isPublicRoute) {
         setIsValidated(true);
         setIsLoading(false);
@@ -31,33 +29,21 @@ export default function PinGuard({ children }: PinGuardProps) {
         return;
       }
 
-      // Wait for next tick to ensure DOM is ready
-      await new Promise(resolve => setTimeout(resolve, 0));
-
       try {
-        // Check if PIN session cookie exists
-        const allCookies = document.cookie.split('; ');
-        const pinSession = allCookies.find(row => row.startsWith('pinSession='));
-        
-        // Also check localStorage for PIN session
+        const pinSession = document.cookie.split('; ').find(row => row.startsWith('pinSession='));
         const localSession = localStorage.getItem('pinAccessSession');
-        // Check for force bypass parameter
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URL(window.location.href).searchParams;
         const forceBypass = urlParams.get('forceBypass');
         
-        if (forceBypass === 'true') {
+        if (pinSession || localSession || forceBypass === 'true') {
           setIsValidated(true);
-        } else if (pinSession || localSession) {
-          const sessionValue = pinSession ? pinSession.split('=')[1] : 'localStorage';
-          setIsValidated(true);
+          setIsLoading(false);
+          setHasChecked(true);
         } else {
-          // Use window.location.href instead of router.push to avoid race conditions
-          window.location.href = '/pin-access';
-          return;
+          router.replace('/pin-access');
         }
       } catch (error) {
-        window.location.href = '/pin-access';
-        return;
+        router.replace('/pin-access');
       } finally {
         setIsLoading(false);
         setHasChecked(true);
@@ -65,7 +51,7 @@ export default function PinGuard({ children }: PinGuardProps) {
     };
 
     checkPinAccess();
-  }, [pathname, hasChecked]);
+  }, [pathname, router]);
 
   // Show loading state
   if (isLoading) {

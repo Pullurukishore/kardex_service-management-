@@ -121,7 +121,7 @@ const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       dataUrl,
       timestamp: new Date().toISOString(),
-      filename: `onsite_photo_${new Date().toISOString().split('T')[0]}_${Date.now()}.jpg`,
+      filename: `onsite_photo_${new Date().toISOString().split('T')[0]}_${Date.now()}.webp`,
       size: sizeInBytes
     };
 

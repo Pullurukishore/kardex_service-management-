@@ -911,16 +911,13 @@ export const zoneAttendanceController = {
             accuracy: stage.accuracy ?? stage.metadata?.accuracy,
             locationSource: stage.locationSource ?? stage.metadata?.locationSource,
             photos: (stage.metadata?.photos || []).map((photo: any) => {
-              // Handle different photo object structures
-              // Photos can come as dataUrl (base64), cloudinaryUrl, url, or thumbnailUrl
-              const photoUrl = photo.cloudinaryUrl || photo.url || photo.thumbnailUrl || photo.dataUrl || '';
+              const photoUrl = photo.url || photo.thumbnailUrl || photo.cloudinaryUrl || photo.dataUrl || '';
               return {
                 id: photo.id || Math.random(),
                 filename: photo.filename || photo.name || 'photo',
-                cloudinaryUrl: photoUrl,
-                url: photoUrl, // Include both for compatibility
+                url: photoUrl,
                 thumbnailUrl: photo.thumbnailUrl || photoUrl,
-                dataUrl: photo.dataUrl, // Include dataUrl if available
+                dataUrl: photo.dataUrl,
                 createdAt: photo.createdAt || photo.timestamp || stage.createdAt || new Date().toISOString(),
               };
             }),
@@ -1203,16 +1200,13 @@ export const zoneAttendanceController = {
           accuracy: stage.accuracy ?? stage.metadata?.accuracy,
           locationSource: stage.locationSource ?? stage.metadata?.locationSource,
           photos: (stage.metadata?.photos || []).map((photo: any) => {
-            // Handle different photo object structures
-            // Photos can come as dataUrl (base64), cloudinaryUrl, url, or thumbnailUrl
-            const photoUrl = photo.cloudinaryUrl || photo.url || photo.thumbnailUrl || photo.dataUrl || '';
+            const photoUrl = photo.url || photo.thumbnailUrl || photo.cloudinaryUrl || photo.dataUrl || '';
             return {
               id: photo.id || Math.random(),
               filename: photo.filename || photo.name || 'photo',
-              cloudinaryUrl: photoUrl,
-              url: photoUrl, // Include both for compatibility
+              url: photoUrl,
               thumbnailUrl: photo.thumbnailUrl || photoUrl,
-              dataUrl: photo.dataUrl, // Include dataUrl if available
+              dataUrl: photo.dataUrl,
               createdAt: photo.createdAt || photo.timestamp || stage.createdAt || new Date().toISOString(),
             };
           }),

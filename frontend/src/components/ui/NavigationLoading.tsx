@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,62 +15,39 @@ export const NavigationLoadingOverlay: React.FC<NavigationLoadingProps> = ({
   loadingText = "Loading...",
   className
 }) => {
+  if (!isLoading) return null;
+
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className={cn(
-            "fixed inset-0 z-[100] flex items-center justify-center bg-white/80 backdrop-blur-sm",
-            className
-          )}
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="flex flex-col items-center space-y-4 p-8 bg-white/90 rounded-2xl shadow-2xl border border-[#92A2A5]/60"
-          >
-            {/* Animated loader with sparkles */}
-            <div className="relative">
-              <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-2"
-              >
-                <Sparkles className="h-3 w-3 text-[#6F8A9D] absolute top-0 left-0" />
-                <Sparkles className="h-2 w-2 text-[#96AEC2] absolute bottom-0 right-0" />
-              </motion.div>
-            </div>
-            
-            {/* Loading text with typing animation */}
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-sm font-medium text-[#5D6E73]"
-            >
-              {loadingText}
-            </motion.p>
-            
-            {/* Progress bar */}
-            <div className="w-32 h-1 bg-[#92A2A5]/30 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
-                className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
-              />
-            </div>
-          </motion.div>
-        </motion.div>
+    <div
+      className={cn(
+        "fixed inset-0 z-[100] flex items-center justify-center bg-white/80 backdrop-blur-sm",
+        "animate-fade-in",
+        className
       )}
-    </AnimatePresence>
+    >
+      <div
+        className="flex flex-col items-center space-y-4 p-8 bg-white/90 rounded-2xl shadow-2xl border border-[#92A2A5]/60 animate-scale-in"
+      >
+        {/* Animated loader with sparkles */}
+        <div className="relative">
+          <Loader2 className="h-8 w-8 animate-spin text-[#546A7A]" />
+          <div className="absolute -inset-2 animate-spin-slow">
+            <Sparkles className="h-3 w-3 text-[#6F8A9D] absolute top-0 left-0" />
+            <Sparkles className="h-2 w-2 text-[#96AEC2] absolute bottom-0 right-0" />
+          </div>
+        </div>
+        
+        {/* Loading text */}
+        <p className="text-sm font-medium text-[#5D6E73] animate-fade-in-up">
+          {loadingText}
+        </p>
+        
+        {/* Progress bar */}
+        <div className="w-32 h-1 bg-[#92A2A5]/30 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full animate-progress" />
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -89,19 +65,13 @@ export const NavItemLoading: React.FC<NavItemLoadingProps> = ({
   return (
     <div className={cn("relative", className)}>
       {children}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 flex items-center justify-end pr-4 bg-gradient-to-r from-transparent via-white/60 to-white/80 rounded-xl backdrop-blur-sm"
-          >
-            <Loader2 className="h-4 w-4 animate-spin text-[#546A7A]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isLoading && (
+        <div
+          className="absolute inset-0 flex items-center justify-end pr-4 bg-gradient-to-r from-transparent via-white/60 to-white/80 rounded-xl backdrop-blur-sm animate-fade-in"
+        >
+          <Loader2 className="h-4 w-4 animate-spin text-[#546A7A]" />
+        </div>
+      )}
     </div>
   );
 };
@@ -140,11 +110,9 @@ export const LoadingProgress: React.FC<LoadingProgressProps> = ({
 }) => {
   return (
     <div className={cn("w-full h-1 bg-[#92A2A5]/30 rounded-full overflow-hidden", className)}>
-      <motion.div
-        initial={{ width: "0%" }}
-        animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full"
+      <div
+        style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+        className="h-full bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] rounded-full transition-all duration-300 ease-out"
       />
     </div>
   );
@@ -154,18 +122,10 @@ export const PulseLoader: React.FC<{ className?: string }> = ({ className }) => 
   return (
     <div className={cn("flex space-x-1", className)}>
       {[0, 1, 2].map((i) => (
-        <motion.div
+        <div
           key={i}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            delay: i * 0.2,
-          }}
-          className="w-2 h-2 bg-[#96AEC2]/100 rounded-full"
+          className="w-2 h-2 bg-[#96AEC2] rounded-full animate-pulse-bounce"
+          style={{ animationDelay: `${i * 0.2}s` }}
         />
       ))}
     </div>

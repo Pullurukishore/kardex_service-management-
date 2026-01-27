@@ -1,21 +1,11 @@
 import { Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { ProductType } from '@prisma/client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { logger } from '../utils/logger';
+import { toNumber } from '../utils/dateUtils';
 
-/**
- * Helper function to properly convert Prisma Decimal to JavaScript number
- * Preserves full precision for accurate calculations
- */
-function toNumber(value: any): number {
-    if (value === null || value === undefined) return 0;
-    // Convert to string first to avoid precision issues, then parse
-    const parsed = parseFloat(value.toString());
-    if (isNaN(parsed)) return 0;
-    // Return full precision - no rounding
-    return parsed;
-}
+
 
 interface ZoneSummary {
     zoneId: number;

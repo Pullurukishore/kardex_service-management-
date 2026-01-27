@@ -98,7 +98,8 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   };
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? dateString : date.toLocaleString();
   };
 
   const handleDownload = async (photo: StoredPhoto) => {
@@ -111,7 +112,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       link.href = url;
       
       // Use the original filename from database if it looks like a proper filename
-      let downloadFilename;
+      let downloadFilename: string = '';
       
       if (photo.filename && 
           photo.filename.trim() !== '' && 
@@ -120,27 +121,16 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       ) {
         // Use the original filename from database
         downloadFilename = photo.filename;
-        
-        // Clean up the filename if it has timestamp suffix
-        if (downloadFilename.includes('T') && downloadFilename.includes('Z')) {
-          // Remove the ISO timestamp part (e.g., _2025-10-10T13-31-18-619Z_1)
-          const timestampPattern = /_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z.*$/;
-          downloadFilename = downloadFilename.replace(timestampPattern, '');
-          
-          // Ensure it has .jpg extension if it doesn't already
-          if (!downloadFilename.endsWith('.jpg') && !downloadFilename.includes('.')) {
-            downloadFilename += '.jpg';
-          }
-        }
       } else {
-        // Fallback: extract from local storage URL
+        // Fallback: extract from URL
         const urlParts = photo.url.split('/');
         const localFilename = urlParts[urlParts.length - 1];
-        const cleanFilename = localFilename.split('?')[0];
-        
-        downloadFilename = cleanFilename.includes('.') 
-          ? cleanFilename 
-          : `${cleanFilename}.jpg`;
+        downloadFilename = localFilename.split('?')[0];
+      }
+      
+      // Ensure it has an extension
+      if (!downloadFilename.includes('.')) {
+        downloadFilename += '.webp';
       }
       
       link.download = downloadFilename;
@@ -217,7 +207,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       <Card className={cn("border-2 border-[#92A2A5] bg-[#AEBFC3]/10", className)}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center gap-2 py-8">
-            <ImageIcon className="h-5 w-5 text-[#AEBFC3]0" />
+            <ImageIcon className="h-5 w-5 text-[#AEBFC3]" />
             <span className="text-[#5D6E73]">No photos available</span>
           </div>
         </CardContent>
@@ -289,7 +279,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
                 </div>
                 
                 {showUploadTime && (
-                  <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
+                  <div className="flex items-center gap-1 text-xs text-[#AEBFC3]">
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(photo.createdAt)}</span>
                   </div>

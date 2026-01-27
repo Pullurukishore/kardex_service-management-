@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ARInvoiceStatus } from '@prisma/client';
 import prisma from '../../config/db';
 import { logInvoiceActivity, getUserFromRequest, getIpFromRequest, logFieldChanges } from './arActivityLog.controller';
+import { calculateDaysBetween } from '../../utils/dateUtils';
 
 
 // Get all invoices with filters
@@ -68,8 +69,7 @@ export const getAllInvoices = async (req: Request, res: Response) => {
         // Calculate days overdue for each invoice
         const invoicesWithOverdue = invoices.map(invoice => {
             const today = new Date();
-            const dueDate = new Date(invoice.dueDate);
-            const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+            const daysOverdue = calculateDaysBetween(invoice.dueDate, today);
 
             return {
                 ...invoice,
@@ -88,7 +88,7 @@ export const getAllInvoices = async (req: Request, res: Response) => {
             }
         });
     } catch (error: any) {
-        console.error('Error fetching AR invoices:', error);
+
         res.status(500).json({ error: 'Failed to fetch invoices', message: error.message });
     }
 };
@@ -122,11 +122,7 @@ export const getInvoiceById = async (req: Request, res: Response) => {
 
         // Calculate days dynamically: positive = overdue, negative = days remaining
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const dueDate = new Date(invoice.dueDate);
-        dueDate.setHours(0, 0, 0, 0);
-        const diffTime = today.getTime() - dueDate.getTime();
-        const dueByDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const dueByDays = calculateDaysBetween(invoice.dueDate, today);
         const isOverdue = dueByDays > 0 && invoice.status !== 'PAID';
 
         res.json({
@@ -136,7 +132,7 @@ export const getInvoiceById = async (req: Request, res: Response) => {
             isOverdue
         });
     } catch (error: any) {
-        console.error('Error fetching AR invoice:', error);
+
         res.status(500).json({ error: 'Failed to fetch invoice', message: error.message });
     }
 };
@@ -225,7 +221,7 @@ export const addPaymentRecord = async (req: Request, res: Response) => {
 
         res.json(result.payment);
     } catch (error: any) {
-        console.error('Error adding payment record:', error);
+
         if (error.message === 'INVOICE_NOT_FOUND') {
             return res.status(404).json({ error: 'Invoice not found' });
         }
@@ -320,7 +316,7 @@ export const createInvoice = async (req: Request, res: Response) => {
 
         res.status(201).json(invoice);
     } catch (error: any) {
-        console.error('Error creating AR invoice:', error);
+
         if (error.code === 'P2002') {
             return res.status(400).json({ error: 'Invoice with this number already exists' });
         }
@@ -456,7 +452,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
 
         res.json(result.invoice);
     } catch (error: any) {
-        console.error('Error updating AR invoice:', error);
+
         if (error.message === 'INVOICE_NOT_FOUND' || error.code === 'P2025') {
             return res.status(404).json({ error: 'Invoice not found' });
         }
@@ -498,7 +494,7 @@ export const updateDeliveryTracking = async (req: Request, res: Response) => {
 
         res.json(invoice);
     } catch (error: any) {
-        console.error('Error updating AR delivery tracking:', error);
+
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Invoice not found' });
         }
@@ -538,7 +534,7 @@ export const deleteInvoice = async (req: Request, res: Response) => {
 
         res.json({ message: 'Invoice deleted successfully' });
     } catch (error: any) {
-        console.error('Error deleting AR invoice:', error);
+
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Invoice not found' });
         }
@@ -565,7 +561,7 @@ export const updateOverdueStatus = async (req: Request, res: Response) => {
 
         res.json({ message: `Updated ${result.count} invoices to OVERDUE status` });
     } catch (error: any) {
-        console.error('Error updating AR overdue status:', error);
+
         res.status(500).json({ error: 'Failed to update overdue status', message: error.message });
     }
 };
@@ -609,7 +605,7 @@ export const getInvoiceRemarks = async (req: Request, res: Response) => {
 
         res.json(remarks);
     } catch (error: any) {
-        console.error('Error fetching invoice remarks:', error);
+
         res.status(500).json({ error: 'Failed to fetch remarks', message: error.message });
     }
 };
@@ -672,7 +668,7 @@ export const addInvoiceRemark = async (req: Request, res: Response) => {
 
         res.status(201).json(remark);
     } catch (error: any) {
-        console.error('Error adding invoice remark:', error);
+
         res.status(500).json({ error: 'Failed to add remark', message: error.message });
     }
 };
@@ -707,7 +703,7 @@ export const getInvoiceActivityLog = async (req: Request, res: Response) => {
 
         res.json(activityLogs);
     } catch (error: any) {
-        console.error('Error fetching invoice activity log:', error);
+
         res.status(500).json({ error: 'Failed to fetch activity log', message: error.message });
     }
 };

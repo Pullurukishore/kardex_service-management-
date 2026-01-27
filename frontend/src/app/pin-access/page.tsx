@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock, Shield, AlertCircle, CheckCircle, Key, Loader2, Delete, Fingerprint } from 'lucide-react';
 import Image from 'next/image';
 import { apiClient } from '@/lib/api/api-client';
+import { useAuth } from '@/contexts/AuthContext';
+import { getRoleBasedRedirect } from '@/lib/utils/navigation';
 
 interface PinSession { sessionId: string; expiresAt: string; }
 interface PinValidationResponse { success: boolean; message?: string; error?: string; sessionId?: string; expiresAt?: string; attemptsLeft?: number; lockedUntil?: string; }
@@ -50,6 +52,7 @@ const setLockoutInfo = (info: any) => { try { if (typeof window !== 'undefined')
 const clearLockoutInfo = () => { try { if (typeof window !== 'undefined') localStorage.removeItem(LOCKOUT_STORAGE_KEY); } catch {} };
 
 export default function PinAccessPage() {
+  const { user } = useAuth();
   const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,6 +68,16 @@ export default function PinAccessPage() {
   const router = useRouter();
 
   const keypadRows = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['', '0', 'delete']];
+  
+  // Determine redirect path based on user role and any module selection
+  const getRedirectPath = () => {
+    const selectedModule = localStorage.getItem('selectedModule');
+    if (selectedModule === 'finance') return '/finance/select';
+    if (selectedModule === 'fsm') return '/fsm/select';
+    
+    // Use role-based redirect
+    return getRoleBasedRedirect(user?.role, user?.financeRole);
+  };
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -105,7 +118,11 @@ export default function PinAccessPage() {
         let valid = false;
         try { if (document.cookie.includes('pinSession=')) valid = true; } catch {}
         if (!valid && getLocalSession()?.sessionId) valid = true;
-        if (valid) { router.push('/auth/login'); return; }
+        if (valid) { 
+          // User already has valid PIN session, redirect to module
+          router.push(getRedirectPath()); 
+          return; 
+        }
         setChecking(false);
       } catch { setChecking(false); }
     };
@@ -138,7 +155,13 @@ export default function PinAccessPage() {
       if (data?.success) {
         setSuccess(true); clearLockoutInfo(); setIsLocked(false);
         if (data.sessionId && data.expiresAt) setLocalSession({ sessionId: data.sessionId, expiresAt: data.expiresAt });
-        setTimeout(() => { try { if (!document.cookie.includes('pinSession=') && data.sessionId) apiClient.setPinSession(data.sessionId); } catch {} router.push('/auth/login'); }, 1500);
+        setTimeout(() => { 
+          try { 
+            if (!document.cookie.includes('pinSession=') && data.sessionId) apiClient.setPinSession(data.sessionId); 
+          } catch {} 
+          // Redirect to the appropriate module dashboard
+          router.push(getRedirectPath()); 
+        }, 500);
       } else { triggerError(data?.error || 'Invalid PIN'); if (typeof data?.attemptsLeft === 'number') setAttemptsLeft(data.attemptsLeft); }
     } catch (err: any) {
       let msg = 'Invalid PIN'; if (err.response?.data?.error) msg = err.response.data.error;

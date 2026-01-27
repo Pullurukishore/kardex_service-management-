@@ -70,13 +70,13 @@ KardexCare is an enterprise-grade service management system designed for technic
 - **Language**: TypeScript
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: JWT with bcrypt password hashing
-- **File Storage**: Cloudinary for photo management
+- **File Storage**: Local storage for photo management (kept within company network)
 - **Location Services**: LocationIQ for geocoding
 
 ### Key Integrations
 
 - **GPS Tracking**: Enhanced location capture with accuracy validation
-- **Photo Storage**: Cloudinary integration for permanent photo storage
+- **Photo Storage**: Local filesystem storage with automatic compression
 - **Geocoding**: LocationIQ for address resolution
 - **PDF Generation**: Custom PDF generator with professional styling
 - **Excel Export**: Advanced Excel generation with formatting
@@ -113,7 +113,7 @@ KardexCare/
 ### Prerequisites
 - Node.js 18+ and npm/yarn
 - PostgreSQL database
-- Cloudinary account (for photo storage)
+
 - LocationIQ API key (for geocoding)
 
 ### Backend Setup
@@ -142,16 +142,14 @@ npm run dev
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/kardexcare"
 JWT_SECRET="your-jwt-secret"
-CLOUDINARY_CLOUD_NAME="your-cloud-name"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
+PHOTO_UPLOAD_DIR="./storage/images" # Local storage path
 LOCATIONIQ_API_KEY="your-locationiq-key"
 ```
 
 **Frontend (.env.local)**
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:5000"
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud-name"
+# Local storage is used via backend API
 ```
 
 ## Core Functionalities
@@ -228,7 +226,7 @@ All time-based calculations use **business hours only** (9 AM - 5 PM, Monday-Sat
 
 - **Server-side rendering** with Next.js App Router
 - **Database query optimization** with Prisma
-- **Image optimization** with Cloudinary CDN
+- **Image optimization** with sharp-based local compression
 - **Lazy loading** for large datasets
 - **Mobile-optimized** bundle sizes
 

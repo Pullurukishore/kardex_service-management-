@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { format, subDays, eachDayOfInterval, differenceInMinutes, getDay, setHours, setMinutes, setSeconds, setMilliseconds, addDays, startOfDay } from 'date-fns';
+import { calculateBusinessHoursInMinutes } from '../utils/dateUtils';
 import { generatePdf, getPdfColumns } from '../utils/pdfGenerator';
 import { generateExcel, getExcelColumns } from '../utils/excelGenerator';
 import prisma from '../config/db';
@@ -75,65 +76,8 @@ type IndustrialZoneData = {
   zoneId: number;
 };
 
-// Helper function to calculate business hours between two dates (9 AM to 5 PM, excluding Sundays)
-function calculateBusinessHoursInMinutes(startDate: Date, endDate: Date): number {
-  if (startDate >= endDate) return 0;
 
-  let totalMinutes = 0;
-  let currentDate = new Date(startDate);
-  const finalDate = new Date(endDate);
-
-  // Business hours: 9 AM to 5:30 PM (8.5 hours per day)
-  const BUSINESS_START_HOUR = 9;
-  const BUSINESS_END_HOUR = 17;
-  const BUSINESS_END_MINUTE = 30;
-  const BUSINESS_MINUTES_PER_DAY = (BUSINESS_END_HOUR - BUSINESS_START_HOUR) * 60 + BUSINESS_END_MINUTE; // 510 minutes (8.5 hours)
-
-  while (currentDate < finalDate) {
-    const dayOfWeek = getDay(currentDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
-    // Skip Sundays (dayOfWeek === 0)
-    if (dayOfWeek !== 0) {
-      // Create business hours for this day
-      const businessStart = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_START_HOUR), 0), 0), 0);
-      const businessEnd = setMilliseconds(setSeconds(setMinutes(setHours(currentDate, BUSINESS_END_HOUR), BUSINESS_END_MINUTE), 0), 0);
-
-      // Determine the actual start and end times for this day
-      let dayStart = businessStart;
-      let dayEnd = businessEnd;
-
-      // If this is the first day, use the actual start time if it's after business start
-      if (currentDate.toDateString() === startDate.toDateString()) {
-        if (startDate > businessStart) {
-          dayStart = startDate;
-        }
-      }
-
-      // If this is the last day, use the actual end time if it's before business end
-      if (currentDate.toDateString() === finalDate.toDateString()) {
-        if (finalDate < businessEnd) {
-          dayEnd = finalDate;
-        }
-      }
-
-      // Only count time if it falls within business hours
-      if (dayStart < businessEnd && dayEnd > businessStart) {
-        // Ensure we don't go outside business hours
-        if (dayStart < businessStart) dayStart = businessStart;
-        if (dayEnd > businessEnd) dayEnd = businessEnd;
-
-        if (dayStart < dayEnd) {
-          totalMinutes += differenceInMinutes(dayEnd, dayStart);
-        }
-      }
-    }
-
-    // Move to next day
-    currentDate = addDays(startOfDay(currentDate), 1);
-  }
-
-  return totalMinutes;
-}
+// Report filters interface
 
 interface ReportFilters {
   from?: string;
@@ -175,15 +119,9 @@ export const generateReport = async (req: Request, res: Response) => {
     const startUTC = new Date(startDate.getTime() - tzOffset);
     const endUTC = new Date(endDate.getTime() - tzOffset);
 
-    console.log('Generating report with date range (Local):', {
-      startDate: startDate.toString(),
-      endDate: endDate.toString()
-    });
 
-    console.log('Generating report with date range (UTC):', {
-      startDate: startUTC.toISOString(),
-      endDate: endUTC.toISOString()
-    });
+
+
 
     // Use the UTC dates for the query
     startDate = startUTC;
@@ -338,63 +276,37 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
     })
   ]);
 
-  // Generate comprehensive daily trends - process sequentially to avoid connection pool exhaustion
+  // Optimized daily trends using only two bulk queries
+  const [trendCreated, trendResolved] = await Promise.all([
+    prisma.ticket.findMany({
+      where: whereClause,
+      select: { createdAt: true, isEscalated: true, escalatedAt: true, status: true, updatedAt: true }
+    }),
+    prisma.ticketStatusHistory.findMany({
+      where: {
+        status: { in: ['RESOLVED', 'CLOSED'] },
+        changedAt: { gte: startDate, lte: endDate },
+        ticket: whereClause
+      },
+      select: { changedAt: true }
+    })
+  ]);
+
   const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
-  const dailyTrends: Array<{ date: string; created: number; resolved: number; escalated: number; assigned: number }> = [];
+  const dailyTrends = dateRange.map(date => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dStart = startOfDay(new Date(date));
+    const dEnd = new Date(dStart);
+    dEnd.setHours(23, 59, 59, 999);
 
-  // Process in batches of 5 days to limit concurrent connections
-  const BATCH_SIZE = 5;
-  for (let i = 0; i < dateRange.length; i += BATCH_SIZE) {
-    const batch = dateRange.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(
-      batch.map(async (date) => {
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const [created, resolved, escalated, assigned] = await Promise.all([
-          prisma.ticket.count({
-            where: {
-              ...whereClause,
-              createdAt: { gte: startOfDay, lte: endOfDay }
-            }
-          }),
-          // Use status history for accurate resolution tracking
-          prisma.ticketStatusHistory.count({
-            where: {
-              status: { in: ['RESOLVED', 'CLOSED'] },
-              changedAt: { gte: startOfDay, lte: endOfDay },
-              ticket: whereClause
-            }
-          }),
-          prisma.ticket.count({
-            where: {
-              ...whereClause,
-              isEscalated: true,
-              escalatedAt: { gte: startOfDay, lte: endOfDay }
-            }
-          }),
-          prisma.ticket.count({
-            where: {
-              ...whereClause,
-              status: 'ASSIGNED',
-              updatedAt: { gte: startOfDay, lte: endOfDay }
-            }
-          })
-        ]);
-
-        return {
-          date: format(date, 'yyyy-MM-dd'),
-          created,
-          resolved,
-          escalated,
-          assigned
-        };
-      })
-    );
-    dailyTrends.push(...batchResults);
-  }
+    return {
+      date: dateStr,
+      created: trendCreated.filter(t => t.createdAt >= dStart && t.createdAt <= dEnd).length,
+      resolved: trendResolved.filter(h => h.changedAt >= dStart && h.changedAt <= dEnd).length,
+      escalated: trendCreated.filter(t => t.isEscalated && t.escalatedAt && t.escalatedAt >= dStart && t.escalatedAt <= dEnd).length,
+      assigned: trendCreated.filter(t => t.status === 'ASSIGNED' && t.updatedAt >= dStart && t.updatedAt <= dEnd).length
+    };
+  });
 
   // Calculate average resolution time
   const resolvedTickets = tickets.filter((t: { status: string }) =>
@@ -1737,14 +1649,14 @@ function calculateBusinessHoursMinutes(startDate: Date, endDate: Date): number {
 // Helper functions to get report data without sending response
 async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: Date): Promise<TicketSummaryData> {
   // Debug: Log the where clause to see what's being filtered
-  console.log('Fetching tickets with where clause:', JSON.stringify(whereClause, null, 2));
+
 
   // First, get all tickets without any filters to verify data exists
   const allTickets = await prisma.ticket.findMany({
     take: 1 // Just get one ticket to check if any exist
   });
 
-  console.log(`Found ${allTickets.length} total tickets in the database`);
+
 
   // Now get the actual tickets with the provided filters
   const tickets = await prisma.ticket.findMany({
@@ -1767,7 +1679,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
     }
   });
 
-  console.log(`Found ${tickets.length} tickets matching the filters`);
+
 
   const statusDistribution = await prisma.ticket.groupBy({
     by: ['status'],
@@ -1955,7 +1867,7 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
 
   // If no tickets found, return empty data with zeros
   if (tickets.length === 0) {
-    console.warn('No tickets found with the given filters');
+
     return {
       tickets: [],
       summary: {
@@ -3516,7 +3428,7 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
       },
     });
   } catch (error) {
-    console.error('Generate offer summary report error:', error);
+
     res.status(500).json({ error: 'Failed to generate offer summary report' });
   }
 };
@@ -3629,7 +3541,7 @@ const generateProductTypeAnalysisReport = async (res: Response, whereClause: any
       data: analysis,
     });
   } catch (error) {
-    console.error('Generate product type analysis report error:', error);
+
     res.status(500).json({ error: 'Failed to generate product type analysis report' });
   }
 };
@@ -3721,7 +3633,7 @@ const generateCustomerPerformanceReport = async (res: Response, whereClause: any
       data: analysis,
     });
   } catch (error) {
-    console.error('Generate customer performance report error:', error);
+
     res.status(500).json({ error: 'Failed to generate customer performance report' });
   }
 };
@@ -3860,7 +3772,7 @@ export const getProductTypeAnalysis = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('Product type analysis error:', error);
+
     res.status(500).json({
       success: false,
       error: 'Failed to generate product type analysis',
@@ -4019,7 +3931,7 @@ export const getCustomerPerformance = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('Customer performance error:', error);
+
     res.status(500).json({
       success: false,
       error: 'Failed to generate customer performance report',

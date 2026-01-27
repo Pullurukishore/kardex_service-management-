@@ -161,21 +161,20 @@ export default function CreateTicketPage() {
         
         let customersRes;
         if (zoneId === 'all') {
-          // Fetch all customers from all zones
-          customersRes = await api.get('/customers?include=contacts,assets');
+          // Fetch all customers but WITHOUT heavy sub-entities (contacts/assets)
+          customersRes = await api.get('/customers');
         } else {
-          // Use the customers endpoint with zone filter
-          customersRes = await api.get(`/customers?serviceZoneId=${zoneId}&include=contacts,assets`);
+          // Use the customers endpoint with zone filter, lean fetch
+          customersRes = await api.get(`/customers?serviceZoneId=${zoneId}`);
         }
         
-        // Map the API response to match our expected format
-        const formattedCustomers = customersRes.data.map((customer: any) => ({
+        const leanCustomers = customersRes.data.map((customer: any) => ({
           ...customer,
           contacts: customer.contacts || [],
           assets: customer.assets || []
         }));
         
-        setCustomers(formattedCustomers);
+        setCustomers(leanCustomers);
         
         // Reset customer-dependent fields
         form.setValue('customerId', '');
@@ -185,7 +184,7 @@ export default function CreateTicketPage() {
         setAssets([]);
       } catch (error) {
         toast.error(zoneId === 'all' 
-          ? 'Failed to load customers from all zones. Please try again.'
+          ? 'Failed to load customers. Please try again.'
           : 'Failed to load customers for selected zone. Please try again.');
         setCustomers([]);
       } finally {
@@ -194,7 +193,6 @@ export default function CreateTicketPage() {
     };
 
     fetchZoneCustomers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoneId]);
 
   // Watch additional required fields for validation
@@ -218,9 +216,11 @@ export default function CreateTicketPage() {
     assetId
   );
 
-  // Update contacts and assets when customer changes
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  // Update contacts and assets when customer changes - Lazy load details
   useEffect(() => {
-    const updateCustomerData = () => {
+    const fetchCustomerDetails = async () => {
       if (!customerId) {
         setContacts([]);
         setAssets([]);
@@ -229,29 +229,41 @@ export default function CreateTicketPage() {
         return;
       }
       
-      // Find the selected customer
-      const selectedCustomer = customers.find(c => c.id.toString() === customerId);
-      if (selectedCustomer) {
-        setContacts(selectedCustomer.contacts || []);
-        setAssets(selectedCustomer.assets || []);
-        form.setValue('contactId', '');
-        form.setValue('assetId', '');
+      try {
+        setIsLoadingDetails(true);
+        // Fetch full customer details including contacts and assets
+        const response = await api.get(`/customers/${customerId}?includeAssets=true`);
+        const customerDetails = response.data;
         
-        // If there's only one contact, auto-select it
-        if (selectedCustomer.contacts?.length === 1) {
-          form.setValue('contactId', selectedCustomer.contacts[0].id.toString());
+        if (customerDetails) {
+          const freshContacts = customerDetails.contacts || [];
+          const freshAssets = customerDetails.assets || [];
+          
+          setContacts(freshContacts);
+          setAssets(freshAssets);
+          form.setValue('contactId', '');
+          form.setValue('assetId', '');
+          
+          // If there's only one contact, auto-select it
+          if (freshContacts.length === 1) {
+            form.setValue('contactId', freshContacts[0].id.toString());
+          }
+          
+          // If there's only one asset, auto-select it
+          if (freshAssets.length === 1) {
+            form.setValue('assetId', freshAssets[0].id.toString());
+          }
         }
-        
-        // If there's only one asset, auto-select it (since asset is now required)
-        if (selectedCustomer.assets?.length === 1) {
-          form.setValue('assetId', selectedCustomer.assets[0].id.toString());
-        }
+      } catch (error) {
+        console.error('Failed to fetch customer details:', error);
+        toast.error('Failed to load customer contacts and assets');
+      } finally {
+        setIsLoadingDetails(false);
       }
     };
 
-    updateCustomerData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customerId, customers]);
+    fetchCustomerDetails();
+  }, [customerId]);
 
   // Handle asset creation
   const handleCreateAsset = async (values: AssetFormValues) => {
@@ -476,7 +488,7 @@ export default function CreateTicketPage() {
               zoneId={zoneId === 'all' ? 'all' : (zoneId !== undefined ? Number(zoneId) : undefined)}
               customerId={customerId}
               isSubmitting={isSubmitting}
-              isLoadingCustomers={isLoadingCustomers}
+              isLoadingCustomers={isLoadingCustomers || isLoadingDetails}
               onAddContactClick={() => setIsAddContactOpen(true)}
               onAddAssetClick={() => setIsAddAssetOpen(true)}
             />

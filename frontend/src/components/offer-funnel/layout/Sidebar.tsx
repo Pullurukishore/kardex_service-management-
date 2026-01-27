@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -224,8 +223,6 @@ export function Sidebar({
   const { logout, user } = useAuth();
   const [hoveredItem, setHoveredItem] = React.useState<string | null>(null);
   const [isMobile, setIsMobile] = React.useState(false);
-  const [isInitialLoad, setIsInitialLoad] = React.useState(true);
-  const [reducedMotion, setReducedMotion] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
 
   // Fast role fallback from cookies/localStorage to avoid flicker on reload
@@ -251,24 +248,6 @@ export function Sidebar({
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Respect prefers-reduced-motion for accessibility
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener?.('change', update);
-    return () => media.removeEventListener?.('change', update);
-  }, []);
-
-  // Handle initial load animation - reduced delay (50ms)
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsInitialLoad(false);
-    }, 50);
-    return () => clearTimeout(timer);
   }, []);
 
   React.useEffect(() => {
@@ -357,28 +336,16 @@ export function Sidebar({
     }
 
     return (
-      <motion.div
-        key={item.href}
-        initial={isInitialLoad ? { opacity: 0, x: -10 } : false}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ 
-          duration: 0.15,
-          delay: isInitialLoad ? index * 0.02 : 0,
-          ease: "easeOut"
-        }}
-        suppressHydrationWarning
-      >
-        <motion.button
+      <div key={item.href}>
+        <button
           onClick={(e) => handleItemClick(e, item)}
           onMouseEnter={() => handleItemHover(item)}
           onMouseLeave={handleItemLeave}
-          whileHover={{ x: isActive ? 0 : 4 }}
-          whileTap={{ scale: 0.97 }}
           aria-current={isActive ? 'page' : undefined}
           aria-label={item.title}
           ref={isActive ? activeItemRef : undefined}
           className={cn(
-            "group relative flex items-center w-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#96AEC2]/60",
+            "group relative flex items-center w-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#96AEC2]/60 hover:translate-x-1",
             isMobile ? "px-3 py-3 mx-2 my-1 rounded-2xl" : collapsed ? "px-2 py-3 mx-2 my-1 rounded-xl justify-center" : "px-3 py-2.5 mx-2 my-0.5 rounded-xl",
             isActive
               ? "bg-gradient-to-r from-[#96AEC2]/10 via-[#6F8A9D]/10 to-[#6F8A9D]/10 border border-[#96AEC2]/50 ring-1 ring-[#96AEC2]/50/60"
@@ -424,40 +391,33 @@ export function Sidebar({
                 {item.title}
               </span>
               {item.badge && (
-                <motion.span
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                <span
                   className={cn(
-                    "ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold",
+                    "ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold animate-pulse",
                     isActive 
                       ? "bg-[#96AEC2]/20 text-[#546A7A]"
                       : "bg-[#AEBFC3]/20 text-[#5D6E73]"
                   )}
                 >
                   {item.badge}
-                </motion.span>
+                </span>
               )}
             </div>
           )}
           
           {/* Tooltip for collapsed state */}
           {collapsed && !isMobile && isHovered && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="absolute left-full ml-3 z-50 pointer-events-none"
-            >
+            <div className="absolute left-full ml-3 z-50 pointer-events-none opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
               <div className="bg-[#546A7A] text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
                 {item.title}
                 <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900" />
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.button>
-      </motion.div>
+        </button>
+      </div>
     );
-  }, [pathname, collapsed, hoveredItem, isMobile, isInitialLoad, handleItemClick, handleItemHover, handleItemLeave]);
+  }, [pathname, collapsed, hoveredItem, isMobile, handleItemClick, handleItemHover, handleItemLeave]);
 
   const navItems = React.useMemo(() => {
     if (!hydrated) return [];
@@ -465,10 +425,7 @@ export function Sidebar({
   }, [filteredNavItems, renderNavItem, hydrated]);
 
   return (
-    <motion.div
-      initial={false}
-      animate={{ x: 0 }}
-      suppressHydrationWarning
+    <div
       className={cn(
         "fixed left-0 top-0 z-[60] flex h-screen flex-col bg-gradient-to-br from-white via-slate-50/80 to-[#96AEC2]/10/30 border-r border-[#92A2A5]/80 shadow-xl transition-all duration-300 ease-out",
         // Mobile-first responsive design
@@ -490,11 +447,7 @@ export function Sidebar({
         isMobile ? "h-16 px-6" : "h-20 px-4"
       )}>
         {(!collapsed || isMobile) && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center justify-center w-full gap-3"
-          >
+          <div className="flex items-center justify-center w-full gap-3">
             <Image 
               src="/favicon-circle.svg" 
               alt="Kardex Logo" 
@@ -512,14 +465,11 @@ export function Sidebar({
               style={{ width: 'auto', height: 'auto' }}
               priority
             />
-          </motion.div>
+          </div>
         )}
         
         {collapsed && !isMobile && (
-          <motion.div 
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            className="flex items-center justify-center w-full"
-          >
+          <div className="flex items-center justify-center w-full hover:scale-110 hover:rotate-3 transition-transform">
             <Image 
               src="/favicon-circle.svg" 
               alt="Kardex Logo" 
@@ -528,14 +478,12 @@ export function Sidebar({
               className="rounded-lg transition-all duration-200 hover:scale-105"
               priority
             />
-          </motion.div>
+          </div>
         )}
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           className={cn(
-            "p-2 rounded-xl hover:bg-white transition-colors",
+            "p-2 rounded-xl hover:bg-white transition-colors hover:scale-105 active:scale-95",
             collapsed && !isMobile && "hidden"
           )}
           onClick={() => isMobile ? onClose?.() : setCollapsed?.(!collapsed)}
@@ -545,28 +493,24 @@ export function Sidebar({
           ) : (
             <ChevronLeft className="h-5 w-5 text-[#5D6E73]" />
           )}
-        </motion.button>
+        </button>
         
         {!isMobile && !collapsed && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+          <button
+            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
             onClick={() => setCollapsed?.(!collapsed)}
           >
             <ChevronLeft className="h-3 w-3 text-[#5D6E73]" />
-          </motion.button>
+          </button>
         )}
         
         {!isMobile && collapsed && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+          <button
+            className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 bg-white border-2 border-[#92A2A5] rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
             onClick={() => setCollapsed?.(!collapsed)}
           >
             <ChevronRight className="h-3 w-3 text-[#5D6E73]" />
-          </motion.button>
+          </button>
         )}
       </div>
 
@@ -577,7 +521,7 @@ export function Sidebar({
       )}>
         <div suppressHydrationWarning>
           {(!collapsed || isMobile) && (
-            <motion.nav 
+            <nav 
               suppressHydrationWarning
               className={cn(
                 "space-y-1",
@@ -585,7 +529,7 @@ export function Sidebar({
               )}
             >
               {navItems}
-            </motion.nav>
+            </nav>
           )}
         </div>
       </ScrollArea>
@@ -634,6 +578,6 @@ export function Sidebar({
           )}
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

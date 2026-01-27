@@ -63,7 +63,7 @@ const generateAccessToken = (user: { id: number; role: UserRole; customerId?: nu
       version
     },
     JWT_CONFIG.secret,
-    { expiresIn: '7d' } // 7 day expiry for access token
+    { expiresIn: JWT_CONFIG.expiresIn } // Use global config
   );
 };
 
@@ -200,7 +200,7 @@ export const authenticate = async (
       prisma.user.update({
         where: { id: user.id },
         data: { lastActiveAt: new Date() }
-      }).catch(console.error);
+      }).catch(() => { });
 
       // Attach user to request
       req.user = userPayload;

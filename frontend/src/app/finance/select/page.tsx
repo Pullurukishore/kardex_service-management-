@@ -43,19 +43,29 @@ export default function FinanceSelectPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
+    // Ensure localStorage is set when this page is accessed directly
     const selectedMod = localStorage.getItem('selectedModule');
-    if (selectedMod !== 'finance') router.push('/module-select');
-  }, [router]);
+    if (!selectedMod) {
+      // User came directly to this page (e.g., from login redirect) - set the module
+      localStorage.setItem('selectedModule', 'finance');
+    } else if (selectedMod !== 'finance') {
+      // User selected a different module, redirect
+      router.push('/module-select');
+    }
+  }, [router, mounted]);
 
   const handleSubModuleSelect = (subModuleId: string) => {
     const module = subModules.find(m => m.id === subModuleId);
     if (module?.disabled) return;
     setSelectedModule(subModuleId);
     if (typeof window !== 'undefined') localStorage.setItem('selectedSubModule', subModuleId);
+    // Minimal delay for UI feedback
     setTimeout(() => {
       if (subModuleId === 'ar') router.push('/finance/ar/dashboard');
       else router.push('/finance/bank-accounts');
-    }, 400);
+    }, 100);
   };
 
   const handleBack = () => {
@@ -63,7 +73,17 @@ export default function FinanceSelectPage() {
     router.push('/module-select');
   };
 
-  if (!mounted) return null;
+  // Show loading state while mounting
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-6">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#CE9F6B] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-6 overflow-hidden">

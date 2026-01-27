@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Shield, Key, Clock, Users, AlertCircle, CheckCircle, Copy, RefreshCw, Eye, EyeOff, Trash2, History, Settings } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
 import { apiClient } from '@/lib/api/api-client';
 
 interface PinStatus {
@@ -155,21 +154,12 @@ export default function PinManagementClient() {
     <div className="min-h-screen bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/20">
       <div className="container mx-auto p-6 max-w-6xl">
         {/* Enhanced Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <motion.div 
-                className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg"
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
+              <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg hover:scale-105 transition-transform">
                 <Shield className="w-8 h-8 text-white" />
-              </motion.div>
+              </div>
               <div>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                   PIN Management
@@ -179,25 +169,15 @@ export default function PinManagementClient() {
                 </p>
               </div>
             </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-md border border-[#96AEC2]/50"
-            >
+            <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-md border border-[#96AEC2]/50">
               <Settings className="w-4 h-4 text-[#546A7A]" />
               <span className="text-sm font-medium text-[#5D6E73]">Admin Panel</span>
-            </motion.div>
+            </div>
           </div>
           
           {/* Status Banner */}
           {pinStatus && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 border border-[#A2B9AF] rounded-xl p-4 shadow-sm"
-            >
+            <div className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 border border-[#A2B9AF] rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-[#4F6A64]" />
@@ -207,9 +187,9 @@ export default function PinManagementClient() {
                   PIN Never Expires
                 </Badge>
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current PIN Status */}

@@ -4,6 +4,7 @@ import http from 'http';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { WebSocket as BaseWebSocket, WebSocketServer } from 'ws';
 import { Request, Response, NextFunction } from 'express-serve-static-core';
 import customerRoutes from './routes/customer.routes';
@@ -140,15 +141,29 @@ const corsOptions: cors.CorsOptions = {
   maxAge: 86400, // 24 hours
 };
 
+// Security Headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false, // Disabled for development to avoid blocking local assets
+}));
+
 // Enable CORS with options
 app.use(cors(corsOptions));
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
-// Parse JSON bodies with increased limit for photo uploads
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// --- BODY PARSER SECURITY ---
+// Global limit for standard JSON (Industry standard 100kb-1mb)
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ limit: '2mb', extended: true }));
+
+// High limit ONLY for routes that handle base64 photo uploads
+const uploadLimit = express.json({ limit: '50mb' });
+app.use('/api/tickets/:id/photos', uploadLimit);
+app.use('/api/activities/:id/photos', uploadLimit);
+app.use('/api/photos', uploadLimit); // If generic upload exists
+// --- END BODY PARSER SECURITY ---
 
 // Parse cookies
 app.use(cookieParser());
@@ -159,7 +174,7 @@ initializeStorage();
 // Global rate limiting - Industry standard
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per window (industry standard)
+  max: 3000, // Limit each IP to 3000 requests per window (increased for office environments)
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -170,10 +185,28 @@ app.use(globalLimiter);
 const storagePath = storageConfig.root;
 app.use('/storage', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Range');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  // Set cache headers for better performance
+  if (req.method === 'GET') {
+    res.header('Cache-Control', 'public, max-age=31536000');
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
   next();
-}, express.static(storagePath));
+}, express.static(storagePath, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.webp')) {
+      res.setHeader('Content-Type', 'image/webp');
+    }
+  },
+  maxAge: '1y',
+  immutable: true
+}));
 
 // Also serve from parent project root storage as a fallback (in case files were saved there)
 const parentStoragePath = path.resolve(process.cwd(), '..', 'storage');

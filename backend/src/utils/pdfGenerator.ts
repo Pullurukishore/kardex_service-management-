@@ -172,7 +172,7 @@ export const generatePdf = async (
                     logoAdded = true;
                     break;
                 } catch (e) {
-                    console.log('Could not add logo to PDF:', e);
+
                 }
             }
         }
@@ -492,7 +492,7 @@ export const generatePdf = async (
 
         doc.end();
     } catch (error) {
-        console.error('PDF generation error:', error);
+
         if (!res.headersSent) {
             res.status(500).json({ error: 'Failed to generate PDF report' });
         }

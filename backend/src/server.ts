@@ -7,7 +7,7 @@ import './utils/console-wrapper';
 import { createServer, Server as HttpServer, IncomingMessage } from 'http';
 import { WebSocket, WebSocketServer } from 'ws';
 import { app } from './app';
-import { prisma } from './lib/prisma';
+import { prisma } from './config/db';
 import { logger } from './utils/logger';
 import { CustomWebSocket } from './types/custom';
 import { cronService } from './services/cron.service';
@@ -19,38 +19,38 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
 const server: HttpServer = createServer(app);
 
 // Create WebSocket server
-const wss = new WebSocketServer({ 
-  server, 
-  path: '/api/notifications/ws' 
+const wss = new WebSocketServer({
+  server,
+  path: '/api/notifications/ws'
 });
 
 // Handle WebSocket connections
 wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
   // Safe type conversion
   const customWs = ws as unknown as CustomWebSocket;
-  
+
   // Initialize custom properties
   customWs.isAlive = true;
-  
+
   // Extract user ID from the auth token in the query params
   const token = new URLSearchParams(req.url?.split('?')[1] || '').get('token');
   const userId = token || '1'; // Replace with actual JWT verification
-  
+
   if (!userId) {
     logger.warn('WebSocket connection attempt without userId');
     ws.close(4001, 'User ID is required');
     return;
   }
-  
+
   customWs.userId = userId;
-  
+
   logger.info(`New WebSocket connection: ${userId}`);
-  
+
   // Handle pong messages
   customWs.on('pong', () => {
     customWs.isAlive = true;
   });
-  
+
   // Handle messages
   customWs.on('message', (message: string) => {
     try {
@@ -66,7 +66,7 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
       logger.error('Error processing WebSocket message:', error);
     }
   });
-  
+
   // Handle close
   customWs.on('close', () => {
     if (customWs.userId) {
@@ -80,12 +80,12 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 const interval = setInterval(() => {
   wss.clients.forEach((client) => {
     const customClient = client as unknown as CustomWebSocket;
-    
+
     if (!customClient.isAlive) {
       customClient.terminate();
       return;
     }
-    
+
     customClient.isAlive = false;
     customClient.ping();
   });
@@ -99,13 +99,13 @@ wss.on('close', () => {
 // Shutdown handler
 const shutdown = () => {
   logger.info('Shutting down server...');
-  
+
   wss.clients.forEach(client => {
     client.close(1001, 'Server shutting down');
   });
-  
+
   server.close(() => {
-    
+
     prisma.$disconnect()
       .then(() => process.exit(0))
       .catch((error: unknown) => {
@@ -119,11 +119,23 @@ const shutdown = () => {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
+// Handle unhandled promise rejections and uncaught exceptions to prevent crashes
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optional: Shutdown gracefully if it's a critical error
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  // For safety, shutdown gracefully on uncaught exceptions
+  shutdown();
+});
+
 // Start server
 const startServer = async () => {
   try {
     await prisma.$connect();
-    
+
     // Initialize local storage
     logger.info('Initializing local storage...');
     try {
@@ -132,11 +144,11 @@ const startServer = async () => {
     } catch (error) {
       logger.error('❌ Local storage initialization failed - photo uploads will not work:', error);
     }
-    
+
     // Start cron jobs
     cronService.startAutoCheckoutJob();
     logger.info('Cron jobs initialized');
-    
+
     server.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`Access the server at http://0.0.0.0:${PORT}`);

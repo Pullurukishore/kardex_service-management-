@@ -49,7 +49,7 @@ export const logInvoiceActivity = async (params: LogActivityParams) => {
         });
     } catch (error) {
         // Log error but don't throw - activity logging should not break main operations
-        console.error('Failed to log invoice activity:', error);
+
     }
 };
 

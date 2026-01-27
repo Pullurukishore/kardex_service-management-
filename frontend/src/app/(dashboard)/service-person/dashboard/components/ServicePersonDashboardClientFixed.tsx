@@ -228,7 +228,10 @@ export default function ServicePersonDashboardClientFixed({ initialLocation, ini
     }, 1000);
   }, [fetchDashboardData]);
 
-  const handleAttendanceChange = useCallback(async () => {
+  const handleAttendanceChange = useCallback(async (newStatus?: any) => {
+    if (newStatus) {
+      setAttendanceStatus(newStatus);
+    }
     await fetchDashboardData();
   }, [fetchDashboardData]);
 

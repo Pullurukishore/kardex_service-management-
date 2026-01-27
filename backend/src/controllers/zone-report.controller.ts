@@ -131,7 +131,7 @@ export const getZoneDashboard = async (req: Request, res: Response) => {
 
     // Calculate average resolution time
     const resolvedTickets = tickets.filter((t: any) => t.actualResolutionTime);
-    const avgResolutionTime = resolvedTickets.length > 0 
+    const avgResolutionTime = resolvedTickets.length > 0
       ? resolvedTickets.reduce((sum: number, t: any) => sum + (t.actualResolutionTime || 0), 0) / resolvedTickets.length
       : 0;
 
@@ -171,7 +171,8 @@ export const getZoneDashboard = async (req: Request, res: Response) => {
       timeframe
     });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -211,7 +212,8 @@ export const getTicketStatusDistribution = async (req: Request, res: Response) =
 
     res.json({ distribution, totalTickets, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -251,7 +253,8 @@ export const getPriorityDistribution = async (req: Request, res: Response) => {
 
     res.json({ distribution, totalTickets, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -288,7 +291,7 @@ export const getCustomerPerformance = async (req: Request, res: Response) => {
       const criticalTickets = tickets.filter((t: any) => t.priority === 'CRITICAL').length;
 
       const resolvedTickets = tickets.filter((t: any) => t.actualResolutionTime);
-      const avgResolutionTime = resolvedTickets.length > 0 
+      const avgResolutionTime = resolvedTickets.length > 0
         ? resolvedTickets.reduce((sum: number, t: any) => sum + (t.actualResolutionTime || 0), 0) / resolvedTickets.length
         : 0;
 
@@ -313,7 +316,8 @@ export const getCustomerPerformance = async (req: Request, res: Response) => {
 
     res.json({ customers: customerPerformance, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -355,7 +359,7 @@ export const getServicePersonPerformance = async (req: Request, res: Response) =
       const activeTickets = tickets.filter((t: any) => ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'IN_PROCESS'].includes(t.status)).length;
 
       const resolvedTickets = tickets.filter((t: any) => t.actualResolutionTime);
-      const avgResolutionTime = resolvedTickets.length > 0 
+      const avgResolutionTime = resolvedTickets.length > 0
         ? resolvedTickets.reduce((sum: number, t: any) => sum + (t.actualResolutionTime || 0), 0) / resolvedTickets.length
         : 0;
 
@@ -380,7 +384,8 @@ export const getServicePersonPerformance = async (req: Request, res: Response) =
 
     res.json({ servicePersons: performance, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -407,13 +412,10 @@ export const getAssetPerformance = async (req: Request, res: Response) => {
             createdAt: {
               gte: startDate
             }
-          }
-        },
-        serviceHistory: {
-          orderBy: {
-            performedAt: 'desc'
           },
-          take: 1
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       }
     });
@@ -424,11 +426,11 @@ export const getAssetPerformance = async (req: Request, res: Response) => {
       const criticalTickets = tickets.filter((t: any) => t.priority === 'CRITICAL').length;
 
       const resolvedTickets = tickets.filter((t: any) => t.actualResolutionTime);
-      const avgResolutionTime = resolvedTickets.length > 0 
+      const avgResolutionTime = resolvedTickets.length > 0
         ? resolvedTickets.reduce((sum: number, t: any) => sum + (t.actualResolutionTime || 0), 0) / resolvedTickets.length
         : 0;
 
-      const lastService = asset.serviceHistory.length > 0 ? asset.serviceHistory[0] : null;
+      const lastService = tickets.length > 0 ? tickets[0] : null;
 
       return {
         assetId: asset.id,
@@ -438,7 +440,7 @@ export const getAssetPerformance = async (req: Request, res: Response) => {
         totalTickets,
         criticalTickets,
         avgResolutionTime: Math.round(avgResolutionTime),
-        lastServiceDate: lastService ? lastService.performedAt.toISOString() : 'Never',
+        lastServiceDate: lastService ? lastService.createdAt.toISOString() : 'Never',
         status: asset.status
       };
     });
@@ -448,7 +450,8 @@ export const getAssetPerformance = async (req: Request, res: Response) => {
 
     res.json({ assets: assetPerformance, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -480,7 +483,7 @@ export const getTicketTrends = async (req: Request, res: Response) => {
     // Generate date range
     const trends: TicketTrend[] = [];
     const currentDate = new Date(startDate);
-    
+
     while (currentDate <= now) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const nextDate = new Date(currentDate);
@@ -513,7 +516,8 @@ export const getTicketTrends = async (req: Request, res: Response) => {
 
     res.json({ trends, timeframe });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -557,13 +561,14 @@ export const getSLAMetrics = async (req: Request, res: Response) => {
       overallCompliance: Math.round(overallCompliance * 100) / 100
     };
 
-    res.json({ 
-      metrics, 
+    res.json({
+      metrics,
       totalTickets: totalSLATickets,
-      timeframe 
+      timeframe
     });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -615,7 +620,8 @@ export const getRecentActivities = async (req: Request, res: Response) => {
 
     res.json({ activities: formattedActivities });
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -627,7 +633,7 @@ export const exportZoneReport = async (req: Request, res: Response) => {
 
     // Get all the data
     const dashboardData = await getZoneDashboardData(parseInt(zoneId), timeframe as string);
-    
+
     if (format === 'csv') {
       // Convert to CSV format
       const csv = convertToCSV(dashboardData);
@@ -641,7 +647,8 @@ export const exportZoneReport = async (req: Request, res: Response) => {
       res.json(dashboardData);
     }
 
-  } catch (error) {    res.status(500).json({ error: 'Internal server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -693,7 +700,7 @@ async function getZoneDashboardData(zoneId: number, timeframe: string) {
 function convertToCSV(data: any): string {
   const tickets = data.tickets;
   const headers = ['ID', 'Title', 'Status', 'Priority', 'Customer', 'Asset', 'Created At', 'Assigned To'];
-  
+
   const rows = tickets.map((ticket: any) => [
     ticket.id,
     ticket.title,

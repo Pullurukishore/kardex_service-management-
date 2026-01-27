@@ -261,6 +261,33 @@ class ApiService {
     return response.data;
   }
 
+  // Admin Activity Log methods (for Ticket/Offer Activity Log pages)
+  async getTicketActivityLogs(params?: any) {
+    const response = await api.get(`${this.baseURL}/admin/ticket-activity-log`, { params });
+    return response.data;
+  }
+
+  async getTicketActivityStats() {
+    const response = await api.get(`${this.baseURL}/admin/ticket-activity-log/stats`);
+    return response.data;
+  }
+
+  async getOfferActivityLogs(params?: any) {
+    const response = await api.get(`${this.baseURL}/admin/offer-activity-log`, { params });
+    return response.data;
+  }
+
+  async getOfferActivityStats() {
+    const response = await api.get(`${this.baseURL}/admin/offer-activity-log/stats`);
+    return response.data;
+  }
+
+  async getActivityLogUsers() {
+    const response = await api.get(`${this.baseURL}/admin/activity-log/users`);
+    return response.data;
+  }
+
+
   // Customer methods
   async getCustomers(params?: { zoneId?: number | string;[key: string]: any }) {
     const { include, zoneId, limit = 100, ...queryParams } = params || {};

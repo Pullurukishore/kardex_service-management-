@@ -20,8 +20,12 @@ router.get('/quote/admin/:id', OfferController.getOfferForQuoteAdminWrapper);
 // Get all offers (both admin and zone users)
 router.get('/', OfferController.getOffersWrapper);
 
+// Get offer activity log (must come before /:id route)
+router.get('/:id/activity-log', OfferController.getOfferActivityLogWrapper);
+
 // Get single offer
 router.get('/:id', OfferController.getOfferWrapper);
+
 
 // Create offer (both admin and zone users)
 router.post('/', OfferController.createOfferWrapper);

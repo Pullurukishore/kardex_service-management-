@@ -12,6 +12,8 @@ import {
   FileText,
   Zap,
   Clock,
+  History,
+  Image as ImageIcon,
 } from "lucide-react";
 
 export type NavItem = {
@@ -75,6 +77,14 @@ export const adminNavigation: NavItem[] = [
         roles: [UserRole.ADMIN],
         iconColor: "text-[#546A7A]",
         iconBgColor: "bg-[#96AEC2]/10"
+      },
+      {
+        title: "Activity Log",
+        href: "/admin/offer-activity-log",
+        icon: History,
+        roles: [UserRole.ADMIN],
+        iconColor: "text-[#976E44]",
+        iconBgColor: "bg-[#CE9F6B]/10"
       }
     ]
   },
@@ -102,7 +112,6 @@ export const adminNavigation: NavItem[] = [
         iconColor: "text-[#546A7A]",
         iconBgColor: "bg-[#6F8A9D]/10"
       },
-
       {
         title: "Service Zones",
         href: "/admin/service-zones",
@@ -126,11 +135,17 @@ export const adminNavigation: NavItem[] = [
         roles: [UserRole.ADMIN],
         iconColor: "text-[#546A7A]",
         iconBgColor: "bg-[#546A7A]/10"
+      },
+      {
+        title: "Activity Log",
+        href: "/admin/ticket-activity-log",
+        icon: History,
+        roles: [UserRole.ADMIN],
+        iconColor: "text-[#546A7A]",
+        iconBgColor: "bg-[#6F8A9D]/10"
       }
     ]
   },
-
-
   {
     title: "Activity Management",
     href: "/admin/attendance",
@@ -154,8 +169,7 @@ export const adminNavigation: NavItem[] = [
         roles: [UserRole.ADMIN],
         iconColor: "text-[#4F6A64]",
         iconBgColor: "bg-[#82A094]/10"
-      },
-
+      }
     ]
   },
   {
@@ -165,6 +179,14 @@ export const adminNavigation: NavItem[] = [
     roles: [UserRole.ADMIN],
     iconColor: "text-[#546A7A]",
     iconBgColor: "bg-[#6F8A9D]/10",
+  },
+  {
+    title: "Image Management",
+    href: "/admin/image-management",
+    icon: ImageIcon,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
   },
 ];
 
@@ -628,6 +650,22 @@ export const adminTicketsNavigation: NavItem[] = [
     iconColor: "text-[#546A7A]",
     iconBgColor: "bg-[#6F8A9D]/10",
   },
+  {
+    title: "Activity Log",
+    href: "/admin/ticket-activity-log",
+    icon: History,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#6F8A9D]/10",
+  },
+  {
+    title: "Image Management",
+    href: "/admin/image-management",
+    icon: ImageIcon,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
+  },
 ];
 
 // Admin Offers Navigation (flattened - no submenus)
@@ -695,6 +733,22 @@ export const adminOffersNavigation: NavItem[] = [
     roles: [UserRole.ADMIN],
     iconColor: "text-[#546A7A]",
     iconBgColor: "bg-[#6F8A9D]/10"
+  },
+  {
+    title: "Activity Log",
+    href: "/admin/offer-activity-log",
+    icon: History,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-[#976E44]",
+    iconBgColor: "bg-[#CE9F6B]/10"
+  },
+  {
+    title: "Image Management",
+    href: "/admin/image-management",
+    icon: ImageIcon,
+    roles: [UserRole.ADMIN],
+    iconColor: "text-[#546A7A]",
+    iconBgColor: "bg-[#96AEC2]/10"
   },
 ];
 

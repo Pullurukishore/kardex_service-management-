@@ -66,7 +66,7 @@ export const requireFinanceAccess: RequestHandler = async (
 
         next();
     } catch (error) {
-        console.error('Finance auth middleware error:', error);
+
         res.status(500).json({
             success: false,
             error: 'Authorization failed',
@@ -139,7 +139,7 @@ export const requireFinanceRole = (allowedRoles: FinanceRole[]): RequestHandler 
 
             next();
         } catch (error) {
-            console.error('Finance role middleware error:', error);
+
             res.status(500).json({
                 success: false,
                 error: 'Authorization failed',

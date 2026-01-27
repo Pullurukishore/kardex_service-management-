@@ -174,7 +174,8 @@ const DEFAULT_MACHINE_DETAILS: MachineDetails = {
 
 // ==================== Helper Functions ====================
 const calculateItemTotal = (unitPrice: string, quantity: number): number => {
-  const price = parseFloat(unitPrice) || 0
+  const cleanPrice = typeof unitPrice === 'string' ? unitPrice.replace(/,/g, '') : unitPrice
+  const price = parseFloat(cleanPrice as string) || 0
   return price * quantity
 }
 
@@ -193,8 +194,8 @@ interface LogoProps {
   className?: string
 }
 
-const KardexLogo = ({ className = 'h-6' }: LogoProps) => (
-  <div className="mb-4">
+const KardexLogo = ({ className = 'h-10' }: LogoProps) => (
+  <div className="flex justify-between items-start mb-6 border-b pb-4">
     <img 
       src="/kardex.png" 
       alt="Kardex Remstar" 
@@ -204,6 +205,9 @@ const KardexLogo = ({ className = 'h-6' }: LogoProps) => (
         console.error('Logo not found')
       }}
     />
+    <div className="text-[10px] text-gray-400 text-right uppercase tracking-widest font-semibold pt-2">
+      Official Quotation
+    </div>
   </div>
 )
 
@@ -216,8 +220,8 @@ const PageFooter = ({ pageNumber, totalPages = 11 }: PageFooterProps) => (
   <div className="page-footer">
     <div className="footer-content">
       <span>{pageNumber} / {totalPages}</span>
-      <span>Service Care Vertrag</span>
-      <span>{format(new Date(), 'yyyy/MM/dd')}</span>
+      <span>Service Care Contract</span>
+      <span>{format(new Date(), 'dd/MM/yyyy')}</span>
     </div>
   </div>
 )
@@ -511,57 +515,9 @@ export default function QuoteGenerationPage() {
 
   const handleDownloadPDF = useCallback(() => {
     window.print()
+    toast.success('Use your browser\'s print dialog to save as PDF')
   }, [])
 
-  // Download Word Document
-  const handleDownloadWord = useCallback(async () => {
-    if (!printRef.current || !offer) {
-      toast.error('Quote content not available')
-      return
-    }
-
-    try {
-      toast.loading('Generating Word document...', { id: 'word-download' })
-
-      // Get the HTML content from the print ref
-      const htmlContent = printRef.current.innerHTML
-
-      // Call the API to generate Word document
-      const response = await fetch('/api/quote/word', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          html: htmlContent,
-          filename: `Quote_${offer.offerReferenceNumber || offerId}.docx`
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Failed to generate Word document')
-      }
-
-      // Get the blob from response
-      const blob = await response.blob()
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `Quote_${offer.offerReferenceNumber || offerId}.docx`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-
-      toast.success('Word document downloaded successfully!', { id: 'word-download' })
-    } catch (error: any) {
-      console.error('Error downloading Word document:', error)
-      toast.error(error.message || 'Failed to download Word document', { id: 'word-download' })
-    }
-  }, [offer, offerId])
 
 
   // Save Quote Changes to Backend
@@ -844,26 +800,28 @@ export default function QuoteGenerationPage() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50/80 print:bg-white">
       {/* Action Buttons - Hidden on print */}
-      <div className="container mx-auto py-4 print:hidden">
-        <div className="flex items-center justify-between mb-4">
+      <div className="container mx-auto py-6 print:hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => router.push(`/admin/offers/${offerId}`)}
             aria-label="Go back to offer details"
+            className="hover:bg-white/80"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Offer
           </Button>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-3">
             {isEditMode && (
               <Button 
                 onClick={handleCancelEdit}
                 variant="outline"
                 disabled={saving}
+                className="bg-white"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -872,6 +830,7 @@ export default function QuoteGenerationPage() {
             <Button 
               onClick={handleToggleEditMode}
               variant={isEditMode ? "default" : "outline"}
+              className={isEditMode ? "bg-[#4472C4] hover:bg-[#365ba3]" : "bg-white"}
               disabled={saving}
             >
               {saving ? (
@@ -891,45 +850,35 @@ export default function QuoteGenerationPage() {
                 </>
               )}
             </Button>
-            <Button onClick={handlePrint} variant="outline" disabled={isEditMode || saving}>
+            <Button onClick={handlePrint} variant="outline" disabled={isEditMode || saving} className="bg-white">
               <Printer className="h-4 w-4 mr-2" />
               Print
             </Button>
-            <Button onClick={handleDownloadPDF} variant="outline" disabled={isEditMode || saving}>
+            <Button onClick={handleDownloadPDF} variant="outline" disabled={isEditMode || saving} className="bg-white">
               <Download className="h-4 w-4 mr-2" />
               Download PDF
-            </Button>
-            <Button onClick={handleDownloadWord} variant="outline" disabled={isEditMode || saving}>
-              <FileText className="h-4 w-4 mr-2" />
-              Download Word
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Quotation Document */}
-      <div ref={printRef} className="quotation-document">
-        <div className="document-container">
-          {/* Page 1 - Main Quote */}
-          <div className="page page-1">
+      {/* Quotation Document Wrapper */}
+      <div className="max-w-[1200px] mx-auto pb-20 print:pb-0">
+        <div ref={printRef} className="quotation-document">
+          <div className="document-container">
+            {/* Page 1 - Main Quote */}
+            <div className="page page-1 shadow-2xl print:shadow-none mb-10 print:mb-0">
             {/* Logo */}
             <KardexLogo />
 
             <div className="page-content">
-              {/* Title - Simple Underlined Blue Heading */}
-              <div className="quote-title-section">
-                {isEditMode ? (
-                  <Input
-                    value={editableData.title}
-                    onChange={(e) => setEditableData({...editableData, title: e.target.value})}
-                    placeholder="Quote Title"
-                    className="text-center text-lg font-bold text-[#546A7A]"
-                  />
-                ) : (
-                  <h1 className="quote-main-title">
-                    <span className="quote-title-underlined"><u>{editableData.title || 'Kardex Remstar Spare Parts Package'}</u></span>
-                  </h1>
-                )}
+              {/* Title - Elegant and Branded */}
+              <div className="page-title mt-8 mb-12">
+                <h1 className="text-center">
+                  <span className="bg-[#4472C4] text-white px-8 py-3 rounded-sm shadow-md border-b-4 border-[#365ba3] uppercase tracking-widest text-lg font-bold">
+                    Spare Parts Quotation
+                  </span>
+                </h1>
               </div>
 
               {/* Header Info - Reference and GST */}
@@ -998,7 +947,7 @@ export default function QuoteGenerationPage() {
                   </div>
                 ) : (
                   <>
-                    <p className="customer-name"><strong>M/s {editableData.customerName || offer.customer?.companyName || offer.company}</strong></p>
+                    <p className="customer-name"><strong>M/s {editableData.customerName.startsWith('M/s') ? editableData.customerName.replace(/^M\/s\s*/, '') : (editableData.customerName || offer?.customer?.companyName || offer?.company || '')}</strong></p>
                     {(editableData.customerAddress || offer.customer?.address) && <p className="customer-address">{editableData.customerAddress || offer.customer?.address}</p>}
                     {(editableData.customerCity || editableData.customerState || offer.customer?.city || offer.customer?.state) && (
                       <p className="customer-location">
@@ -1160,9 +1109,23 @@ export default function QuoteGenerationPage() {
                       />
                     ))}
                     <tr className="total-row">
-                      <td colSpan={6} className="text-right">TOTAL</td>
-                      <td className="text-right">
+                      <td colSpan={6} className="text-right font-semibold">SUB TOTAL</td>
+                      <td className="text-right font-semibold">
                         {formatCurrency(subtotal)}
+                      </td>
+                      {isEditMode && <td className="print:hidden"></td>}
+                    </tr>
+                    <tr className="tax-row-display">
+                      <td colSpan={6} className="text-right text-xs">GST ({editableData.gstRate}%)</td>
+                      <td className="text-right text-xs">
+                        {formatCurrency(subtotal * (editableData.gstRate / 100))}
+                      </td>
+                      {isEditMode && <td className="print:hidden"></td>}
+                    </tr>
+                    <tr className="grand-total-row bg-[#4472C4]/5">
+                      <td colSpan={6} className="text-right font-bold text-[#4472C4] py-3">GRAND TOTAL</td>
+                      <td className="text-right font-bold text-[#4472C4] py-3">
+                        {formatCurrency(subtotal * (1 + editableData.gstRate / 100))}
                       </td>
                       {isEditMode && <td className="print:hidden"></td>}
                     </tr>
@@ -1177,7 +1140,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 2 - Terms and Conditions */}
-          <div className="page page-2">
+          <div className="page page-2 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content">
@@ -1334,7 +1297,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 3 - Service Products */}
-          <div className="page page-3">
+          <div className="page page-3 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content">
@@ -1441,7 +1404,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 4 - Service Package */}
-          <div className="page page-4">
+          <div className="page page-4 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content">
@@ -1472,7 +1435,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 5 - General Terms */}
-          <div className="page page-5">
+          <div className="page page-5 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1553,7 +1516,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 6 - General Terms Continued */}
-          <div className="page page-6">
+          <div className="page page-6 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1628,7 +1591,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Pages 7-11 - Terms Sections */}
-          <div className="page page-7">
+          <div className="page page-7 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1691,7 +1654,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 8 - Part B Continued + Part C Start */}
-          <div className="page page-8">
+          <div className="page page-8 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1770,7 +1733,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 9 - C2 Individual Services */}
-          <div className="page page-9">
+          <div className="page page-9 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1845,7 +1808,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 10 - C2 Continued, C3 Service Contracts */}
-          <div className="page page-10">
+          <div className="page page-10 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1893,7 +1856,7 @@ export default function QuoteGenerationPage() {
           </div>
 
           {/* Page 11 - C3 Remuneration, Warranty, Termination */}
-          <div className="page page-11">
+          <div className="page page-11 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content terms-page">
@@ -1931,8 +1894,6 @@ export default function QuoteGenerationPage() {
             {/* Page 11 Footer */}
             <PageFooter pageNumber={11} />
           </div>
-        </div>
-      </div>
 
       {/* Modern PDF/Word-friendly Styles */}
       <style jsx global>{`
@@ -1946,27 +1907,25 @@ export default function QuoteGenerationPage() {
         .document-container {
           max-width: 210mm; /* A4 width */
           margin: 0 auto;
-          background: white;
+          background: transparent;
         }
 
         /* ==================== PAGE STRUCTURE ==================== */
         .page {
-          width: 100%;
-          min-height: 297mm; /* A4 height */
+          width: 210mm;
+          min-height: 297mm;
           padding: 20mm;
-          margin: 0;
+          margin: 0 auto;
           background: white;
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
-          page-break-after: always;
-          break-after: page;
           position: relative;
         }
 
-        .page:last-child {
-          page-break-after: avoid;
-          break-after: avoid;
+        .page + .page {
+          page-break-before: always;
+          break-before: page;
         }
 
         .page-content {
@@ -2153,7 +2112,7 @@ export default function QuoteGenerationPage() {
         }
 
         .tax-label {
-          background: #4472C4;
+          background: #75242D;
           color: white;
           padding: 2px 8px;
           border-radius: 4px;
@@ -3328,40 +3287,66 @@ export default function QuoteGenerationPage() {
         /* ==================== PAGE FOOTER ==================== */
         .page-footer {
           position: absolute;
-          bottom: 15mm;
+          bottom: 12mm;
           left: 20mm;
           right: 20mm;
           border-top: 1px solid #d1d5db;
           padding-top: 8px;
+          z-index: 10;
         }
 
         .footer-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          display: flex !important;
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          width: 100% !important;
           font-size: 10px;
           color: #6b7280;
         }
 
+        .footer-content span {
+          flex: 1;
+        }
+
+        .footer-content span:nth-child(2) {
+          text-align: center;
+          flex: 2;
+        }
+
+        .footer-content span:last-child {
+          text-align: right;
+        }
+
         /* Page structure - global style */
         .page {
-          overflow: hidden !important;
+          background: white;
+          width: 210mm;
+          min-height: 297mm;
+          padding: 20mm;
+          margin: 0 auto 30px auto;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          position: relative;
+          color: #374151;
         }
 
         /* ==================== PRINT STYLES - ENHANCED ==================== */
         @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
           /* Base print setup - prevent extra margins causing blank pages */
           * {
             margin: 0;
             padding: 0;
-            scrollbar-width: none !important; /* Firefox */
-            -ms-overflow-style: none !important; /* IE/Edge */
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
           }
           
           *::-webkit-scrollbar {
-            display: none !important; /* Chrome/Safari */
-            width: 0 !important;
-            height: 0 !important;
+            display: none !important;
           }
           
           html, body {
@@ -3369,10 +3354,43 @@ export default function QuoteGenerationPage() {
             padding: 0 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-            color-adjust: exact !important;
             background: white !important;
             width: 210mm !important;
             height: auto !important;
+          }
+
+          .quotation-document {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: white !important;
+          }
+
+          .document-container {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            max-width: 210mm !important;
+            overflow: visible !important;
+            background: white !important;
+          }
+
+          .page {
+            margin: 0 !important;
+            padding: 15mm 20mm 20mm 20mm !important; /* Accurate A4 Padding */
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            position: relative !important;
+            background: white !important;
+            box-shadow: none !important;
+            overflow: hidden !important;
+          }
+
+          .page + .page {
+            page-break-before: always !important;
+            break-before: page !important;
           }
 
           .print\\:hidden {
@@ -3787,18 +3805,25 @@ export default function QuoteGenerationPage() {
             print-color-adjust: exact !important;
           }
 
-          /* Terms pages - SINGLE COLUMN layout for better readability */
+          /* Terms pages - layout for better readability */
           .page-6 .terms-content,
           .page-7 .terms-content,
           .page-8 .terms-content,
-          .page-9 .terms-content,
+          .page-9 .terms-content {
+            display: block !important;
+            column-count: 1 !important;
+            font-size: 8px !important;
+            line-height: 1.3 !important;
+          }
+
           .page-10 .terms-content,
           .page-11 .terms-content {
             display: block !important;
-            column-count: 1 !important;
-            grid-template-columns: none !important;
-            font-size: 8px !important;
-            line-height: 1.3 !important;
+            column-count: 2 !important;
+            column-gap: 20px !important;
+            font-size: 7.5px !important;
+            line-height: 1.2 !important;
+            color: #000 !important;
           }
 
           /* Section headers */
@@ -3879,67 +3904,21 @@ export default function QuoteGenerationPage() {
             color: #000 !important;
           }
 
-           /* Footer positioning */
           .page-footer {
             position: absolute !important;
-            bottom: 15mm !important;
+            bottom: 12mm !important;
             left: 20mm !important;
             right: 20mm !important;
             z-index: 100 !important;
-            display: block !important;
-            background: white !important; /* Ensure background doesn't hide it */
-          }
-        }
-
-        /* ==================== RESPONSIVE DESIGN ==================== */
-        @media screen and (max-width: 768px) {
-          .document-container {
-            max-width: 100%;
-            padding: 0 16px;
-          }
-
-          .page {
-            padding: 16px;
-            min-height: auto;
-          }
-
-          .header-info {
-            grid-template-columns: 1fr;
-            gap: 12px;
-          }
-
-          .services-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .data-table {
-            font-size: 11px;
-          }
-
-          .data-table th,
-          .data-table td {
-            padding: 6px;
-          }
-        }
-
-        @media print {
-          .page {
-            height: auto !important;
-            min-height: 297mm !important;
-            overflow: visible !important;
-          }
-          
-          .page-1 {
-            page-break-after: always;
-          }
-
-          .document-container {
-            height: auto !important;
-            overflow: visible !important;
+            display: flex !important;
+            background: white !important;
+            border-top: 1px solid #d1d5db !important;
           }
         }
       `}</style>
+        </div>
+      </div>
     </div>
-    
-  )
+  </div>
+)
 }

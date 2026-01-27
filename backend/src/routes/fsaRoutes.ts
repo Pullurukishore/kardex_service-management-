@@ -14,12 +14,14 @@ import {
   getServiceReports,
   exportFSAData
 } from '../controllers/fsaController';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, requireRole } from '../middleware/auth.middleware';
+import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
-// All routes require authentication
+// All routes require authentication and specific roles
 router.use(authenticate);
+router.use(requireRole(['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'EXPERT_HELPDESK'] as UserRole[]));
 
 // Core FSA Dashboard routes
 router.get('/', getFSADashboard);

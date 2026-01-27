@@ -194,14 +194,14 @@ export default function ZoneCreateTicketPage() {
 
       try {
         setIsLoadingCustomers(true);
-        // Fetch customers for the zone user's zone only
-        const customersRes = await api.get(`/customers?serviceZoneId=${zoneId}&include=contacts,assets`);
-        const formattedCustomers = customersRes.data.map((customer: any) => ({
+        // Fetch lean customers for the zone user's zone only
+        const customersRes = await api.get(`/customers?serviceZoneId=${zoneId}`);
+        const leanCustomers = customersRes.data.map((customer: any) => ({
           ...customer,
           contacts: customer.contacts || [],
           assets: customer.assets || []
         }));
-        setCustomers(formattedCustomers);
+        setCustomers(leanCustomers);
         form.setValue('customerId', '');
         form.setValue('contactId', '');
         form.setValue('assetId', '');
@@ -216,11 +216,13 @@ export default function ZoneCreateTicketPage() {
     };
 
     fetchZoneCustomers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoneId]);
 
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  // Lazy load customer details when a customer is selected
   useEffect(() => {
-    const updateCustomerData = () => {
+    const fetchCustomerDetails = async () => {
       if (!customerId) {
         setContacts([]);
         setAssets([]);
@@ -229,21 +231,34 @@ export default function ZoneCreateTicketPage() {
         return;
       }
 
-      const selectedCustomer = customers.find(c => c.id.toString() === customerId);
-      if (selectedCustomer) {
-        setContacts(selectedCustomer.contacts || []);
-        setAssets(selectedCustomer.assets || []);
-        form.setValue('contactId', '');
-        form.setValue('assetId', '');
-        if (selectedCustomer.contacts?.length === 1) {
-          form.setValue('contactId', selectedCustomer.contacts[0].id.toString());
+      try {
+        setIsLoadingDetails(true);
+        const response = await api.get(`/customers/${customerId}?includeAssets=true`);
+        const customerDetails = response.data;
+
+        if (customerDetails) {
+          const freshContacts = customerDetails.contacts || [];
+          const freshAssets = customerDetails.assets || [];
+          
+          setContacts(freshContacts);
+          setAssets(freshAssets);
+          form.setValue('contactId', '');
+          form.setValue('assetId', '');
+          
+          if (freshContacts.length === 1) {
+            form.setValue('contactId', freshContacts[0].id.toString());
+          }
         }
+      } catch (error) {
+        console.error('Failed to fetch details:', error);
+        toast.error('Failed to load customer contacts and assets');
+      } finally {
+        setIsLoadingDetails(false);
       }
     };
 
-    updateCustomerData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customerId, customers]);
+    fetchCustomerDetails();
+  }, [customerId]);
 
   const handleCreateAsset = async (values: AssetFormValues) => {
     if (!customerId) {
@@ -407,7 +422,7 @@ export default function ZoneCreateTicketPage() {
               zoneId={zoneId !== undefined ? Number(zoneId) : undefined}
               customerId={customerId}
               isSubmitting={isSubmitting}
-              isLoadingCustomers={isLoadingCustomers}
+              isLoadingCustomers={isLoadingCustomers || isLoadingDetails}
               onAddContactClick={() => setIsAddContactOpen(true)}
               onAddAssetClick={() => setIsAddAssetOpen(true)}
             />

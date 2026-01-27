@@ -66,18 +66,30 @@ export default function FSMSelectPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
+    // Ensure localStorage is set when this page is accessed directly
     const selectedMod = localStorage.getItem('selectedModule');
-    if (selectedMod !== 'fsm') { router.push('/module-select'); return; }
+    if (!selectedMod) {
+      // User came directly to this page (e.g., from login redirect) - set the module
+      localStorage.setItem('selectedModule', 'fsm');
+    } else if (selectedMod !== 'fsm') {
+      // User selected a different module, redirect
+      router.push('/module-select');
+      return;
+    }
+    
     if (user?.role === 'EXTERNAL_USER') {
       localStorage.setItem('selectedSubModule', 'tickets');
       router.push('/external/tickets');
     }
-  }, [router, user]);
+  }, [router, user, mounted]);
 
   const handleSubModuleSelect = (subModuleId: string) => {
     setSelectedModule(subModuleId);
     if (typeof window !== 'undefined') localStorage.setItem('selectedSubModule', subModuleId);
-    setTimeout(() => router.push(getRoleDashboardPath(subModuleId)), 400);
+    // Minimal delay for UI feedback
+    setTimeout(() => router.push(getRoleDashboardPath(subModuleId)), 100);
   };
 
   const handleBack = () => {
@@ -85,7 +97,17 @@ export default function FSMSelectPage() {
     router.push('/module-select');
   };
 
-  if (!mounted) return null;
+  // Show loading state while mounting
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-6">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#E17F70] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-6 overflow-hidden">

@@ -81,6 +81,7 @@ export default function OfferManagement() {
   const [editingOffer, setEditingOffer] = useState<any>(null)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, pages: 0 })
+  const [summary, setSummary] = useState<any>(null)
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('')
@@ -122,7 +123,10 @@ export default function OfferManagement() {
       const response = await apiService.getUsers({ isActive: 'true' })
       // Handle both response formats: { data: { users: [...] } } and direct array
       const usersData = response.data?.users || response.users || response.data || response || []
-      setUsers(Array.isArray(usersData) ? usersData : [])
+      const filteredUsers = Array.isArray(usersData) 
+        ? usersData.filter((u: any) => u.role === UserRole.ZONE_USER || u.role === UserRole.ZONE_MANAGER)
+        : []
+      setUsers(filteredUsers)
     } catch (error: any) {
       console.error('Failed to fetch users:', error)
       toast.error(error.response?.data?.message || 'Failed to fetch users')
@@ -152,6 +156,7 @@ export default function OfferManagement() {
       const response = await apiService.getOffers(params)
       setOffers(response.offers || [])
       setPagination(response.pagination || { page: 1, limit: 100, total: 0, pages: 0 })
+      setSummary(response.summary || null)
     } catch (error: any) {
       console.error('Failed to fetch offers:', error)
       toast.error(error.response?.data?.error || 'Failed to fetch offers')
@@ -177,6 +182,38 @@ export default function OfferManagement() {
     fetchZones()
     fetchUsers()
   }, [authLoading, isAuthenticated, user?.role])
+
+  // Sort offers
+  const sortedOffers = useMemo(() => {
+    if (!sortField) return offers
+    
+    return [...offers].sort((a, b) => {
+      let aValue = a[sortField]
+      let bValue = b[sortField]
+      
+      // Handle nested properties
+      if (sortField === 'customer') {
+        aValue = a.customer?.companyName || a.company || ''
+        bValue = b.customer?.companyName || b.company || ''
+      } else if (sortField === 'zone') {
+        aValue = a.zone?.name || ''
+        bValue = b.zone?.name || ''
+      } else if (sortField === 'createdBy') {
+        aValue = a.createdBy?.name || ''
+        bValue = b.createdBy?.name || ''
+      } else if (sortField === 'offerValue') {
+        aValue = Number(a.offerValue || 0)
+        bValue = Number(b.offerValue || 0)
+      } else if (sortField === 'probabilityPercentage') {
+        aValue = Number(a.probabilityPercentage || 0)
+        bValue = Number(b.probabilityPercentage || 0)
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [offers, sortField, sortDirection])
 
   // Show loading state while auth is being checked
   if (authLoading) {
@@ -234,38 +271,6 @@ export default function OfferManagement() {
 
   const hasActiveFilters = searchTerm || selectedZone !== 'All Zones' || selectedStage !== 'All Stage' || selectedUser !== 'All Users' || selectedProductType !== 'All Product Types'
 
-  // Sort offers
-  const sortedOffers = useMemo(() => {
-    if (!sortField) return offers
-    
-    return [...offers].sort((a, b) => {
-      let aValue = a[sortField]
-      let bValue = b[sortField]
-      
-      // Handle nested properties
-      if (sortField === 'customer') {
-        aValue = a.customer?.companyName || a.company || ''
-        bValue = b.customer?.companyName || b.company || ''
-      } else if (sortField === 'zone') {
-        aValue = a.zone?.name || ''
-        bValue = b.zone?.name || ''
-      } else if (sortField === 'createdBy') {
-        aValue = a.createdBy?.name || ''
-        bValue = b.createdBy?.name || ''
-      } else if (sortField === 'offerValue') {
-        aValue = Number(a.offerValue || 0)
-        bValue = Number(b.offerValue || 0)
-      } else if (sortField === 'probabilityPercentage') {
-        aValue = Number(a.probabilityPercentage || 0)
-        bValue = Number(b.probabilityPercentage || 0)
-      }
-      
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [offers, sortField, sortDirection])
-
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
@@ -277,13 +282,13 @@ export default function OfferManagement() {
 
   // Calculate statistics
   const stats = {
-    total: pagination.total,
-    active: offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
-    won: offers.filter(o => o.stage === 'WON').length,
-    lost: offers.filter(o => o.stage === 'LOST').length,
-    totalValue: offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
-    avgValue: offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0,
-    conversionRate: pagination.total > 0 ? ((offers.filter(o => o.stage === 'WON').length / pagination.total) * 100) : 0
+    total: summary?.totalCount || pagination.total,
+    active: summary ? (summary.totalCount - summary.wonCount - summary.lostCount) : offers.filter(o => !['WON', 'LOST'].includes(o.stage)).length,
+    won: summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length,
+    lost: summary ? summary.lostCount : offers.filter(o => o.stage === 'LOST').length,
+    totalValue: summary ? summary.totalValue : offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0),
+    avgValue: summary ? (summary.totalCount > 0 ? summary.totalValue / summary.totalCount : 0) : (offers.length > 0 ? offers.reduce((sum, o) => sum + (Number(o.offerValue) || 0), 0) / offers.filter(o => o.offerValue).length : 0),
+    conversionRate: (summary?.totalCount || pagination.total) > 0 ? (((summary ? summary.wonCount : offers.filter(o => o.stage === 'WON').length) / (summary?.totalCount || pagination.total)) * 100) : 0
   }
 
   return (

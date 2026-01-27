@@ -15,7 +15,7 @@ export const getAllPaymentTerms = async (req: Request, res: Response) => {
 
         res.json(terms);
     } catch (error: any) {
-        console.error('Error fetching AR payment terms:', error);
+
         res.status(500).json({ error: 'Failed to fetch payment terms', message: error.message });
     }
 };
@@ -35,7 +35,7 @@ export const getPaymentTermById = async (req: Request, res: Response) => {
 
         res.json(term);
     } catch (error: any) {
-        console.error('Error fetching AR payment term:', error);
+
         res.status(500).json({ error: 'Failed to fetch payment term', message: error.message });
     }
 };
@@ -63,7 +63,7 @@ export const createPaymentTerm = async (req: Request, res: Response) => {
 
         res.status(201).json(term);
     } catch (error: any) {
-        console.error('Error creating AR payment term:', error);
+
         if (error.code === 'P2002') {
             return res.status(400).json({ error: 'Payment term with this code already exists' });
         }
@@ -88,7 +88,7 @@ export const updatePaymentTerm = async (req: Request, res: Response) => {
 
         res.json(term);
     } catch (error: any) {
-        console.error('Error updating AR payment term:', error);
+
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'Payment term not found' });
         }
@@ -120,7 +120,7 @@ export const seedPaymentTerms = async (req: Request, res: Response) => {
 
         res.json({ message: `Seeded ${results.length} payment terms`, terms: results });
     } catch (error: any) {
-        console.error('Error seeding AR payment terms:', error);
+
         res.status(500).json({ error: 'Failed to seed payment terms', message: error.message });
     }
 };

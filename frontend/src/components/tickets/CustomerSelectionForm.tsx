@@ -1,7 +1,7 @@
 'use client';
 
 import { Control } from 'react-hook-form';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -74,34 +74,65 @@ export function CustomerSelectionForm({
   const [contactSearch, setContactSearch] = useState('');
   const [assetSearch, setAssetSearch] = useState('');
 
-  // Filter customers based on search
+  // Debounce search inputs to improve performance
+  const [debouncedCustomerSearch, setDebouncedCustomerSearch] = useState('');
+  const [debouncedContactSearch, setDebouncedContactSearch] = useState('');
+  const [debouncedAssetSearch, setDebouncedAssetSearch] = useState('');
+
+  // Update debounced values with a delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedCustomerSearch(customerSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [customerSearch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedContactSearch(contactSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [contactSearch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedAssetSearch(assetSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [assetSearch]);
+
+  // Filter customers based on debounced search
   const filteredCustomers = useMemo(() => {
-    if (!customerSearch.trim()) return customers;
+    if (!debouncedCustomerSearch.trim()) return customers;
+    const searchLower = debouncedCustomerSearch.toLowerCase();
+    // Limit results for performance if search is empty/short
     return customers.filter(customer => 
-      customer.companyName.toLowerCase().includes(customerSearch.toLowerCase()) ||
-      customer.name?.toLowerCase().includes(customerSearch.toLowerCase())
-    );
-  }, [customers, customerSearch]);
+      customer.companyName.toLowerCase().includes(searchLower) ||
+      customer.name?.toLowerCase().includes(searchLower)
+    ).slice(0, 50); // Limit to 50 results for better rendering performance
+  }, [customers, debouncedCustomerSearch]);
 
-  // Filter contacts based on search
+  // Filter contacts based on debounced search
   const filteredContacts = useMemo(() => {
-    if (!contactSearch.trim()) return contacts;
+    if (!debouncedContactSearch.trim()) return contacts;
+    const searchLower = debouncedContactSearch.toLowerCase();
     return contacts.filter(contact => 
-      contact.name.toLowerCase().includes(contactSearch.toLowerCase()) ||
-      contact.email?.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      contact.name.toLowerCase().includes(searchLower) ||
+      contact.email?.toLowerCase().includes(searchLower) ||
       contact.phone?.includes(contactSearch)
-    );
-  }, [contacts, contactSearch]);
+    ).slice(0, 50);
+  }, [contacts, debouncedContactSearch]);
 
-  // Filter assets based on search
+  // Filter assets based on debounced search
   const filteredAssets = useMemo(() => {
-    if (!assetSearch.trim()) return assets;
+    if (!debouncedAssetSearch.trim()) return assets;
+    const searchLower = debouncedAssetSearch.toLowerCase();
     return assets.filter(asset => 
-      asset.model?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-      asset.serialNo?.toLowerCase().includes(assetSearch.toLowerCase()) ||
-      asset.serialNumber?.toLowerCase().includes(assetSearch.toLowerCase())
-    );
-  }, [assets, assetSearch]);
+      asset.model?.toLowerCase().includes(searchLower) ||
+      asset.serialNo?.toLowerCase().includes(searchLower) ||
+      asset.serialNumber?.toLowerCase().includes(searchLower)
+    ).slice(0, 50);
+  }, [assets, debouncedAssetSearch]);
 
   // Status indicators
   const hasCustomer = !!customerId;
@@ -217,9 +248,9 @@ export function CustomerSelectionForm({
                             <div>
                               <span className="font-medium text-[#546A7A]">{customer.companyName}</span>
                               <div className="flex items-center gap-2 text-xs text-[#AEBFC3]0 mt-0.5">
-                                <span>{customer.contacts?.length || 0} contacts</span>
+                                <span>{(customer as any)._count?.contacts ?? customer.contacts?.length ?? 0} contacts</span>
                                 <span>•</span>
-                                <span>{customer.assets?.length || 0} assets</span>
+                                <span>{(customer as any)._count?.assets ?? customer.assets?.length ?? 0} assets</span>
                               </div>
                             </div>
                           </div>

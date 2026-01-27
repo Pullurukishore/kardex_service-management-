@@ -91,11 +91,9 @@ export default async function DashboardPage() {
       redirect('/auth/login');
     }
 
-    // Fetch initial data on the server
-    const { dashboardData, statusDistribution, ticketTrends } = await getAllDashboardData();
-
-    // Create safe dashboard data with proper typing
-    const safeDashboardData: DashboardData = {
+    // For performance, we render the shell instantly and fetch data on the client
+    // This removes the server-side blocking delay on page reloads
+    const emptyDashboardData: DashboardData = {
       stats: {
         openTickets: { count: 0, change: 0 },
         unassignedTickets: { count: 0, critical: false },
@@ -131,8 +129,7 @@ export default async function DashboardPage() {
         ticketTrends: [],
         zoneWiseTickets: []
       },
-      recentTickets: [],
-      ...dashboardData
+      recentTickets: []
     };
 
     return (
@@ -141,9 +138,9 @@ export default async function DashboardPage() {
           <DashboardErrorBoundary fallback={DashboardErrorFallback}>
             <Suspense fallback={<DashboardLoading />}>
               <DashboardClient 
-                initialDashboardData={safeDashboardData}
-                initialStatusDistribution={statusDistribution || { distribution: [] }}
-                initialTicketTrends={ticketTrends || { trends: [] }}
+                initialDashboardData={emptyDashboardData}
+                initialStatusDistribution={{ distribution: [] }}
+                initialTicketTrends={{ trends: [] }}
               />
             </Suspense>
           </DashboardErrorBoundary>
@@ -151,6 +148,7 @@ export default async function DashboardPage() {
       </>
     );
   } catch (error) {
+
     // Handle authentication errors
     if (error instanceof Error && 
         (error.message.includes('401') || error.message.includes('Unauthorized'))) {

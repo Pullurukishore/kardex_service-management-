@@ -1,5 +1,13 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+
+// Standard cookie options for consistency across the app
+const COOKIE_OPTIONS = {
+  path: '/',
+  sameSite: 'lax' as const,
+  secure: process.env.NODE_ENV === 'production'
+};
+
 import { isTokenExpired } from '@/services/auth.service';
 import { API_BASE_URL } from '../constants';
 
@@ -82,17 +90,42 @@ api.interceptors.request.use(
                 );
 
                 if (response.data?.success && response.data.accessToken) {
-                  setCookie('accessToken', response.data.accessToken);
-                  setCookie('token', response.data.accessToken);
+                  const newToken = response.data.accessToken;
+                  setCookie('accessToken', newToken);
+                  setCookie('token', newToken);
+
+                  // Update localStorage to prevent infinite refresh loops
+                  // The request interceptor checks localStorage first, so it MUST be updated
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('accessToken', newToken);
+                    localStorage.setItem('token', newToken);
+
+                    // Also update development keys if they exist
+                    if (localStorage.getItem('dev_accessToken')) {
+                      localStorage.setItem('dev_accessToken', newToken);
+                    }
+                    if (localStorage.getItem('cookie_accessToken')) {
+                      localStorage.setItem('cookie_accessToken', newToken);
+                    }
+                  }
 
                   // Update refresh token if rotated
                   if (response.data.refreshToken) {
-                    setCookie('refreshToken', response.data.refreshToken);
+                    setCookie('refreshToken', response.data.refreshToken, COOKIE_OPTIONS);
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('refreshToken', response.data.refreshToken);
+                    }
                   }
 
                   // Set userRole cookie if provided in response
-                  if (response.data.user?.role) {
-                    setCookie('userRole', response.data.user.role);
+                  if (response.data.user) {
+                    const displayRole = response.data.user.financeRole || response.data.user.role;
+                    if (displayRole) {
+                      setCookie('userRole', displayRole, COOKIE_OPTIONS);
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('userRole', displayRole);
+                      }
+                    }
                   }
 
                   return response.data.accessToken;
@@ -113,9 +146,10 @@ api.interceptors.request.use(
 
         } catch (error: any) {
           // Clear tokens on refresh failure
-          deleteCookie('accessToken');
-          deleteCookie('token');
-          deleteCookie('refreshToken');
+          deleteCookie('accessToken', COOKIE_OPTIONS);
+          deleteCookie('token', COOKIE_OPTIONS);
+          deleteCookie('refreshToken', COOKIE_OPTIONS);
+          deleteCookie('userRole', COOKIE_OPTIONS);
 
           // Check if backend is down
           if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || !error.response) {
@@ -126,15 +160,9 @@ api.interceptors.request.use(
 
           // Redirect to login (client-side only)
           if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
-            // Show user-friendly message
             const errorCode = error?.response?.data?.code;
-            if (errorCode === 'REFRESH_TOKEN_EXPIRED') {
-              // Store a flag to show session expired message
-              if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.setItem('sessionExpired', 'true');
-              }
-            }
-            window.location.href = '/auth/login';
+            const expiredParam = errorCode === 'REFRESH_TOKEN_EXPIRED' ? '?expired=true' : '';
+            window.location.href = `/auth/login${expiredParam}`;
           }
 
           return Promise.reject(error);
@@ -198,9 +226,11 @@ api.interceptors.response.use(
       if (retryCount >= maxRetries) {
         // Max retries reached, clear tokens and redirect
         if (typeof window !== 'undefined') {
-          deleteCookie('accessToken');
-          deleteCookie('token');
-          deleteCookie('refreshToken');
+          deleteCookie('accessToken', COOKIE_OPTIONS);
+          deleteCookie('token', COOKIE_OPTIONS);
+          deleteCookie('refreshToken', COOKIE_OPTIONS);
+          deleteCookie('userRole', COOKIE_OPTIONS);
+
           if (window.location.pathname !== '/auth/login') {
             window.location.href = '/auth/login';
           }
@@ -212,10 +242,12 @@ api.interceptors.response.use(
       retryCount++;
 
       try {
-        // Implement shorter delay for first retry, then exponential backoff
-        // First retry: 100ms, then 500ms, 1s max
-        const delay = retryCount === 1 ? 100 : Math.min(500 * Math.pow(2, retryCount - 2), 1000);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        // Implement exponential backoff ONLY for subsequent retries (retryCount > 1)
+        // First retry (retryCount === 1) should be immediate for better UX
+        if (retryCount > 1) {
+          const delay = Math.min(500 * Math.pow(2, retryCount - 2), 1000);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
 
         // Reuse the refresh token promise if one is in flight
         if (!refreshTokenPromise) {
@@ -233,17 +265,41 @@ api.interceptors.response.use(
               );
 
               if (response.data?.success && response.data.accessToken) {
-                setCookie('accessToken', response.data.accessToken);
-                setCookie('token', response.data.accessToken);
+                const newToken = response.data.accessToken;
+                setCookie('accessToken', newToken, COOKIE_OPTIONS);
+                setCookie('token', newToken, COOKIE_OPTIONS);
+
+                // Update localStorage to prevent infinite refresh loops
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('accessToken', newToken);
+                  localStorage.setItem('token', newToken);
+
+                  // Also update development keys if they exist
+                  if (localStorage.getItem('dev_accessToken')) {
+                    localStorage.setItem('dev_accessToken', newToken);
+                  }
+                  if (localStorage.getItem('cookie_accessToken')) {
+                    localStorage.setItem('cookie_accessToken', newToken);
+                  }
+                }
 
                 // Update refresh token if rotated
                 if (response.data.refreshToken) {
-                  setCookie('refreshToken', response.data.refreshToken);
+                  setCookie('refreshToken', response.data.refreshToken, COOKIE_OPTIONS);
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('refreshToken', response.data.refreshToken);
+                  }
                 }
 
-                // Set userRole cookie if provided
-                if (response.data.user?.role) {
-                  setCookie('userRole', response.data.user.role);
+                // Set userRole cookie if provided, prioritizing financeRole
+                if (response.data.user) {
+                  const displayRole = response.data.user.financeRole || response.data.user.role;
+                  if (displayRole) {
+                    setCookie('userRole', displayRole, COOKIE_OPTIONS);
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('userRole', displayRole);
+                    }
+                  }
                 }
 
                 // Reset retry count on success
@@ -273,6 +329,13 @@ api.interceptors.response.use(
           deleteCookie('accessToken');
           deleteCookie('token');
           deleteCookie('refreshToken');
+
+          // Also clear from localStorage
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('dev_accessToken');
+          localStorage.removeItem('cookie_accessToken');
 
           // Check error code for user-friendly messaging
           const errorCode = refreshError?.response?.data?.code;

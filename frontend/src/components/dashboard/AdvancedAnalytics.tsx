@@ -38,35 +38,35 @@ export default function AdvancedAnalytics({
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [showClosedTickets, setShowClosedTickets] = useState(false);
 
-  // Status color mapping
+  // Status color mapping - Kardex branded colors
   const colorMap: { [key: string]: string } = {
-    'open': '#0ea5e9',
-    'reopened': '#3b82f6',
-    'assigned': '#8b5cf6',
-    'in_progress': '#f59e0b',
-    'in_process': '#f59e0b',
-    'onsite_visit': '#f97316',
-    'onsite_visit_planned': '#fb923c',
-    'onsite_visit_started': '#ea580c',
-    'onsite_visit_reached': '#c2410c',
-    'onsite_visit_in_progress': '#f97316',
-    'onsite_visit_resolved': '#16a34a',
-    'onsite_visit_pending': '#fdba74',
-    'onsite_visit_completed': '#15803d',
-    'spare_parts_needed': '#0891b2',
-    'spare_parts_booked': '#06b6d4',
-    'spare_parts_delivered': '#14b8a6',
-    'po_needed': '#0284c7',
-    'po_received': '#0369a1',
-    'po_reached': '#075985',
-    'waiting_customer': '#ec4899',
-    'pending': '#d946ef',
-    'on_hold': '#db2777',
-    'escalated': '#dc2626',
-    'resolved': '#10b981',
-    'closed_pending': '#059669',
-    'closed': '#6366f1',
-    'cancelled': '#ef4444',
+    'open': '#6F8A9D',           // Kardex blue
+    'reopened': '#546A7A',       // Kardex dark blue
+    'assigned': '#96AEC2',       // Kardex light blue
+    'in_progress': '#CE9F6B',    // Kardex sand
+    'in_process': '#CE9F6B',     // Kardex sand
+    'onsite_visit': '#976E44',   // Kardex dark sand
+    'onsite_visit_planned': '#CE9F6B',
+    'onsite_visit_started': '#976E44',
+    'onsite_visit_reached': '#82A094',
+    'onsite_visit_in_progress': '#CE9F6B',
+    'onsite_visit_resolved': '#4F6A64',
+    'onsite_visit_pending': '#EEC1BF',
+    'onsite_visit_completed': '#82A094',
+    'spare_parts_needed': '#E17F70', // Kardex coral
+    'spare_parts_booked': '#EEC1BF',
+    'spare_parts_delivered': '#A2B9AF',
+    'po_needed': '#9E3B47',      // Kardex burgundy
+    'po_received': '#E17F70',
+    'po_reached': '#82A094',
+    'waiting_customer': '#E17F70',
+    'pending': '#CE9F6B',
+    'on_hold': '#9E3B47',
+    'escalated': '#9E3B47',      // Kardex burgundy
+    'resolved': '#82A094',       // Kardex green
+    'closed_pending': '#4F6A64',
+    'closed': '#A2B9AF',         // Kardex light green
+    'cancelled': '#AEBFC3',      // Kardex gray
   };
 
   // Transform status distribution data for pie chart
@@ -120,102 +120,100 @@ export default function AdvancedAnalytics({
   })) || [];
 
   return (
-    <div className="mb-8">
-      <Card className="relative overflow-hidden bg-white/90 backdrop-blur-xl border-0 shadow-xl rounded-2xl sm:rounded-3xl">
-        {/* Background decorations */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-purple-200/40 to-pink-200/30 rounded-full blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr from-blue-200/30 to-cyan-200/20 rounded-full blur-3xl" />
+    <div className="mb-6">
+      <Card className="relative overflow-hidden bg-white/95 backdrop-blur-xl border border-[#96AEC2]/20 shadow-lg rounded-2xl">
+        {/* Background decorations with Kardex colors */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-[#E17F70]/15 to-transparent rounded-full blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-gradient-to-tr from-[#82A094]/15 to-transparent rounded-full blur-3xl" />
         
-        <CardHeader className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <CardHeader className="relative z-10 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
-                <div className="relative">
-                  <div className="p-2.5 sm:p-3 bg-gradient-to-br from-[#6F8A9D] via-pink-500 to-[#E17F70] rounded-xl sm:rounded-2xl shadow-lg shadow-[#6F8A9D]/25">
-                    <PieChart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
+              <CardTitle className="flex items-center gap-2.5 text-lg sm:text-xl font-bold">
+                <div className="p-2 bg-gradient-to-br from-[#E17F70] to-[#9E3B47] rounded-xl shadow-md shadow-[#E17F70]/20">
+                  <PieChart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <span className="text-[#546A7A]">Analytics Dashboard</span>
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base mt-2 text-[#757777] ml-14 sm:ml-16">
+              <CardDescription className="text-xs sm:text-sm mt-1 text-[#757777] ml-10 sm:ml-11">
                 Ticket distribution patterns and volume trends
               </CardDescription>
             </div>
-            <Badge className="bg-[#6F8A9D]/20 text-[#546A7A] border border-[#6F8A9D]/50 px-3 py-1.5 text-xs font-semibold ml-14 sm:ml-0">
-              <Sparkles className="w-3 h-3 mr-1.5" />
+            <Badge className="bg-[#82A094]/20 text-[#4F6A64] border border-[#82A094]/40 px-2.5 py-1 text-[10px] font-bold ml-10 sm:ml-0">
+              <Sparkles className="w-2.5 h-2.5 mr-1" />
               Visual Insights
             </Badge>
           </div>
         </CardHeader>
         
-        <CardContent className="relative z-10">
+        <CardContent className="relative z-10 pt-0">
           <Tabs defaultValue="status" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#AEBFC3]/20/80 p-1 rounded-xl">
-              <TabsTrigger value="status" className="rounded-lg text-xs sm:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                <PieChart className="w-4 h-4 mr-1.5" />
+            <TabsList className="grid w-full grid-cols-2 bg-[#96AEC2]/15 p-1 rounded-lg h-9">
+              <TabsTrigger value="status" className="rounded-md text-xs font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#546A7A] h-7">
+                <PieChart className="w-3.5 h-3.5 mr-1.5" />
                 Status Distribution
               </TabsTrigger>
-              <TabsTrigger value="trends" className="rounded-lg text-xs sm:text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                <TrendingUp className="w-4 h-4 mr-1.5" />
+              <TabsTrigger value="trends" className="rounded-md text-xs font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-[#546A7A] h-7">
+                <TrendingUp className="w-3.5 h-3.5 mr-1.5" />
                 Volume Trends
               </TabsTrigger>
             </TabsList>
             
             {/* STATUS DISTRIBUTION TAB */}
-            <TabsContent value="status" className="mt-6">
-              <div className="space-y-5">
-                {/* Filter Toggle */}
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#AEBFC3]/10 to-[#6F8A9D]/10/50 rounded-xl border border-[#92A2A5]/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
-                      <Filter className="w-4 h-4 text-[#546A7A]" />
+            <TabsContent value="status" className="mt-4">
+              <div className="space-y-4">
+                {/* Filter Toggle - Compact */}
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#96AEC2]/10 to-[#82A094]/10 rounded-lg border border-[#96AEC2]/20">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-[#6F8A9D]/20 rounded-md">
+                      <Filter className="w-3.5 h-3.5 text-[#546A7A]" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#546A7A]">Show Archived</p>
-                      <p className="text-xs text-[#757777]">
-                        {showClosedTickets ? 'All statuses visible' : 'Hiding closed & cancelled'}
+                      <p className="text-xs font-semibold text-[#546A7A]">Show Archived</p>
+                      <p className="text-[10px] text-[#757777]">
+                        {showClosedTickets ? 'All statuses' : 'Hiding closed & cancelled'}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className={showClosedTickets ? 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]' : 'bg-[#82A094]/20 text-[#4F6A64] border-[#82A094]/50'}>
+                    <Badge variant="outline" className={`text-[10px] px-2 py-0.5 ${showClosedTickets ? 'bg-[#6F8A9D]/15 text-[#546A7A] border-[#6F8A9D]/40' : 'bg-[#82A094]/15 text-[#4F6A64] border-[#82A094]/40'}`}>
                       {showClosedTickets ? 'All' : 'Active'}
                     </Badge>
                     <Switch 
                       checked={showClosedTickets}
                       onCheckedChange={setShowClosedTickets}
-                      className="data-[state=checked]:bg-[#546A7A]"
+                      className="data-[state=checked]:bg-[#6F8A9D] scale-90"
                     />
                   </div>
                 </div>
 
                 {loading ? (
-                  <div className="h-[350px] flex items-center justify-center">
-                    <div className="text-center space-y-3">
-                      <RefreshCw className="h-8 w-8 animate-spin text-[#6F8A9D] mx-auto" />
-                      <p className="text-sm text-[#757777]">Loading analytics...</p>
+                  <div className="h-[280px] flex items-center justify-center">
+                    <div className="text-center space-y-2">
+                      <RefreshCw className="h-6 w-6 animate-spin text-[#6F8A9D] mx-auto" />
+                      <p className="text-xs text-[#757777]">Loading analytics...</p>
                     </div>
                   </div>
                 ) : statusChartData.length === 0 && !showClosedTickets ? (
-                  <div className="h-[350px] flex flex-col items-center justify-center gap-4">
-                    <div className="p-4 bg-[#82A094]/20 rounded-2xl">
-                      <CheckCircle className="w-12 h-12 text-[#4F6A64]" />
+                  <div className="h-[280px] flex flex-col items-center justify-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-[#82A094]/20 to-[#A2B9AF]/15 rounded-xl">
+                      <CheckCircle className="w-10 h-10 text-[#4F6A64]" />
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-[#546A7A]">All Clear! 🎉</p>
-                      <p className="text-sm text-[#757777] mt-1">No active tickets in queue</p>
+                      <p className="text-base font-semibold text-[#546A7A]">All Clear! 🎉</p>
+                      <p className="text-xs text-[#757777] mt-0.5">No active tickets in queue</p>
                       <button
                         onClick={() => setShowClosedTickets(true)}
-                        className="mt-4 px-4 py-2 bg-[#546A7A] text-white rounded-xl hover:bg-[#546A7A] transition-colors text-sm font-medium"
+                        className="mt-3 px-4 py-1.5 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white rounded-lg hover:shadow-md transition-all text-xs font-semibold"
                       >
                         View Archived
                       </button>
                     </div>
                   </div>
                 ) : statusDistribution?.distribution?.length ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Pie Chart */}
-                    <div className="bg-gradient-to-br from-white to-[#AEBFC3]/10 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Pie Chart - Enhanced Card */}
+                    <div className="bg-gradient-to-br from-white via-white to-[#96AEC2]/10 rounded-xl p-4 border border-[#96AEC2]/20 shadow-sm hover:shadow-md transition-shadow">
                       <StatusPieChart 
                         data={statusChartData}
                         title="Status Distribution"
@@ -223,13 +221,15 @@ export default function AdvancedAnalytics({
                       />
                     </div>
                     
-                    {/* Status Breakdown List */}
-                    <div className="bg-gradient-to-br from-white to-[#AEBFC3]/10 rounded-2xl p-5 border border-[#AEBFC3]/30 shadow-sm">
-                      <h4 className="font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-[#546A7A]" />
+                    {/* Status Breakdown List - Enhanced */}
+                    <div className="bg-gradient-to-br from-white via-white to-[#82A094]/10 rounded-xl p-4 border border-[#82A094]/20 shadow-sm">
+                      <h4 className="font-semibold text-sm text-[#546A7A] mb-3 flex items-center gap-2">
+                        <div className="p-1.5 bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-lg">
+                          <BarChart3 className="w-3.5 h-3.5 text-white" />
+                        </div>
                         Status Breakdown
                       </h4>
-                      <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-2">
+                      <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
                         {statusChartData.map((chartItem, i) => {
                           const item = statusDistribution.distribution.find(
                             d => d.status.toLowerCase() === chartItem.status.toLowerCase().replace(' ', '_')
@@ -242,28 +242,28 @@ export default function AdvancedAnalytics({
                           return (
                             <div 
                               key={i} 
-                              className="p-3 bg-white rounded-xl border-l-4 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group"
-                              style={{ borderLeftColor: statusColor }}
+                              className="p-2.5 bg-white rounded-lg border-l-3 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer group"
+                              style={{ borderLeftWidth: '3px', borderLeftColor: statusColor }}
                               onClick={() => handleStatusClick(item.status)}
                             >
-                              <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center justify-between mb-1.5">
                                 <div className="flex items-center gap-2">
                                   <div 
-                                    className="w-2.5 h-2.5 rounded-full"
+                                    className="w-2 h-2 rounded-full"
                                     style={{ backgroundColor: statusColor }}
                                   />
-                                  <span className="font-medium text-sm text-[#5D6E73] capitalize">
+                                  <span className="font-medium text-xs text-[#5D6E73] capitalize">
                                     {item.status.replace('_', ' ')}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-lg font-bold" style={{ color: statusColor }}>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-base font-bold" style={{ color: statusColor }}>
                                     {item.count}
                                   </span>
                                   <Badge 
-                                    className="text-[10px] px-1.5 py-0.5"
+                                    className="text-[9px] px-1.5 py-0.5 font-bold"
                                     style={{ 
-                                      backgroundColor: `${statusColor}15`,
+                                      backgroundColor: `${statusColor}20`,
                                       color: statusColor,
                                     }}
                                   >
@@ -271,9 +271,9 @@ export default function AdvancedAnalytics({
                                   </Badge>
                                 </div>
                               </div>
-                              <div className="relative h-1.5 bg-[#AEBFC3]/20 rounded-full overflow-hidden">
+                              <div className="relative h-1 bg-[#AEBFC3]/20 rounded-full overflow-hidden">
                                 <div 
-                                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 group-hover:opacity-80"
                                   style={{ 
                                     width: `${percentage}%`,
                                     backgroundColor: statusColor,
@@ -287,8 +287,8 @@ export default function AdvancedAnalytics({
                     </div>
                   </div>
                 ) : (
-                  <div className="h-[350px] flex items-center justify-center">
-                    <p className="text-[#757777]">No status data available</p>
+                  <div className="h-[280px] flex items-center justify-center">
+                    <p className="text-sm text-[#757777]">No status data available</p>
                   </div>
                 )}
               </div>

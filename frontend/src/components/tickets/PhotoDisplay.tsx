@@ -35,12 +35,11 @@ interface PhotoDisplayProps {
   className?: string;
 }
 
-interface CloudinaryPhoto {
+interface StoredPhoto {
   id: number;
   filename: string;
-  cloudinaryUrl: string;
+  url: string;
   thumbnailUrl: string;
-  publicId: string;
   size: number;
   createdAt: string;
 }
@@ -55,51 +54,54 @@ interface PhotoInfo {
 function extractPhotoInfo(notes: string): PhotoInfo | null {
   if (!notes) return null;
 
-  // Try new Cloudinary format first
-  const cloudinaryMatch = notes.match(/📸 Photos: (\d+) verification photo[s]? stored permanently \(([^)]+)\)/);
-  const cloudinaryTimeMatch = notes.match(/🕒 Photo Time: ([^\n]+)/);
+  // Try standard format first (handles optional clock/camera emojis)
+  const photoMatch = notes.match(/(?:📸 )?Photos: (\d+) verification photo[s]? stored permanently \(([^)]+)\)/);
+  const photoTimeMatch = notes.match(/(?:🕒 )?Photo Time: ([^\n]+)/);
   
-  if (cloudinaryMatch) {
+  if (photoMatch) {
     return {
-      count: parseInt(cloudinaryMatch[1]),
-      size: cloudinaryMatch[2],
-      time: cloudinaryTimeMatch?.[1] || new Date().toLocaleString()
+      count: parseInt(photoMatch[1]),
+      size: photoMatch[2],
+      time: photoTimeMatch?.[1] || new Date().toISOString()
     };
   }
 
-  // Fallback to old metadata format
-  const photoMatch = notes.match(/📸 Photos: (\d+) verification photo[s]? captured \(([^)]+)\)/);
-  const timeMatch = notes.match(/🕒 Photo Time: ([^\n]+)/);
+  // Fallback to captured metadata format
+  const capturedMatch = notes.match(/(?:📸 )?Photos: (\d+) verification photo[s]? captured \(([^)]+)\)/);
+  const timeMatch = notes.match(/(?:🕒 )?(?:Photo )?Time: ([^\n]+)/);
   
-  if (!photoMatch) return null;
+  if (!capturedMatch) return null;
 
   return {
-    count: parseInt(photoMatch[1]),
-    size: photoMatch[2],
-    time: timeMatch?.[1] || 'Unknown time'
+    count: parseInt(capturedMatch[1]),
+    size: capturedMatch[2],
+    time: timeMatch?.[1] || new Date().toISOString()
   };
 }
 
-// Extract photo URLs from notes (both Cloudinary and Local Storage)
+// Extract photo URLs from notes
 function extractPhotoUrls(notes: string): string[] {
   if (!notes) return [];
   
-  // Try Cloudinary URLs first
-  const cloudinaryMatch = notes.match(/🔗 Cloudinary URLs: ([^\n]+)/);
-  if (cloudinaryMatch) {
-    return cloudinaryMatch[1].split(', ').map(url => url.trim());
-  }
-  
-  // Try Local Storage URLs
+  // Try explicitly listed URLs first
   const localMatch = notes.match(/🔗 Local URLs: ([^\n]+)/);
+  const cloudinaryMatch = notes.match(/🔗 Cloudinary URLs: ([^\n]+)/); // Keeping for legacy parsing but will treat as local
+  
   if (localMatch) {
-    return localMatch[1].split(', ').map(url => url.trim());
+    const urls = localMatch[1].split(', ').map(url => url.trim());
+    return Array.from(new Set(urls));
   }
   
-  // Fallback: extract any /storage/ URLs from notes
+  if (cloudinaryMatch) {
+    const urls = cloudinaryMatch[1].split(', ').map(url => url.trim());
+    return Array.from(new Set(urls));
+  }
+  
+  // Only if no explicit list found, search for direct URLs anywhere in the notes
   const urlRegex = /\/storage\/images\/[^\s,]+/g;
-  const urls = notes.match(urlRegex) || [];
-  return urls;
+  const directUrls = notes.match(urlRegex) || [];
+  
+  return Array.from(new Set(directUrls));
 }
 
 // Check if notes contain photo information
@@ -112,78 +114,165 @@ export function hasPhotoData(notes?: string): boolean {
 export function getNotesWithoutPhotos(notes?: string): string {
   if (!notes) return '';
   
-  // Remove photo information lines (both old and new formats)
   return notes
     .replace(/\n\n📸 Photos: [^\n]+/g, '')
     .replace(/\n🕒 Photo Time: [^\n]+/g, '')
     .replace(/\n🔗 Cloudinary URLs: [^\n]+/g, '')
-    .replace(/\n🔗 Local URLs: [^\n]+/g, '') // Remove Local URLs line
-    .replace(/🔗 Local URLs: [^\n]+/g, '') // Remove Local URLs without newline
-    .replace(/🔗 Cloudinary URLs: [^\n]+/g, '') // Remove Cloudinary URLs without newline
-    .replace(/\/storage\/images\/[^\s,\n]+/g, '') // Remove any remaining storage URLs
-    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .replace(/\n🔗 Local URLs: [^\n]+/g, '')
+    .replace(/🔗 Local URLs: [^\n]+/g, '')
+    .replace(/🔗 Cloudinary URLs: [^\n]+/g, '')
+    .replace(/\/storage\/images\/[^\s,\n]+/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDisplayProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cloudinaryPhotos, setCloudinaryPhotos] = useState<CloudinaryPhoto[]>([]);
+  const [photos, setPhotos] = useState<StoredPhoto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPhoto, setSelectedPhoto] = useState<CloudinaryPhoto | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<StoredPhoto | null>(null);
   
   const photoInfo = extractPhotoInfo(notes || '');
   const photoUrls = extractPhotoUrls(notes || '');
 
-  // Load photos immediately when component mounts
   useEffect(() => {
     if (photoUrls.length > 0) {
-      // If we have URLs from notes, convert them to CloudinaryPhoto format
-      const photosFromUrls = photoUrls.map((url, index) => ({
-        id: index,
-        filename: `photo_${index + 1}.jpg`,
-        cloudinaryUrl: getPhotoUrl(url),
-        thumbnailUrl: getPhotoUrl(url),
-        publicId: '',
-        size: 0,
-        createdAt: photoInfo?.time || new Date().toISOString()
-      }));
-      setCloudinaryPhotos(photosFromUrls);
+      const photosFromUrls = photoUrls.map((url, index) => {
+        const urlParts = url.split('/');
+        const originalFilename = urlParts[urlParts.length - 1];
+        const dotIndex = originalFilename.lastIndexOf('.');
+        const extension = dotIndex !== -1 ? originalFilename.substring(dotIndex + 1).toLowerCase() : 'webp';
+        
+        return {
+          id: -index - 1,
+          filename: originalFilename || `photo_${index + 1}.${extension}`,
+          url: getPhotoUrl(url),
+          thumbnailUrl: getPhotoUrl(url),
+          size: 0,
+          createdAt: photoInfo?.time || new Date().toISOString()
+        };
+      });
+      setPhotos(photosFromUrls);
       setLoading(false);
-    } else if (ticketId) {
-      loadCloudinaryPhotos();
+    } else if (ticketId && photoInfo && photoInfo.count > 0) {
+      loadAndFilterPhotos();
+    } else if (ticketId && !notes) {
+      loadAllPhotos();
     } else {
       setLoading(false);
     }
-  }, [ticketId, photoUrls.length]);
+  }, [ticketId, photoUrls.length, notes, photoInfo?.time]);
 
-  const loadCloudinaryPhotos = async () => {
+  const loadAndFilterPhotos = async () => {
+    if (!ticketId || !photoInfo) return;
+    
+    try {
+      setLoading(true);
+      const result = await PhotoUploadService.getTicketPhotos(ticketId);
+      if (result.success && result.photos) {
+        // Try multiple ways to parse the time
+        let infoTime = NaN;
+        const timeStr = photoInfo.time;
+        
+        // 1. Direct parsing (works for ISO, and some regional formats)
+        infoTime = new Date(timeStr).getTime();
+        
+        // 2. Try handling common locale format: "27/1/2026, 12:54:41 pm"
+        if (isNaN(infoTime) && timeStr.includes('/') && timeStr.includes(',')) {
+           // Basic manual parsing for common D/M/YYYY
+           const [datePart, timePart] = timeStr.split(', ');
+           const [d, m, y] = datePart.split('/').map(Number);
+           
+           if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+             // Create a date object (months are 0-indexed)
+             const tempDate = new Date(y, m - 1, d);
+             
+             // Try to add time if possible
+             if (timePart) {
+                const [timeOnly, ampm] = timePart.split(' ');
+                let [hh, mm, ss] = timeOnly.split(':').map(Number);
+                if (ampm?.toLowerCase() === 'pm' && hh < 12) hh += 12;
+                if (ampm?.toLowerCase() === 'am' && hh === 12) hh = 0;
+                
+                tempDate.setHours(hh || 0, mm || 0, ss || 0);
+             }
+             infoTime = tempDate.getTime();
+           }
+        }
+        
+        const isValidDate = !isNaN(infoTime);
+        
+        const convertedPhotos = result.photos.map(photo => ({
+          id: photo.id,
+          filename: photo.filename,
+          url: getPhotoUrl(photo.url),
+          thumbnailUrl: getPhotoUrl(photo.url),
+          size: photo.size,
+          createdAt: photo.createdAt
+        }));
+
+        if (!isValidDate) {
+          // If date is invalid, DON'T show all photos.
+          // Instead, try to show the N most recent photos if they exist, 
+          // or just show nothing to avoid confusion.
+          // Given the requirement to show ONLY relevant photos, showing nothing is safer than showing wrong ones.
+          setPhotos([]);
+          return;
+        }
+
+        const matchedPhotos = convertedPhotos.filter(photo => {
+          const photoTime = new Date(photo.createdAt).getTime();
+          // Increase tolerance slightly to 5 minutes for safety, but still keep it specific
+          return Math.abs(photoTime - infoTime) < 300000; 
+        });
+
+        const uniqueMatchedPhotos = matchedPhotos.filter((photo, index, self) =>
+          index === self.findIndex((p) => p.url === photo.url)
+        );
+
+        if (uniqueMatchedPhotos.length === 0 && convertedPhotos.length > 0) {
+            // If no time match found, but we expected N photos, 
+            // maybe try to find photos that were created VERY close to each other
+            // but for now, empty is safer.
+            setPhotos([]);
+        } else {
+            setPhotos(uniqueMatchedPhotos);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load and filter photos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const loadAllPhotos = async () => {
     if (!ticketId) return;
     
     try {
       setLoading(true);
       const result = await PhotoUploadService.getTicketPhotos(ticketId);
       if (result.success && result.photos) {
-        // Convert local storage photos to CloudinaryPhoto format
         const convertedPhotos = result.photos.map(photo => ({
           id: photo.id,
           filename: photo.filename,
-          cloudinaryUrl: getPhotoUrl(photo.url),
+          url: getPhotoUrl(photo.url),
           thumbnailUrl: getPhotoUrl(photo.url),
-          publicId: '',
           size: photo.size,
           createdAt: photo.createdAt
         }));
-        setCloudinaryPhotos(convertedPhotos);
+        setPhotos(convertedPhotos);
       }
     } catch (error) {
-      } finally {
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleDownload = async (photo: CloudinaryPhoto) => {
+  const handleDownload = async (photo: StoredPhoto) => {
     try {
-      const response = await fetch(photo.cloudinaryUrl);
+      const response = await fetch(photo.url);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -201,17 +290,15 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
 
   return (
     <>
-      {/* Premium Photo Card with Direct Thumbnails */}
-      <div className={`mt-3 overflow-hidden rounded-xl border border-[#6F8A9D]/60 bg-gradient-to-br from-white via-purple-50/30 to-[#EEC1BF]/10/40 shadow-lg shadow-[#6F8A9D]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#6F8A9D]/30 ${className}`}>
-        {/* Premium Header */}
-        <div className="bg-gradient-to-r from-[#546A7A] via-fuchsia-600 to-[#9E3B47] px-4 py-2.5">
+      <div className={`mt-3 overflow-hidden rounded-xl border border-[#6F8A9D]/60 bg-gradient-to-br from-white via-slate-50 to-[#AEBFC3]/10 shadow-lg shadow-[#6F8A9D]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#6F8A9D]/30 ${className}`}>
+        <div className="bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#546A7A] px-4 py-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg ring-1 ring-white/30">
                 <Camera className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-xs font-bold text-white uppercase tracking-wider">
-                Photos Captured
+                Verification Photos
               </span>
             </div>
             <Badge className="bg-white/20 text-white border-white/30 text-[10px] font-semibold px-2 py-0.5 backdrop-blur-sm">
@@ -220,17 +307,15 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
           </div>
         </div>
         
-        {/* Content Area */}
         <div className="p-4 space-y-3">
-          {/* Photo Thumbnails Grid - Show directly */}
           {loading ? (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="h-5 w-5 animate-spin text-[#546A7A]" />
               <span className="ml-2 text-xs text-[#757777]">Loading photos...</span>
             </div>
-          ) : cloudinaryPhotos.length > 0 ? (
-            <div className={`grid gap-2 ${cloudinaryPhotos.length === 1 ? 'grid-cols-1' : cloudinaryPhotos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-              {cloudinaryPhotos.slice(0, 6).map((photo, index) => (
+          ) : photos.length > 0 ? (
+            <div className={`grid gap-2 ${photos.length === 1 ? 'grid-cols-1' : photos.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {photos.slice(0, 6).map((photo, index) => (
                 <div 
                   key={photo.id} 
                   className="relative group cursor-pointer rounded-lg overflow-hidden border border-[#6F8A9D]/30 shadow-sm hover:shadow-md transition-all duration-200"
@@ -241,12 +326,8 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                       src={photo.thumbnailUrl}
                       alt={`Verification photo ${index + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = photo.cloudinaryUrl;
-                      }}
                     />
                   </div>
-                  {/* Overlay on hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center pb-2">
                     <span className="text-white text-[10px] font-medium flex items-center gap-1">
                       <ZoomIn className="h-3 w-3" />
@@ -255,13 +336,13 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                   </div>
                 </div>
               ))}
-              {cloudinaryPhotos.length > 6 && (
+              {photos.length > 6 && (
                 <div 
-                  className="aspect-square bg-gradient-to-br from-[#6F8A9D]/20 to-[#EEC1BF]/20 rounded-lg flex items-center justify-center cursor-pointer hover:from-[#6F8A9D]/30 hover:to-[#EEC1BF]/30 transition-colors border border-[#6F8A9D]"
+                  className="aspect-square bg-gradient-to-br from-[#6F8A9D]/20 to-[#AEBFC3]/20 rounded-lg flex items-center justify-center cursor-pointer hover:from-[#6F8A9D]/30 hover:to-[#AEBFC3]/30 transition-colors border border-[#6F8A9D]"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <div className="text-center">
-                    <span className="text-lg font-bold text-[#546A7A]">+{cloudinaryPhotos.length - 6}</span>
+                    <span className="text-lg font-bold text-[#546A7A]">+{photos.length - 6}</span>
                     <p className="text-[10px] text-[#546A7A]">more</p>
                   </div>
                 </div>
@@ -276,12 +357,11 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                 <p className="font-semibold text-[#546A7A] text-sm">
                   {photoInfo.count} Verification Photo{photoInfo.count > 1 ? 's' : ''}
                 </p>
-                <p className="text-xs text-[#757777]">Photos captured but not available for preview</p>
+                <p className="text-xs text-[#757777]">Captured at {photoInfo.time}</p>
               </div>
             </div>
           )}
           
-          {/* Photo Meta Info */}
           <div className="flex items-center justify-between text-xs text-[#757777] pt-1 border-t border-[#AEBFC3]/30">
             <span className="flex items-center gap-1">
               <FileImage className="h-3 w-3" />
@@ -289,19 +369,23 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {new Date(photoInfo.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {(() => {
+                const date = new Date(photoInfo.time);
+                return isNaN(date.getTime()) 
+                  ? photoInfo.time 
+                  : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              })()}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Photo Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Camera className="h-5 w-5 text-[#546A7A]" />
-              Verification Photos ({photoUrls.length || cloudinaryPhotos.length || photoInfo?.count || 0})
+              Verification Photos ({photos.length})
             </DialogTitle>
           </DialogHeader>
           
@@ -311,185 +395,55 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
                 <Loader2 className="h-6 w-6 animate-spin text-[#546A7A]" />
                 <span className="ml-2 text-sm text-[#5D6E73]">Loading photos...</span>
               </div>
-            ) : photoUrls.length > 0 ? (
-              <>
-                {/* Photo Grid from URLs */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {photoUrls.map((url: string, index: number) => (
-                    <div key={index} className="group relative bg-white rounded-lg border border-[#6F8A9D] overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="relative aspect-video bg-[#AEBFC3]/20">
-                        <img
-                          src={getPhotoUrl(url)}
-                          alt={`Verification photo ${index + 1}`}
-                          className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => setSelectedPhoto({
-                            id: index,
-                            filename: `photo_${index + 1}.jpg`,
-                            cloudinaryUrl: getPhotoUrl(url),
-                            thumbnailUrl: getPhotoUrl(url),
-                            publicId: '',
-                            size: 0,
-                            createdAt: new Date().toISOString()
-                          })}
-                        />
-                        
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => setSelectedPhoto({
-                                id: index,
-                                filename: `photo_${index + 1}.jpg`,
-                                cloudinaryUrl: getPhotoUrl(url),
-                                thumbnailUrl: getPhotoUrl(url),
-                                publicId: '',
-                                size: 0,
-                                createdAt: new Date().toISOString()
-                              })}
-                              className="bg-white/90 hover:bg-white"
-                            >
-                              <ZoomIn className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => {
-                                const link = document.createElement('a');
-                                link.href = getPhotoUrl(url);
-                                link.download = `photo_${index + 1}.jpg`;
-                                link.click();
-                              }}
-                              className="bg-white/90 hover:bg-white"
-                            >
-                              <Download className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="p-3">
-                        <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
-                          <span className="truncate flex-1">Photo {index + 1}</span>
-                          <span>Cloudinary</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
-                          <Clock className="h-3 w-3" />
-                          <span>{photoInfo?.time || 'Recently captured'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Photo Info Summary */}
-                <div className="bg-[#6F8A9D]/10 p-3 rounded-lg border border-[#6F8A9D]">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#546A7A] font-medium">
-                      {photoUrls.length} verification photos stored permanently
-                    </span>
-                    <span className="text-[#546A7A]">
-                      Size: {photoInfo?.size || 'Unknown'}
-                    </span>
-                  </div>
-                </div>
-              </>
-            ) : cloudinaryPhotos.length > 0 ? (
-              <>
-                {/* Photo Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {cloudinaryPhotos.map((photo, index) => (
-                    <div key={photo.id} className="group relative bg-white rounded-lg border border-[#6F8A9D] overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="relative aspect-video bg-[#AEBFC3]/20">
-                        <img
-                          src={photo.thumbnailUrl}
-                          alt={`Verification photo ${index + 1}`}
-                          className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => setSelectedPhoto(photo)}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = photo.cloudinaryUrl;
-                          }}
-                        />
-                        
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => setSelectedPhoto(photo)}
-                              className="bg-white/90 hover:bg-white"
-                            >
-                              <ZoomIn className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => handleDownload(photo)}
-                              className="bg-white/90 hover:bg-white"
-                            >
-                              <Download className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="p-3">
-                        <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
-                          <span className="truncate flex-1">Photo {index + 1}</span>
-                          <span>{Math.round(photo.size / 1024)}KB</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs text-[#AEBFC3]0">
-                          <Clock className="h-3 w-3" />
-                          <span>{new Date(photo.createdAt).toLocaleString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Photo Info Summary */}
-                <div className="bg-[#6F8A9D]/10 p-3 rounded-lg border border-[#6F8A9D]">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#546A7A] font-medium">
-                      {cloudinaryPhotos.length} verification photos stored permanently
-                    </span>
-                    <span className="text-[#546A7A]">
-                      Total: {Math.round(cloudinaryPhotos.reduce((sum, p) => sum + p.size, 0) / 1024)}KB
-                    </span>
-                  </div>
-                </div>
-              </>
             ) : (
-              <div className="bg-[#6F8A9D]/10 p-4 rounded-lg border border-[#6F8A9D]">
-                <div className="text-center space-y-3">
-                  <div className="mx-auto w-16 h-16 bg-[#6F8A9D]/20 rounded-full flex items-center justify-center">
-                    <FileImage className="h-8 w-8 text-[#546A7A]" />
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-[#546A7A]">
-                      {photoInfo.count} Photo{photoInfo.count > 1 ? 's' : ''} Captured
-                    </h3>
-                    <p className="text-sm text-[#5D6E73] mt-1">
-                      Photos were captured but may not be available for viewing
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[#5D6E73]">Photos:</span>
-                      <span className="font-medium">{photoInfo.count}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {photos.map((photo, index) => (
+                  <div key={photo.id} className="group relative bg-white rounded-lg border border-[#6F8A9D] overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="relative aspect-video bg-[#AEBFC3]/20">
+                      <img
+                        src={photo.thumbnailUrl}
+                        alt={`Verification photo ${index + 1}`}
+                        className="w-full h-full object-cover cursor-pointer"
+                        onClick={() => setSelectedPhoto(photo)}
+                      />
+                      
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => setSelectedPhoto(photo)}
+                            className="bg-white/90 hover:bg-white"
+                          >
+                            <ZoomIn className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleDownload(photo)}
+                            className="bg-white/90 hover:bg-white"
+                          >
+                            <Download className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#5D6E73]">Total Size:</span>
-                      <span className="font-medium">{photoInfo.size}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#5D6E73]">Captured:</span>
-                      <span className="font-medium">{photoInfo.time}</span>
+                    
+                    <div className="p-3">
+                      <div className="flex items-center justify-between text-xs text-[#5D6E73] mb-1">
+                        <span className="truncate flex-1">{photo.filename}</span>
+                        <span>{Math.round(photo.size / 1024)}KB</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-[#757777]">
+                        <Clock className="h-3 w-3" />
+                        <span>{(() => {
+                          const date = new Date(photo.createdAt);
+                          return isNaN(date.getTime()) ? photo.createdAt : date.toLocaleString();
+                        })()}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
             )}
             
@@ -497,7 +451,7 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
               <Button
                 variant="outline"
                 onClick={() => setIsModalOpen(false)}
-                className="text-sm"
+                className="text-sm border-[#92A2A5] text-[#546A7A]"
               >
                 <X className="h-4 w-4 mr-1" />
                 Close
@@ -507,35 +461,35 @@ export function PhotoDisplay({ notes, activityId, ticketId, className }: PhotoDi
         </DialogContent>
       </Dialog>
 
-      {/* Full Size Photo Modal */}
       {selectedPhoto && (
         <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-          <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0">
+          <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 overflow-hidden">
             <div className="relative">
               <img
-                src={selectedPhoto.cloudinaryUrl}
+                src={selectedPhoto.url}
                 alt="Full size verification photo"
-                className="w-full h-auto max-h-[80vh] object-contain"
+                className="w-full h-auto max-h-[85vh] object-contain"
               />
               
-              <Button
-                variant="secondary"
-                size="sm"
-                className="absolute top-4 right-4 bg-white/90 hover:bg-white"
-                onClick={() => setSelectedPhoto(null)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              
-              <Button
-                variant="secondary"
-                size="sm"
-                className="absolute top-4 left-4 bg-white/90 hover:bg-white"
-                onClick={() => handleDownload(selectedPhoto)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white/90 hover:bg-white shadow-md"
+                  onClick={() => handleDownload(selectedPhoto)}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="bg-white/90 hover:bg-white shadow-md"
+                  onClick={() => setSelectedPhoto(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

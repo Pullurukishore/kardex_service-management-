@@ -9,6 +9,7 @@ export interface LoginCredentials {
 export interface RegisterData extends LoginCredentials {
   name: string;
   role: UserRole;
+  financeRole?: FinanceRole;
   companyName?: string;
   zoneId?: string;
 }

@@ -40,34 +40,63 @@ export default function ModuleSelectPage() {
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [availableModules, setAvailableModules] = useState<ModuleCard[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!user) { router.push('/auth/login'); return; }
+    // Wait for both mounted and auth loading to complete
+    if (!mounted || isLoading) return;
+    
+    // Don't redirect to login if no user - they may be coming from login page
+    // and auth state hasn't synced yet. Give it time or let PinGuard/middleware handle it.
+    if (!user) {
+      // Small delay to allow state to sync
+      const timer = setTimeout(() => {
+        if (!user) router.push('/auth/login');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+    
     if (user.role === 'SERVICE_PERSON') {
       localStorage.setItem('selectedModule', 'fsm');
       localStorage.setItem('selectedSubModule', 'tickets');
       router.push('/service-person/dashboard');
       return;
     }
+    
     const accessible = allModules.filter(m => hasModuleAccess(user, m.id));
     setAvailableModules(accessible);
+    setInitialized(true);
+    
     if (accessible.length === 1) handleModuleSelect(accessible[0].id);
-  }, [user, router]);
+  }, [user, router, mounted, isLoading]);
 
   const handleModuleSelect = (moduleId: ModuleType) => {
     setSelectedModule(moduleId);
     if (typeof window !== 'undefined') localStorage.setItem('selectedModule', moduleId);
+    
+    // Minimal delay for UI feedback, then redirect immediately
+    const delay = availableModules.length === 1 ? 0 : 100;
     setTimeout(() => {
       if (moduleId === 'fsm') router.push('/fsm/select');
       else if (moduleId === 'finance') router.push('/finance/select');
-    }, 400);
+    }, delay);
   };
 
-  if (!mounted) return null;
+  // Show loading state while initializing
+  if (!mounted || isLoading || (!initialized && !selectedModule)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-4">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#E17F70] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60 text-sm">Loading modules...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] p-4 overflow-hidden">

@@ -1,8 +1,17 @@
 'use client'
 
 import { Suspense } from 'react'
-import ForecastDashboard from '@/components/forecast/ForecastDashboard'
+import dynamic from 'next/dynamic'
 import { BarChart3 } from 'lucide-react'
+
+// Dynamically import the heavy dashboard component to reduce initial bundle
+const ForecastDashboard = dynamic(
+  () => import('@/components/forecast/ForecastDashboard'),
+  { 
+    loading: () => <DashboardSkeleton />,
+    ssr: false 
+  }
+)
 
 // Loading skeleton for the dashboard
 function DashboardSkeleton() {

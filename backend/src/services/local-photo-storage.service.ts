@@ -67,7 +67,7 @@ export class LocalPhotoStorageService {
         return { buffer: compressedBuffer, mimeType: 'image/jpeg', extension: 'jpg' };
       }
     } catch (error) {
-      console.error('Image compression failed, using original:', error);
+
       const ext = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
       return { buffer, mimeType, extension: ext };
     }
@@ -83,7 +83,7 @@ export class LocalPhotoStorageService {
       ticketId?: number;
       activityId?: number;
       userId: number;
-      type: 'ticket' | 'activity' | 'profile';
+      type: 'ticket' | 'activity';
     }
   ): Promise<StoredPhoto[]> {
     await this.initialize();
@@ -91,8 +91,7 @@ export class LocalPhotoStorageService {
     const storedPhotos: StoredPhoto[] = [];
     const folderMap: Record<string, string> = {
       'ticket': 'tickets',
-      'activity': 'activities',
-      'profile': 'profiles'
+      'activity': 'activities'
     };
     const uploadDir = path.join(storageConfig.images, folderMap[context.type] || context.type + 's');
 
@@ -122,22 +121,30 @@ export class LocalPhotoStorageService {
           throw new Error(`File type ${extension} not allowed`);
         }
 
-        // Generate descriptive filename with date/time for easy identification
-        const hash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 8);
+        // Generate short, readable, knowable filename
+        // Format: T45_27Jan_1230_abc1.jpg (TypeID_DayMonth_Time_ShortHash.ext)
+        const hash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 4);
         const now = new Date();
-        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
-        const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, ''); // HHMMSS
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = months[now.getMonth()];
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+
+        const typeMap: Record<string, string> = {
+          'ticket': 'T',
+          'activity': 'A',
+          'profile': 'P'
+        };
+        const typePrefix = typeMap[context.type] || context.type.charAt(0).toUpperCase();
         const contextId = context.ticketId || context.activityId || context.userId;
-        const uniqueFilename = `${context.type}_${contextId}_${dateStr}_${timeStr}_${hash}.${extension}`;
+        const uniqueFilename = `${typePrefix}${contextId}_${day}${month}_${timeStr}_${hash}.${extension}`;
         const filePath = path.join(uploadDir, uniqueFilename);
 
         // Save compressed file to disk
         await fs.writeFile(filePath, buffer);
 
         const compressionRatio = originalSize > 0 ? Math.round((1 - buffer.length / originalSize) * 100) : 0;
-        if (compressionRatio > 0) {
-          console.log(`📦 Compressed: ${(originalSize / 1024).toFixed(1)}KB → ${(buffer.length / 1024).toFixed(1)}KB (${compressionRatio}% saved)`);
-        }
+
 
         // Generate serving URL
         const relativePath = path.relative(storageConfig.root, filePath).replace(/\\/g, '/');
@@ -289,26 +296,4 @@ export class LocalPhotoStorageService {
     });
   }
 
-  /**
-   * Clean up temporary files older than retention period
-   */
-  static async cleanupTempFiles(): Promise<void> {
-    try {
-      const tempDir = storageConfig.temp;
-      const retentionMs = storageConfig.tempRetentionHours * 60 * 60 * 1000;
-      const cutoffTime = Date.now() - retentionMs;
-
-      const files = await fs.readdir(tempDir);
-
-      for (const file of files) {
-        const filePath = path.join(tempDir, file);
-        const stats = await fs.stat(filePath);
-
-        if (stats.mtime.getTime() < cutoffTime) {
-          await fs.unlink(filePath);
-        }
-      }
-    } catch (error) {
-    }
-  }
 }

@@ -18,11 +18,11 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
 
     // Build where clause
     const where: any = {};
-    
+
     if (role && typeof role === 'string') {
       where.role = role as UserRole;
     }
-    
+
     if (search && typeof search === 'string') {
       where.OR = [
         { email: { contains: search, mode: 'insensitive' } },
@@ -180,7 +180,7 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
 
     // Prepare update data
     const updateData: any = {};
-    
+
     if (email !== undefined) updateData.email = email;
     if (name !== undefined) updateData.name = name || null;
     if (phone !== undefined) updateData.phone = phone || null;
@@ -271,12 +271,12 @@ export const resetUserPassword = async (req: AuthenticatedRequest, res: Response
 
     // Use provided password or generate new one
     const passwordToUse = newPassword || crypto.randomBytes(8).toString('hex');
-    
+
     // Validate password if provided
     if (newPassword && newPassword.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
-    
+
     const hashedPassword = await bcrypt.hash(passwordToUse, 10);
 
     // Update user password and clear any existing tokens
@@ -292,7 +292,7 @@ export const resetUserPassword = async (req: AuthenticatedRequest, res: Response
       }
     });
 
-    res.json({ 
+    res.json({
       message: 'Password reset successfully',
       newPassword: passwordToUse // Return the password that was actually set
     });
@@ -338,7 +338,7 @@ export const toggleUserStatus = async (req: AuthenticatedRequest, res: Response)
       }
     });
 
-    res.json({ 
+    res.json({
       user,
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`
     });

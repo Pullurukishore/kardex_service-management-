@@ -63,7 +63,7 @@ router.get('/stats', async (_req: Request, res: Response) => {
         }
 
         // 2. Scan file system for additional images
-        const foldersToScan = ['tickets', 'activities', 'activitys', 'legacy'];
+        const foldersToScan = ['tickets', 'activities'];
 
         for (const folder of foldersToScan) {
             const folderPath = path.join(storageConfig.images, folder);
@@ -127,7 +127,7 @@ router.get('/stats', async (_req: Request, res: Response) => {
 
         res.json(stats);
     } catch (error) {
-        console.error('Failed to get image stats:', error);
+
         res.status(500).json({ error: 'Failed to get image statistics' });
     }
 });
@@ -195,7 +195,7 @@ router.get('/images', async (req: Request, res: Response) => {
         }
 
         // 2. Scan file system for additional images not in DB
-        const foldersToScan = ['tickets', 'activities', 'activitys', 'legacy'];
+        const foldersToScan = ['tickets', 'activities'];
 
         for (const folder of foldersToScan) {
             const folderPath = path.join(storageConfig.images, folder);
@@ -218,9 +218,9 @@ router.get('/images', async (req: Request, res: Response) => {
                         const ext = path.extname(filename).toLowerCase();
                         if (!['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) continue;
 
-                        // Extract ticket ID from filename if possible (e.g., ticket_45_...)
+                        // Extract ticket ID from filename if possible (e.g., ticket_45_ or T45_)
                         let ticketId: number | null = null;
-                        const ticketMatch = filename.match(/ticket_(\d+)_/);
+                        const ticketMatch = filename.match(/(?:ticket|T)_?(\d+)_/);
                         if (ticketMatch) ticketId = parseInt(ticketMatch[1]);
 
                         allImages.push({
@@ -267,7 +267,7 @@ router.get('/images', async (req: Request, res: Response) => {
             },
         });
     } catch (error) {
-        console.error('Failed to list images:', error);
+
         res.status(500).json({ error: 'Failed to list images' });
     }
 });
@@ -328,11 +328,8 @@ router.post('/bulk-download', async (req: Request, res: Response) => {
                 if (fsSync.existsSync(filePath)) {
                     archive.file(filePath, { name: img.filename || path.basename(filePath) });
                     filesAdded++;
-                } else {
-                    console.warn(`File not found: ${img.path}`);
                 }
             } catch (err) {
-                console.error(`Failed to add file to ZIP: ${img.path}`, err);
             }
         }
 
@@ -345,7 +342,6 @@ router.post('/bulk-download', async (req: Request, res: Response) => {
 
         await archive.finalize();
     } catch (error) {
-        console.error('Failed to create ZIP:', error);
         if (!res.headersSent) {
             res.status(500).json({ error: 'Failed to create ZIP file' });
         }
@@ -403,7 +399,7 @@ router.delete('/bulk-delete', async (req: Request, res: Response) => {
             errors: errors.length > 0 ? errors : undefined,
         });
     } catch (error) {
-        console.error('Failed to delete images:', error);
+
         res.status(500).json({ error: 'Failed to delete images' });
     }
 });

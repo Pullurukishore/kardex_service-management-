@@ -58,7 +58,7 @@ interface ActivityStage {
   photos?: Array<{
     id: number;
     filename: string;
-    cloudinaryUrl: string;
+    url: string;
     thumbnailUrl: string;
     createdAt: string;
   }>;
@@ -1356,7 +1356,7 @@ export default function AttendanceDetailView({
                                             <div key={photo.id} className="group relative">
                                               <div className="aspect-square overflow-hidden rounded-lg border border-[#92A2A5] bg-[#AEBFC3]/10 flex items-center justify-center">
                                                 <img
-                                                  src={photo.thumbnailUrl || photo.cloudinaryUrl || photo.url || ''}
+                                                  src={photo.url || photo.thumbnailUrl || ''}
                                                   alt={`Stage photo ${photoIndex + 1}`}
                                                   className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                                                   onError={(e) => {
@@ -1376,7 +1376,7 @@ export default function AttendanceDetailView({
                                                     size="sm"
                                                     variant="secondary"
                                                     className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
-                                                    onClick={() => window.open(photo.cloudinaryUrl || photo.url || photo.thumbnailUrl || photo.dataUrl, '_blank')}
+                                                    onClick={() => window.open(photo.url || photo.thumbnailUrl || photo.dataUrl, '_blank')}
                                                   >
                                                     <ExternalLink className="h-3 w-3" />
                                                   </Button>
@@ -1386,7 +1386,7 @@ export default function AttendanceDetailView({
                                                     className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
                                                     onClick={async () => {
                                                       try {
-                                                        const imageUrl = photo.cloudinaryUrl || photo.url || photo.thumbnailUrl || photo.dataUrl;
+                                                        const imageUrl = photo.url || photo.thumbnailUrl || photo.dataUrl;
                                                         if (!imageUrl) {
                                                           console.warn('No image URL available');
                                                           return;
@@ -1416,7 +1416,7 @@ export default function AttendanceDetailView({
                                                       } catch (error) {
                                                         console.error('Download failed:', error);
                                                         // Fallback to direct link
-                                                        const imageUrl = photo.cloudinaryUrl || photo.url || photo.thumbnailUrl || photo.dataUrl;
+                                                        const imageUrl = photo.url || photo.thumbnailUrl || photo.dataUrl;
                                                         if (imageUrl) {
                                                           window.open(imageUrl, '_blank');
                                                         }

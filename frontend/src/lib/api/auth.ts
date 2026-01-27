@@ -9,12 +9,12 @@ export interface AuthResponseUser {
   // Add other user properties as needed
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/api';
 
 export async function getCurrentUser(): Promise<AuthResponseUser | null> {
   const cookieStore = cookies();
   const token = cookieStore.get('accessToken')?.value || cookieStore.get('token')?.value;
-  
+
   if (!token) {
     return null;
   }

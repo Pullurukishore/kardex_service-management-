@@ -45,44 +45,43 @@ export const getAllCustomers = async (req: Request, res: Response) => {
         });
 
         // Get total count of unique customers
-        const allCustomers = await prisma.aRInvoice.findMany({
+        const totalAggregate = await prisma.aRInvoice.groupBy({
+            by: ['bpCode'],
             where,
-            select: { bpCode: true },
-            distinct: ['bpCode'],
         });
-        const total = allCustomers.length;
+        const total = totalAggregate.length;
 
-        // Get invoice counts and financial totals for each customer
-        const customersWithCounts = await Promise.all(
-            invoices.map(async (customer) => {
-                const [invoiceCount, financialTotals] = await Promise.all([
-                    prisma.aRInvoice.count({
-                        where: { bpCode: customer.bpCode }
-                    }),
-                    prisma.aRInvoice.aggregate({
-                        where: { bpCode: customer.bpCode },
-                        _sum: {
-                            totalAmount: true,
-                            balance: true
-                        }
-                    })
-                ]);
-                return {
-                    id: customer.bpCode,
-                    bpCode: customer.bpCode,
-                    customerName: customer.customerName,
-                    riskClass: customer.riskClass,
-                    emailId: customer.emailId,
-                    contactNo: customer.contactNo,
-                    region: customer.region,
-                    department: customer.department,
-                    personInCharge: customer.personInCharge,
-                    totalInvoiceAmount: financialTotals._sum.totalAmount || 0,
-                    outstandingBalance: financialTotals._sum.balance || 0,
-                    _count: { invoices: invoiceCount }
-                };
-            })
-        );
+        // Get totals for all customers in the current page batch in one query to avoid N+1
+        const pageBpCodes = invoices.map(i => i.bpCode);
+        const financialStats = await prisma.aRInvoice.groupBy({
+            by: ['bpCode'],
+            where: { bpCode: { in: pageBpCodes } },
+            _sum: {
+                totalAmount: true,
+                balance: true
+            },
+            _count: {
+                _all: true
+            }
+        });
+
+        const customersWithCounts = invoices.map((customer) => {
+            const stats = financialStats.find(s => s.bpCode === customer.bpCode);
+            return {
+                id: customer.bpCode,
+                bpCode: customer.bpCode,
+                customerName: customer.customerName,
+                riskClass: customer.riskClass,
+                emailId: customer.emailId,
+                contactNo: customer.contactNo,
+                region: customer.region,
+                department: customer.department,
+                personInCharge: customer.personInCharge,
+                totalInvoiceAmount: stats?._sum.totalAmount || 0,
+                outstandingBalance: stats?._sum.balance || 0,
+                _count: { invoices: stats?._count._all || 0 }
+            };
+        });
 
         res.json({
             data: customersWithCounts,
@@ -94,7 +93,7 @@ export const getAllCustomers = async (req: Request, res: Response) => {
             }
         });
     } catch (error: any) {
-        console.error('Error fetching AR customers:', error);
+
         res.status(500).json({ error: 'Failed to fetch customers', message: error.message });
     }
 };
@@ -145,7 +144,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
 
         res.json(customer);
     } catch (error: any) {
-        console.error('Error fetching AR customer:', error);
+
         res.status(500).json({ error: 'Failed to fetch customer', message: error.message });
     }
 };
@@ -202,7 +201,7 @@ export const updateCustomer = async (req: Request, res: Response) => {
             message: `Updated ${updateResult.count} invoice(s)`
         });
     } catch (error: any) {
-        console.error('Error updating AR customer:', error);
+
         res.status(500).json({ error: 'Failed to update customer', message: error.message });
     }
 };

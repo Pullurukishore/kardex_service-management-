@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/db';
+import { calculateDaysBetween } from '../../utils/dateUtils';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SAFE QUERY HELPERS - Prevent crashes
@@ -7,17 +8,17 @@ import prisma from '../../config/db';
 
 const safeAggregate = async <T>(query: Promise<T>, fallback: T): Promise<T> => {
     try { return await query; }
-    catch (e) { console.error('Query failed:', e); return fallback; }
+    catch (e) { return fallback; }
 };
 
 const safeFindMany = async <T>(query: Promise<T[]>): Promise<T[]> => {
     try { return await query; }
-    catch (e) { console.error('Query failed:', e); return []; }
+    catch (e) { return []; }
 };
 
 const safeCount = async (query: Promise<number>): Promise<number> => {
     try { return await query; }
-    catch (e) { console.error('Query failed:', e); return 0; }
+    catch (e) { return 0; }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -125,8 +126,7 @@ export const getEssentialDashboard = async (req: Request, res: Response) => {
         };
 
         allUnpaidInvoices.forEach(inv => {
-            const dueDate = new Date(inv.dueDate);
-            const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+            const daysOverdue = calculateDaysBetween(inv.dueDate, today);
             const amount = Number(inv.balance ?? inv.totalAmount ?? 0);
 
             if (daysOverdue <= 0) { aging.current.count++; aging.current.amount += amount; }
@@ -139,7 +139,7 @@ export const getEssentialDashboard = async (req: Request, res: Response) => {
         // Calculate critical overdue with days
         const criticalWithDays = criticalOverdue.map(inv => ({
             ...inv,
-            daysOverdue: Math.max(0, Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)))
+            daysOverdue: Math.max(0, calculateDaysBetween(inv.dueDate, today))
         }));
 
         // ═══════════════════════════════════════════════════════════════════════════
@@ -197,7 +197,7 @@ export const getEssentialDashboard = async (req: Request, res: Response) => {
             criticalOverdue: criticalWithDays
         });
     } catch (error: any) {
-        console.error('Dashboard error:', error);
+
         res.status(500).json({ error: 'Failed to load dashboard', message: error.message });
     }
 };
@@ -234,7 +234,7 @@ export const getDashboardKPIs = async (req: Request, res: Response) => {
             dso
         });
     } catch (error: any) {
-        console.error('KPIs error:', error);
+
         res.status(500).json({ error: 'Failed to fetch KPIs', message: error.message });
     }
 };
@@ -250,7 +250,7 @@ export const getAgingAnalysis = async (req: Request, res: Response) => {
         const aging = { current: { count: 0, amount: 0 }, days1to30: { count: 0, amount: 0 }, days31to60: { count: 0, amount: 0 }, days61to90: { count: 0, amount: 0 }, over90: { count: 0, amount: 0 } };
 
         invoices.forEach(inv => {
-            const daysOverdue = Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24));
+            const daysOverdue = calculateDaysBetween(inv.dueDate, today);
             const amount = Number(inv.balance ?? inv.totalAmount ?? 0);
             if (daysOverdue <= 0) { aging.current.count++; aging.current.amount += amount; }
             else if (daysOverdue <= 30) { aging.days1to30.count++; aging.days1to30.amount += amount; }
@@ -261,7 +261,7 @@ export const getAgingAnalysis = async (req: Request, res: Response) => {
 
         res.json(aging);
     } catch (error: any) {
-        console.error('Aging error:', error);
+
         res.status(500).json({ error: 'Failed to fetch aging', message: error.message });
     }
 };
@@ -337,7 +337,7 @@ export const getCriticalOverdue = async (req: Request, res: Response) => {
         const today = new Date();
         res.json(invoices.map(inv => ({
             ...inv,
-            daysOverdue: Math.max(0, Math.floor((today.getTime() - new Date(inv.dueDate).getTime()) / (1000 * 60 * 60 * 24)))
+            daysOverdue: Math.max(0, calculateDaysBetween(inv.dueDate, today))
         })));
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to fetch overdue', message: error.message });
@@ -372,14 +372,22 @@ export const getRecentPayments = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const payments = await safeFindMany(prisma.aRPaymentHistory.findMany({
             orderBy: { createdAt: 'desc' },
-            take: limit,
-            select: { id: true, invoiceId: true, amount: true, paymentDate: true, paymentMode: true, recordedBy: true, createdAt: true }
+            take: limit
         }));
 
-        const result = await Promise.all(payments.map(async p => {
-            const inv = await prisma.aRInvoice.findUnique({ where: { id: p.invoiceId }, select: { invoiceNumber: true, customerName: true } }).catch(() => null);
-            return { ...p, invoice: inv };
+        // Fetch related invoices in one batch query to avoid N+1
+        const invoiceIds = [...new Set(payments.map(p => p.invoiceId))];
+        const invoices = await prisma.aRInvoice.findMany({
+            where: { id: { in: invoiceIds } },
+            select: { id: true, invoiceNumber: true, customerName: true }
+        });
+
+        // Map invoices back to payments
+        const result = payments.map(p => ({
+            ...p,
+            invoice: invoices.find(inv => inv.id === p.invoiceId) || null
         }));
+
         res.json(result);
     } catch (error: any) {
         res.status(500).json({ error: 'Failed to fetch payments', message: error.message });

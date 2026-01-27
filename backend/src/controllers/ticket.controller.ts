@@ -339,6 +339,14 @@ async function checkTicketAccess(user: any, ticketId: number) {
     }
   }
 
+  // External user can access tickets they created (after-hours support)
+  if (user.role === UserRoleEnum.EXTERNAL_USER) {
+    if (ticket.createdById === user.id) {
+      return { allowed: true };
+    }
+    return { allowed: false, error: 'You only have access to tickets you created' };
+  }
+
   // Owner can access their own tickets
   if (ticket.ownerId === user.id || ticket.subOwnerId === user.id) {
     return { allowed: true };
@@ -458,7 +466,7 @@ export const createTicket = async (req: TicketRequest, res: Response) => {
       });
     }
 
-    // Send WhatsApp notification for OPEN status
+    // Send WhatsApp notification for OPEN status - non-blocking
     try {
       const ticketNotificationService = new TicketNotificationService();
 
@@ -469,7 +477,8 @@ export const createTicket = async (req: TicketRequest, res: Response) => {
         customerPhone = '+91' + customerPhone.replace(/[^0-9]/g, '');
       }
 
-      await ticketNotificationService.sendTicketOpenedNotification({
+      // Execute without await to avoid blocking the response
+      ticketNotificationService.sendTicketOpenedNotification({
         id: ticket.id.toString(),
         title: ticket.title,
         customerName: ticket.customer.companyName,
@@ -478,6 +487,8 @@ export const createTicket = async (req: TicketRequest, res: Response) => {
         priority: ticket.priority,
         assignedTo: ticket.assignedToId?.toString(),
         estimatedResolution: ticket.dueDate || undefined
+      }).catch(err => {
+
       });
     } catch (notificationError) {
       // Don't fail the ticket creation if notification fails
@@ -521,6 +532,9 @@ export const getTickets = async (req: TicketRequest, res: Response) => {
             { ownerId: user.id }
           ]
         });
+      } else if (user.role === UserRoleEnum.EXTERNAL_USER) {
+        // External users (after-hours support) only see tickets they created
+        where.createdById = user.id;
       }
     } else {
       // Admin users can use view filters
@@ -814,25 +828,27 @@ export const getTicket = async (req: TicketRequest, res: Response) => {
 export const updateStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status, comments, location, photos } = req.body;
+    const { status, comments, location: locationDataInput, photos } = req.body;
+    const locationData = locationDataInput as any;
     const user = req.user as any;
 
-    // Log incoming location data for debugging
-    if (location) {
+    const ticketId = Number(id);
+    if (isNaN(ticketId)) {
+      return res.status(400).json({ error: 'Invalid ticket ID' });
     }
 
-    const permission = await checkTicketAccess(user, Number(id));
+    const permission = await checkTicketAccess(user, ticketId);
     if (!permission.allowed) {
       return res.status(403).json({ error: permission.error });
     }
 
-    if (!Object.values(TicketStatus).includes(status)) {
+    if (!Object.values(TicketStatus).includes(status as any)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
     // Fetch current ticket to compute time tracking
     const currentTicket = await prisma.ticket.findUnique({
-      where: { id: Number(id) },
+      where: { id: ticketId },
     });
     if (!currentTicket) {
       return res.status(404).json({ error: 'Ticket not found' });
@@ -854,18 +870,18 @@ export const updateStatus = async (req: Request, res: Response) => {
     }
 
     // Add location data for onsite visit statuses
-    if (location) {
-      const locationData = JSON.stringify({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        address: location.address,
-        timestamp: location.timestamp
+    if (locationData) {
+      const locationDataJson = JSON.stringify({
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        address: locationData.address,
+        timestamp: locationData.timestamp
       });
 
       switch (status) {
         case 'ONSITE_VISIT_STARTED':
           updateData.visitStartedAt = new Date();
-          updateData.onsiteStartLocation = locationData;
+          updateData.onsiteStartLocation = locationDataJson;
           break;
         case 'ONSITE_VISIT_REACHED':
           updateData.visitReachedAt = new Date();
@@ -878,31 +894,46 @@ export const updateStatus = async (req: Request, res: Response) => {
           break;
         case 'ONSITE_VISIT_COMPLETED':
           updateData.visitCompletedDate = new Date();
-          updateData.onsiteEndLocation = locationData;
+          updateData.onsiteEndLocation = locationDataJson;
           break;
       }
 
       // Update location history
       if (currentTicket.onsiteLocationHistory) {
-        const locationHistory = JSON.parse(currentTicket.onsiteLocationHistory);
-        locationHistory.push({
-          status,
-          location: {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            address: location.address,
-            timestamp: location.timestamp
+        try {
+          const locationHistory = JSON.parse(currentTicket.onsiteLocationHistory);
+          if (Array.isArray(locationHistory)) {
+            locationHistory.push({
+              status,
+              location: {
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                address: locationData.address,
+                timestamp: locationData.timestamp
+              }
+            });
+            updateData.onsiteLocationHistory = JSON.stringify(locationHistory);
           }
-        });
-        updateData.onsiteLocationHistory = JSON.stringify(locationHistory);
+        } catch (e) {
+          // If parse fails, start a new history
+          updateData.onsiteLocationHistory = JSON.stringify([{
+            status,
+            location: {
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+              address: locationData.address,
+              timestamp: locationData.timestamp
+            }
+          }]);
+        }
       } else {
         updateData.onsiteLocationHistory = JSON.stringify([{
           status,
           location: {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            address: location.address,
-            timestamp: location.timestamp
+            latitude: locationData.latitude,
+            longitude: locationData.longitude,
+            address: locationData.address,
+            timestamp: locationData.timestamp
           }
         }]);
       }
@@ -932,7 +963,8 @@ export const updateStatus = async (req: Request, res: Response) => {
 
         // Store photo info in notes but NOT the URLs (to avoid duplication)
         // Photos will be fetched via the /photos API endpoint
-        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} stored permanently (${formattedSize})\n🕒 Photo Time: ${new Date().toLocaleString()}`;
+        const urlList = storedPhotos.map(p => p.url).join(', ');
+        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} stored permanently (${formattedSize})\n🕒 Photo Time: ${new Date().toISOString()}\n🔗 Local URLs: ${urlList}`;
 
         // Log photo storage for audit trail
       } catch (error) {
@@ -943,39 +975,33 @@ export const updateStatus = async (req: Request, res: Response) => {
           ? `${(totalSize / (1024 * 1024)).toFixed(1)}MB`
           : `${Math.round(totalSize / 1024)}KB`;
 
-        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} captured (${formattedSize}) - Storage failed, metadata only\n🕒 Photo Time: ${new Date().toLocaleString()}`;
+        photoInfo = `\n\n📸 Photos: ${photoCount} verification photo${photoCount > 1 ? 's' : ''} captured (${formattedSize}) - Storage failed, metadata only\n🕒 Photo Time: ${new Date().toISOString()}`;
       }
     }
 
-    // Update the ticket with new status and timestamps
-    const updatedTicket = await prisma.ticket.update({
-      where: { id: Number(id) },
-      data: updateData,
-    });
-
     // Prepare notes with location information if provided
     let notesWithLocation = comments || '';
-    if (location) {
+    if (locationData) {
       // For manual locations, preserve the user's original input
       // For GPS locations, geocode to get full address
-      let resolvedAddress = location.address || 'Unknown';
+      let resolvedAddress = locationData.address || 'Unknown';
 
-      if (location.source === 'manual' && location.address) {
+      if (locationData.source === 'manual' && locationData.address) {
         // Manual address - preserve as-is
-        resolvedAddress = location.address;
-      } else if (location.latitude && location.longitude) {
+        resolvedAddress = locationData.address;
+      } else if (locationData.latitude && locationData.longitude) {
         // GPS location - geocode to get full address
         try {
-          const { address: geocodedAddress } = await GeocodingService.reverseGeocode(location.latitude, location.longitude);
-          resolvedAddress = geocodedAddress || `${location.latitude}, ${location.longitude}`;
+          const { address: geocodedAddress } = await GeocodingService.reverseGeocode(locationData.latitude, locationData.longitude);
+          resolvedAddress = geocodedAddress || `${locationData.latitude}, ${locationData.longitude}`;
         } catch (error) {
           // Fallback to provided address or coordinates
-          resolvedAddress = location.address || `${location.latitude}, ${location.longitude}`;
+          resolvedAddress = locationData.address || `${locationData.latitude}, ${locationData.longitude}`;
         }
       }
 
-      const sourceIndicator = location.source === 'manual' ? '✓ Manual' : location.accuracy && location.accuracy <= 100 ? `✓ Accurate (${location.accuracy.toFixed(0)}m)` : location.accuracy ? `⚠ Low Accuracy (${location.accuracy.toFixed(0)}m)` : '';
-      const locationInfo = `\n\n📍 Location: ${resolvedAddress}\n🕒 Time: ${new Date(location.timestamp).toLocaleString()}\n📍 Coordinates: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}${sourceIndicator ? `\n📌 Source: ${sourceIndicator}` : ''}`;
+      const sourceIndicator = locationData.source === 'manual' ? '✓ Manual' : locationData.accuracy && locationData.accuracy <= 100 ? `✓ Accurate (${locationData.accuracy.toFixed(0)}m)` : locationData.accuracy ? `⚠ Low Accuracy (${locationData.accuracy.toFixed(0)}m)` : '';
+      const locationInfo = `\n\n📍 Location: ${resolvedAddress}\n🕒 Time: ${new Date(locationData.timestamp).toLocaleString()}\n📍 Coordinates: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)}${sourceIndicator ? `\n📌 Source: ${sourceIndicator}` : ''}`;
       notesWithLocation = notesWithLocation + locationInfo;
     }
 
@@ -986,29 +1012,40 @@ export const updateStatus = async (req: Request, res: Response) => {
 
     // Insert a new record into TicketStatusHistory with location data
     // Only save location if it's manual or has good accuracy (≤100m)
-    const shouldSaveLocation = location && (
-      location.source === 'manual' ||
-      (location.accuracy && location.accuracy <= 100)
+    const shouldSaveLocation = locationData && (
+      locationData.source === 'manual' ||
+      (locationData.accuracy && locationData.accuracy <= 100)
     );
 
-    await prisma.ticketStatusHistory.create({
-      data: {
-        ticket: { connect: { id: Number(id) } },
-        status: status,
-        changedBy: { connect: { id: user.id } },
-        changedAt: new Date(),
-        notes: notesWithLocation,
-        timeInStatus,
-        totalTimeOpen,
-        // Add location data if provided and valid
-        ...(shouldSaveLocation && {
-          location: location.address,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          accuracy: location.accuracy,
-          locationSource: location.source || 'gps'
-        })
-      },
+    // Use transaction for all relevant updates to ensure consistency
+    const updatedTicket = await prisma.$transaction(async (tx) => {
+      // 1. Update the ticket with new status and timestamps
+      const ticket = await tx.ticket.update({
+        where: { id: ticketId },
+        data: updateData,
+      });
+
+      // 2. Insert record into TicketStatusHistory
+      await tx.ticketStatusHistory.create({
+        data: {
+          ticket: { connect: { id: ticketId } },
+          status: status as any,
+          changedBy: { connect: { id: user.id } },
+          changedAt: new Date(),
+          notes: notesWithLocation,
+          timeInStatus,
+          totalTimeOpen,
+          ...(shouldSaveLocation && {
+            location: locationData.address,
+            latitude: locationData.latitude,
+            longitude: locationData.longitude,
+            accuracy: locationData.accuracy,
+            locationSource: locationData.source || 'gps'
+          })
+        },
+      });
+
+      return ticket;
     });
 
     // Create automatic activity log for ticket status update
@@ -1021,12 +1058,12 @@ export const updateStatus = async (req: Request, res: Response) => {
         details: {
           oldStatus: currentTicket.status,
           newStatus: status,
-          ...(location && {
-            location: location.address,
-            latitude: location.latitude,
-            longitude: location.longitude,
-            accuracy: location.accuracy,
-            locationSource: location.source || 'gps'
+          ...(locationData && {
+            location: locationData.address,
+            latitude: locationData.latitude,
+            longitude: locationData.longitude,
+            accuracy: locationData.accuracy,
+            locationSource: locationData.source || 'gps'
           })
         },
         ipAddress: req.ip,
@@ -1282,47 +1319,54 @@ export const assignTicket = async (req: TicketRequest, res: Response) => {
       return res.status(400).json({ error: `Can only assign to: ${validAssigneeRoles.join(', ')}` });
     }
 
-    // Update the ticket with the new assignee
-    const updatedTicket = await prisma.ticket.update({
-      where: { id: Number(ticketId) },
-      data: {
-        assignedToId: Number(assignedToId),
-        ...(subOwnerId && { subOwnerId: Number(subOwnerId) }),
-        status: TicketStatus.ASSIGNED,
-        lastStatusChange: new Date(),
-        // Set assignment status to PENDING so assigned user can accept/reject
-        assignmentStatus: 'PENDING',
-        assignmentRespondedAt: null,
-        assignmentNotes: null,
-      },
-      include: {
-        assignedTo: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true,
+    // Use transaction for atomicity
+    const updatedTicket = await prisma.$transaction(async (tx) => {
+      // 1. Update the ticket with the new assignee
+      const ticket = await tx.ticket.update({
+        where: { id: Number(ticketId) },
+        data: {
+          assignedToId: Number(assignedToId),
+          ...(subOwnerId && { subOwnerId: Number(subOwnerId) }),
+          status: TicketStatus.ASSIGNED,
+          lastStatusChange: new Date(),
+          assignmentStatus: 'PENDING',
+          assignmentRespondedAt: null,
+          assignmentNotes: null,
+        },
+        include: {
+          assignedTo: {
+            select: { id: true, email: true, name: true, role: true, phone: true },
+          },
+          subOwner: {
+            select: { id: true, email: true, name: true, role: true },
           },
         },
-        subOwner: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true,
-          },
-        },
-      },
-    });
+      });
 
-    // Create status history entry
-    await prisma.ticketStatusHistory.create({
-      data: {
-        ticketId: updatedTicket.id,
-        status: updatedTicket.status,
-        changedById: user.id,
-        notes: note || `Ticket assigned to ${updatedTicket.assignedTo?.name || 'service person'}`
-      }
+      // 2. Create status history entry
+      await tx.ticketStatusHistory.create({
+        data: {
+          ticketId: ticket.id,
+          status: ticket.status,
+          changedById: user.id,
+          notes: note || `Ticket assigned to ${ticket.assignedTo?.name || 'service person'}`
+        }
+      });
+
+      // 3. Create audit log
+      await tx.auditLog.create({
+        data: {
+          action: 'ASSIGN_TO_SERVICE_PERSON',
+          entityType: 'TICKET',
+          entityId: Number(ticketId),
+          userId: user.id,
+          performedById: user.id,
+          details: note || `Assigned ticket to service person ${assignedUser.name}`,
+          updatedAt: new Date()
+        }
+      });
+
+      return ticket;
     });
 
     // Send notification to assigned user
@@ -1364,6 +1408,7 @@ export const assignTicket = async (req: TicketRequest, res: Response) => {
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: note || `Assigned ticket to service person ${assignedUser.name}`,
         updatedAt: new Date()
       }
@@ -1436,6 +1481,7 @@ export const planOnsiteVisit = async (req: TicketRequest, res: Response) => {
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: `Planned onsite visit for ${visitDate}`,
         updatedAt: new Date()
       }
@@ -1581,17 +1627,11 @@ export const assignToZoneUser = async (req: TicketRequest, res: Response) => {
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: `Assigned ticket to zone user ${zoneUser.name}`,
         updatedAt: new Date()
       }
     });
-
-    // Send assignment notification
-    await NotificationService.createTicketAssignmentNotification(
-      Number(ticketId),
-      Number(zoneUserId),
-      user.id
-    );
 
     res.json(updatedTicket);
   } catch (error) {
@@ -1648,6 +1688,7 @@ export const completeOnsiteVisit = async (req: TicketRequest, res: Response) => 
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: `Updated spare parts status to ${sparePartsNeeded ? 'NEEDED' : 'NOT_NEEDED'}`,
         updatedAt: new Date()
       }
@@ -1725,6 +1766,7 @@ export const requestPO = async (req: TicketRequest, res: Response) => {
         entityType: 'PO_REQUEST',
         entityId: poRequest.id,
         userId: user.id,
+        performedById: user.id,
         details: `Created PO request: ${description}`,
         updatedAt: new Date()
       }
@@ -1859,54 +1901,40 @@ export const closeTicket = async (req: TicketRequest, res: Response) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // First update to CLOSED_PENDING status
-    await prisma.ticket.update({
-      where: { id: Number(ticketId) },
-      data: {
-        status: TicketStatus.CLOSED_PENDING,
-        lastStatusChange: new Date(),
-      },
-    });
-
-    // Create status history entry for CLOSED_PENDING
-    await prisma.ticketStatusHistory.create({
-      data: {
-        ticketId: Number(ticketId),
-        status: TicketStatus.CLOSED_PENDING,
-        changedById: user.id,
-        notes: 'Ticket marked as closed pending',
-      },
-    });
-
-    // Then update to CLOSED status
-    const updatedTicket = await prisma.ticket.update({
-      where: { id: Number(ticketId) },
-      data: {
-        status: TicketStatus.CLOSED,
-        lastStatusChange: new Date(),
-      },
-    });
-
-    // Create feedback if provided
-    if (feedback || rating) {
-      await prisma.ticketFeedback.create({
+    // Use transaction for consistency
+    const updatedTicket = await prisma.$transaction(async (tx) => {
+      // 1. Update to CLOSED status (skip PENDING if it was redundant)
+      const ticket = await tx.ticket.update({
+        where: { id: Number(ticketId) },
         data: {
-          ticketId: Number(ticketId),
-          feedback,
-          rating: rating || 5,
-          submittedById: user.id,
+          status: TicketStatus.CLOSED,
+          lastStatusChange: new Date(),
         },
       });
-    }
 
-    // Create status history entry for CLOSED
-    await prisma.ticketStatusHistory.create({
-      data: {
-        ticketId: Number(ticketId),
-        status: TicketStatus.CLOSED,
-        changedById: user.id,
-        notes: 'Ticket closed by zone owner',
-      },
+      // 2. Create feedback if provided
+      if (feedback || rating) {
+        await tx.ticketFeedback.create({
+          data: {
+            ticketId: Number(ticketId),
+            feedback,
+            rating: rating || 5,
+            submittedById: user.id,
+          },
+        });
+      }
+
+      // 3. Create status history entry for CLOSED
+      await tx.ticketStatusHistory.create({
+        data: {
+          ticketId: Number(ticketId),
+          status: TicketStatus.CLOSED,
+          changedById: user.id,
+          notes: 'Ticket closed by zone owner',
+        },
+      });
+
+      return ticket;
     });
 
     res.json(updatedTicket);
@@ -1929,8 +1957,8 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Get ticket status history, notes, and scheduled activities
-    const [statusHistory, notes, scheduledActivities] = await Promise.all([
+    // Get ticket status history, notes, scheduled activities, reports, and audit logs
+    const [statusHistory, notes, scheduledActivities, reports, auditLogs] = await Promise.all([
       prisma.ticketStatusHistory.findMany({
         where: { ticketId },
         orderBy: { changedAt: 'desc' },
@@ -1990,13 +2018,48 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
             }
           }
         }
+      }),
+      // Fetch reports for this ticket
+      prisma.ticketReport.findMany({
+        where: { ticketId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          uploadedBy: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true
+            }
+          }
+        }
+      }),
+      // Fetch audit logs for this ticket
+      prisma.auditLog.findMany({
+        where: {
+          OR: [
+            { ticketId },
+            { entityType: 'TICKET', entityId: ticketId }
+          ]
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          performedBy: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true
+            }
+          }
+        }
       })
     ]);
 
     // Define activity type
     type Activity = {
       id: string;
-      type: 'STATUS_CHANGE' | 'NOTE' | 'SCHEDULED';
+      type: 'STATUS_CHANGE' | 'NOTE' | 'SCHEDULED' | 'REPORT_UPLOADED' | 'TICKET_CREATED' | 'TICKET_UPDATED' | 'TICKET_ASSIGNED' | 'AUDIT';
       description: string;
       data: Record<string, any>;
       user: { id: number; email: string; name: string | null; role: string | null };
@@ -2011,7 +2074,7 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
         type: 'STATUS_CHANGE' as const,
         description: history.notes && history.notes.includes('assigned to') || history.notes && history.notes.includes('Assigned to')
           ? history.notes
-          : `changed status to ${history.status}`,
+          : `Changed status to ${history.status.replace(/_/g, ' ')}`,
         data: {
           status: history.status,
           notes: history.notes,
@@ -2070,7 +2133,84 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
         },
         createdAt: schedule.createdAt,
         updatedAt: schedule.updatedAt
-      }))
+      })),
+      // Add report uploads to timeline
+      ...reports.map((report: any) => ({
+        id: `report_${report.id}`,
+        type: 'REPORT_UPLOADED' as const,
+        description: `Report uploaded: ${report.fileName}`,
+        data: {
+          fileName: report.fileName,
+          fileSize: report.fileSize,
+          fileType: report.fileType,
+          reportId: report.id
+        },
+        user: {
+          ...report.uploadedBy,
+          name: report.uploadedBy.name || report.uploadedBy.email.split('@')[0]
+        },
+        createdAt: report.createdAt,
+        updatedAt: report.updatedAt || report.createdAt
+      })),
+      // Add audit logs to timeline (filter out duplicates with status history)
+      ...auditLogs
+        .filter((log: any) => {
+          // Exclude status change audit logs as they're already in statusHistory
+          return !['STATUS_CHANGED', 'TICKET_STATUS_CHANGED'].includes(log.action);
+        })
+        .map((log: any) => {
+          // Map action to user-friendly description
+          const getActionDescription = (action: string, details: any) => {
+            switch (action) {
+              case 'TICKET_CREATED':
+                return `Ticket created: ${details?.title || 'New ticket'}`;
+              case 'TICKET_UPDATED':
+                return 'Ticket details updated';
+              case 'TICKET_ASSIGNED':
+                return `Ticket assigned to ${details?.assigneeName || 'user'}`;
+              case 'TICKET_ESCALATED':
+                return `Ticket escalated${details?.reason ? ': ' + details.reason : ''}`;
+              case 'TICKET_CLOSED':
+                return 'Ticket closed';
+              case 'TICKET_REOPENED':
+                return 'Ticket reopened';
+              case 'PO_REQUESTED':
+                return 'PO requested';
+              case 'PO_APPROVED':
+                return `PO approved: ${details?.poNumber || ''}`;
+              case 'COMMENT_ADDED':
+                return 'Comment added';
+              default:
+                return action.replace(/_/g, ' ').toLowerCase().replace(/^./, (s: string) => s.toUpperCase());
+            }
+          };
+
+          return {
+            id: `audit_${log.id}`,
+            type: log.action as any,
+            description: getActionDescription(log.action, log.details || log.metadata),
+            data: {
+              action: log.action,
+              details: log.details,
+              metadata: log.metadata,
+              oldValue: log.oldValue,
+              newValue: log.newValue,
+              ipAddress: log.ipAddress,
+              userAgent: log.userAgent
+            },
+            user: log.performedBy ? {
+              ...log.performedBy,
+              name: log.performedBy.name || log.performedBy.email?.split('@')[0] || 'System'
+            } : {
+              id: log.userId || 0,
+              email: 'system@kardex.com',
+              name: 'System',
+              role: null
+            },
+            createdAt: log.createdAt,
+            updatedAt: log.updatedAt || log.createdAt
+          };
+        })
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     res.json(activities);
@@ -2078,6 +2218,7 @@ export const getTicketActivity = async (req: TicketRequest, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 // Add note to ticket (internal use)
 export const addNote = async (req: TicketRequest, res: Response) => {
@@ -2106,6 +2247,7 @@ export const addNote = async (req: TicketRequest, res: Response) => {
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: 'Added internal note',
         updatedAt: new Date()
       }
@@ -2187,6 +2329,7 @@ export const uploadTicketReports = async (req: TicketRequest, res: Response) => 
           entityType: 'TICKET',
           entityId: Number(ticketId),
           userId: user.id,
+          performedById: user.id,
           performedAt: new Date(),
           updatedAt: new Date(),
           details: {
@@ -2457,6 +2600,7 @@ export const startOnsiteVisit = async (req: TicketRequest, res: Response) => {
         entityType: 'TICKET',
         entityId: Number(ticketId),
         userId: user.id,
+        performedById: user.id,
         details: `Started onsite visit at ${address || 'location'}`,
         updatedAt: new Date(),
       },
@@ -3137,7 +3281,7 @@ export const respondToAssignment = async (req: TicketRequest, res: Response) => 
       });
     } catch (notificationError) {
       // Don't fail if notification fails
-      console.error('Failed to create notification:', notificationError);
+
     }
 
     // Create audit log
@@ -3161,7 +3305,7 @@ export const respondToAssignment = async (req: TicketRequest, res: Response) => 
     });
 
   } catch (error) {
-    console.error('Error responding to assignment:', error);
+
     res.status(500).json({ error: 'Failed to respond to assignment' });
   }
 };

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
@@ -21,7 +20,7 @@ import { apiClient } from '@/lib/api/api-client';
 import EnhancedLocationCapture from '@/components/activity/EnhancedLocationCapture';
 import { LocationData as EnhancedLocationData } from '@/hooks/useEnhancedLocation';
 
-interface AttendanceData {
+export interface AttendanceData {
   isCheckedIn: boolean;
   attendance?: {
     id: number;
@@ -59,7 +58,7 @@ interface AttendanceLocationData {
 }
 
 interface CleanAttendanceWidgetProps {
-  onStatusChange?: () => void;
+  onStatusChange?: (data?: AttendanceData) => void;
   initialData?: AttendanceData;
 }
 
@@ -128,7 +127,7 @@ export default function CleanAttendanceWidget({
       const data = response.data || response;
       setStats(data);
     } catch (error) {
-      }
+    }
   }, []);
 
   // Initialize data
@@ -196,7 +195,6 @@ export default function CleanAttendanceWidget({
             await new Promise(resolve => setTimeout(resolve, readingDelay));
           }
         } catch (error) {
-          // Continue with other readings even if one fails
         }
       }
 
@@ -204,10 +202,8 @@ export default function CleanAttendanceWidget({
         throw new Error('All GPS readings failed');
       }
 
-      // Analyze readings for consistency
       const bestReading = selectBestLocationReading(readings);
       
-      // Update location state with the best reading
       setLocationState({
         isCapturing: false,
         capturedLocation: bestReading,
@@ -226,200 +222,89 @@ export default function CleanAttendanceWidget({
     }
   };
 
-  // Select the best location reading from multiple GPS attempts
   const selectBestLocationReading = (readings: LocationData[]): LocationData => {
-    if (readings.length === 1) {
-      return readings[0];
-    }
-
-    // Strategy 1: If we have a reading with excellent accuracy (<50m), prefer it
+    if (readings.length === 1) return readings[0];
     const excellentReadings = readings.filter(r => r.accuracy <= 50);
     if (excellentReadings.length > 0) {
-      const best = excellentReadings.reduce((best, current) => 
-        current.accuracy < best.accuracy ? current : best
-      );
-      return best;
+      return excellentReadings.reduce((best, current) => current.accuracy < best.accuracy ? current : best);
     }
-
-    // Strategy 2: Check for consistency between readings
     const consistentReadings = findConsistentReadings(readings);
     if (consistentReadings.length > 0) {
-      const best = consistentReadings.reduce((best, current) => 
-        current.accuracy < best.accuracy ? current : best
-      );
-      return best;
+      return consistentReadings.reduce((best, current) => current.accuracy < best.accuracy ? current : best);
     }
-
-    // Strategy 3: Fall back to best accuracy
-    const best = readings.reduce((best, current) => 
-      current.accuracy < best.accuracy ? current : best
-    );
-    return best;
+    return readings.reduce((best, current) => current.accuracy < best.accuracy ? current : best);
   };
 
-  // Find readings that are geographically consistent (within reasonable distance)
   const findConsistentReadings = (readings: LocationData[]): LocationData[] => {
     if (readings.length < 2) return readings;
-
-    const CONSISTENCY_THRESHOLD = 500; // 500 meters threshold for consistency
+    const CONSISTENCY_THRESHOLD = 500;
     const consistent: LocationData[] = [];
-
     for (let i = 0; i < readings.length; i++) {
-      let consistentCount = 1; // Count itself
-      
+      let consistentCount = 1;
       for (let j = 0; j < readings.length; j++) {
         if (i !== j) {
-          const distance = calculateDistance(
-            readings[i].latitude, readings[i].longitude,
-            readings[j].latitude, readings[j].longitude
-          );
-          
-          if (distance <= CONSISTENCY_THRESHOLD) {
-            consistentCount++;
-          }
+          const distance = calculateDistance(readings[i].latitude, readings[i].longitude, readings[j].latitude, readings[j].longitude);
+          if (distance <= CONSISTENCY_THRESHOLD) consistentCount++;
         }
       }
-      
-      // If this reading is consistent with at least one other reading
-      if (consistentCount > 1) {
-        consistent.push(readings[i]);
-      }
+      if (consistentCount > 1) consistent.push(readings[i]);
     }
-
     return consistent;
   };
 
-  // Calculate distance between two GPS coordinates (Haversine formula)
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371000; // Earth's radius in meters
+    const R = 6371000;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
   };
 
-  // Get a single GPS reading
   const getSingleLocationReading = async (): Promise<LocationData> => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         const error = 'Geolocation is not supported by this browser';
-        setLocationState({
-          isCapturing: false,
-          capturedLocation: null,
-          error
-        });
+        setLocationState({ isCapturing: false, capturedLocation: null, error });
         reject(new Error(error));
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude, accuracy } = position.coords;
-          
-          // Warn about poor GPS accuracy and provide user guidance
           if (accuracy > 100) {
-            // Show user warning for poor accuracy
-            setLocationState(prev => ({
-              ...prev,
-              error: `Very poor GPS signal (±${Math.round(accuracy)}m). Please go outdoors with clear sky view for better accuracy. Location may be off by over 3km.`
-            }));
-          } else if (accuracy > 500) {
-            // Show user warning for poor accuracy
-            setLocationState(prev => ({
-              ...prev,
-              error: `Poor GPS signal (±${Math.round(accuracy)}m). Consider moving outdoors for better accuracy.`
-            }));
+            setLocationState(prev => ({ ...prev, error: `Poor GPS signal (±${Math.round(accuracy)}m).` }));
           }
-          
-          // Get address from coordinates
           let address = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
           try {
             const response = await apiClient.get(`/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`);
-            
-            // Handle different response formats
-            if (response.data?.address) {
-              // Direct address in response
-              address = response.data.address;
-              } else if (response.data?.success && response.data?.data?.address) {
-              // Nested address format
-              address = response.data.data.address;
-              } else {
-              }
-          } catch (error: any) {
-            }
-
-          const locationData = { 
-            latitude, 
-            longitude, 
-            accuracy, 
-            address,
-            timestamp: new Date().toISOString()
-          };
-          
-          // Update location state with captured location and clear capturing state
-          setLocationState({
-            isCapturing: false,
-            capturedLocation: locationData,
-            error: null
-          });
-          
+            if (response.data?.address) address = response.data.address;
+            else if (response.data?.success && response.data?.data?.address) address = response.data.data.address;
+          } catch (error) {}
+          const locationData = { latitude, longitude, accuracy, address, timestamp: new Date().toISOString() };
+          setLocationState({ isCapturing: false, capturedLocation: locationData, error: null });
           resolve(locationData);
         },
         (error) => {
           const errorMessage = `Location error: ${error.message}`;
-          setLocationState({
-            isCapturing: false,
-            capturedLocation: null,
-            error: errorMessage
-          });
+          setLocationState({ isCapturing: false, capturedLocation: null, error: errorMessage });
           reject(new Error(errorMessage));
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000, // Increased timeout for better accuracy
-          maximumAge: 0 // Always get fresh location
-        }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     });
   };
 
-  // Handle check-in with enhanced location validation
   const handleCheckIn = async () => {
-    // Check if we have enhanced location data
     if (!enhancedLocationState.capturedLocation) {
-      // Show enhanced location capture dialog
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true,
-        error: null
-      }));
-      
-      toast({
-        title: "Location Required",
-        description: "Please capture your location for check-in.",
-        variant: "destructive",
-      });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true, error: null }));
+      toast({ title: "Location Required", description: "Please capture your location for check-in.", variant: "destructive" });
       return;
     }
-
     const location = enhancedLocationState.capturedLocation;
-    
-    // Validate GPS accuracy (reject if > 100m for GPS sources)
     if (location.source === 'gps' && location.accuracy > 2000) {
-      toast({
-        title: "GPS Accuracy Too Poor",
-        description: `GPS accuracy is ±${Math.round(location.accuracy)}m (requires ≤2000m). Please move to an area with better GPS signal.`,
-        variant: "destructive",
-      });
-      
-      // Show location capture again for manual selection
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true
-      }));
+      toast({ title: "GPS Accuracy Too Poor", description: `GPS accuracy is ±${Math.round(location.accuracy)}m (requires ≤2000m).`, variant: "destructive" });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true }));
       return;
     }
 
@@ -435,49 +320,49 @@ export default function CleanAttendanceWidget({
       };
 
       const response = await apiClient.post('/attendance/checkin', checkInData);
+      const result = (response.data || response) as any;
+      const newData: AttendanceData = {
+        isCheckedIn: true,
+        attendance: result.attendance ? {
+          id: result.attendance.id,
+          checkInAt: result.attendance.checkInAt,
+          checkInAddress: result.attendance.checkInAddress || location.address,
+          status: 'CHECKED_IN'
+        } : {
+          id: 0,
+          checkInAt: new Date().toISOString(),
+          checkInAddress: location.address,
+          status: 'CHECKED_IN'
+        }
+      };
       
-      // Reset enhanced location state
-      setEnhancedLocationState({
-        isCapturing: false,
-        capturedLocation: null,
-        error: null,
-        showLocationCapture: false
-      });
-
-      await fetchAttendanceStatus();
+      setAttendanceData(newData);
+      if (onStatusChange) onStatusChange(newData);
+      
+      setActionLoading(false);
+      setEnhancedLocationState({ isCapturing: false, capturedLocation: null, error: null, showLocationCapture: false });
+      fetchAttendanceStats().catch(() => {});
     } catch (error: any) {
+      setActionLoading(false);
       let errorMessage = 'Failed to check in. Please try again.';
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.status === 400) {
-        errorMessage = 'Invalid location data. Please try capturing location again.';
-      }
-      
-      toast({
-        title: 'Check-in Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      if (error.response?.data?.message) errorMessage = error.response.data.message;
+      else if (error.response?.status === 400) errorMessage = 'Invalid location data.';
+      toast({ title: 'Check-in Failed', description: errorMessage, variant: 'destructive' });
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Legacy check-in handler (keeping for fallback)
   const handleLegacyCheckIn = async () => {
     setActionLoading(true);
     try {
-      // Get location with visual feedback
       const location = await getCurrentLocation();
-      // Send check-in request
       const response = await apiClient.post('/attendance/checkin', {
         latitude: location.latitude,
         longitude: location.longitude,
         address: location.address,
       });
-
       const result = response.data || response;
-      // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: true,
         attendance: result.attendance ? {
@@ -493,243 +378,85 @@ export default function CleanAttendanceWidget({
         }
       };
       setAttendanceData(newData);
-
-      // Refresh local data
+      if (onStatusChange) onStatusChange(newData);
       await fetchAttendanceStatus();
       await fetchAttendanceStats();
     } catch (error: any) {
-      // If already checked in, refresh status to sync UI with backend
       if (error.response?.status === 400 && 
           (error.response?.data?.error === 'Already checked in' || 
            error.response?.data?.message?.includes('already checked in'))) {
-        toast({
-          title: 'Already Checked In',
-          description: 'You are currently checked in. Refreshing status...',
-          variant: 'destructive',
-        });
-        // Refresh local data
-      await fetchAttendanceStatus();
+        toast({ title: 'Already Checked In', description: 'Refreshing status...', variant: 'destructive' });
+        await fetchAttendanceStatus();
       } else {
-        toast({
-          title: 'Check-in Failed',
-          description: error.response?.data?.message || error.message || 'Failed to check in',
-          variant: 'destructive',
-        });
+        toast({ title: 'Check-in Failed', description: error.response?.data?.message || 'Failed to check in', variant: 'destructive' });
       }
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Handle check-out with enhanced location validation
   const handleCheckOut = async () => {
-    // Check if user is actually checked in
     if (!attendanceData?.isCheckedIn || !attendanceData?.attendance?.id) {
-      toast({
-        title: "Cannot Check Out",
-        description: "You are not currently checked in or attendance record not found.",
-        variant: "destructive",
-      });
-      
-      // Refresh attendance status to sync with backend
+      toast({ title: "Cannot Check Out", description: "You are not currently checked in.", variant: "destructive" });
       await fetchAttendanceStatus();
       return;
     }
-
-    // Check if we have enhanced location data
     if (!enhancedLocationState.capturedLocation) {
-      // Show enhanced location capture dialog
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true,
-        error: null
-      }));
-      
-      toast({
-        title: "Location Required",
-        description: "Please capture your location for check-out.",
-        variant: "destructive",
-      });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true, error: null }));
+      toast({ title: "Location Required", description: "Please capture location.", variant: "destructive" });
       return;
     }
-
     const location = enhancedLocationState.capturedLocation;
-    
-    // Validate GPS accuracy (reject if > 100m for GPS sources)
     if (location.source === 'gps' && location.accuracy > 2000) {
-      toast({
-        title: "GPS Accuracy Too Poor",
-        description: `GPS accuracy is ±${Math.round(location.accuracy)}m (requires ≤2000m). Please move to an area with better GPS signal.`,
-        variant: "destructive",
-      });
-      
-      // Show location capture again for manual selection
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true
-      }));
+      toast({ title: "GPS Accuracy Too Poor", description: "GPS Accuracy Too Poor", variant: "destructive" });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true }));
       return;
     }
-
     const checkOutData = {
       attendanceId: attendanceData.attendance.id,
       latitude: location.latitude,
       longitude: location.longitude,
       address: location.address || `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`,
-      locationSource: location.source // 'gps' or 'manual'
+      locationSource: location.source
     };
-
     setActionLoading(true);
     try {
       const response = await apiClient.post('/attendance/checkout', checkOutData);
-      
-      // Reset enhanced location state
-      setEnhancedLocationState({
-        isCapturing: false,
-        capturedLocation: null,
-        error: null,
-        showLocationCapture: false
-      });
-
-      await fetchAttendanceStatus();
-    } catch (error: any) {
-      // Handle early checkout confirmation - Show dialog to user
-      if (error.response?.status === 400 && error.response.data?.requiresConfirmation) {
-        // Store the checkout data and show confirmation dialog
-        setEarlyCheckoutData({
-          location: location,
-          confirmationData: error.response.data
-        });
-        setShowEarlyCheckoutConfirm(true);
-        setActionLoading(false);
-        return; // Wait for user confirmation
-      }
-      
-      // Handle other errors
-      let errorMessage = 'Failed to check out. Please try again.';
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.response?.status === 404) {
-        errorMessage = 'Active attendance record not found. Please refresh and try again.';
-      } else if (error.response?.status === 400) {
-        errorMessage = error.response.data?.message || 'Invalid checkout data. Please try again.';
-      }
-      
-      toast({
-        title: 'Check-out Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-      setActionLoading(false);
-    }
-  };
-
-  // Legacy check-out handler (keeping for fallback)
-  const handleLegacyCheckOut = async () => {
-    setActionLoading(true);
-    try {
-      // Get location with visual feedback
-      const location = await getCurrentLocation();
-      // Send check-out request
-      const response = await apiClient.post('/attendance/checkout', {
-        attendanceId: attendanceData?.attendance?.id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        address: location.address,
-      });
-
-      const result = response.data || response;
-      // Update local state immediately
+      const result = (response.data || response) as any;
       const newData: AttendanceData = {
         isCheckedIn: false,
-        attendance: result.attendance ? {
-          id: result.attendance.id,
-          checkInAt: result.attendance.checkInAt,
-          checkOutAt: result.attendance.checkOutAt,
-          checkInAddress: result.attendance.checkInAddress,
-          checkOutAddress: result.attendance.checkOutAddress || location.address,
-          status: result.attendance.status || 'CHECKED_OUT',
-          totalHours: result.attendance.totalHours
-        } : attendanceData?.attendance
+        attendance: result.attendance
       };
       setAttendanceData(newData);
-
-      // Refresh local data
-      await fetchAttendanceStatus();
-      await fetchAttendanceStats();
+      if (onStatusChange) onStatusChange(newData);
+      setActionLoading(false);
+      setEnhancedLocationState({ isCapturing: false, capturedLocation: null, error: null, showLocationCapture: false });
+      fetchAttendanceStats().catch(() => {});
     } catch (error: any) {
-      // Handle early checkout confirmation - Show dialog to user
-      if (error.response?.status === 400 && error.response?.data?.requiresConfirmation) {
-        const capturedLocation = enhancedLocationState.capturedLocation;
-        if (!capturedLocation) {
-          toast({
-            title: 'Location Required',
-            description: 'Please capture your location for checkout.',
-            variant: 'destructive',
-          });
-          setActionLoading(false);
-          return;
-        }
-        
-        // Store the checkout data and show confirmation dialog
-        setEarlyCheckoutData({
-          location: capturedLocation,
-          confirmationData: error.response.data
-        });
+      setActionLoading(false);
+      if (error.response?.status === 400 && error.response.data?.requiresConfirmation) {
+        setEarlyCheckoutData({ location, confirmationData: error.response.data });
         setShowEarlyCheckoutConfirm(true);
         setActionLoading(false);
-        return; // Wait for user confirmation
+        return;
       }
-      
-      toast({
-        title: 'Check-out Failed',
-        description: error.response?.data?.message || 'Failed to check out',
-        variant: 'destructive',
-      });
-    } finally {
+      toast({ title: 'Check-out Failed', description: error.response?.data?.message || 'Failed to check out', variant: 'destructive' });
       setActionLoading(false);
     }
   };
 
-  // Handle re-check-in with enhanced location validation
   const handleReCheckIn = async () => {
-    // Check if we have enhanced location data
     if (!enhancedLocationState.capturedLocation) {
-      // Show enhanced location capture dialog
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true,
-        error: null
-      }));
-      
-      toast({
-        title: "Location Required",
-        description: "Please capture your location for re-check-in.",
-        variant: "destructive",
-      });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true, error: null }));
+      toast({ title: "Location Required", description: "Please capture location.", variant: "destructive" });
       return;
     }
-
     const location = enhancedLocationState.capturedLocation;
-    
-    // Validate GPS accuracy (reject if > 100m for GPS sources)
     if (location.source === 'gps' && location.accuracy > 2000) {
-      toast({
-        title: "GPS Accuracy Too Poor",
-        description: `GPS accuracy is ±${Math.round(location.accuracy)}m (requires ≤2000m). Please move to an area with better GPS signal.`,
-        variant: "destructive",
-      });
-      
-      // Show location capture again for manual selection
-      setEnhancedLocationState(prev => ({
-        ...prev,
-        showLocationCapture: true
-      }));
+      toast({ title: "GPS Accuracy Too Poor", description: "GPS Accuracy Too Poor", variant: "destructive" });
+      setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: true }));
       return;
     }
-
     setActionLoading(true);
     try {
       const reCheckInData = {
@@ -741,11 +468,8 @@ export default function CleanAttendanceWidget({
         locationSource: location.source,
         timestamp: new Date(location.timestamp).toISOString()
       };
-
       const response = await apiClient.post('/attendance/re-checkin', reCheckInData);
-      
       const result = response.data || response;
-      // Update local state immediately
       const newData: AttendanceData = {
         isCheckedIn: true,
         attendance: result.attendance ? {
@@ -761,96 +485,28 @@ export default function CleanAttendanceWidget({
         }
       };
       setAttendanceData(newData);
-
-      // Reset enhanced location state
-      setEnhancedLocationState({
-        isCapturing: false,
-        capturedLocation: null,
-        error: null,
-        showLocationCapture: false
-      });
-
-      // Refresh local data
-      await fetchAttendanceStatus();
-      await fetchAttendanceStats();
+      if (onStatusChange) onStatusChange(newData);
+      setActionLoading(false);
+      setEnhancedLocationState({ isCapturing: false, capturedLocation: null, error: null, showLocationCapture: false });
+      fetchAttendanceStats().catch(() => {});
     } catch (error: any) {
-      let errorMessage = 'Failed to re-check in. Please try again.';
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.status === 400) {
-        errorMessage = 'Invalid location data. Please try capturing location again.';
-      }
-      
-      toast({
-        title: 'Re-Check-in Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      setActionLoading(false);
+      toast({ title: 'Re-Check-in Failed', description: error.response?.data?.message || 'Failed', variant: 'destructive' });
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Legacy re-check-in handler (keeping for fallback)
-  const handleLegacyReCheckIn = async () => {
-    setActionLoading(true);
-    try {
-      // Get location with visual feedback
-      const location = await getCurrentLocation();
-      // Send re-check-in request
-      const response = await apiClient.post('/attendance/re-checkin', {
-        attendanceId: attendanceData?.attendance?.id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        address: location.address,
-      });
-
-      const result = response.data || response;
-      // Update local state immediately
-      const newData: AttendanceData = {
-        isCheckedIn: true,
-        attendance: result.attendance ? {
-          id: result.attendance.id,
-          checkInAt: result.attendance.checkInAt,
-          checkInAddress: result.attendance.checkInAddress || location.address,
-          status: 'CHECKED_IN'
-        } : {
-          id: 0,
-          checkInAt: new Date().toISOString(),
-          checkInAddress: location.address,
-          status: 'CHECKED_IN'
-        }
-      };
-      setAttendanceData(newData);
-
-      // Refresh local data
-      await fetchAttendanceStatus();
-      await fetchAttendanceStats();
-    } catch (error: any) {
-      toast({
-        title: 'Re-Check-in Failed',
-        description: error.response?.data?.message || 'Failed to re-check in',
-        variant: 'destructive',
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Handle early checkout confirmation
   const handleEarlyCheckoutConfirm = async (confirmed: boolean) => {
     setShowEarlyCheckoutConfirm(false);
-    
     if (!confirmed || !earlyCheckoutData) {
       setEarlyCheckoutData(null);
       setActionLoading(false);
       return;
     }
-
     setActionLoading(true);
     try {
       const { location } = earlyCheckoutData;
-      
       const response = await apiClient.post('/attendance/checkout', {
         attendanceId: attendanceData?.attendance?.id,
         latitude: location.latitude,
@@ -859,52 +515,26 @@ export default function CleanAttendanceWidget({
         locationSource: location.source,
         confirmEarlyCheckout: true
       });
-
       const result = response.data || response;
       const newData: AttendanceData = {
         isCheckedIn: false,
-        attendance: result.attendance ? {
-          id: result.attendance.id,
-          checkInAt: result.attendance.checkInAt,
-          checkOutAt: result.attendance.checkOutAt,
-          checkInAddress: result.attendance.checkInAddress,
-          checkOutAddress: result.attendance.checkOutAddress,
-          status: result.attendance.status || 'EARLY_CHECKOUT',
-          totalHours: result.attendance.totalHours
-        } : attendanceData?.attendance
+        attendance: result.attendance
       };
       setAttendanceData(newData);
-
-      // Reset enhanced location state
-      setEnhancedLocationState({
-        isCapturing: false,
-        capturedLocation: null,
-        error: null,
-        showLocationCapture: false
-      });
-
-      // Refresh local data
-      await fetchAttendanceStatus();
-      await fetchAttendanceStats();
+      if (onStatusChange) onStatusChange(newData);
+      setEnhancedLocationState({ isCapturing: false, capturedLocation: null, error: null, showLocationCapture: false });
+      fetchAttendanceStatus();
+      fetchAttendanceStats();
     } catch (error: any) {
-      toast({
-        title: 'Check-out Failed',
-        description: error.response?.data?.message || 'Failed to check out',
-        variant: 'destructive',
-      });
+      toast({ title: 'Check-out Failed', description: error.response?.data?.message || 'Failed', variant: 'destructive' });
     } finally {
       setActionLoading(false);
       setEarlyCheckoutData(null);
     }
   };
 
-  // Utility functions
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    return new Date(dateString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   const formatHours = (hours: string | number | undefined, decimals: number = 2): string => {
@@ -913,49 +543,8 @@ export default function CleanAttendanceWidget({
     return isNaN(numHours) ? '0' : numHours.toFixed(decimals);
   };
 
-  const getStatusBadge = () => {
-    if (!attendanceData) return null;
-
-    if (attendanceData.isCheckedIn) {
-      return (
-        <Badge className="bg-[#A2B9AF]/20 text-[#4F6A64] border-[#A2B9AF]">
-          <CheckCircle className="w-3 h-3 mr-1" />
-          Checked In
-        </Badge>
-      );
-    } else {
-      const hasAttendanceToday = attendanceData.attendance && 
-        (attendanceData.attendance.status === 'CHECKED_OUT' || attendanceData.attendance.status === 'EARLY_CHECKOUT');
-      
-      if (hasAttendanceToday) {
-        return (
-          <Badge variant="secondary" className="bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]">
-            <Clock className="w-3 h-3 mr-1" />
-            Can Re-Check In
-          </Badge>
-        );
-      } else {
-        return (
-          <Badge variant="secondary" className="bg-[#AEBFC3]/20 text-[#546A7A] border-[#92A2A5]">
-            <Clock className="w-3 h-3 mr-1" />
-            Ready to Check In
-          </Badge>
-        );
-      }
-    }
-  };
-
   const renderActionButton = () => {
-    if (loading) {
-      return (
-        <Button disabled className="w-full h-12 text-sm font-semibold">
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          Loading...
-        </Button>
-      );
-    }
-
-    if (!attendanceData) {
+    if (loading || !attendanceData) {
       return (
         <Button disabled className="w-full h-12 rounded-xl text-sm font-semibold bg-[#AEBFC3]/20 text-[#979796]">
           <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -963,425 +552,137 @@ export default function CleanAttendanceWidget({
         </Button>
       );
     }
-
     const isCheckedIn = attendanceData.isCheckedIn;
-    const hasAttendanceToday = attendanceData.attendance && 
-      (attendanceData.attendance.status === 'CHECKED_OUT' || attendanceData.attendance.status === 'EARLY_CHECKOUT');
+    const hasAttendanceToday = attendanceData.attendance && (attendanceData.attendance.status === 'CHECKED_OUT' || attendanceData.attendance.status === 'EARLY_CHECKOUT');
     
-    // Debug logging
     if (isCheckedIn) {
       return (
-        <Button
-          onClick={handleCheckOut}
-          disabled={actionLoading}
-          className="w-full h-14 bg-gradient-to-r from-[#E17F70] to-[#9E3B47] hover:from-[#9E3B47] hover:to-[#75242D] text-white text-sm font-bold shadow-lg shadow-red-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
-        >
-          {actionLoading ? (
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-          ) : (
-            <LogOut className="w-5 h-5 mr-2" />
-          )}
+        <Button onClick={handleCheckOut} disabled={actionLoading} className="w-full h-14 bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white font-bold rounded-xl shadow-lg">
+          {actionLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogOut className="w-5 h-5 mr-2" />}
           {actionLoading ? 'Checking Out...' : 'Check Out'}
         </Button>
       );
     } else if (hasAttendanceToday) {
       return (
         <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-[#546A7A] font-semibold bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 py-2.5 px-4 rounded-xl border border-[#96AEC2]">
-            <CheckCircle className="w-4 h-4" />
-            <span>Checked out today • Tap to resume work</span>
+          <div className="text-center text-xs text-[#546A7A] font-semibold bg-[#96AEC2]/10 py-2.5 px-4 rounded-xl border border-[#96AEC2]">
+            Checked out today • Tap to resume work
           </div>
-          <Button
-            onClick={handleReCheckIn}
-            disabled={actionLoading}
-            className="w-full h-14 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] hover:from-[#546A7A] hover:to-[#546A7A] text-white text-sm font-bold shadow-lg shadow-[#96AEC2]/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
-          >
-            {actionLoading ? (
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            ) : (
-              <LogIn className="w-5 h-5 mr-2" />
-            )}
+          <Button onClick={handleReCheckIn} disabled={actionLoading} className="w-full h-14 bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white font-bold rounded-xl shadow-lg">
+            {actionLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogIn className="w-5 h-5 mr-2" />}
             {actionLoading ? 'Re-Checking In...' : 'Re-Check In'}
           </Button>
         </div>
       );
     } else {
       return (
-        <Button
-          onClick={handleCheckIn}
-          disabled={actionLoading}
-          className="w-full h-14 bg-gradient-to-r from-[#82A094] to-[#4F6A64] hover:from-[#4F6A64] hover:to-[#4F6A64] text-white text-sm font-bold shadow-lg shadow-green-500/30 active:scale-[0.98] transition-all duration-200 touch-manipulation rounded-xl"
-        >
-          {actionLoading ? (
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-          ) : (
-            <LogIn className="w-5 h-5 mr-2" />
-          )}
+        <Button onClick={handleCheckIn} disabled={actionLoading} className="w-full h-14 bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-bold rounded-xl shadow-lg">
+          {actionLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <LogIn className="w-5 h-5 mr-2" />}
           {actionLoading ? 'Checking In...' : 'Check In'}
         </Button>
       );
     }
   };
 
-  if (loading) {
-    return (
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl">
-        {/* Premium Loading State */}
-        <div className="bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] p-4 sm:p-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-xl animate-pulse"></div>
-            <div className="space-y-2 flex-1">
-              <div className="h-5 w-32 bg-white/30 rounded-lg animate-pulse"></div>
-              <div className="h-3 w-24 bg-white/20 rounded animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-4 sm:p-6">
-          <div className="space-y-3">
-            <div className="h-12 bg-[#AEBFC3]/20 rounded-xl animate-pulse"></div>
-            <div className="h-14 bg-[#AEBFC3]/20 rounded-xl animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Early Checkout Confirmation Modal */}
-      {showEarlyCheckoutConfirm && earlyCheckoutData && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B] p-4 sm:p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <AlertCircle className="h-5 w-5 text-white" />
-                  </div>
-                  <h2 className="text-lg font-bold text-white">Early Check-out</h2>
-                </div>
-                <button
-                  onClick={() => handleEarlyCheckoutConfirm(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+    <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-white/50">
+      <div className="bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] p-6 text-white">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center border border-white/30">
+              <Clock className="w-6 h-6" />
             </div>
-            
-            <div className="p-4 sm:p-5 space-y-4">
-              <p className="text-[#5D6E73] text-sm sm:text-base">
-                {earlyCheckoutData.confirmationData.message}
-              </p>
-              
-              <div className="bg-[#CE9F6B]/10 border border-[#CE9F6B]/50 rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-[#976E44]" />
-                  <span className="text-[#976E44] font-medium">
-                    Current: {new Date(earlyCheckoutData.confirmationData.checkoutTime).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    })}
-                  </span>
+            <div>
+              <h2 className="text-xl font-bold">Attendance</h2>
+              <p className="text-white/70 text-sm">Track your work hours</p>
+            </div>
+          </div>
+          <div className={`px-4 py-2 rounded-full border ${attendanceData?.isCheckedIn ? 'bg-green-500/20 border-green-500/50' : 'bg-white/10 border-white/30'}`}>
+            <span className="text-sm font-bold">{attendanceData?.isCheckedIn ? 'Checked In' : 'Off Duty'}</span>
+          </div>
+        </div>
+        {attendanceData?.attendance?.checkInAt && (
+          <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-2 gap-4">
+            <div className="bg-white/10 p-3 rounded-xl">
+              <p className="text-white/60 text-xs">Started at</p>
+              <p className="font-bold">{formatTime(attendanceData.attendance.checkInAt)}</p>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="p-6">
+        {enhancedLocationState.showLocationCapture && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+            <EnhancedLocationCapture
+              onLocationCapture={handleEnhancedLocationCapture}
+              required={true}
+              enableJumpDetection={true}
+              autoCapture={true}
+            />
+          </div>
+        )}
+        
+        {/* Captured Location Preview */}
+        {enhancedLocationState.capturedLocation && !enhancedLocationState.showLocationCapture && (
+          <div className="mb-4 bg-[#A2B9AF]/10 border border-[#A2B9AF]/30 rounded-2xl p-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-[#A2B9AF]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-[#4F6A64]" />
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-[#976E44]" />
-                  <span className="text-[#976E44] font-medium">
-                    Scheduled: {new Date(earlyCheckoutData.confirmationData.scheduledTime).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    })}
-                  </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-[#4F6A64] flex items-center gap-1.5">
+                    Location Captured 
+                    <CheckCircle className="w-3.5 h-3.5" />
+                  </p>
+                  <p className="text-xs text-[#5D6E73] mt-0.5 line-clamp-2 leading-relaxed">
+                    {enhancedLocationState.capturedLocation.address || `${enhancedLocationState.capturedLocation.latitude.toFixed(6)}, ${enhancedLocationState.capturedLocation.longitude.toFixed(6)}`}
+                  </p>
+                  <div className="flex gap-3 mt-1.5">
+                    <span className="text-[10px] bg-white/50 px-2 py-0.5 rounded-full text-[#AEBFC3]0 font-medium">
+                      Accuracy: ±{Math.round(enhancedLocationState.capturedLocation.accuracy)}m
+                    </span>
+                    <span className="text-[10px] bg-white/50 px-2 py-0.5 rounded-full text-[#AEBFC3]0 font-medium">
+                      Source: {enhancedLocationState.capturedLocation.source?.toUpperCase() || 'GPS'}
+                    </span>
+                  </div>
                 </div>
               </div>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => handleEarlyCheckoutConfirm(false)}
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl border-2"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => handleEarlyCheckoutConfirm(true)}
-                  className="flex-1 h-12 bg-gradient-to-r from-[#CE9F6B] to-[#CE9F6B] hover:from-amber-600 hover:to-[#976E44] rounded-xl font-bold"
-                  disabled={actionLoading}
-                >
-                  {actionLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : null}
-                  Confirm
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setEnhancedLocationState(prev => ({ ...prev, capturedLocation: null, showLocationCapture: true }))}
+                className="h-8 w-8 text-[#546A7A] hover:bg-white/50 rounded-lg"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+        {renderActionButton()}
+        <Button 
+          variant="ghost" 
+          onClick={() => { fetchAttendanceStatus(); fetchAttendanceStats(); }} 
+          className="w-full mt-4 text-[#5D6E73] hover:bg-gray-100"
+        >
+          <RotateCcw className="w-4 h-4 mr-2" /> Refresh Status
+        </Button>
+      </div>
+      
+      {showEarlyCheckoutConfirm && earlyCheckoutData && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-3xl max-w-sm w-full">
+            <h3 className="text-xl font-bold mb-4">Confirm Early Checkout</h3>
+            <p className="text-gray-600 mb-6">{earlyCheckoutData.confirmationData.message}</p>
+            <div className="flex gap-4">
+              <Button onClick={() => handleEarlyCheckoutConfirm(false)} variant="outline" className="flex-1">Cancel</Button>
+              <Button onClick={() => handleEarlyCheckoutConfirm(true)} className="flex-1 bg-[#CE9F6B]">Confirm</Button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Premium Attendance Card */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden">
-        {/* Premium Header */}
-        <div className="relative bg-gradient-to-r from-[#546A7A] via-[#6F8A9D] to-[#96AEC2] p-4 sm:p-6 overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-          </div>
-          
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
-                <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-white">Attendance</h2>
-                <p className="text-white/70 text-xs sm:text-sm">Track your daily work hours</p>
-              </div>
-            </div>
-            
-            {/* Status Badge */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm border ${
-              attendanceData?.isCheckedIn 
-                ? 'bg-[#A2B9AF]/100/20 border-green-400/50' 
-                : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                ? 'bg-[#CE9F6B]/100/20 border-[#CE9F6B]/50'
-                : 'bg-white/10 border-white/30'
-            }`}>
-              <div className={`w-2.5 h-2.5 rounded-full ${
-                attendanceData?.isCheckedIn 
-                  ? 'bg-[#82A094] animate-pulse shadow-lg shadow-green-400/50' 
-                  : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                  ? 'bg-[#CE9F6B]'
-                  : 'bg-white/50'
-              }`}></div>
-              <span className={`text-xs sm:text-sm font-semibold ${
-                attendanceData?.isCheckedIn 
-                  ? 'text-[#A2B9AF]' 
-                  : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                  ? 'text-[#EEC1BF]'
-                  : 'text-white/80'
-              }`}>
-                {attendanceData?.isCheckedIn 
-                  ? 'Checked In' 
-                  : attendanceData?.attendance?.status === 'EARLY_CHECKOUT'
-                  ? 'Early Out'
-                  : 'Ready to Check In'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Time Info for Checked-in State */}
-          {attendanceData?.attendance && (
-            <div className="relative z-10 mt-4 pt-4 border-t border-white/20">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-                  <p className="text-white/60 text-xs font-medium">Check-in</p>
-                  <p className="text-white font-bold text-sm sm:text-base">
-                    {formatTime(attendanceData.attendance.checkInAt)}
-                  </p>
-                </div>
-                {attendanceData.attendance.checkOutAt && (
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-                    <p className="text-white/60 text-xs font-medium">Check-out</p>
-                    <p className="text-white font-bold text-sm sm:text-base">
-                      {formatTime(attendanceData.attendance.checkOutAt)}
-                    </p>
-                  </div>
-                )}
-                {attendanceData.attendance.totalHours && (
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-                    <p className="text-white/60 text-xs font-medium">Total Hours</p>
-                    <p className="text-white font-bold text-sm sm:text-base">
-                      {formatHours(attendanceData.attendance.totalHours)}h
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Content Area */}
-        <div className="p-4 sm:p-6 space-y-4">
-          {/* Location Capture Status */}
-          {locationState.isCapturing && (
-            <div className="bg-gradient-to-r from-[#96AEC2]/10 to-[#6F8A9D]/10 border border-[#96AEC2] rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl flex items-center justify-center">
-                  <Navigation className="h-5 w-5 text-white animate-spin" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#546A7A] text-sm">Capturing Location...</p>
-                  <p className="text-xs text-[#5D6E73]">Taking multiple GPS readings for accuracy</p>
-                </div>
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Enhanced Location Capture Dialog */}
-          {enhancedLocationState.showLocationCapture && (
-            <div className="bg-gradient-to-br from-[#96AEC2]/10 to-[#6F8A9D]/10 border-2 border-[#96AEC2] rounded-2xl p-4 sm:p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#E17F70] to-[#9E3B47] rounded-xl flex items-center justify-center shadow-lg">
-                    <MapPin className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-[#546A7A]">Location Required</h3>
-                    <p className="text-xs text-[#AEBFC3]0">Capture your current location</p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEnhancedLocationState(prev => ({ ...prev, showLocationCapture: false }))}
-                  className="h-9 w-9 p-0 rounded-full hover:bg-[#92A2A5]/30"
-                >
-                  <X className="h-4 w-4 text-[#AEBFC3]0" />
-                </Button>
-              </div>
-              <EnhancedLocationCapture
-                onLocationCapture={handleEnhancedLocationCapture}
-                previousLocation={lastKnownLocation ? {
-                  latitude: lastKnownLocation.latitude,
-                  longitude: lastKnownLocation.longitude,
-                  accuracy: lastKnownLocation.accuracy,
-                  timestamp: lastKnownLocation.timestamp,
-                  source: lastKnownLocation.source === 'network' ? 'gps' : lastKnownLocation.source,
-                  address: lastKnownLocation.address || `${lastKnownLocation.latitude.toFixed(6)}, ${lastKnownLocation.longitude.toFixed(6)}`
-                } : undefined}
-                required={true}
-                enableJumpDetection={true}
-                className=""
-              />
-            </div>
-          )}
-
-          {/* Captured Location Status */}
-          {enhancedLocationState.capturedLocation && (
-            <div className="bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 border border-[#A2B9AF] rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#82A094] to-[#4F6A64] rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="font-bold text-[#4F6A64] text-sm">Location Ready</span>
-                </div>
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs px-2 py-1 ${
-                    enhancedLocationState.capturedLocation.source === 'manual' 
-                      ? 'bg-[#96AEC2]/20 text-[#546A7A]' 
-                      : 'bg-[#A2B9AF]/20 text-[#4F6A64]'
-                  }`}
-                >
-                  {enhancedLocationState.capturedLocation.source === 'manual' ? (
-                    <>
-                      <MapPin className="h-3 w-3 mr-1" />
-                      Manual
-                    </>
-                  ) : (
-                    <>
-                      <Navigation className="h-3 w-3 mr-1" />
-                      ±{Math.round(enhancedLocationState.capturedLocation.accuracy)}m
-                    </>
-                  )}
-                </Badge>
-              </div>
-              <div className="bg-white/60 rounded-lg p-3 space-y-1">
-                <p className="text-sm text-[#5D6E73] break-words">
-                  📍 {enhancedLocationState.capturedLocation.address || 
-                   `${enhancedLocationState.capturedLocation.latitude.toFixed(6)}, ${enhancedLocationState.capturedLocation.longitude.toFixed(6)}`}
-                </p>
-                <p className="text-xs text-[#AEBFC3]0">
-                  🕒 {new Date(enhancedLocationState.capturedLocation.timestamp).toLocaleTimeString()}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Location Error */}
-          {locationState.error && !locationState.isCapturing && (
-            <div className="bg-[#E17F70]/10 border border-[#E17F70] rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[#E17F70]/20 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-[#9E3B47]" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#75242D] text-sm">Location Error</p>
-                  <p className="text-xs text-[#9E3B47] mt-0.5">{locationState.error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Stored Location Info - when no fresh location */}
-          {attendanceData?.attendance && !locationState.isCapturing && !locationState.capturedLocation && !enhancedLocationState.capturedLocation && (
-            <div className="bg-[#AEBFC3]/10 rounded-xl p-4 space-y-3">
-              {attendanceData.attendance.checkInAddress && (
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-[#A2B9AF]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <LogIn className="h-4 w-4 text-[#4F6A64]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-[#AEBFC3]0 font-medium">Check-in Location</p>
-                    <p className="text-sm text-[#546A7A] break-words mt-0.5">
-                      {attendanceData.attendance.checkInAddress}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {attendanceData.attendance.checkOutAddress && (
-                <div className="flex items-start gap-3 pt-3 border-t border-[#92A2A5]">
-                  <div className="w-8 h-8 bg-[#96AEC2]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <LogOut className="h-4 w-4 text-[#546A7A]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-[#AEBFC3]0 font-medium">Check-out Location</p>
-                    <p className="text-sm text-[#546A7A] break-words mt-0.5">
-                      {attendanceData.attendance.checkOutAddress}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
-            <div className="flex-1">
-              {renderActionButton()}
-            </div>
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => {
-                fetchAttendanceStatus();
-                fetchAttendanceStats();
-                setLocationState(prev => ({
-                  ...prev,
-                  isCapturing: false,
-                  error: null
-                }));
-              }}
-              disabled={actionLoading || locationState.isCapturing}
-              className="w-12 h-12 p-0 rounded-xl border-2 border-[#92A2A5] hover:border-[#96AEC2] hover:bg-[#96AEC2]/10 transition-all"
-            >
-              <RotateCcw className={`w-5 h-5 text-[#5D6E73] ${actionLoading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 import { logger } from '../utils/logger';
 
 // Type alias for backward compatibility
@@ -141,6 +141,13 @@ export class ActivityController {
                 name: true,
                 email: true
               }
+            },
+            User_AuditLog_userIdToUser: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
             }
           },
           orderBy: {
@@ -158,11 +165,17 @@ export class ActivityController {
 
       res.json({
         success: true,
-        activities: activities.map((activity) => ({
-          ...activity,
-          userName: activity.performedBy?.name || 'System',
-          userEmail: activity.performedBy?.email
-        })),
+        activities: activities.map((activity) => {
+          const user = activity.performedBy || (activity as any).User_AuditLog_userIdToUser;
+          return {
+            ...activity,
+            performedBy: user ? {
+              id: user.id,
+              name: user.name,
+              email: user.email
+            } : null
+          };
+        }),
         pagination: {
           total,
           page: parseInt(page as string),
@@ -186,14 +199,14 @@ export class ActivityController {
    */
   static async getAllActivities(req: AuthRequest, res: Response) {
     try {
-      const { 
-        entityType, 
-        action, 
-        userId, 
+      const {
+        entityType,
+        action,
+        userId,
         search,
         startDate,
         endDate,
-        page = 1, 
+        page = 1,
         limit = 50,
         groupBy,
         timeframe = '7d' // 1d, 7d, 30d, 90d, 1y
@@ -206,7 +219,7 @@ export class ActivityController {
       if (timeframe && !startDate && !endDate) {
         const now = new Date();
         let timeframeStart: Date;
-        
+
         switch (timeframe) {
           case '1d':
             timeframeStart = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -226,7 +239,7 @@ export class ActivityController {
           default:
             timeframeStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         }
-        
+
         where.createdAt = { gte: timeframeStart };
       }
 
@@ -256,12 +269,14 @@ export class ActivityController {
           { entityId: { contains: search as string, mode: 'insensitive' } },
           { action: { contains: search as string, mode: 'insensitive' } },
           { entityType: { contains: search as string, mode: 'insensitive' } },
-          { performedBy: { 
-            OR: [
-              { name: { contains: search as string, mode: 'insensitive' } },
-              { email: { contains: search as string, mode: 'insensitive' } }
-            ]
-          }}
+          {
+            performedBy: {
+              OR: [
+                { name: { contains: search as string, mode: 'insensitive' } },
+                { email: { contains: search as string, mode: 'insensitive' } }
+              ]
+            }
+          }
         ];
       }
 
@@ -272,13 +287,13 @@ export class ActivityController {
       const now = new Date();
       const today = new Date(now);
       today.setHours(0, 0, 0, 0);
-      
+
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       const lastWeek = new Date(today);
       lastWeek.setDate(lastWeek.getDate() - 7);
-      
+
       const lastMonth = new Date(today);
       lastMonth.setMonth(lastMonth.getMonth() - 1);
 
@@ -306,8 +321,8 @@ export class ActivityController {
           where: { createdAt: { gte: today } }
         }),
         prisma.auditLog.count({
-          where: { 
-            createdAt: { 
+          where: {
+            createdAt: {
               gte: yesterday,
               lt: today
             }
@@ -372,8 +387,8 @@ export class ActivityController {
       });
 
       // Calculate trends
-      const todayVsYesterday = yesterdayCount > 0 
-        ? ((todayCount - yesterdayCount) / yesterdayCount) * 100 
+      const todayVsYesterday = yesterdayCount > 0
+        ? ((todayCount - yesterdayCount) / yesterdayCount) * 100
         : todayCount > 0 ? 100 : 0;
 
       // Get entity type distribution
@@ -392,7 +407,7 @@ export class ActivityController {
       const ipStats = await prisma.auditLog.groupBy({
         by: ['ipAddress'],
         _count: true,
-        where: { 
+        where: {
           ipAddress: { not: null },
           createdAt: { gte: lastWeek }
         },
@@ -459,14 +474,14 @@ export class ActivityController {
    */
   static async getZoneActivities(req: AuthRequest, res: Response) {
     try {
-      const { 
-        entityType, 
-        action, 
-        userId, 
+      const {
+        entityType,
+        action,
+        userId,
         search,
         startDate,
         endDate,
-        page = 1, 
+        page = 1,
         limit = 50,
         zoneId, // Optional: Admin can specify zoneId, zone manager can only see their zone
         timeframe = '7d' // 1d, 7d, 30d, 90d, 1y
@@ -474,7 +489,7 @@ export class ActivityController {
 
       // Get user's zone information
       let targetZoneId: string | number | undefined;
-      
+
       if (req.user?.role === 'ZONE_MANAGER') {
         // Zone managers can only see their own zone
         const user = await prisma.user.findUnique({
@@ -527,7 +542,7 @@ export class ActivityController {
       if (timeframe && !startDate && !endDate) {
         const now = new Date();
         let timeframeStart: Date;
-        
+
         switch (timeframe) {
           case '1d':
             timeframeStart = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -547,7 +562,7 @@ export class ActivityController {
           default:
             timeframeStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         }
-        
+
         where.createdAt = { gte: timeframeStart };
       }
 
@@ -577,12 +592,14 @@ export class ActivityController {
           { entityId: { contains: search as string, mode: 'insensitive' } },
           { action: { contains: search as string, mode: 'insensitive' } },
           { entityType: { contains: search as string, mode: 'insensitive' } },
-          { performedBy: { 
-            OR: [
-              { name: { contains: search as string, mode: 'insensitive' } },
-              { email: { contains: search as string, mode: 'insensitive' } }
-            ]
-          } },
+          {
+            performedBy: {
+              OR: [
+                { name: { contains: search as string, mode: 'insensitive' } },
+                { email: { contains: search as string, mode: 'insensitive' } }
+              ]
+            }
+          },
         ];
       }
 
@@ -662,8 +679,9 @@ export class ActivityController {
       const data: any = {
         action: params.action,
         entityType: params.entityType,
-        entityId: parseInt(params.entityId),
+        entityId: parseInt(params.entityId) || null,
         userId: params.userId,
+        performedById: params.userId,
         details: params.details || {},
         ipAddress: params.ipAddress || null,
         userAgent: params.userAgent || null,
@@ -676,7 +694,7 @@ export class ActivityController {
       }
 
       await prisma.auditLog.create({ data });
-      
+
       logger.info(`Activity logged: ${params.action} on ${params.entityType} ${params.entityId}`);
     } catch (error) {
       logger.error('Log activity error:', error);
@@ -729,18 +747,31 @@ export class ActivityController {
     // Detect changes
     const changes: any = {};
     const fieldsToTrack = [
-      'title', 'description', 'productType', 'lead', 'status', 'stage', 
-      'priority', 'offerValue', 'offerMonth', 'poExpectedMonth', 
-      'probabilityPercentage', 'poNumber', 'poDate', 'poValue', 
+      'title', 'description', 'productType', 'lead', 'status', 'stage',
+      'priority', 'offerValue', 'offerMonth', 'poExpectedMonth',
+      'probabilityPercentage', 'poNumber', 'poDate', 'poValue',
       'poReceivedMonth', 'assignedToId', 'remarks', 'openFunnel'
     ];
 
+    const normalize = (val: any) => {
+      if (val === null || val === undefined) return '';
+      if (typeof val === 'string') return val.trim();
+      if (typeof val === 'number') return val.toString();
+      if (val instanceof Date) return val.toISOString();
+      if (typeof val === 'object' && val.toNumber) return val.toNumber().toString(); // Prisma Decimal
+      return String(val);
+    };
+
     for (const field of fieldsToTrack) {
-      if (params.newData[field] !== undefined && 
-          params.oldData[field] !== params.newData[field]) {
+      if (params.newData[field] === undefined) continue;
+
+      const oldVal = params.oldData[field];
+      const newVal = params.newData[field];
+
+      if (normalize(oldVal) !== normalize(newVal)) {
         changes[field] = {
-          from: params.oldData[field],
-          to: params.newData[field]
+          from: oldVal,
+          to: newVal
         };
       }
     }
@@ -756,6 +787,64 @@ export class ActivityController {
       offerId: params.offerId,
       userId: params.userId,
       details: { changes },
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent
+    });
+  }
+
+  /**
+   * Log spare part update with automatic change detection
+   */
+  static async logSparePartUpdate(params: {
+    sparePartId: number;
+    partNumber: string;
+    oldData: any;
+    newData: any;
+    userId: number;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    // Detect changes
+    const changes: any = {};
+    const fieldsToTrack = [
+      'name', 'description', 'category', 'basePrice', 'imageUrl', 'specifications', 'status'
+    ];
+
+    const normalize = (val: any) => {
+      if (val === null || val === undefined) return '';
+      if (typeof val === 'string') return val.trim();
+      if (typeof val === 'number') return val.toString();
+      if (typeof val === 'object' && val.toNumber) return val.toNumber().toString(); // Prisma Decimal
+      return String(val);
+    };
+
+    for (const field of fieldsToTrack) {
+      if (params.newData[field] === undefined) continue;
+
+      const oldVal = params.oldData[field];
+      const newVal = params.newData[field];
+
+      if (normalize(oldVal) !== normalize(newVal)) {
+        changes[field] = {
+          from: oldVal,
+          to: newVal
+        };
+      }
+    }
+
+    if (Object.keys(changes).length === 0) {
+      return; // No changes to log
+    }
+
+    await ActivityController.logActivity({
+      action: 'SPARE_PART_UPDATED',
+      entityType: 'SparePart',
+      entityId: params.sparePartId.toString(),
+      userId: params.userId,
+      details: {
+        partNumber: params.partNumber,
+        changes
+      },
       ipAddress: params.ipAddress,
       userAgent: params.userAgent
     });
@@ -906,7 +995,7 @@ export class ActivityController {
       const { startDate, endDate, timeframe = '30d' } = req.query;
 
       const where: any = {};
-      
+
       // Set default timeframe if no dates provided
       const now = new Date();
       if (!startDate && !endDate) {
@@ -977,7 +1066,7 @@ export class ActivityController {
             ...where,
             OR: [
               { action: 'OFFER_DELETED' },
-              { 
+              {
                 AND: [
                   { createdAt: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) } },
                   {
@@ -1025,7 +1114,7 @@ export class ActivityController {
       });
 
       // Calculate activity velocity (activities per day)
-      const daysInPeriod = where.createdAt?.gte 
+      const daysInPeriod = where.createdAt?.gte
         ? Math.ceil((now.getTime() - where.createdAt.gte.getTime()) / (24 * 60 * 60 * 1000))
         : 30;
       const avgActivitiesPerDay = totalActivities / Math.max(daysInPeriod, 1);
@@ -1072,10 +1161,10 @@ export class ActivityController {
   static async getActivityComparison(req: AuthRequest, res: Response) {
     try {
       const { period = 'week' } = req.query; // week, month, quarter, year
-      
+
       const now = new Date();
       let currentStart: Date, currentEnd: Date, previousStart: Date, previousEnd: Date;
-      
+
       switch (period) {
         case 'week':
           currentStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -1222,7 +1311,7 @@ export class ActivityController {
   static async getActivityByEntity(req: AuthRequest, res: Response) {
     try {
       const { timeframe = '30d' } = req.query;
-      
+
       const now = new Date();
       const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
       const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
@@ -1281,7 +1370,7 @@ export class ActivityController {
   static async getUserLeaderboard(req: AuthRequest, res: Response) {
     try {
       const { timeframe = '30d', limit = 20 } = req.query;
-      
+
       const now = new Date();
       const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
       const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
@@ -1306,12 +1395,12 @@ export class ActivityController {
       const [users, actionBreakdown] = await Promise.all([
         prisma.user.findMany({
           where: { id: { in: userIds } },
-          select: { 
-            id: true, 
-            name: true, 
-            email: true, 
+          select: {
+            id: true,
+            name: true,
+            email: true,
             role: true,
-            lastLoginAt: true 
+            lastLoginAt: true
           }
         }),
         Promise.all(userIds.map(userId =>
@@ -1370,17 +1459,17 @@ export class ActivityController {
    */
   static async exportActivities(req: AuthRequest, res: Response) {
     try {
-      const { 
-        entityType, 
-        action, 
-        userId, 
+      const {
+        entityType,
+        action,
+        userId,
         startDate,
         endDate,
         format = 'csv'
       } = req.query;
 
       const where: any = {};
-      
+
       if (entityType && entityType !== 'All') where.entityType = entityType;
       if (action && action !== 'All Actions') where.action = action;
       if (userId && userId !== 'All Users') where.userId = parseInt(userId as string);
@@ -1455,7 +1544,7 @@ export class ActivityController {
   static async getSecurityAlerts(req: AuthRequest, res: Response) {
     try {
       const { timeframe = '7d' } = req.query;
-      
+
       const now = new Date();
       const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 7;
       const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
@@ -1553,11 +1642,11 @@ export class ActivityController {
       ]);
 
       // Calculate risk scores
-      const riskScore = Math.min(100, 
-        (suspiciousActivities.length * 10) + 
-        (failedLogins.length * 5) + 
-        ((unusualIPs as any[]).length * 3) + 
-        (bulkOperations.length * 7) + 
+      const riskScore = Math.min(100,
+        (suspiciousActivities.length * 10) +
+        (failedLogins.length * 5) +
+        ((unusualIPs as any[]).length * 3) +
+        (bulkOperations.length * 7) +
         (offHoursActivities.length * 2)
       );
 
@@ -1605,7 +1694,7 @@ export class ActivityController {
   static async getWorkflowAnalysis(req: AuthRequest, res: Response) {
     try {
       const { timeframe = '30d' } = req.query;
-      
+
       const now = new Date();
       const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 30;
       const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
@@ -1672,7 +1761,7 @@ export class ActivityController {
 
       const activeUsers = await prisma.auditLog.groupBy({
         by: ['userId'],
-        where: { 
+        where: {
           createdAt: { gte: startDate },
           userId: { not: null }
         },
@@ -1716,7 +1805,7 @@ export class ActivityController {
   static async getComplianceReport(req: AuthRequest, res: Response) {
     try {
       const { timeframe = '30d' } = req.query;
-      
+
       const now = new Date();
       const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 30;
       const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);

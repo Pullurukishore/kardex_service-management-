@@ -767,24 +767,8 @@ export default function OfferDetailPage() {
                     </Badge>
                   </dd>
                 </div>
-                <div className="bg-white rounded-xl p-5 shadow-md border border-[#96AEC2]/30 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
-                      <Wrench className="h-5 w-5 text-[#546A7A]" />
-                    </div>
-                    <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Machine Serial Number</dt>
-                  </div>
-                  <dd className="text-base font-bold text-[#546A7A]">
-                    {offer.machineSerialNumber || 
-                      (offer.offerAssets && offer.offerAssets.length > 0 
-                        ? offer.offerAssets.map((oa: any) => oa.asset?.serialNo || oa.asset?.machineId).filter(Boolean).join(', ')
-                        : '-'
-                      )
-                    }
-                  </dd>
-                </div>
                 {offer.title && (
-                  <div className="md:col-span-2 bg-white rounded-xl p-5 shadow-md border border-[#96AEC2]/20 hover:shadow-lg transition-shadow">
+                  <div className="bg-white rounded-xl p-5 shadow-md border border-[#96AEC2]/20 hover:shadow-lg transition-shadow">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
                         <FileText className="h-5 w-5 text-[#546A7A]" />
@@ -812,55 +796,49 @@ export default function OfferDetailPage() {
               </CardHeader>
               <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {offer.offerAssets.map((offerAsset: any, index: number) => {
-                    const asset = offerAsset.asset;
+                  {offer.offerAssets.map((oa: any, index: number) => {
+                    const asset = oa.asset;
                     return (
                       <div 
-                        key={offerAsset.id || index}
-                        className="bg-white rounded-xl p-5 shadow-md border border-cyan-100 hover:shadow-lg transition-all hover:border-cyan-300"
+                        key={oa.id || index} 
+                        className="bg-white rounded-xl p-5 shadow-sm border border-[#E2E8F0] hover:shadow-md transition-all relative overflow-hidden group"
                       >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-lg shadow-sm">
-                              <Wrench className="h-5 w-5 text-white" />
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-bl-full translate-x-4 -translate-y-4"></div>
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                            <Wrench className="h-6 w-6 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-bold text-[#546A7A] text-lg">
+                                {asset?.serialNo || 'Serial Not Available'}
+                              </h4>
+                              {asset?.status && (
+                                <Badge 
+                                  className={`text-[10px] px-2 py-0 h-4 ${
+                                    asset.status === 'ACTIVE' 
+                                      ? 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]' 
+                                      : 'bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]'
+                                  }`}
+                                >
+                                  {asset.status}
+                                </Badge>
+                              )}
                             </div>
-                            <div>
-                              <h4 className="font-bold text-[#546A7A]">{asset?.machineId || 'Unknown Machine'}</h4>
-                              <p className="text-xs text-[#AEBFC3]0">Machine ID</p>
+                            <div className="space-y-1.5">
+                              {asset?.model && (
+                                <p className="text-sm font-medium text-[#5D6E73] flex items-center gap-2">
+                                  <span className="text-[#AEBFC3]0">Model:</span> {asset.model}
+                                </p>
+                              )}
+                              {asset?.location && (
+                                <p className="text-sm text-[#5D6E73] flex items-center gap-2">
+                                  <MapPin className="h-4 w-4 text-[#96AEC2]" />
+                                  {asset.location}
+                                </p>
+                              )}
                             </div>
                           </div>
-                          {asset?.status && (
-                            <Badge 
-                              className={`text-xs ${
-                                asset.status === 'ACTIVE' 
-                                  ? 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]' 
-                                  : 'bg-[#AEBFC3]/20 text-[#5D6E73] border-[#92A2A5]'
-                              }`}
-                            >
-                              {asset.status}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-3 mt-4">
-                          {asset?.serialNo && (
-                            <div className="bg-[#AEBFC3]/10 rounded-lg p-3">
-                              <p className="text-xs text-[#AEBFC3]0 font-medium mb-1">Serial Number</p>
-                              <p className="text-sm font-semibold text-[#546A7A]">{asset.serialNo}</p>
-                            </div>
-                          )}
-                          {asset?.model && (
-                            <div className="bg-[#AEBFC3]/10 rounded-lg p-3">
-                              <p className="text-xs text-[#AEBFC3]0 font-medium mb-1">Model</p>
-                              <p className="text-sm font-semibold text-[#546A7A]">{asset.model}</p>
-                            </div>
-                          )}
-                          {asset?.location && (
-                            <div className="bg-[#AEBFC3]/10 rounded-lg p-3 col-span-2">
-                              <p className="text-xs text-[#AEBFC3]0 font-medium mb-1">Location</p>
-                              <p className="text-sm font-semibold text-[#546A7A]">{asset.location}</p>
-                            </div>
-                          )}
                         </div>
                       </div>
                     );

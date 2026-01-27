@@ -34,7 +34,7 @@ export const listZoneUsers = async (req: Request, res: Response) => {
       }
     };
 
-    console.log('Querying zone users with roles:', role ? [role] : ['ZONE_USER', 'ZONE_MANAGER']);
+
 
     if (search) {
       whereClause.OR = [
@@ -83,7 +83,7 @@ export const listZoneUsers = async (req: Request, res: Response) => {
       prisma.user.count({ where: whereClause })
     ]);
 
-    console.log(`Found ${total} zone users/managers. Roles in result:`, users.map(u => ({ id: u.id, email: u.email, role: u.role })));
+
 
     const totalPages = Math.ceil(total / limit);
 

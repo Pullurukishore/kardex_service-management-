@@ -60,11 +60,11 @@ export const listAssets = async (req: AssetRequest, res: Response) => {
     const skip = (pageNum - 1) * limitNum;
 
     const where: AssetWhereInput = {};
-    
+
     // Role-based filtering
     const userRole = user.role;
     const userCustomerId = user.customerId;
-    
+
     if (userRole === 'ADMIN') {
       // Admin can view all assets
       if (customerId) {
@@ -119,7 +119,7 @@ export const listAssets = async (req: AssetRequest, res: Response) => {
     } else {
       return res.status(403).json({ error: 'Insufficient permissions to view assets' });
     }
-    
+
     // Add search filter if provided
     if (search) {
       where.OR = [
@@ -202,7 +202,8 @@ export const getAsset = async (req: AssetRequest, res: Response) => {
         customer: {
           select: {
             id: true,
-            companyName: true
+            companyName: true,
+            serviceZoneId: true // Added this since it's used in permission checks
           }
         },
         tickets: {
@@ -219,25 +220,6 @@ export const getAsset = async (req: AssetRequest, res: Response) => {
                 id: true,
                 email: true,
                 name: true
-              }
-            }
-          }
-        },
-        serviceHistory: {
-          take: 5,
-          orderBy: { performedAt: 'desc' },
-          include: {
-            performedBy: {
-              select: {
-                id: true,
-                email: true,
-                name: true
-              }
-            },
-            ticket: {
-              select: {
-                id: true,
-                title: true
               }
             }
           }
@@ -271,19 +253,18 @@ export const getAsset = async (req: AssetRequest, res: Response) => {
         where: { userId: user.id },
         select: { serviceZoneId: true }
       });
-      
-      const hasZoneAccess = serviceZones.some((sz: any) => 
-        asset.customer && 'serviceZoneId' in asset.customer && 
-        asset.customer.serviceZoneId === sz.serviceZoneId
+
+      const hasZoneAccess = serviceZones.some((sz: any) =>
+        (asset.customer && asset.customer.serviceZoneId === sz.serviceZoneId)
       );
-      
+
       const hasTicketAccess = await prisma.ticket.findFirst({
         where: {
           assetId: assetId,
           assignedToId: user.id
         }
       });
-      
+
       if (!hasZoneAccess && !hasTicketAccess) {
         return res.status(403).json({ error: 'Access denied to this asset' });
       }
@@ -438,7 +419,7 @@ export const updateAsset = async (req: AssetRequest, res: Response) => {
     if (isNaN(assetId)) {
       return res.status(400).json({ message: 'Invalid asset ID' });
     }
-    
+
     // Check if asset exists
     const existingAsset = await prisma.asset.findUnique({
       where: { id: assetId }
@@ -542,7 +523,7 @@ export const deleteAsset = async (req: AssetRequest, res: Response) => {
     if (isNaN(assetId)) {
       return res.status(400).json({ message: 'Invalid asset ID' });
     }
-    
+
     // Check if asset exists
     const existingAsset = await prisma.asset.findUnique({
       where: { id: assetId },
@@ -660,7 +641,7 @@ export const getAssetStats = async (req: AssetRequest, res: Response) => {
     const userCustomerId = user.customerId;
 
     const where: AssetWhereInput = {};
-    
+
     // Role-based filtering
     if (userRole === 'ZONE_USER') {
       if (!userCustomerId) {
@@ -707,7 +688,7 @@ export const getAssetDetails = async (req: AssetRequest, res: Response) => {
       return res.status(400).json({ error: 'Asset ID is required' });
     }
     const assetId = parseInt(id);
-    
+
     const asset = await prisma.asset.findUnique({
       where: { id: assetId },
       include: {

@@ -16,11 +16,8 @@ const prismaClientSingleton = () => {
 
   // Log when client connects (for debugging connection issues)
   client.$connect()
-    .then(() => {
-      console.log('✅ Prisma client connected to database');
-    })
+
     .catch((error) => {
-      console.error('❌ Failed to connect to database:', error);
     });
 
   return client;
@@ -43,8 +40,9 @@ process.on('beforeExit', async () => {
 process.on('unhandledRejection', (reason: any) => {
   if (reason?.message?.includes('Too many database connections') ||
     reason?.message?.includes('connection pool')) {
-    console.error('🔴 Database connection pool exhausted. Consider increasing connection_limit.');
+
   }
 });
 
+export { prisma };
 export default prisma;

@@ -79,7 +79,7 @@ export class PhotoStorageService {
         return { buffer: compressedBuffer, mimeType: 'image/jpeg', extension: 'jpg' };
       }
     } catch (error) {
-      console.error('Image compression failed, using original:', error);
+
       const ext = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
       return { buffer, mimeType, extension: ext };
     }
@@ -113,7 +113,7 @@ export class PhotoStorageService {
     // Determine subdirectory based on context
     const subDir = context.type === 'ticket_verification' ? 'tickets' : 'activities';
     const entityId = context.ticketId || context.activityId || 0;
-    const targetDir = path.join(this.UPLOAD_DIR, subDir, String(entityId));
+    const targetDir = path.join(this.UPLOAD_DIR, subDir);
 
     // Ensure upload directory exists
     await fs.mkdir(targetDir, { recursive: true });
@@ -125,7 +125,7 @@ export class PhotoStorageService {
         // Extract base64 data and mime type
         const matches = photo.dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
         if (!matches) {
-          console.error('Invalid data URL format for photo:', photo.filename);
+
           continue;
         }
 
@@ -137,13 +137,17 @@ export class PhotoStorageService {
         // Compress the image
         const { buffer, mimeType, extension } = await this.compressImage(originalBuffer, originalMimeType);
 
-        // Generate descriptive filename with date/time for easy identification
-        const hash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 8);
+        // Generate short, readable, knowable filename
+        // Format: T45_27Jan_1230_abc1.jpg (TypeID_DayMonth_Time_ShortHash.ext)
+        const hash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 4);
         const now = new Date();
-        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
-        const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, ''); // HHMMSS
-        // Format: ticket_45_20241218_103045_abc12345.jpg (type_id_date_time_hash.ext)
-        const uniqueFilename = `${subDir.slice(0, -1)}_${entityId}_${dateStr}_${timeStr}_${hash}.${extension}`;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = months[now.getMonth()];
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+
+        const typePrefix = context.type === 'ticket_verification' ? 'T' : 'A';
+        const uniqueFilename = `${typePrefix}${entityId}_${day}${month}_${timeStr}_${hash}.${extension}`;
         const filePath = path.join(targetDir, uniqueFilename);
 
         // Save compressed file to local disk
@@ -153,12 +157,10 @@ export class PhotoStorageService {
         const actualSize = buffer.length;
         const compressionRatio = originalSize > 0 ? Math.round((1 - actualSize / originalSize) * 100) : 0;
 
-        if (compressionRatio > 0) {
-          console.log(`📦 Compressed: ${(originalSize / 1024).toFixed(1)}KB → ${(actualSize / 1024).toFixed(1)}KB (${compressionRatio}% saved)`);
-        }
+
 
         // Generate URL path for serving (relative to storage root)
-        const urlPath = `/storage/images/${subDir}/${entityId}/${uniqueFilename}`;
+        const urlPath = `/storage/images/${subDir}/${uniqueFilename}`;
 
         // Store in database if it's a ticket photo
         if (context.ticketId) {
@@ -197,10 +199,10 @@ export class PhotoStorageService {
           });
         }
 
-        console.log(`✅ Photo stored locally: ${filePath}`);
+
 
       } catch (error) {
-        console.error('Failed to store photo:', error);
+
         // Continue with other photos
       }
     }
@@ -218,12 +220,6 @@ export class PhotoStorageService {
           ticketId,
           mimeType: {
             startsWith: 'image/'
-          },
-          // Exclude Cloudinary URLs (to only get local photos)
-          NOT: {
-            path: {
-              contains: 'cloudinary.com'
-            }
           }
         },
         orderBy: {
@@ -235,7 +231,7 @@ export class PhotoStorageService {
         // Generate URL from path
         const urlPath = att.path.includes('\\storage\\') || att.path.includes('/storage/')
           ? `/storage/images/${att.path.split(/[\\\/]storage[\\\/]images[\\\/]/)[1]?.replace(/\\/g, '/') || ''}`
-          : `/storage/images/tickets/${ticketId}/${path.basename(att.path)}`;
+          : `/storage/images/tickets/${path.basename(att.path)}`;
 
         return {
           id: att.id,
@@ -249,7 +245,7 @@ export class PhotoStorageService {
         };
       });
     } catch (error) {
-      console.error('Failed to get ticket photos:', error);
+
       return [];
     }
   }

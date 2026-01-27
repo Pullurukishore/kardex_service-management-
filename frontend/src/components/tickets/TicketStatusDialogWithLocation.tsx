@@ -318,6 +318,7 @@ export function TicketStatusDialogWithLocation({
                 onLocationCapture={handleLocationCapture}
                 required={true}
                 enableJumpDetection={true}
+                autoCapture={true}
                 className=""
               />
             </div>

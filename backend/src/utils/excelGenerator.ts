@@ -179,7 +179,7 @@ export const generateExcel = async (
                     logoAdded = true;
                     break;
                 } catch (e) {
-                    console.log('Could not add logo to Excel:', e);
+
                 }
             }
         }
@@ -547,7 +547,7 @@ export const generateExcel = async (
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {
-        console.error('Excel generation error:', error);
+
         if (!res.headersSent) {
             res.status(500).json({ error: 'Failed to generate Excel report' });
         }

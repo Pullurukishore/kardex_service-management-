@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import prisma from '../config/db';
 import { AuthUser } from '../types/express'; // Import AuthUser type
 import bcrypt from 'bcrypt'; // For password hashing

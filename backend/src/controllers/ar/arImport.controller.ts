@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import * as XLSX from 'xlsx';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { logInvoiceActivity, getUserFromRequest, getIpFromRequest } from './arActivityLog.controller';
+import { calculateDaysBetween, calculateRiskClass } from '../../utils/dateUtils';
 
-const prisma = new PrismaClient();
+import prisma from '../../config/db';
 
 
 // Configure multer for file upload
@@ -114,25 +114,6 @@ function getValue(row: SAPImportRow, ...keys: string[]): any {
         }
     }
     return null;
-}
-
-// Calculate risk class based on days overdue
-function calculateRiskClass(dueByDays: number): 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' {
-    if (dueByDays <= 0) return 'LOW';
-    if (dueByDays <= 30) return 'MEDIUM';
-    if (dueByDays <= 90) return 'HIGH';
-    return 'CRITICAL';
-}
-
-// Calculate due by days
-function calculateDueByDays(dueDate: Date): number {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const due = new Date(dueDate);
-    due.setHours(0, 0, 0, 0);
-
-    const diffTime = today.getTime() - due.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
 // Validate a single row and return field-level errors
@@ -308,7 +289,7 @@ export const previewExcel = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error('Preview error:', error);
+
         return res.status(500).json({
             success: false,
             message: 'Failed to preview file',
@@ -412,7 +393,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
 
             // Calculate due date (30 days from invoice date)
             const finalDueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-            const dueByDays = calculateDueByDays(finalDueDate);
+            const dueByDays = calculateDaysBetween(finalDueDate);
             const riskClass = calculateRiskClass(dueByDays);
             const balance = totalAmount;
 
@@ -529,7 +510,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error('Import error:', error);
+
         return res.status(500).json({
             success: false,
             message: 'Failed to import file',
@@ -566,7 +547,7 @@ export const getImportHistory = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error('Get import history error:', error);
+
         return res.status(500).json({
             success: false,
             message: 'Failed to fetch import history',
@@ -618,7 +599,7 @@ export const downloadTemplate = async (req: Request, res: Response) => {
         res.send(buffer);
 
     } catch (error: any) {
-        console.error('Download template error:', error);
+
         return res.status(500).json({
             success: false,
             message: 'Failed to generate template',
@@ -675,7 +656,7 @@ export const recalculateAll = async (req: Request, res: Response) => {
                 const adjustments = Number(invoice.adjustments) || 0;
                 const totalReceipts = receipts + adjustments;
                 const balance = Number(invoice.totalAmount) - totalReceipts;
-                const dueByDays = calculateDueByDays(invoice.dueDate);
+                const dueByDays = calculateDaysBetween(invoice.dueDate);
                 const riskClass = calculateRiskClass(dueByDays);
 
                 // Determine status
@@ -728,7 +709,7 @@ export const recalculateAll = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error('Recalculate error:', error);
+
         return res.status(500).json({
             success: false,
             message: 'Failed to recalculate invoices',
@@ -736,4 +717,3 @@ export const recalculateAll = async (req: Request, res: Response) => {
         });
     }
 };
-

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { ActivityController } from '../controllers/activityController';
 import { authenticate, requireRole, AuthenticatedRequest } from '../middleware/auth.middleware';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../config/db';
 
 const router = Router();
 
@@ -165,7 +165,7 @@ router.post('/', requireRole(['SERVICE_PERSON']), async (req: Request, res: Resp
       data: activityWithStage,
     });
   } catch (error: any) {
-    console.error('Error creating activity:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create activity',
@@ -207,7 +207,7 @@ router.get('/', requireRole(['SERVICE_PERSON']), async (req: Request, res: Respo
       data: activities, // Include both for compatibility
     });
   } catch (error: any) {
-    console.error('Error fetching daily activities:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch activities',
@@ -347,7 +347,7 @@ router.post('/:activityId/stages', requireRole(['SERVICE_PERSON']), async (req: 
     });
 
     if (existingActiveStage) {
-      console.log('Found existing active stage, ending it first:', existingActiveStage.id);
+
       // End the existing active stage first
       await prisma.activityStage.update({
         where: { id: existingActiveStage.id },
@@ -378,7 +378,7 @@ router.post('/:activityId/stages', requireRole(['SERVICE_PERSON']), async (req: 
 
     // If this is a COMPLETED stage, automatically end the stage and the activity
     if (stage === 'COMPLETED') {
-      console.log('COMPLETED stage created, auto-ending stage and activity:', activityId);
+
 
       // End the COMPLETED stage
       await prisma.activityStage.update({
@@ -401,7 +401,7 @@ router.post('/:activityId/stages', requireRole(['SERVICE_PERSON']), async (req: 
         },
       });
 
-      console.log('Activity auto-ended successfully:', activityId);
+
     }
 
     res.status(201).json({
@@ -410,7 +410,7 @@ router.post('/:activityId/stages', requireRole(['SERVICE_PERSON']), async (req: 
       data: activityStage,
     });
   } catch (error: any) {
-    console.error('Error creating activity stage:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to create activity stage',
@@ -425,7 +425,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
     const { endTime } = req.body;
     const user = (req as any).user;
 
-    console.log(`Ending stage ${stageId} for activity ${activityId} by user ${user.id}`);
+
 
     // Check if user is checked in
     const activeAttendance = await prisma.attendance.findFirst({
@@ -455,7 +455,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
     });
 
     if (!stage) {
-      console.log('Stage not found');
+
       return res.status(404).json({
         success: false,
         message: 'Stage not found',
@@ -469,7 +469,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
     });
 
     if (!activity || activity.userId !== user.id) {
-      console.log('Stage does not belong to user');
+
       return res.status(403).json({
         success: false,
         message: 'Access denied',
@@ -478,7 +478,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
 
 
     if (stage.endTime) {
-      console.log('Stage already ended at:', stage.endTime);
+
       return res.status(400).json({
         success: false,
         message: 'Stage already ended',
@@ -494,7 +494,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
       },
     });
 
-    console.log('Successfully ended stage:', updatedStage.id, 'endTime:', updatedStage.endTime);
+
 
     // Check if all stages for this activity are now ended
     const remainingActiveStages = await prisma.activityStage.findMany({
@@ -504,11 +504,11 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
       },
     });
 
-    console.log('Remaining active stages:', remainingActiveStages.length);
+
 
     // If no more active stages, end the activity itself
     if (remainingActiveStages.length === 0) {
-      console.log('All stages ended, ending activity:', activityId);
+
       await prisma.dailyActivityLog.update({
         where: { id: parseInt(activityId) },
         data: {
@@ -523,7 +523,7 @@ router.put('/:activityId/stages/:stageId', requireRole(['SERVICE_PERSON']), asyn
       data: updatedStage,
     });
   } catch (error: any) {
-    console.error('Error ending activity stage:', error);
+
 
     // Handle specific Prisma errors
     if (error.code === 'P2025') {
@@ -605,7 +605,7 @@ router.put('/:activityId/complete', requireRole(['SERVICE_PERSON']), async (req:
       data: updatedActivity,
     });
   } catch (error: any) {
-    console.error('Error ending activity:', error);
+
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to end activity',

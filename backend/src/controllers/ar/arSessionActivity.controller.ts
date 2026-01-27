@@ -73,7 +73,7 @@ export const logSessionActivity = async (params: LogSessionParams) => {
         });
     } catch (error) {
         // Log error but don't throw - session logging should not break auth flow
-        console.error('Failed to log session activity:', error);
+
     }
 };
 
