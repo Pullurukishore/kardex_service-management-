@@ -227,7 +227,7 @@ export class PhotoStorageService {
         }
       });
 
-      return attachments.map(att => {
+      return attachments.map((att: any) => {
         // Generate URL from path
         const urlPath = att.path.includes('\\storage\\') || att.path.includes('/storage/')
           ? `/storage/images/${att.path.split(/[\\\/]storage[\\\/]images[\\\/]/)[1]?.replace(/\\/g, '/') || ''}`

@@ -514,6 +514,12 @@ export const deleteInvoice = async (req: Request, res: Response) => {
             select: { invoiceNumber: true, customerName: true, totalAmount: true }
         });
 
+        // Delete associated payment history first (since there's no cascade constraint)
+        // This prevents orphaned payment records from appearing in dashboard
+        await prisma.aRPaymentHistory.deleteMany({
+            where: { invoiceId: id }
+        });
+
         await prisma.aRInvoice.delete({
             where: { id }
         });

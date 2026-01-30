@@ -6,10 +6,25 @@ import { toast } from 'sonner';
 import { apiService } from '@/services/api';
 import type { ReportFilters, ReportData, ReportType } from '@/types/reports';
 import { REPORT_TYPES, TICKET_REPORT_TYPES, SALES_REPORT_TYPES } from '@/types/reports';
-import ReportsTable from './ReportsTable';
-import OfferDetailsDialog from './OfferDetailsDialog';
-import ZoneTargetDetailsDialog from './ZoneTargetDetailsDialog';
-import UserTargetDetailsDialog from './UserTargetDetailsDialog';
+import dynamic from 'next/dynamic';
+
+const ReportsTable = dynamic(() => import('./ReportsTable'), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const OfferDetailsDialog = dynamic(() => import('./OfferDetailsDialog'), {
+  ssr: false
+});
+
+const ZoneTargetDetailsDialog = dynamic(() => import('./ZoneTargetDetailsDialog'), {
+  ssr: false
+});
+
+const UserTargetDetailsDialog = dynamic(() => import('./UserTargetDetailsDialog'), {
+  ssr: false
+});
+
 import ReportsFilters from './ReportsFilters';
 // Dynamic imports for heavy report components (lazy loaded for better performance)
 import {
@@ -723,7 +738,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
         const params: any = {
           reportType: 'offer-summary', // Use the same backend report type
           page: currentPage,
-          limit: 1000,
+          limit: 50,
         };
 
         // For zone-user-offer-summary, add myOffers=true to filter only user's offers
@@ -1498,7 +1513,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   </div>
                   <p className="text-xs text-[#AEBFC3]0">
                     Conversion: <span className="font-semibold text-[#5D6E73]">
-                      {((summary.totalPoValue || 0) / Math.max(summary.totalOfferValue || 1) * 100).toFixed(1)}%
+                      {(Number(summary.totalOfferValue || 0) > 0 ? (Number(summary.totalPoValue || 0) / Number(summary.totalOfferValue)) * 100 : 0).toFixed(1)}%
                     </span>
                   </p>
                 </div>
@@ -1601,7 +1616,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             onViewOffer={handleViewOffer}
             currentPage={currentPage}
             totalPages={totalPages}
-            totalOffers={filteredOffers.length}
+            totalOffers={totalOffers}
             onPageChange={handlePageChange}
           />
         </div>

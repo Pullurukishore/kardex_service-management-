@@ -3,6 +3,10 @@ import { prisma } from '../config/db';
 import { logger } from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { ActivityController } from './activityController';
+import { SparePartImportService } from '../services/sparePartImport.service';
+import fs from 'fs/promises';
+import XLSX from 'xlsx';
+
 
 export class SparePartController {
   // Wrapper methods for routes without authentication
@@ -32,6 +36,18 @@ export class SparePartController {
 
   static async bulkUpdatePricesWrapper(req: any, res: Response) {
     return SparePartController.bulkUpdatePrices(req as AuthenticatedRequest, res);
+  }
+
+  static async previewBulkImportWrapper(req: any, res: Response) {
+    return SparePartController.previewBulkImport(req as AuthenticatedRequest, res);
+  }
+
+  static async bulkImportWrapper(req: any, res: Response) {
+    return SparePartController.bulkImport(req as AuthenticatedRequest, res);
+  }
+
+  static async downloadImportTemplateWrapper(req: any, res: Response) {
+    return SparePartController.downloadImportTemplate(req as AuthenticatedRequest, res);
   }
 
   // Get all spare parts
@@ -432,6 +448,228 @@ export class SparePartController {
     } catch (error) {
       logger.error('Bulk update prices error:', error);
       res.status(500).json({ error: 'Failed to bulk update prices' });
+      return;
+    }
+  }
+
+  // Preview bulk import from Excel file
+  static async previewBulkImport(req: AuthenticatedRequest, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      // Read file buffer
+      const fileBuffer = await fs.readFile(req.file.path);
+
+      // Get existing part IDs for upsert detection
+      const existingParts = await prisma.sparePart.findMany({
+        select: { partNumber: true },
+      });
+      const existingPartIds = existingParts.map((p: { partNumber: string }) => p.partNumber);
+
+      // Preview import
+      const result = await SparePartImportService.previewImport(fileBuffer, existingPartIds);
+
+      // Clean up temp file
+      await fs.unlink(req.file.path).catch(() => { });
+
+      logger.info(`Bulk import preview: ${result.totalRows} rows, ${result.validRows} valid, ${result.imagesFound} images`);
+
+      res.json(result);
+      return;
+    } catch (error: any) {
+      logger.error('Preview bulk import error:', error);
+      // Clean up temp file on error
+      if (req.file?.path) {
+        await fs.unlink(req.file.path).catch(() => { });
+      }
+      res.status(500).json({ error: error.message || 'Failed to preview import' });
+      return;
+    }
+  }
+
+  // Execute bulk import from Excel
+  static async bulkImport(req: AuthenticatedRequest, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      // Read file buffer
+      const fileBuffer = await fs.readFile(req.file.path);
+
+      // Parse Excel
+      const { rows } = await SparePartImportService.parseSparePartsExcel(fileBuffer);
+
+      // Filter valid rows only
+      const validRows = rows.filter(r => r._isValid);
+
+      if (validRows.length === 0) {
+        await fs.unlink(req.file.path).catch(() => { });
+        return res.status(400).json({ error: 'No valid rows to import' });
+      }
+
+      // Get existing parts for upsert
+      const existingParts = await prisma.sparePart.findMany({
+        select: { id: true, partNumber: true },
+      });
+      const existingMap = new Map(existingParts.map((p: { id: number; partNumber: string }) => [p.partNumber.toLowerCase(), p.id]));
+
+      let created = 0;
+      let updated = 0;
+      let failed = 0;
+      const errors: { rowNumber: number; error: string }[] = [];
+
+      // Process each row
+      for (const row of validRows) {
+        try {
+          // Build description from available fields
+          let description = '';
+          if (row.hsnCode) description += `HSN Code: ${row.hsnCode}\n`;
+          if (row.useApplication) description += `Use/Application: ${row.useApplication}\n`;
+          if (row.modelSpec) description += `Model Specification: ${row.modelSpec}\n`;
+          if (row.manufacturingUnit) description += `Manufacturing Unit: ${row.manufacturingUnit}`;
+
+          // Handle image storage
+          let imageUrl: string | null = null;
+          if (row.imageDataUrl) {
+            try {
+              imageUrl = await SparePartImportService.storeSparePartImage(row.imageDataUrl, row.partId);
+            } catch (imgError) {
+              logger.warn(`Failed to store image for ${row.partId}:`, imgError);
+            }
+          }
+
+          const existingId = existingMap.get(row.partId.toLowerCase());
+
+          if (existingId) {
+            // Update existing
+            await prisma.sparePart.update({
+              where: { id: existingId },
+              data: {
+                name: row.productName,
+                description: description.trim() || undefined,
+                specifications: row.technicalSheet ? JSON.stringify({ technicalSheet: row.technicalSheet }) : undefined,
+                imageUrl: imageUrl || undefined,
+                updatedById: req.user!.id,
+              },
+            });
+            updated++;
+          } else {
+            // Create new
+            const newPart = await prisma.sparePart.create({
+              data: {
+                name: row.productName,
+                partNumber: row.partId,
+                description: description.trim() || null,
+                category: null,
+                basePrice: row.basePrice ? parseFloat(row.basePrice.toString()) : 0,
+                imageUrl,
+                specifications: row.technicalSheet ? JSON.stringify({ technicalSheet: row.technicalSheet }) : null,
+                status: 'ACTIVE',
+                createdById: req.user!.id,
+                updatedById: req.user!.id,
+              },
+            });
+
+            // Add to map to prevent duplicate creation if same partId appears again in same file
+            existingMap.set(row.partId.toLowerCase(), newPart.id);
+            created++;
+          }
+        } catch (rowError: any) {
+          failed++;
+          errors.push({ rowNumber: row.rowNumber, error: rowError.message });
+        }
+      }
+
+      // Clean up temp file
+      await fs.unlink(req.file.path).catch(() => { });
+
+      // Log activity
+      await ActivityController.logActivity({
+        userId: req.user!.id,
+        action: 'BULK_IMPORT_SPARE_PARTS',
+        entityType: 'SparePart',
+        entityId: 'SYSTEM',
+        details: {
+          created,
+          updated,
+          failed,
+          totalRows: validRows.length,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      logger.info(`Bulk import completed by ${req.user?.email}: ${created} created, ${updated} updated, ${failed} failed`);
+
+      res.json({
+        message: `Import completed: ${created} created, ${updated} updated, ${failed} failed`,
+        created,
+        updated,
+        failed,
+        errors,
+      });
+      return;
+    } catch (error: any) {
+      logger.error('Bulk import error:', error);
+      if (req.file?.path) {
+        await fs.unlink(req.file.path).catch(() => { });
+      }
+      res.status(500).json({ error: error.message || 'Failed to import spare parts' });
+      return;
+    }
+  }
+
+  // Download import template
+  static async downloadImportTemplate(_req: AuthenticatedRequest, res: Response) {
+    try {
+      // Create template workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Template headers matching expected format
+      const headers = [
+        'HSN Code',
+        'Product Name',
+        'Part ID',
+        '(Use/Application of product)',
+        'Model Specification',
+        'Manufacturing Unit',
+        'Ratings/Technical sheet',
+        'Image and brochures of product',
+      ];
+
+      // Sample row
+      const sampleRow = [
+        '84139100',
+        'Sample Pump Assembly',
+        'SP-001',
+        'Industrial use for fluid transfer',
+        'Model XYZ-123',
+        'Chennai Plant',
+        '5HP, 50Hz, 220V',
+        '(Embed image in this cell)',
+      ];
+
+      const data = [headers, sampleRow];
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+      // Set column widths
+      worksheet['!cols'] = headers.map(() => ({ wch: 25 }));
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Spare Parts Template');
+
+      // Generate buffer
+      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=Spare_Parts_Import_Template.xlsx');
+      res.send(buffer);
+      return;
+    } catch (error) {
+      logger.error('Download template error:', error);
+      res.status(500).json({ error: 'Failed to generate template' });
       return;
     }
   }

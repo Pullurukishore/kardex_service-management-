@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { SparePartController } from '../controllers/sparePartController';
 import { authenticate, requireRole } from '../middleware/auth.middleware';
+import { sparePartsUpload } from '../config/sparePartsMulter';
 
 const router = Router();
 
@@ -16,6 +17,21 @@ router.get('/categories', requireRole(['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'EX
 // Bulk update prices (admin and expert helpdesk) - MUST be before /:id routes
 router.put('/bulk-update', requireRole(['ADMIN', 'EXPERT_HELPDESK']), SparePartController.bulkUpdatePricesWrapper);
 
+// ═══════════════════════════════════════════════════════════════════════════
+// BULK IMPORT ENDPOINTS (admin and expert helpdesk)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Preview bulk import from Excel file
+router.post('/import/preview', requireRole(['ADMIN', 'EXPERT_HELPDESK']), sparePartsUpload.single('file'), SparePartController.previewBulkImportWrapper);
+
+// Execute bulk import from Excel file  
+router.post('/import', requireRole(['ADMIN', 'EXPERT_HELPDESK']), sparePartsUpload.single('file'), SparePartController.bulkImportWrapper);
+
+// Download import template
+router.get('/import/template', requireRole(['ADMIN', 'EXPERT_HELPDESK']), SparePartController.downloadImportTemplateWrapper);
+
+// ═══════════════════════════════════════════════════════════════════════════
+
 // Get single spare part
 router.get('/:id', requireRole(['ADMIN', 'ZONE_MANAGER', 'ZONE_USER', 'EXPERT_HELPDESK']), SparePartController.getSparePartWrapper);
 
@@ -29,4 +45,3 @@ router.put('/:id', requireRole(['ADMIN', 'EXPERT_HELPDESK']), SparePartControlle
 router.delete('/:id', requireRole(['ADMIN', 'EXPERT_HELPDESK']), SparePartController.deleteSparePartWrapper);
 
 export default router;
-

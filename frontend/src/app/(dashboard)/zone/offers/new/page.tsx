@@ -13,14 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import dynamic from 'next/dynamic'
+
+const AddContactDialog = dynamic(() => import('@/components/offers/AddContactDialog'), {
+  ssr: false
+})
+const AddAssetDialog = dynamic(() => import('@/components/offers/AddAssetDialog'), {
+  ssr: false
+})
 import { ArrowLeft, Save, Loader2, Plus, Users, HardDrive, Search, X, Building2, MapPin, FileText, Calendar, DollarSign, Target, MessageSquare, Image, Package, TrendingUp, Sparkles } from 'lucide-react'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
@@ -1138,153 +1138,26 @@ export default function NewOfferPage() {
       </form>
 
       {/* Add Contact Dialog */}
-      <Dialog open={isAddContactOpen} onOpenChange={setIsAddContactOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#546A7A]" />
-              Add New Contact
-            </DialogTitle>
-            <DialogDescription>
-              Create a new contact for {selectedCustomer?.companyName}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="contactName">Name *</Label>
-              <Input
-                id="contactName"
-                value={newContact.name}
-                onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                placeholder="Enter contact name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail">Email</Label>
-              <Input
-                id="contactEmail"
-                type="email"
-                value={newContact.email}
-                onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
-                placeholder="contact@example.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contactPhone">Phone *</Label>
-              <Input
-                id="contactPhone"
-                value={newContact.phone}
-                onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
-                placeholder="+91 98765 43210"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsAddContactOpen(false)
-                setNewContact({ name: '', email: '', phone: '' })
-              }}
-              disabled={isCreatingContact}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={handleCreateContact}
-              disabled={isCreatingContact}
-            >
-              {isCreatingContact ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Contact
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddContactDialog
+        open={isAddContactOpen}
+        onOpenChange={setIsAddContactOpen}
+        selectedCustomerName={selectedCustomer?.companyName}
+        newContact={newContact}
+        setNewContact={setNewContact}
+        onConfirm={handleCreateContact}
+        isCreating={isCreatingContact}
+      />
 
       {/* Add Asset Dialog */}
-      <Dialog open={isAddAssetOpen} onOpenChange={setIsAddAssetOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <HardDrive className="h-5 w-5 text-[#546A7A]" />
-              Add New Asset
-            </DialogTitle>
-            <DialogDescription>
-              Create a new asset for {selectedCustomer?.companyName}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="assetName">Asset Name *</Label>
-              <Input
-                id="assetName"
-                value={newAsset.assetName}
-                onChange={(e) => setNewAsset({ ...newAsset, assetName: e.target.value })}
-                placeholder="Enter asset name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="machineSerialNumber">Serial Number *</Label>
-              <Input
-                id="machineSerialNumber"
-                value={newAsset.machineSerialNumber}
-                onChange={(e) => setNewAsset({ ...newAsset, machineSerialNumber: e.target.value })}
-                placeholder="Enter serial number"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="assetModel">Model</Label>
-              <Input
-                id="assetModel"
-                value={newAsset.model}
-                onChange={(e) => setNewAsset({ ...newAsset, model: e.target.value })}
-                placeholder="Enter model (optional)"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsAddAssetOpen(false)
-                setNewAsset({ assetName: '', machineSerialNumber: '', model: '' })
-              }}
-              disabled={isCreatingAsset}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={handleCreateAsset}
-              disabled={isCreatingAsset}
-            >
-              {isCreatingAsset ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Asset
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddAssetDialog
+        open={isAddAssetOpen}
+        onOpenChange={setIsAddAssetOpen}
+        selectedCustomerName={selectedCustomer?.companyName}
+        newAsset={newAsset}
+        setNewAsset={setNewAsset}
+        onConfirm={handleCreateAsset}
+        isCreating={isCreatingAsset}
+      />
       </div>
     </div>
   )

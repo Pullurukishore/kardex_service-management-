@@ -7,6 +7,7 @@ export interface StorageConfig {
   maxFileSize: number;
   maxPhotosPerUpload: number;
   allowedImageTypes: string[];
+  spareParts: string;
   // Image compression settings
   compression: {
     enabled: boolean;
@@ -25,6 +26,7 @@ const defaultConfig: StorageConfig = {
   maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760'), // 10MB
   maxPhotosPerUpload: parseInt(process.env.MAX_PHOTOS_PER_UPLOAD || '10'),
   allowedImageTypes: (process.env.ALLOWED_IMAGE_TYPES || 'jpg,jpeg,png,webp').split(','),
+  spareParts: process.env.SPARE_PARTS_UPLOAD_DIR || path.join(process.env.STORAGE_ROOT || path.join(process.cwd(), 'storage'), 'images', 'spare-parts'),
   // Image compression - reduces storage by ~90% while maintaining quality
   compression: {
     enabled: process.env.IMAGE_COMPRESSION_ENABLED !== 'false', // Enabled by default
@@ -41,6 +43,7 @@ export function initializeStorage(): void {
   const dirs = [
     defaultConfig.root,
     defaultConfig.images,
+    defaultConfig.spareParts,
     path.join(defaultConfig.images, 'tickets'),
     path.join(defaultConfig.images, 'activities'),
   ];

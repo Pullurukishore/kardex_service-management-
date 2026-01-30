@@ -13,14 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import dynamic from 'next/dynamic'
+
+const AddContactDialog = dynamic(() => import('@/components/offers/AddContactDialog'), {
+  ssr: false
+})
+
+const AddAssetDialog = dynamic(() => import('@/components/offers/AddAssetDialog'), {
+  ssr: false
+})
 import { ArrowLeft, Save, Loader2, Plus, Users, HardDrive, Search, X, Building2, MapPin, FileText, Calendar, DollarSign, Target, MessageSquare, Image } from 'lucide-react'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
@@ -1389,176 +1390,25 @@ export default function NewOfferPage() {
       </form>
 
 
-      {/* Add Contact Dialog - Premium Design */}
-      <Dialog open={isAddContactOpen} onOpenChange={setIsAddContactOpen}>
-        <DialogContent className="p-0 gap-0 rounded-2xl border-0 shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] p-6">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white text-xl">
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                Add New Contact
-              </DialogTitle>
-              <DialogDescription className="text-[#6F8A9D] mt-2 text-base">
-                Create a new contact for <span className="font-semibold text-white">{selectedCustomer?.companyName}</span>
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          <div className="p-6 space-y-5 bg-gradient-to-b from-[#AEBFC3]/10 to-white">
-            <div className="space-y-2">
-              <Label htmlFor="contactName" className="font-medium text-sm">Name <span className="text-[#E17F70]">*</span></Label>
-              <Input
-                id="contactName"
-                value={newContact.name}
-                onChange={(e) => setNewContact(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter contact name"
-                className="h-12 border-2 rounded-xl focus:border-[#6F8A9D] transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail" className="font-medium text-sm">Email</Label>
-              <Input
-                id="contactEmail"
-                type="email"
-                value={newContact.email}
-                onChange={(e) => setNewContact(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="contact@example.com"
-                className="h-12 border-2 rounded-xl focus:border-[#6F8A9D] transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contactPhone" className="font-medium text-sm">Phone <span className="text-[#E17F70]">*</span></Label>
-              <Input
-                id="contactPhone"
-                value={newContact.phone}
-                onChange={(e) => setNewContact(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="+91 98765 43210"
-                className="h-12 border-2 rounded-xl focus:border-[#6F8A9D] transition-colors"
-              />
-            </div>
-          </div>
-          <div className="p-5 bg-[#AEBFC3]/10 border-t">
-            <DialogFooter className="gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsAddContactOpen(false)
-                  setNewContact({ name: '', email: '', phone: '' })
-                }}
-                disabled={isCreatingContact}
-                className="px-6 h-12 rounded-xl border-2 transition-all duration-200"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCreateContact}
-                disabled={isCreatingContact}
-                className="px-6 h-12 rounded-xl bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] hover:from-[#546A7A] hover:to-[#546A7A] shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                {isCreatingContact ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Contact
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddContactDialog
+        open={isAddContactOpen}
+        onOpenChange={setIsAddContactOpen}
+        selectedCustomerName={selectedCustomer?.companyName}
+        newContact={newContact}
+        setNewContact={setNewContact}
+        onConfirm={handleCreateContact}
+        isCreating={isCreatingContact}
+      />
 
-      {/* Add Asset Dialog - Premium Design */}
-      <Dialog open={isAddAssetOpen} onOpenChange={setIsAddAssetOpen}>
-        <DialogContent className="p-0 gap-0 rounded-2xl border-0 shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-cyan-600 to-[#6F8A9D] p-6">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-3 text-white text-xl">
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                  <HardDrive className="h-6 w-6 text-white" />
-                </div>
-                Add New Asset
-              </DialogTitle>
-              <DialogDescription className="text-cyan-100 mt-2 text-base">
-                Create a new asset for <span className="font-semibold text-white">{selectedCustomer?.companyName}</span>
-              </DialogDescription>
-            </DialogHeader>
-          </div>
-          <div className="p-6 space-y-5 bg-gradient-to-b from-[#AEBFC3]/10 to-white">
-            <div className="space-y-2">
-              <Label htmlFor="assetName" className="font-medium text-sm">Asset Name / Machine ID <span className="text-[#E17F70]">*</span></Label>
-              <Input
-                id="assetName"
-                value={newAsset.assetName}
-                onChange={(e) => setNewAsset({ ...newAsset, assetName: e.target.value })}
-                placeholder="Enter machine ID or name"
-                className="h-12 border-2 rounded-xl focus:border-cyan-500 transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="machineSerialNumber" className="font-medium text-sm">Serial Number <span className="text-[#E17F70]">*</span></Label>
-              <Input
-                id="machineSerialNumber"
-                value={newAsset.machineSerialNumber}
-                onChange={(e) => setNewAsset({ ...newAsset, machineSerialNumber: e.target.value })}
-                placeholder="Enter serial number"
-                className="h-12 border-2 rounded-xl focus:border-cyan-500 transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="assetModel" className="font-medium text-sm">Model</Label>
-              <Input
-                id="assetModel"
-                value={newAsset.model}
-                onChange={(e) => setNewAsset({ ...newAsset, model: e.target.value })}
-                placeholder="Enter model (optional)"
-                className="h-12 border-2 rounded-xl focus:border-cyan-500 transition-colors"
-              />
-            </div>
-          </div>
-          <div className="p-5 bg-[#AEBFC3]/10 border-t">
-            <DialogFooter className="gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsAddAssetOpen(false)
-                  setNewAsset({ assetName: '', machineSerialNumber: '', model: '' })
-                }}
-                disabled={isCreatingAsset}
-                className="px-6 h-12 rounded-xl border-2 transition-all duration-200"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCreateAsset}
-                disabled={isCreatingAsset}
-                className="px-6 h-12 rounded-xl bg-gradient-to-r from-cyan-600 to-[#6F8A9D] hover:from-cyan-700 hover:to-[#546A7A] shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                {isCreatingAsset ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Asset
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddAssetDialog
+        open={isAddAssetOpen}
+        onOpenChange={setIsAddAssetOpen}
+        selectedCustomerName={selectedCustomer?.companyName}
+        newAsset={newAsset}
+        setNewAsset={setNewAsset}
+        onConfirm={handleCreateAsset}
+        isCreating={isCreatingAsset}
+      />
       </div>
     </div>
   )

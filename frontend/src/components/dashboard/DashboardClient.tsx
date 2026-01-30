@@ -104,12 +104,13 @@ export default function DashboardClient({
       return;
     }
     
+    // Only skip if we have actual operational data (e.g. totalCustomers > 0 or tickets exist)
     const hasValidInitialData = 
       initialDashboardData && 
       initialDashboardData.stats && 
-      Object.keys(initialDashboardData).length > 0;
+      (initialDashboardData.adminStats?.totalCustomers ?? 0) > 0;
     
-    // Only fetch if no valid initial data was provided from server
+    // Always fetch if no valid initial data (like totalCustomers) was provided from server
     if (!hasValidInitialData) {
       hasInitialized.current = true;
       fetchDashboardData(false); // Don't show toast on initial load

@@ -37,17 +37,48 @@ import { Ticket } from '@/types/ticket';
 import api from '@/lib/api/axios';
 import { StatusBadge } from '@/components/tickets/StatusBadge';
 import { PriorityBadge } from '@/components/tickets/PriorityBadge';
-import { TicketActivity } from '@/components/tickets/TicketActivity';
-import { ActivityLogTimeline } from '@/components/activity/ActivityLogTimeline';
-import { TicketComments } from '@/components/tickets/TicketComments';
-import { TicketDetails } from '@/components/tickets/TicketDetails';
-import { AssignTicketDialog } from '@/components/tickets/AssignTicketDialog';
-import { StatusChangeDialog, TicketStatus, TicketStatusType } from '@/components/tickets/StatusChangeDialog';
-import { TicketReports } from '@/components/tickets/TicketReports';
-import { StatusHistoryItem } from '@/components/tickets/StatusHistoryItem';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import PhotoGallery from '@/components/photo/PhotoGallery';
+import dynamic from 'next/dynamic';
+
+// Heavy components loaded dynamically
+const TicketActivity = dynamic(() => import('@/components/tickets/TicketActivity').then(mod => mod.TicketActivity), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const ActivityLogTimeline = dynamic(() => import('@/components/activity/ActivityLogTimeline').then(mod => mod.ActivityLogTimeline), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const TicketComments = dynamic(() => import('@/components/tickets/TicketComments').then(mod => mod.TicketComments), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const TicketDetails = dynamic(() => import('@/components/tickets/TicketDetails').then(mod => mod.TicketDetails), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const AssignTicketDialog = dynamic(() => import('@/components/tickets/AssignTicketDialog').then(mod => mod.AssignTicketDialog), {
+  ssr: false
+});
+
+const StatusChangeDialog = dynamic(() => import('@/components/tickets/StatusChangeDialog').then(mod => mod.StatusChangeDialog), {
+  ssr: false
+});
+
+const TicketReports = dynamic(() => import('@/components/tickets/TicketReports').then(mod => mod.TicketReports), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
+
+const PhotoGallery = dynamic(() => import('@/components/photo/PhotoGallery'), {
+  loading: () => <div className="p-4 animate-pulse bg-gray-50 rounded-lg h-32" />,
+  ssr: false
+});
 
 export default function TicketDetailPage() {
   const { id } = useParams();

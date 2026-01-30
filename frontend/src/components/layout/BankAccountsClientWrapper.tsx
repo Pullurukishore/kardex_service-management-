@@ -16,9 +16,9 @@ interface BankAccountsLayoutProps {
 }
 
 const navItems = [
-  { href: '/finance/bank-accounts', label: 'All Accounts', icon: Building2, description: 'View all bank accounts' },
-  { href: '/finance/bank-accounts/new', label: 'Add New', icon: Plus, description: 'Create bank account' },
-  { href: '/finance/bank-accounts/requests', label: 'Requests', icon: Clock, description: 'Pending approvals' },
+  { href: '/finance/bank-accounts', label: 'All Vendors', icon: Building2, description: 'View all vendor accounts' },
+  { href: '/finance/bank-accounts/new', label: 'Add Vendor', icon: Plus, description: 'Create vendor account' },
+  { href: '/finance/bank-accounts/requests', label: 'Requests', icon: Clock, description: 'Vendor approvals' },
 ];
 
 export function BankAccountsClientWrapper({ children }: BankAccountsLayoutProps) {
@@ -414,7 +414,7 @@ export function BankAccountsClientWrapper({ children }: BankAccountsLayoutProps)
                   <div className="pl-2">
                     <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight">
                       <span className="bg-gradient-to-r from-[#976E44] via-[#CE9F6B] to-[#82A094] bg-clip-text text-transparent">
-                        Bank Accounts
+                        Vendor Accounts
                       </span>
                     </h1>
                     <p className="text-[11px] font-medium text-[#CE9F6B]/60 tracking-wide uppercase mt-0.5 hidden sm:block">

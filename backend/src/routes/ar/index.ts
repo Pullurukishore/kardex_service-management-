@@ -8,6 +8,9 @@ import * as paymentTermsController from '../../controllers/ar/arPaymentTerms.con
 import * as importController from '../../controllers/ar/arImport.controller';
 import * as bankAccountController from '../../controllers/ar/bankAccount.controller';
 import * as bankAccountRequestController from '../../controllers/ar/bankAccountRequest.controller';
+import * as bankAccountAttachmentController from '../../controllers/ar/bankAccountAttachment.controller';
+import * as bankAccountImportController from '../../controllers/ar/bankAccountImport.controller';
+import { bankDocUpload } from '../../config/bankDocMulter';
 import * as financeUserController from '../../controllers/ar/financeUser.controller';
 import * as dashboardController from '../../controllers/ar/arDashboard.controller';
 import * as activityController from '../../controllers/ar/arTotalActivity.controller';
@@ -110,6 +113,21 @@ router.get('/bank-accounts/requests/:id', requireFinanceRead, bankAccountRequest
 router.post('/bank-accounts/requests', requireFinanceWrite, bankAccountRequestController.createChangeRequest);
 router.post('/bank-accounts/requests/:id/approve', requireFinanceAdmin, bankAccountRequestController.approveRequest);
 router.post('/bank-accounts/requests/:id/reject', requireFinanceAdmin, bankAccountRequestController.rejectRequest);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BANK ACCOUNT ATTACHMENT ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+router.get('/bank-accounts/:id/attachments', requireFinanceRead, bankAccountAttachmentController.getAttachments);
+router.post('/bank-accounts/:id/attachments', requireFinanceWrite, bankDocUpload.single('file'), bankAccountAttachmentController.uploadAttachment);
+router.get('/bank-accounts/attachments/:attachmentId/download', requireFinanceRead, bankAccountAttachmentController.downloadAttachment);
+router.delete('/bank-accounts/attachments/:attachmentId', requireFinanceAdmin, bankAccountAttachmentController.deleteAttachment);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BANK ACCOUNT IMPORT ROUTES
+// ═══════════════════════════════════════════════════════════════════════════
+router.post('/bank-accounts/import/preview', requireFinanceWrite, upload.single('file'), bankAccountImportController.previewExcel);
+router.post('/bank-accounts/import/excel', requireFinanceAdmin, bankAccountImportController.importFromExcel);
+router.get('/bank-accounts/import/template', requireFinanceRead, bankAccountImportController.downloadTemplate);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // IMPORT ROUTES - Admin & User can import

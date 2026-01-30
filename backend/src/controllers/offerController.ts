@@ -368,9 +368,11 @@ export class OfferController {
 
   // Get single offer
   static async getOffer(req: AuthenticatedRequest, res: Response) {
-    try {
-      const { id } = req.params;
+    const startTime = Date.now();
+    const { id } = req.params;
+    logger.info(`Fetching offer details for ID: ${id}`);
 
+    try {
       const offer = await prisma.offer.findUnique({
         where: { id: parseInt(id) },
         include: {
@@ -446,7 +448,10 @@ export class OfferController {
         },
       });
 
+      logger.info(`Database query for offer ${id} completed in ${Date.now() - startTime}ms`);
+
       if (!offer) {
+        logger.warn(`Offer not found for ID: ${id}`);
         return res.status(404).json({ error: 'Offer not found' });
       }
 
@@ -454,15 +459,20 @@ export class OfferController {
       if ((req.user?.role === 'ZONE_USER' || req.user?.role === 'ZONE_MANAGER')) {
         const userZoneIds = req.user.zoneIds || (req.user.zoneId ? [Number(req.user.zoneId)] : []);
         if (!userZoneIds.includes(offer.zoneId)) {
+          logger.warn(`Access denied for user ${req.user.id} to offer ${id} (Zone ${offer.zoneId} not in ${userZoneIds})`);
           return res.status(403).json({ error: 'Access denied: offer not in your authorized zones' });
         }
       }
 
       res.json({ offer });
+      logger.info(`Successfully returned offer ${id} in ${Date.now() - startTime}ms`);
       return;
-    } catch (error) {
-      logger.error('Get offer error:', error);
-      res.status(500).json({ error: 'Failed to fetch offer' });
+    } catch (error: any) {
+      logger.error(`Get offer error for ID ${id}:`, {
+        message: error.message,
+        stack: error.stack
+      });
+      res.status(500).json({ error: 'Failed to fetch offer', details: error.message });
       return;
     }
   }

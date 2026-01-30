@@ -330,9 +330,12 @@ export const arApi = {
     },
 
 
-    async importExcel(file: File, mapping?: any) {
+    async importExcel(file: File, selectedIndices?: number[], mapping?: any) {
         const formData = new FormData();
         formData.append('file', file);
+        if (selectedIndices && selectedIndices.length > 0) {
+            formData.append('selectedIndices', JSON.stringify(selectedIndices));
+        }
         if (mapping) formData.append('mapping', JSON.stringify(mapping));
 
         const res = await api.post('/ar/import/excel', formData, {
@@ -357,7 +360,7 @@ export const arApi = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // BANK ACCOUNTS
+    // VENDOR ACCOUNTS
     // ═══════════════════════════════════════════════════════════════════════════
 
     async getBankAccounts(params?: { search?: string; activeOnly?: boolean }) {
@@ -385,7 +388,7 @@ export const arApi = {
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // BANK ACCOUNT CHANGE REQUESTS
+    // VENDOR ACCOUNT CHANGE REQUESTS
     // ═══════════════════════════════════════════════════════════════════════════
 
     async createBankAccountRequest(data: {
@@ -425,6 +428,60 @@ export const arApi = {
     async getRequestStats(): Promise<{ pending: number; approved: number; rejected: number; total: number }> {
         const res = await api.get('/ar/bank-accounts/requests/stats');
         return res.data;
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VENDOR ACCOUNT ATTACHMENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async getBankAccountAttachments(id: string): Promise<BankAccountAttachment[]> {
+        const res = await api.get(`/ar/bank-accounts/${id}/attachments`);
+        return res.data;
+    },
+
+    async uploadBankAccountAttachment(id: string, file: File): Promise<BankAccountAttachment> {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await api.post(`/ar/bank-accounts/${id}/attachments`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return res.data;
+    },
+
+    async downloadBankAccountAttachment(attachmentId: string): Promise<void> {
+        // We use window.open for downloads or a blob approach.
+        // For standard file download, window.open is often simplest if the server sets Content-Disposition
+        const baseURL = process.env.NEXT_PUBLIC_API_URL || '';
+        window.open(`${baseURL}/ar/bank-accounts/attachments/${attachmentId}/download`, '_blank');
+    },
+
+    async deleteBankAccountAttachment(attachmentId: string): Promise<void> {
+        await api.delete(`/ar/bank-accounts/attachments/${attachmentId}`);
+    },
+
+    async previewBankAccountImport(file: File): Promise<any> {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { data } = await api.post('/ar/bank-accounts/import/preview', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return data;
+    },
+
+    async importBankAccountsFromExcel(rows: any[]): Promise<any> {
+        const { data } = await api.post('/ar/bank-accounts/import/excel', { rows });
+        return data;
+    },
+
+    async downloadBankAccountTemplate(): Promise<void> {
+        const { data } = await api.get('/ar/bank-accounts/import/template', { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Vendor_Accounts_Template.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     }
 };
 
@@ -436,12 +493,17 @@ export interface BankAccount {
     accountNumber: string;
     ifscCode: string;
     emailId?: string;
+    beneficiaryName?: string;
     nickName?: string;
     isActive: boolean;
+    isMSME: boolean;
+    udyamRegNum?: string;
+    currency: string;
     createdById: number;
     updatedById: number;
     createdAt: string;
     updatedAt: string;
+    attachments?: BankAccountAttachment[];
     changeRequests?: BankAccountChangeRequest[];
     _count?: { changeRequests: number };
 }
@@ -460,6 +522,19 @@ export interface BankAccountChangeRequest {
     bankAccount?: BankAccount;
     requestedBy?: { id: number; name: string; email: string };
     reviewedBy?: { id: number; name: string; email: string };
+    attachments?: BankAccountAttachment[];
+}
+
+export interface BankAccountAttachment {
+    id: string;
+    filename: string;
+    path: string;
+    mimeType: string;
+    size: number;
+    bankAccountId: string;
+    uploadedById: number;
+    createdAt: string;
+    uploadedBy?: { id: number; name: string };
 }
 
 // Utility functions

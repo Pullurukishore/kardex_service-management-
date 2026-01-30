@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
+    "@types/adm-zip": "^0.5.7",
     "@types/archiver": "^7.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/connect": "^3.4.35",
@@ -90,6 +91,7 @@
     "@types/send": "^0.17.1",
     "@types/serve-static": "^1.15.8",
     "@types/uuid": "^11.0.0",
+    "@types/xml2js": "^0.4.14",
     "canvas": "^3.2.0",
     "chart.js": "^4.5.0",
     "chartjs-node-canvas": "^5.0.0",

@@ -805,7 +805,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-[#6F8A9D]"></div>
-                            <span className="font-semibold text-[#546A7A]">{target.serviceZone.name}</span>
+                            <span className="font-semibold text-[#546A7A]">{target.serviceZone?.name || 'N/A'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.noOfOffers || 0}</td>
@@ -816,13 +816,13 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                         <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{target.metrics?.orderBooking || 0}</td>
                         <td className="px-4 py-3 text-right text-sm font-semibold text-[#546A7A]">{formatCrLakh(target.targetValue)}</td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.achievement)} text-xs font-bold`}>
-                            {target.achievement.toFixed(1)}%
+                          <Badge className={`${getAchievementColor(target.achievement || 0)} text-xs font-bold`}>
+                            {(target.achievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <Badge className={`${getAchievementColor(target.expectedAchievement)} text-xs font-bold`}>
-                            {target.expectedAchievement.toFixed(1)}%
+                          <Badge className={`${getAchievementColor(target.expectedAchievement || 0)} text-xs font-bold`}>
+                            {(target.expectedAchievement || 0).toFixed(1)}%
                           </Badge>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-semibold ${
@@ -1008,7 +1008,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   </div>
                   <p className="text-xs text-[#AEBFC3]0">
                     Avg: <span className="font-semibold text-[#5D6E73]">
-                      {formatCrLakh((summary.totalOfferValue || 0) / Math.max(filteredOffers.length, 1))}
+                      {formatCrLakh((summary.totalOfferValue || 0) / Math.max(filteredOffers.length || 0, 1))}
                     </span>
                   </p>
                 </div>
@@ -1030,7 +1030,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   </div>
                   <p className="text-xs text-[#AEBFC3]0">
                     Conversion: <span className="font-semibold text-[#5D6E73]">
-                      {((summary.totalPoValue || 0) / Math.max(summary.totalOfferValue || 1) * 100).toFixed(1)}%
+                      {((summary.totalPoValue || 0) / Math.max(summary.totalOfferValue || 0, 1) * 100).toFixed(1)}%
                     </span>
                   </p>
                 </div>
@@ -1052,7 +1052,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
                   </div>
                   <p className="text-xs text-[#5D6E73]">
                     Success Rate: <span className="font-semibold text-[#4F6A64]">
-                      {((offers.filter(o => o.stage === 'WON').length / Math.max(filteredOffers.length, 1)) * 100).toFixed(1)}%
+                      {((offers.filter(o => o.stage === 'WON').length / Math.max(filteredOffers.length || 0, 1)) * 100).toFixed(1)}%
                     </span>
                   </p>
                 </div>
@@ -1133,7 +1133,7 @@ const ReportsClient: React.FC<ReportsClientProps> = ({
             onViewOffer={handleViewOffer}
             currentPage={currentPage}
             totalPages={totalPages}
-            totalOffers={filteredOffers.length}
+            totalOffers={totalOffers}
             onPageChange={handlePageChange}
           />
         </div>

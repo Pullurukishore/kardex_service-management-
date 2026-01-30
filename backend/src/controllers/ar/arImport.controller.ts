@@ -341,6 +341,19 @@ export const importFromExcel = async (req: Request, res: Response) => {
             });
         }
 
+        // Parse selectedIndices if provided - only import selected rows
+        let selectedIndices: Set<number> | null = null;
+        if (req.body?.selectedIndices) {
+            try {
+                const indices = JSON.parse(req.body.selectedIndices);
+                if (Array.isArray(indices)) {
+                    selectedIndices = new Set(indices);
+                }
+            } catch (e) {
+                // Ignore parsing errors, import all rows
+            }
+        }
+
         // Phase 1: Validate all rows and prepare data (outside transaction)
         const validRows: Array<{
             rowNumber: number;
@@ -360,6 +373,11 @@ export const importFromExcel = async (req: Request, res: Response) => {
         const errors: string[] = [];
 
         for (let i = 0; i < rows.length; i++) {
+            // Skip rows that are not selected (if selection was provided)
+            if (selectedIndices !== null && !selectedIndices.has(i)) {
+                continue;
+            }
+
             const row = rows[i];
             const rowNumber = i + 2; // Excel rows are 1-indexed, plus header row
 
@@ -372,6 +390,8 @@ export const importFromExcel = async (req: Request, res: Response) => {
             const netAmount = parseDecimal(getValue(row, 'Net', 'Net Amount', 'NetAmount'));
             const taxAmount = parseDecimal(getValue(row, 'Tax', 'Tax Amount', 'TaxAmount'));
             const invoiceDate = parseExcelDate(getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate'));
+            // Parse Due Date from Excel if provided
+            const dueDateFromExcel = parseExcelDate(getValue(row, 'Due Date', 'DueDate', 'Due'));
 
             // Validate mandatory fields
             if (!invoiceNumber) {
@@ -391,8 +411,8 @@ export const importFromExcel = async (req: Request, res: Response) => {
                 continue;
             }
 
-            // Calculate due date (30 days from invoice date)
-            const finalDueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+            // Use due date from Excel if provided, otherwise calculate (30 days from invoice date)
+            const finalDueDate = dueDateFromExcel || new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
             const dueByDays = calculateDaysBetween(finalDueDate);
             const riskClass = calculateRiskClass(dueByDays);
             const balance = totalAmount;
@@ -423,6 +443,20 @@ export const importFromExcel = async (req: Request, res: Response) => {
             try {
                 await prisma.$transaction(async (tx) => {
                     for (const row of validRows) {
+                        // Check if invoice already exists
+                        const existingInvoice = await tx.aRInvoice.findUnique({
+                            where: { invoiceNumber: row.invoiceNumber },
+                            select: { id: true }
+                        });
+
+                        // If invoice exists, delete associated payment history first
+                        // This ensures a clean slate when re-importing the same invoices
+                        if (existingInvoice) {
+                            await tx.aRPaymentHistory.deleteMany({
+                                where: { invoiceId: existingInvoice.id }
+                            });
+                        }
+
                         const upsertedInvoice = await tx.aRInvoice.upsert({
                             where: { invoiceNumber: row.invoiceNumber },
                             create: {
@@ -449,6 +483,11 @@ export const importFromExcel = async (req: Request, res: Response) => {
                                 taxAmount: row.taxAmount,
                                 invoiceDate: row.invoiceDate,
                                 dueDate: row.finalDueDate,
+                                // Reset payment-related fields on re-import
+                                balance: row.balance,
+                                receipts: 0,
+                                adjustments: 0,
+                                totalReceipts: 0,
                                 riskClass: row.riskClass,
                                 dueByDays: row.dueByDays,
                                 status: row.dueByDays > 0 ? 'OVERDUE' : 'PENDING'

@@ -32,11 +32,11 @@ export default function FinanceSelectPage() {
     },
     {
       id: 'bank-accounts',
-      title: 'Bank Accounts',
-      description: 'Account management, requests, and banking operations',
+      title: 'Vendor Accounts',
+      description: 'Vendor management, requests, and verification',
       icon: <Building2 className="w-8 h-8" />,
       color: '#CE9F6B',
-      features: ['Accounts', 'Requests', 'New Account', 'Reports'],
+      features: ['Vendors', 'Requests', 'New Vendor', 'Reports'],
     }
   ];
 

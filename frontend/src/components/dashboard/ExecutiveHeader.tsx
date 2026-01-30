@@ -71,9 +71,9 @@ export default function ExecutiveHeader({
             </div>
 
             {/* Admin Stats - Compact badges */}
-            {stats && (stats.totalCustomers || stats.totalServicePersons || stats.totalServiceZones || stats.totalZoneUsers || stats.totalZoneManagers) && (
+            {stats && (stats.totalCustomers || stats.totalServicePersons || stats.totalServiceZones || stats.totalZoneUsers || stats.totalZoneManagers) ? (
               <div className="flex flex-wrap items-center gap-2">
-                {stats.totalCustomers !== undefined && (
+                {stats.totalCustomers !== undefined && stats.totalCustomers > 0 && (
                   <div className="flex items-center gap-1.5 bg-[#E17F70]/15 px-2.5 py-1.5 rounded-lg border border-[#E17F70]/20">
                     <div className="p-1 bg-[#E17F70] rounded">
                       <Users className="h-2.5 w-2.5 text-white" />
@@ -91,7 +91,7 @@ export default function ExecutiveHeader({
                     <span className="text-[#5D6E73] text-xs">Zone Users</span>
                   </div>
                 )}
-                {stats.totalServicePersons !== undefined && (
+                {stats.totalServicePersons !== undefined && stats.totalServicePersons > 0 && (
                   <div className="flex items-center gap-1.5 bg-[#82A094]/15 px-2.5 py-1.5 rounded-lg border border-[#82A094]/20">
                     <div className="p-1 bg-[#82A094] rounded">
                       <Wrench className="h-2.5 w-2.5 text-white" />
@@ -100,7 +100,7 @@ export default function ExecutiveHeader({
                     <span className="text-[#5D6E73] text-xs">Technicians</span>
                   </div>
                 )}
-                {stats.totalServiceZones !== undefined && (
+                {stats.totalServiceZones !== undefined && stats.totalServiceZones > 0 && (
                   <div className="flex items-center gap-1.5 bg-[#A2B9AF]/15 px-2.5 py-1.5 rounded-lg border border-[#A2B9AF]/20">
                     <div className="p-1 bg-[#4F6A64] rounded">
                       <Building2 className="h-2.5 w-2.5 text-white" />
@@ -110,7 +110,7 @@ export default function ExecutiveHeader({
                   </div>
                 )}
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Action buttons - Compact */}

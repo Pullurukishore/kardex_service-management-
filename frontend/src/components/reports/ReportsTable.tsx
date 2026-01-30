@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { STAGE_COLORS, PRODUCT_TYPE_COLORS } from '@/types/reports';
-import { formatCrLakh, formatINRFull } from '@/lib/format';
+import { formatCrLakh, formatINRFull, formatDateSafe } from '@/lib/format';
 
 interface Offer {
   id: number;
@@ -128,8 +128,8 @@ const OfferRow = memo(({ offer, onViewOffer }: { offer: Offer; onViewOffer: (id:
       </td>
       <td className="py-3.5 px-4">
         <div className="text-sm text-[#546A7A]">{offer.createdBy.name}</div>
-        <div className="text-xs text-[#AEBFC3]0 mt-0.5">
-          {format(new Date(offer.createdAt), 'MMM dd, yyyy')}
+        <div className="text-xs text-[#AEBFC3] mt-0.5">
+          {formatDateSafe(offer.createdAt, 'MMM dd, yyyy')}
         </div>
       </td>
       <td className="py-3.5 px-4">
@@ -143,8 +143,8 @@ const OfferRow = memo(({ offer, onViewOffer }: { offer: Offer; onViewOffer: (id:
         )}
       </td>
       <td className="py-3.5 px-4">
-        <div className="text-xs text-[#AEBFC3]0">
-          {format(new Date(offer.updatedAt), 'MMM dd, yyyy')}
+        <div className="text-xs text-[#AEBFC3]">
+          {formatDateSafe(offer.updatedAt, 'MMM dd, yyyy')}
         </div>
         <div className="text-xs text-[#979796] mt-0.5">
           by {offer.updatedBy.name}

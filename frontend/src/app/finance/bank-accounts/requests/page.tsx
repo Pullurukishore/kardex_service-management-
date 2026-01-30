@@ -9,8 +9,8 @@ import { FinanceRole } from '@/types/user.types';
 import { 
   ArrowLeft, Sparkles, Clock, CheckCircle2, XCircle, 
   AlertCircle, Building2, Plus, Trash2, Pencil, Eye,
-  MessageSquare, Loader2, ChevronDown, Square, CheckSquare,
-  ArrowRight, ExternalLink
+  MessageSquare, Loader2, Square, CheckSquare,
+  ArrowRight, ExternalLink, Search
 } from 'lucide-react';
 
 export default function BankAccountRequestsPage() {
@@ -19,6 +19,7 @@ export default function BankAccountRequestsPage() {
   const [requests, setRequests] = useState<BankAccountChangeRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL'>('PENDING');
+  const [searchTerm, setSearchTerm] = useState('');
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [bulkProcessing, setBulkProcessing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -45,7 +46,7 @@ export default function BankAccountRequestsPage() {
       setLoading(true);
       let data: BankAccountChangeRequest[];
       if (isAdmin) {
-        data = await arApi.getPendingRequests(filter === 'ALL' ? undefined : filter);
+        data = await arApi.getPendingRequests(filter);
       } else {
         data = await arApi.getMyRequests();
         if (filter !== 'ALL') {
@@ -138,11 +139,11 @@ export default function BankAccountRequestsPage() {
   };
 
   const toggleSelectAll = () => {
-    const pendingRequests = requests.filter(r => r.status === 'PENDING');
-    if (selectedIds.size === pendingRequests.length) {
+    const pendingInView = filteredRequests.filter(r => r.status === 'PENDING');
+    if (selectedIds.size === pendingInView.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(pendingRequests.map(r => r.id)));
+      setSelectedIds(new Set(pendingInView.map(r => r.id)));
     }
   };
 
@@ -182,45 +183,109 @@ export default function BankAccountRequestsPage() {
     }
   };
 
-  const pendingRequests = requests.filter(r => r.status === 'PENDING');
+  const filteredRequests = requests.filter((r) => {
+    if (!searchTerm.trim()) return true;
+    const term = searchTerm.toLowerCase();
+
+    const vendorName = r.requestedData.vendorName?.toLowerCase() || '';
+    const bankName = r.requestedData.beneficiaryBankName?.toLowerCase() || '';
+    const accountNumber = r.requestedData.accountNumber || '';
+    const requesterName = r.requestedBy?.name?.toLowerCase() || '';
+    const requesterEmail = r.requestedBy?.email?.toLowerCase() || '';
+
+    return (
+      vendorName.includes(term) ||
+      bankName.includes(term) ||
+      accountNumber.includes(term) ||
+      requesterName.includes(term) ||
+      requesterEmail.includes(term)
+    );
+  });
+
+  const pendingRequests = filteredRequests.filter(r => r.status === 'PENDING');
   const hasSelection = selectedIds.size > 0;
   const allPendingSelected = pendingRequests.length > 0 && selectedIds.size === pendingRequests.length;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/finance/bank-accounts"
-            className="p-2 rounded-xl bg-white border border-[#AEBFC3]/30 text-[#5D6E73] hover:text-[#546A7A] hover:border-[#CE9F6B]/30 transition-all shadow-sm"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-[#546A7A] flex items-center gap-2">
-              {isAdmin ? 'Pending Requests' : 'My Requests'}
-              <Sparkles className="w-5 h-5 text-[#CE9F6B]" />
-            </h1>
-            <p className="text-[#92A2A5] text-sm mt-1 font-medium">
-              {isAdmin ? 'Review and approve bank account changes' : 'Track your submitted requests'}
-            </p>
+      <div className="bg-white rounded-2xl border border-[#AEBFC3]/20 p-5 shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/finance/bank-accounts"
+              className="p-2 rounded-xl bg-[#F8FAFB] border border-[#AEBFC3]/40 text-[#5D6E73] hover:text-[#546A7A] hover:border-[#CE9F6B]/40 transition-all shadow-sm"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold text-[#546A7A] flex items-center gap-2">
+                {isAdmin ? 'Vendor Pending Requests' : 'My Vendor Requests'}
+                <Sparkles className="w-5 h-5 text-[#CE9F6B]" />
+              </h1>
+              <p className="text-[#92A2A5] text-sm mt-1 font-medium">
+                {isAdmin ? 'Review and approve vendor account changes' : 'Track your submitted vendor requests'}
+              </p>
+              <p className="text-[11px] text-[#AEBFC3] mt-1 font-medium">
+                Showing {filteredRequests.length} {filter.toLowerCase()} request{filteredRequests.length === 1 ? '' : 's'}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Filter Dropdown */}
-        <div className="relative">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
-            className="appearance-none px-4 py-2.5 pr-10 rounded-xl bg-white border border-[#AEBFC3]/30 text-[#546A7A] font-medium focus:outline-none focus:border-[#CE9F6B]/50 cursor-pointer shadow-sm"
-          >
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="ALL">All</option>
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#92A2A5] pointer-events-none" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#92A2A5]" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={isAdmin ? 'Search vendors, banks or accounts...' : 'Search your requests...'}
+                className="w-full pl-9 pr-3 py-2.5 bg-[#F8FAFB] border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] placeholder-[#92A2A5] focus:outline-none focus:border-[#CE9F6B]/50 focus:ring-2 focus:ring-[#CE9F6B]/20 focus:bg-white transition-all text-sm"
+              />
+            </div>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                onClick={() => setFilter('PENDING')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all ${
+                  filter === 'PENDING'
+                    ? 'bg-[#CE9F6B] text-white border-[#CE9F6B] shadow-sm'
+                    : 'bg-[#F8FAFB] text-[#92A2A5] border-[#AEBFC3]/40 hover:border-[#CE9F6B]/40 hover:text-[#546A7A]'
+                }`}
+              >
+                Pending
+              </button>
+              <button
+                onClick={() => setFilter('APPROVED')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all ${
+                  filter === 'APPROVED'
+                    ? 'bg-[#82A094] text-white border-[#82A094] shadow-sm'
+                    : 'bg-[#F8FAFB] text-[#92A2A5] border-[#AEBFC3]/40 hover:border-[#CE9F6B]/40 hover:text-[#546A7A]'
+                }`}
+              >
+                Approved
+              </button>
+              <button
+                onClick={() => setFilter('REJECTED')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all ${
+                  filter === 'REJECTED'
+                    ? 'bg-[#E17F70] text-white border-[#E17F70] shadow-sm'
+                    : 'bg-[#F8FAFB] text-[#92A2A5] border-[#AEBFC3]/40 hover:border-[#CE9F6B]/40 hover:text-[#546A7A]'
+                }`}
+              >
+                Rejected
+              </button>
+              <button
+                onClick={() => setFilter('ALL')}
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all ${
+                  filter === 'ALL'
+                    ? 'bg-[#546A7A] text-white border-[#546A7A] shadow-sm'
+                    : 'bg-[#F8FAFB] text-[#92A2A5] border-[#AEBFC3]/40 hover:border-[#CE9F6B]/40 hover:text-[#546A7A]'
+                }`}
+              >
+                All
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -297,8 +362,18 @@ export default function BankAccountRequestsPage() {
               {isAdmin ? 'All caught up! No pending requests to review.' : 'You haven\'t submitted any requests yet.'}
             </p>
           </div>
+        ) : filteredRequests.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 rounded-2xl bg-[#AEBFC3]/10 flex items-center justify-center mx-auto mb-4">
+              <Search className="w-10 h-10 text-[#AEBFC3]/60" />
+            </div>
+            <p className="text-[#92A2A5] font-medium mb-2">No matching requests found</p>
+            <p className="text-[#AEBFC3] text-sm">
+              Try adjusting your search term or clearing the filter.
+            </p>
+          </div>
         ) : (
-          requests.map((request) => (
+          filteredRequests.map((request) => (
             <div 
               key={request.id} 
               className={`bg-white rounded-2xl border overflow-hidden hover:border-[#CE9F6B]/30 transition-all shadow-lg cursor-pointer group ${
@@ -333,9 +408,9 @@ export default function BankAccountRequestsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="text-lg font-semibold text-[#546A7A] group-hover:text-[#CE9F6B] transition-colors">
-                          {request.requestType === 'CREATE' ? 'New Account Request' :
-                           request.requestType === 'UPDATE' ? 'Update Request' :
-                           'Delete Request'}
+                          {request.requestType === 'CREATE' ? 'New Vendor Account Request' :
+                           request.requestType === 'UPDATE' ? 'Vendor Account Update Request' :
+                           'Vendor Account Deletion Request'}
                         </h3>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}>
                           {request.status}

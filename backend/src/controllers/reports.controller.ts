@@ -4,6 +4,7 @@ import { calculateBusinessHoursInMinutes } from '../utils/dateUtils';
 import { generatePdf, getPdfColumns } from '../utils/pdfGenerator';
 import { generateExcel, getExcelColumns } from '../utils/excelGenerator';
 import prisma from '../config/db';
+import { logger } from '../utils/logger';
 
 // Define enums since they're not exported from Prisma client
 enum TicketStatus {
@@ -90,11 +91,12 @@ interface ReportFilters {
   stage?: string;
   page?: string;
   limit?: string;
+  search?: string;
 }
 
 export const generateReport = async (req: Request, res: Response) => {
   try {
-    const { from, to, zoneId, reportType, customerId, assetId, productType, stage, page, limit } = req.query as unknown as ReportFilters;
+    const { from, to, zoneId, reportType, customerId, assetId, productType, stage, page, limit, search } = req.query as unknown as ReportFilters;
 
     // Parse pagination params with defaults
     const pageNum = page ? parseInt(page) : 1;
@@ -107,6 +109,11 @@ export const generateReport = async (req: Request, res: Response) => {
     const now = new Date();
     let startDate = from ? new Date(from) : subDays(now, 30);
     let endDate = to ? new Date(to) : now;
+
+    // Validate dates
+    if (isNaN(startDate.getTime())) startDate = subDays(now, 30);
+    if (isNaN(endDate.getTime())) endDate = now;
+
 
     // Set start of day for start date (00:00:00.000) in local time
     startDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0, 0);
@@ -153,6 +160,16 @@ export const generateReport = async (req: Request, res: Response) => {
     if (stage) {
       whereClause.stage = stage;
     }
+    // Add search filter for offer reports
+    if (search) {
+      whereClause.OR = [
+        { offerReferenceNumber: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search, mode: 'insensitive' } },
+        { company: { contains: search, mode: 'insensitive' } },
+        { contactPersonName: { contains: search, mode: 'insensitive' } },
+        { poNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
     switch (reportType) {
       case 'ticket-summary':
@@ -182,8 +199,16 @@ export const generateReport = async (req: Request, res: Response) => {
       default:
         return res.status(400).json({ error: 'Invalid report type' });
     }
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to generate report' });
+  } catch (error: any) {
+    logger.error('Global generate report error:', {
+      message: error.message,
+      stack: error.stack,
+      query: req.query
+    });
+    return res.status(500).json({
+      error: 'Failed to generate report',
+      details: error.message
+    });
   }
 };
 
@@ -3246,12 +3271,19 @@ export const exportZoneReport = async (req: Request, res: Response) => {
  * Generate Offer Summary Report
  */
 const generateOfferSummaryReport = async (res: Response, whereClause: any, startDate: Date, endDate: Date, page: number = 1, limit: number = 500) => {
+  const startTime = Date.now();
+  logger.info(`Starting offer summary report generation: page=${page}, limit=${limit}`, { whereClause });
   try {
+    // Cap limit to prevent memory issues
+    const safeLimit = Math.min(limit, 1000);
+
     // Calculate skip for pagination
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * safeLimit;
 
     // Get total count for pagination info
     const totalCount = await prisma.offer.count({ where: whereClause });
+    logger.info(`Total offers found: ${totalCount}`);
+
 
     // Fetch offers with important fields and pagination
     const offers = await prisma.offer.findMany({
@@ -3336,52 +3368,60 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
       },
       orderBy: { createdAt: 'desc' },
       skip: skip,
-      take: limit,
+      take: safeLimit,
     });
+    logger.info(`Fetched ${offers.length} offers for current page in ${Date.now() - startTime}ms`);
 
-    // Calculate summary statistics
-    const summary = await prisma.offer.aggregate({
-      where: whereClause,
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+    // Perform aggregations in parallel to improve performance
+    logger.info('Starting aggregations...');
+    const aggStartTime = Date.now();
+    const [summary, wonOffers, statusDistribution, stageDistribution, productTypeDistribution] = await Promise.all([
+      // Calculate summary statistics
+      prisma.offer.aggregate({
+        where: whereClause,
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      }),
 
-    // Won offers statistics
-    const wonOffers = await prisma.offer.aggregate({
-      where: { ...whereClause, stage: 'WON' },
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+      // Won offers statistics
+      prisma.offer.aggregate({
+        where: { ...whereClause, stage: 'WON' },
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      }),
 
-    // Status distribution
-    const statusDistribution = await prisma.offer.groupBy({
-      where: whereClause,
-      by: ['status'],
-      _count: { id: true },
-    });
+      // Status distribution
+      prisma.offer.groupBy({
+        where: whereClause,
+        by: ['status'],
+        _count: { id: true },
+      }),
 
-    // Stage distribution
-    const stageDistribution = await prisma.offer.groupBy({
-      where: whereClause,
-      by: ['stage'],
-      _count: { id: true },
-    });
+      // Stage distribution
+      prisma.offer.groupBy({
+        where: whereClause,
+        by: ['stage'],
+        _count: { id: true },
+      }),
 
-    // Product type distribution
-    const productTypeDistribution = await prisma.offer.groupBy({
-      where: whereClause,
-      by: ['productType'],
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-      },
-    });
+      // Product type distribution
+      prisma.offer.groupBy({
+        where: whereClause,
+        by: ['productType'],
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+        },
+      })
+    ]);
+    logger.info(`Aggregations completed in ${Date.now() - aggStartTime}ms`);
+
 
     // Format distributions
     const statusDist: Record<string, number> = {};
@@ -3409,8 +3449,8 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
         pagination: {
           total: totalCount,
           page: page,
-          limit: limit,
-          pages: Math.ceil(totalCount / limit),
+          limit: safeLimit,
+          pages: Math.ceil(totalCount / safeLimit),
         },
         summary: {
           totalOffers: summary._count.id,
@@ -3427,9 +3467,17 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
         productTypeDistribution: productTypeDist,
       },
     });
-  } catch (error) {
-
-    res.status(500).json({ error: 'Failed to generate offer summary report' });
+    logger.info(`Report generation completed successfully in ${Date.now() - startTime}ms`);
+  } catch (error: any) {
+    logger.error('Generate offer summary report error:', {
+      message: error.message,
+      stack: error.stack,
+      whereClause
+    });
+    res.status(500).json({
+      error: 'Failed to generate offer summary report',
+      details: error.message
+    });
   }
 };
 
@@ -3458,35 +3506,42 @@ const generateTargetReport = async (res: Response, whereClause: any, startDate: 
  * Generate Product Type Analysis Report
  */
 const generateProductTypeAnalysisReport = async (res: Response, whereClause: any, startDate: Date, endDate: Date) => {
+  const startTime = Date.now();
+  logger.info('Starting product type analysis report generation', { whereClause });
   try {
-    // Get all product types with metrics
-    const productTypeMetrics = await prisma.offer.groupBy({
-      where: whereClause,
-      by: ['productType'],
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+    // Get metrics in parallel
+    const [productTypeMetrics, wonByProductType, lostByProductType] = await Promise.all([
+      // Get all product types with metrics
+      prisma.offer.groupBy({
+        where: whereClause,
+        by: ['productType'],
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      }),
 
-    // Get won offers by product type
-    const wonByProductType = await prisma.offer.groupBy({
-      where: { ...whereClause, stage: 'WON' },
-      by: ['productType'],
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+      // Get won offers by product type
+      prisma.offer.groupBy({
+        where: { ...whereClause, stage: 'WON' },
+        by: ['productType'],
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      }),
 
-    // Get lost offers by product type (stage = 'LOST')
-    const lostByProductType = await prisma.offer.groupBy({
-      where: { ...whereClause, stage: 'LOST' },
-      by: ['productType'],
-      _count: { id: true },
-    });
+      // Get lost offers by product type (stage = 'LOST')
+      prisma.offer.groupBy({
+        where: { ...whereClause, stage: 'LOST' },
+        by: ['productType'],
+        _count: { id: true },
+      })
+    ]);
+    logger.info(`Database queries completed in ${Date.now() - startTime}ms`);
+
 
     // Define all product types
     const allProductTypes = ['RELOCATION', 'CONTRACT', 'SPP', 'UPGRADE_KIT', 'SOFTWARE', 'BD_CHARGES', 'BD_SPARE', 'MIDLIFE_UPGRADE', 'RETROFIT_KIT'];
@@ -3540,9 +3595,17 @@ const generateProductTypeAnalysisReport = async (res: Response, whereClause: any
       success: true,
       data: analysis,
     });
-  } catch (error) {
-
-    res.status(500).json({ error: 'Failed to generate product type analysis report' });
+    logger.info(`Report generation completed successfully in ${Date.now() - startTime}ms`);
+  } catch (error: any) {
+    logger.error('Generate product type analysis report error:', {
+      message: error.message,
+      stack: error.stack,
+      whereClause
+    });
+    res.status(500).json({
+      error: 'Failed to generate product type analysis report',
+      details: error.message
+    });
   }
 };
 
@@ -3550,28 +3613,40 @@ const generateProductTypeAnalysisReport = async (res: Response, whereClause: any
  * Generate Customer Performance Report
  */
 const generateCustomerPerformanceReport = async (res: Response, whereClause: any, startDate: Date, endDate: Date) => {
+  const startTime = Date.now();
+  logger.info('Starting customer performance report generation', { whereClause });
   try {
-    // Get customer performance metrics
-    const customerMetrics = await prisma.offer.groupBy({
-      where: whereClause,
-      by: ['customerId'],
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+    // Get metrics in parallel
+    const [customerMetrics, wonByCustomer] = await Promise.all([
+      // Get customer performance metrics
+      prisma.offer.groupBy({
+        where: whereClause,
+        by: ['customerId'],
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      }),
 
-    // Get won offers by customer
-    const wonByCustomer = await prisma.offer.groupBy({
-      where: { ...whereClause, stage: 'WON' },
-      by: ['customerId'],
-      _count: { id: true },
-      _sum: {
-        offerValue: true,
-        poValue: true,
-      },
-    });
+      // Get won offers by customer
+      prisma.offer.groupBy({
+        where: { ...whereClause, stage: 'WON' },
+        by: ['customerId'],
+        _count: { id: true },
+        _sum: {
+          offerValue: true,
+          poValue: true,
+        },
+      })
+    ]);
+    logger.info(`Database groupBy queries completed in ${Date.now() - startTime}ms`);
+
+    // Check if we have any results
+    if (customerMetrics.length === 0) {
+      return res.json({ success: true, data: [] });
+    }
+
 
     // Get customer details
     const customerIds = customerMetrics.map(m => m.customerId).filter(Boolean);
@@ -3632,9 +3707,17 @@ const generateCustomerPerformanceReport = async (res: Response, whereClause: any
       success: true,
       data: analysis,
     });
-  } catch (error) {
-
-    res.status(500).json({ error: 'Failed to generate customer performance report' });
+    logger.info(`Report generation completed successfully in ${Date.now() - startTime}ms`);
+  } catch (error: any) {
+    logger.error('Generate customer performance report error:', {
+      message: error.message,
+      stack: error.stack,
+      whereClause
+    });
+    res.status(500).json({
+      error: 'Failed to generate customer performance report',
+      details: error.message
+    });
   }
 };
 

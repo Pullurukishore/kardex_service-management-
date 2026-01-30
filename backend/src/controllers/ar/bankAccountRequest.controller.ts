@@ -32,6 +32,11 @@ export const createChangeRequest = async (req: Request, res: Response) => {
                 });
             }
 
+            // Validate MSME/Udyam
+            if (requestedData?.isMSME && !requestedData?.udyamRegNum) {
+                return res.status(400).json({ error: 'Udyam Registration Number is required for MSME vendors' });
+            }
+
             // Check if account number already exists
             const existing = await prisma.bankAccount.findUnique({
                 where: { accountNumber }
@@ -93,10 +98,14 @@ export const getPendingRequests = async (req: Request, res: Response) => {
         const { status } = req.query;
 
         const where: any = {};
-        if (status) {
-            where.status = status;
-        } else {
-            where.status = 'PENDING'; // Default to pending
+        const statusFilter = Array.isArray(status) ? status[0] : status;
+
+        if (!statusFilter) {
+            // Default behaviour: only pending requests
+            where.status = 'PENDING';
+        } else if (statusFilter !== 'ALL') {
+            // Explicit status filter: PENDING / APPROVED / REJECTED
+            where.status = statusFilter;
         }
 
         const requests = await prisma.bankAccountChangeRequest.findMany({
@@ -113,7 +122,7 @@ export const getPendingRequests = async (req: Request, res: Response) => {
             where: { id: { in: userIds } },
             select: { id: true, name: true, email: true }
         });
-        const userMap = new Map(users.map(u => [u.id, u]));
+        const userMap = new Map(users.map((u: { id: number; name: string | null; email: string }) => [u.id, u]));
 
         const enrichedRequests = requests.map((r: any) => ({
             ...r,
@@ -155,7 +164,12 @@ export const getRequestById = async (req: Request, res: Response) => {
         const request = await prisma.bankAccountChangeRequest.findUnique({
             where: { id },
             include: {
-                bankAccount: true
+                bankAccount: true,
+                attachments: {
+                    include: {
+                        uploadedBy: { select: { id: true, name: true } }
+                    }
+                }
             }
         });
 
@@ -221,7 +235,11 @@ export const approveRequest = async (req: Request, res: Response) => {
                     accountNumber: requestedData.accountNumber,
                     ifscCode: requestedData.ifscCode,
                     emailId: requestedData.emailId || null,
+                    beneficiaryName: requestedData.beneficiaryName || requestedData.vendorName,
                     nickName: requestedData.nickName || null,
+                    isMSME: requestedData.isMSME || false,
+                    udyamRegNum: requestedData.isMSME ? requestedData.udyamRegNum : null,
+                    currency: requestedData.currency || 'INR',
                     createdById: request.requestedById,
                     updatedById: userId
                 }
@@ -237,6 +255,12 @@ export const approveRequest = async (req: Request, res: Response) => {
                     reviewedAt: new Date(),
                     reviewNotes
                 }
+            });
+
+            // Transfer attachments from Request to BankAccount
+            await prisma.bankAccountAttachment.updateMany({
+                where: { changeRequestId: id },
+                data: { bankAccountId: bankAccount.id }
             });
         } else if (request.requestType === 'UPDATE') {
             if (!request.bankAccountId) {

@@ -21,6 +21,7 @@ export const getAllBankAccounts = async (req: Request, res: Response) => {
         if (search) {
             where.OR = [
                 { vendorName: { contains: String(search), mode: 'insensitive' } },
+                { beneficiaryName: { contains: String(search), mode: 'insensitive' } },
                 { nickName: { contains: String(search), mode: 'insensitive' } },
                 { accountNumber: { contains: String(search), mode: 'insensitive' } },
                 { beneficiaryBankName: { contains: String(search), mode: 'insensitive' } },
@@ -73,7 +74,7 @@ export const getBankAccountById = async (req: Request, res: Response) => {
 // Create bank account (FINANCE_ADMIN only)
 export const createBankAccount = async (req: Request, res: Response) => {
     try {
-        const { vendorName, beneficiaryBankName, accountNumber, ifscCode, emailId, nickName } = req.body;
+        const { vendorName, beneficiaryBankName, beneficiaryName, accountNumber, ifscCode, emailId, nickName } = req.body;
         const userId = (req as any).user?.id || 1; // Get from auth context
 
         // Validate required fields
@@ -96,10 +97,14 @@ export const createBankAccount = async (req: Request, res: Response) => {
             data: {
                 vendorName,
                 beneficiaryBankName,
+                beneficiaryName: beneficiaryName || vendorName, // Default to vendorName if not provided
                 accountNumber,
                 ifscCode,
                 emailId: emailId || null,
                 nickName: nickName || null,
+                isMSME: req.body.isMSME || false,
+                udyamRegNum: req.body.isMSME ? req.body.udyamRegNum : null,
+                currency: req.body.currency || 'INR',
                 createdById: userId,
                 updatedById: userId
             }

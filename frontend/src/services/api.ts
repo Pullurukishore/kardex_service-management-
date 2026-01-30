@@ -133,6 +133,41 @@ class ApiService {
     return this.bulkUpdatePrices(updates);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPARE PART BULK IMPORT
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async previewSparePartImport(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post(`${this.baseURL}/spare-parts/import/preview`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+
+  async bulkImportSpareParts(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post(`${this.baseURL}/spare-parts/import`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+
+  async downloadSparePartImportTemplate(): Promise<void> {
+    const response = await api.get(`${this.baseURL}/spare-parts/import/template`, {
+      responseType: 'blob'
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'Spare_Parts_Import_Template.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
 
 
 
@@ -694,3 +729,6 @@ export default apiService;
 
 // Export individual methods for direct imports
 export const getZoneManagerTargets = (params?: any) => apiService.getZoneManagerTargets(params);
+export const previewSparePartImport = (file: File) => apiService.previewSparePartImport(file);
+export const bulkImportSpareParts = (file: File) => apiService.bulkImportSpareParts(file);
+export const downloadSparePartImportTemplate = () => apiService.downloadSparePartImportTemplate();

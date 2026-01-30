@@ -10,14 +10,21 @@ import { Form } from '@/components/ui/form';
 import { Loader2 } from 'lucide-react';
 import api from '@/lib/api/axios';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  TicketFormHeader,
-  TicketBasicInfoForm,
-  CustomerSelectionForm,
-  AddContactDialog,
-  AddAssetDialog,
-  TicketFormActions,
-} from '@/components/tickets';
+import { TicketFormHeader } from '@/components/tickets/TicketFormHeader';
+import { TicketBasicInfoForm } from '@/components/tickets/TicketBasicInfoForm';
+import { CustomerSelectionForm } from '@/components/tickets/CustomerSelectionForm';
+import { TicketFormActions } from '@/components/tickets/TicketFormActions';
+import dynamic from 'next/dynamic';
+
+const AddContactDialog = dynamic(() => import('@/components/tickets/AddContactDialog').then(mod => mod.AddContactDialog), {
+  loading: () => null,
+  ssr: false
+});
+
+const AddAssetDialog = dynamic(() => import('@/components/tickets/AddAssetDialog').then(mod => mod.AddAssetDialog), {
+  loading: () => null,
+  ssr: false
+});
 
 const formSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),

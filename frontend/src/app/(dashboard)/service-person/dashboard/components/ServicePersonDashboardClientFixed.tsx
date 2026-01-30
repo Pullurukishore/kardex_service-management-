@@ -5,10 +5,27 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api/api-client';
 import { toast } from 'sonner';
 import CleanAttendanceWidget from '@/components/attendance/CleanAttendanceWidget';
-import TicketStatusDialogWithLocation from '@/components/tickets/TicketStatusDialogWithLocation';
-import ActivityLogger from '@/components/activity/ActivityLogger';
-import ActivityStatusManager from '@/components/activity/ActivityStatusManager';
-import ServicePersonSchedules from '@/components/service-person/ServicePersonSchedules';
+import dynamic from 'next/dynamic';
+
+const TicketStatusDialogWithLocation = dynamic(() => import('@/components/tickets/TicketStatusDialogWithLocation'), {
+  loading: () => null,
+  ssr: false
+});
+
+const ActivityLogger = dynamic(() => import('@/components/activity/ActivityLogger'), {
+  loading: () => <div className="p-8 text-center animate-pulse text-[#AEBFC3]">Loading Activity Logger...</div>,
+  ssr: false
+});
+
+const ActivityStatusManager = dynamic(() => import('@/components/activity/ActivityStatusManager'), {
+  loading: () => null,
+  ssr: false
+});
+
+const ServicePersonSchedules = dynamic(() => import('@/components/service-person/ServicePersonSchedules'), {
+  loading: () => <div className="p-8 text-center animate-pulse text-[#AEBFC3]">Loading Schedules...</div>,
+  ssr: false
+});
 import { LocationResult } from '@/services/LocationService';
 import { 
   Calendar, 

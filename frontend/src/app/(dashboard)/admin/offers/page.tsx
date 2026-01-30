@@ -17,15 +17,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -33,6 +24,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import dynamic from 'next/dynamic'
+
+const EditOfferDialog = dynamic(() => import('@/components/offers/EditOfferDialog'), {
+  ssr: false
+})
 import { 
   Search, 
   MoreHorizontal, 
@@ -757,47 +753,11 @@ export default function OfferManagement() {
           )}
         </Card>
 
-        {/* Edit Dialog */}
-        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit Offer</DialogTitle>
-              <DialogDescription>
-                Make changes to the offer details here.
-              </DialogDescription>
-            </DialogHeader>
-            {editingOffer && (
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="customer" className="text-right">
-                    Customer
-                  </Label>
-                  <Input
-                    id="customer"
-                    defaultValue={editingOffer.customer}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="value" className="text-right">
-                    Value
-                  </Label>
-                  <Input
-                    id="value"
-                    type="number"
-                    defaultValue={editingOffer.value}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button type="submit" onClick={() => setShowEditDialog(false)}>
-                Save changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <EditOfferDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          editingOffer={editingOffer}
+        />
       </div>
     </div>
   )

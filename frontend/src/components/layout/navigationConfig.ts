@@ -143,6 +143,14 @@ export const adminNavigation: NavItem[] = [
         roles: [UserRole.ADMIN],
         iconColor: "text-[#546A7A]",
         iconBgColor: "bg-[#6F8A9D]/10"
+      },
+      {
+        title: "Image Management",
+        href: "/admin/image-management",
+        icon: ImageIcon,
+        roles: [UserRole.ADMIN],
+        iconColor: "text-[#546A7A]",
+        iconBgColor: "bg-[#96AEC2]/10"
       }
     ]
   },
@@ -179,14 +187,6 @@ export const adminNavigation: NavItem[] = [
     roles: [UserRole.ADMIN],
     iconColor: "text-[#546A7A]",
     iconBgColor: "bg-[#6F8A9D]/10",
-  },
-  {
-    title: "Image Management",
-    href: "/admin/image-management",
-    icon: ImageIcon,
-    roles: [UserRole.ADMIN],
-    iconColor: "text-[#546A7A]",
-    iconBgColor: "bg-[#96AEC2]/10"
   },
 ];
 
@@ -741,14 +741,6 @@ export const adminOffersNavigation: NavItem[] = [
     roles: [UserRole.ADMIN],
     iconColor: "text-[#976E44]",
     iconBgColor: "bg-[#CE9F6B]/10"
-  },
-  {
-    title: "Image Management",
-    href: "/admin/image-management",
-    icon: ImageIcon,
-    roles: [UserRole.ADMIN],
-    iconColor: "text-[#546A7A]",
-    iconBgColor: "bg-[#96AEC2]/10"
   },
 ];
 

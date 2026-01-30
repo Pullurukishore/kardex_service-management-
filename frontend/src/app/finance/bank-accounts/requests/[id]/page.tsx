@@ -9,8 +9,8 @@ import { FinanceRole } from '@/types/user.types';
 import { 
   ArrowLeft, Sparkles, Clock, CheckCircle2, XCircle, 
   AlertCircle, Building2, Plus, Trash2, Pencil,
-  MessageSquare, Loader2, User, Calendar, CreditCard, Hash, Mail,
-  ArrowRight, GitCompare
+  ArrowRight, GitCompare, FileText, Eye, Download, FileImage, FileSpreadsheet, File, Download as DownloadIcon,
+  User, Calendar, CreditCard, Hash, Mail, MessageSquare, Loader2
 } from 'lucide-react';
 
 interface FieldChange {
@@ -58,6 +58,32 @@ export default function RequestDetailPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDownload = async (attachmentId: string) => {
+    arApi.downloadBankAccountAttachment(attachmentId);
+  };
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) return <FileImage className="w-5 h-5" />;
+    if (mimeType.includes('pdf')) return <FileText className="w-5 h-5" />;
+    if (mimeType.includes('sheet') || mimeType.includes('excel')) return <FileSpreadsheet className="w-5 h-5" />;
+    return <File className="w-5 h-5" />;
+  };
+
+  const getFileColor = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) return 'text-blue-500 bg-blue-50';
+    if (mimeType.includes('pdf')) return 'text-red-500 bg-red-50';
+    if (mimeType.includes('sheet') || mimeType.includes('excel')) return 'text-emerald-500 bg-emerald-50';
+    return 'text-slate-500 bg-slate-50';
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleApprove = async () => {
@@ -139,6 +165,13 @@ export default function RequestDetailPage() {
         icon: <User className="w-4 h-4" />
       },
       {
+        field: 'beneficiaryName',
+        label: 'Beneficiary Name',
+        oldValue: (originalAccount as any)?.beneficiaryName || null,
+        newValue: (request.requestedData as any).beneficiaryName || null,
+        icon: <User className="w-4 h-4" />
+      },
+      {
         field: 'nickName',
         label: 'Nick Name',
         oldValue: originalAccount?.nickName || null,
@@ -172,6 +205,27 @@ export default function RequestDetailPage() {
         oldValue: originalAccount?.emailId || null,
         newValue: request.requestedData.emailId || null,
         icon: <Mail className="w-4 h-4" />
+      },
+      {
+        field: 'isMSME',
+        label: 'MSME Registered',
+        oldValue: originalAccount?.isMSME ? 'Yes' : 'No',
+        newValue: request.requestedData.isMSME ? 'Yes' : 'No',
+        icon: <Sparkles className="w-4 h-4" />
+      },
+      {
+        field: 'udyamRegNum',
+        label: 'Udyam Reg. Number',
+        oldValue: (originalAccount as any)?.udyamRegNum || null,
+        newValue: (request.requestedData as any).udyamRegNum || null,
+        icon: <Hash className="w-4 h-4" />
+      },
+      {
+        field: 'currency',
+        label: 'Currency',
+        oldValue: originalAccount?.currency || null,
+        newValue: request.requestedData.currency || null,
+        icon: <CreditCard className="w-4 h-4" />
       }
     ];
 
@@ -237,9 +291,9 @@ export default function RequestDetailPage() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-[#546A7A]">
-                {request.requestType === 'CREATE' ? 'New Account Request' :
-                 request.requestType === 'UPDATE' ? 'Update Request' :
-                 'Delete Request'}
+                {request.requestType === 'CREATE' ? 'New Vendor Account Request' :
+                 request.requestType === 'UPDATE' ? 'Vendor Account Update Request' :
+                 'Vendor Account Deletion Request'}
               </h2>
               <div className="flex items-center gap-4 mt-1 text-sm text-[#92A2A5]">
                 <span className="flex items-center gap-1">
@@ -319,6 +373,51 @@ export default function RequestDetailPage() {
           </div>
         </div>
 
+        {/* Attachments Section */}
+        {request.attachments && request.attachments.length > 0 && (
+          <div className="p-6 border-t border-[#AEBFC3]/10">
+            <h3 className="text-lg font-semibold text-[#546A7A] mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#82A094]" />
+              Attached Verification Documents
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {request.attachments.map((file) => (
+                <div key={file.id} className="group relative p-4 rounded-2xl bg-white border border-[#AEBFC3]/20 hover:border-[#82A094]/40 hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 duration-300 ${getFileColor(file.mimeType)}`}>
+                      {getFileIcon(file.mimeType)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-[#546A7A] truncate" title={file.filename}>
+                          {file.filename}
+                        </p>
+                        <span className="shrink-0 px-2 py-0.5 rounded-md bg-[#AEBFC3]/10 text-[#92A2A5] text-[10px] font-bold uppercase tracking-tight">
+                          {file.filename.split('.').pop()}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#92A2A5] mt-1 font-medium">
+                        {formatFileSize(file.size)} • {new Date(file.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-2 pt-3 border-t border-[#AEBFC3]/10">
+                    <button 
+                      onClick={() => handleDownload(file.id)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-[#82A094]/10 text-[#82A094] text-xs font-bold hover:bg-[#82A094] hover:text-white transition-all shadow-sm"
+                    >
+                      <DownloadIcon className="w-4 h-4" />
+                      Download Verification Document
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Review Notes (if reviewed) */}
         {request.reviewNotes && (
           <div className="p-6 border-t border-[#AEBFC3]/10 bg-[#F8FAFB]">
@@ -337,27 +436,39 @@ export default function RequestDetailPage() {
         )}
       </div>
 
-      {/* Action Buttons (for pending requests, admin only) */}
-      {isAdmin && request.status === 'PENDING' && (
-        <div className="flex items-center gap-4">
+      {/* Action Buttons */}
+      <div className="flex items-center gap-4">
+        {isAdmin && request.status === 'PENDING' && (
+          <>
+            <button
+              onClick={handleApprove}
+              disabled={processing}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-semibold hover:from-[#A2B9AF] hover:to-[#82A094] transition-all duration-300 shadow-lg shadow-[#82A094]/25 disabled:opacity-50"
+            >
+              {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+              Approve Request
+            </button>
+            <button
+              onClick={() => setShowRejectModal(true)}
+              disabled={processing}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#E17F70]/10 border-2 border-[#E17F70]/30 text-[#E17F70] font-semibold hover:bg-[#E17F70]/20 transition-all disabled:opacity-50"
+            >
+              <XCircle className="w-5 h-5" />
+              Reject Request
+            </button>
+          </>
+        )}
+
+        {!isAdmin && request.status === 'REJECTED' && request.requestedById === user?.id && (
           <button
-            onClick={handleApprove}
-            disabled={processing}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-semibold hover:from-[#A2B9AF] hover:to-[#82A094] transition-all duration-300 shadow-lg shadow-[#82A094]/25 disabled:opacity-50"
+            onClick={() => router.push(`/finance/bank-accounts/requests/${request.id}/edit`)}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white font-semibold hover:from-[#976E44] hover:to-[#7A5837] transition-all duration-300 shadow-lg shadow-[#CE9F6B]/25"
           >
-            {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-            Approve Request
+            <Pencil className="w-5 h-5" />
+            Edit & Re-request
           </button>
-          <button
-            onClick={() => setShowRejectModal(true)}
-            disabled={processing}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#E17F70]/10 border-2 border-[#E17F70]/30 text-[#E17F70] font-semibold hover:bg-[#E17F70]/20 transition-all disabled:opacity-50"
-          >
-            <XCircle className="w-5 h-5" />
-            Reject Request
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Reject Modal */}
       {showRejectModal && (

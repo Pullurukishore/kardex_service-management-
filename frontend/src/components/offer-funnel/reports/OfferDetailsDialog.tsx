@@ -13,6 +13,7 @@ import { Loader2, Building2, User, MapPin, Phone, Mail, Calendar, DollarSign, Fi
 import { apiService } from '@/services/api';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { formatCrLakh, formatINRFull, formatDateSafe } from '@/lib/format';
 import { STATUS_COLORS, STAGE_COLORS, PRODUCT_TYPE_COLORS } from '@/types/reports';
 
 interface OfferDetailsDialogProps {
@@ -144,33 +145,63 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
 }) => {
   const [offer, setOffer] = useState<FullOfferDetails | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && offerId) {
       fetchOfferDetails();
     } else {
       setOffer(null);
+      setError(null);
     }
   }, [open, offerId]);
 
   const fetchOfferDetails = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await apiService.getOffer(offerId);
       if (response.success && response.data?.offer) {
         setOffer(response.data.offer);
+      } else if (response?.offer) {
+        // Handle direct offer response format
+        setOffer(response.offer);
       } else {
+        setError('Failed to load offer details');
         toast.error('Failed to load offer details');
       }
-    } catch (error: any) {
-      console.error('Error fetching offer details:', error);
-      toast.error(error?.response?.data?.error || 'Failed to load offer details');
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.error || err?.message || 'Failed to load offer details';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   if (!open) return null;
+
+  // Show error state
+  if (error && !loading) {
+    return (
+      <Dialog open={open} onOpenChange={() => onClose()}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Error Loading Offer</DialogTitle>
+          </DialogHeader>
+          <div className="p-4 text-center">
+            <p className="text-[#5D6E73] mb-4">{error}</p>
+            <button 
+              onClick={() => fetchOfferDetails()}
+              className="px-4 py-2 bg-[#6F8A9D] text-white rounded hover:bg-[#546A7A]"
+            >
+              Retry
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const statusColor = offer ? (STATUS_COLORS[offer.status] || '#9CA3AF') : '#9CA3AF';
   const stageColor = offer ? (STAGE_COLORS[offer.stage] || '#9CA3AF') : '#9CA3AF';
@@ -203,7 +234,7 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                       <div className="font-bold text-xl text-[#546A7A]">{offer.offerReferenceNumber}</div>
                       {offer.offerReferenceDate && (
                         <div className="text-xs text-[#AEBFC3]0 mt-1">
-                          📅 {format(new Date(offer.offerReferenceDate), 'MMM dd, yyyy')}
+                          📅 {formatDateSafe(offer.offerReferenceDate)}
                         </div>
                       )}
                       {offer.title && (
@@ -243,13 +274,13 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         <dl className="space-y-2">
                           <div>
                             <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Company Name</dt>
-                            <dd className="text-base font-bold text-[#546A7A]">{offer.company || offer.customer.companyName}</dd>
+                            <dd className="text-base font-bold text-[#546A7A]">{offer.company || offer.customer?.companyName || 'N/A'}</dd>
                           </div>
                           <div>
                             <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase">Location</dt>
                             <dd className="text-base font-medium text-[#5D6E73] flex items-center gap-1">
                               <MapPin className="h-4 w-4 text-[#4F6A64]" />
-                              {offer.location || offer.customer.location || 'N/A'}
+                              {offer.location || offer.customer?.location || 'N/A'}
                             </dd>
                           </div>
                           {offer.department && (
@@ -360,7 +391,7 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase mb-1">PO Date</dt>
                         <dd className="text-base font-bold text-[#546A7A] flex items-center gap-1">
                           <Calendar className="h-4 w-4 text-[#546A7A]" />
-                          {format(new Date(offer.poDate), 'MMM dd, yyyy')}
+                          {formatDateSafe(offer.poDate)}
                         </dd>
                       </div>
                     )}
@@ -431,13 +462,13 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                         <div key={part.id} className="border rounded-lg p-4">
                           <div className="flex justify-between items-start mb-2">
                             <div>
-                              <div className="font-medium">{part.sparePart.name}</div>
-                              <div className="text-sm text-[#AEBFC3]0">{part.sparePart.partNumber}</div>
+                              <div className="font-medium">{part.sparePart?.name || 'Unnamed Part'}</div>
+                              <div className="text-sm text-[#AEBFC3]0">{part.sparePart?.partNumber || 'No Part Number'}</div>
                             </div>
                             <div className="text-right">
-                              <div className="font-semibold">₹{part.totalPrice.toLocaleString()}</div>
+                              <div className="font-semibold">₹{(part.totalPrice || 0).toLocaleString()}</div>
                               <div className="text-xs text-[#AEBFC3]0">
-                                {part.quantity} × ₹{part.unitPrice.toLocaleString()}
+                                {part.quantity || 0} × ₹{(part.unitPrice || 0).toLocaleString()}
                               </div>
                             </div>
                           </div>
@@ -460,18 +491,18 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                     <div className="space-y-3">
                       {offer.offerAssets.map((asset) => (
                         <div key={asset.id} className="border rounded-lg p-4">
-                          <div className="font-medium">Machine ID: {asset.asset.machineId || asset.asset.serialNo || 'N/A'}</div>
-                          {asset.asset.serialNo && (
+                          <div className="font-medium">Machine ID: {asset.asset?.machineId || asset.asset?.serialNo || 'N/A'}</div>
+                          {asset.asset?.serialNo && (
                             <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Serial No: {asset.asset.serialNo}
                             </div>
                           )}
-                          {asset.asset.model && (
+                          {asset.asset?.model && (
                             <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Model: {asset.asset.model}
                             </div>
                           )}
-                          {asset.asset.customer && (
+                          {asset.asset?.customer?.companyName && (
                             <div className="text-sm text-[#AEBFC3]0 mt-1">
                               Customer: {asset.asset.customer.companyName}
                             </div>
@@ -492,12 +523,12 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                           <div className="flex justify-between items-start mb-2">
                             <Badge>{remark.stage}</Badge>
                             <div className="text-xs text-[#AEBFC3]0">
-                              {format(new Date(remark.createdAt), 'MMM dd, yyyy HH:mm')}
+                              {formatDateSafe(remark.createdAt, 'MMM dd, yyyy HH:mm')}
                             </div>
                           </div>
                           <div className="text-sm text-[#5D6E73] mt-2">{remark.remarks}</div>
                           <div className="text-xs text-[#AEBFC3]0 mt-2">
-                            By: {remark.createdBy.name}
+                            By: {remark.createdBy?.name || 'Unknown'}
                           </div>
                         </div>
                       ))}
@@ -511,16 +542,16 @@ const OfferDetailsDialog: React.FC<OfferDetailsDialogProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <div className="text-sm text-[#AEBFC3]0">Zone</div>
-                      <div className="font-medium">{offer.zone.name}</div>
+                      <div className="font-medium">{offer.zone?.name || 'N/A'}</div>
                     </div>
                     <div>
                       <div className="text-sm text-[#AEBFC3]0">Created By</div>
-                      <div className="font-medium">{offer.createdBy.name}</div>
+                      <div className="font-medium">{offer.createdBy?.name || 'N/A'}</div>
                     </div>
                     <div>
                       <div className="text-sm text-[#AEBFC3]0">Created At</div>
                       <div className="font-medium">
-                        {format(new Date(offer.createdAt), 'MMM dd, yyyy HH:mm')}
+                        {formatDateSafe(offer.createdAt, 'MMM dd, yyyy HH:mm')}
                       </div>
                     </div>
                   </div>

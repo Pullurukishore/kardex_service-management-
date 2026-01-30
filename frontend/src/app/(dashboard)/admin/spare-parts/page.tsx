@@ -48,13 +48,32 @@ import {
   Sparkles,
   Grid3x3,
   List,
-  TrendingUp
+  TrendingUp,
+  Upload,
+  Download,
+  FileSpreadsheet,
+  CheckCircle2,
+  XCircle,
+  AlertCircle
 } from 'lucide-react'
 import { apiService } from '@/services/api'
 import { toast } from 'sonner'
 
 const statuses = ['All Status', 'ACTIVE', 'INACTIVE', 'DISCONTINUED']
 const categories = ['All Categories', 'Hardware', 'Software', 'Consumables', 'Tools', 'Accessories']
+
+// Build server base URL for static assets.
+const getServerBaseUrl = () => {
+  const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003';
+  return raw.replace(/\/(api)\/?$/, '');
+};
+
+const getImageUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('data:')) return url;
+  if (url.startsWith('http')) return url;
+  return `${getServerBaseUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 export default function SparePartsManagement() {
   const router = useRouter()
@@ -95,6 +114,14 @@ export default function SparePartsManagement() {
   const [bulkPriceOperation, setBulkPriceOperation] = useState<'increase' | 'decrease' | 'set'>('increase')
   const [individualPrices, setIndividualPrices] = useState<Record<number, string>>({})
   const [bulkUpdateLoading, setBulkUpdateLoading] = useState(false)
+
+  // Bulk Import States
+  const [showImportDialog, setShowImportDialog] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importPreview, setImportPreview] = useState<any>(null)
+  const [importing, setImporting] = useState(false)
+  const [previewing, setPreviewing] = useState(false)
+  const [importResult, setImportResult] = useState<any>(null)
   
   // Ref to prevent duplicate API calls
   const fetchingRef = useRef(false)
@@ -446,6 +473,63 @@ export default function SparePartsManagement() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // Bulk Import Handlers
+  const handleDownloadTemplate = async () => {
+    try {
+      await apiService.downloadSparePartImportTemplate()
+      toast.success('Template downloaded successfully')
+    } catch (error) {
+      toast.error('Failed to download template')
+    }
+  }
+
+  const handleImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImportFile(file)
+      setImportPreview(null)
+      setImportResult(null)
+    }
+  }
+
+  const handlePreviewImport = async () => {
+    if (!importFile) return
+    setPreviewing(true)
+    try {
+      const result = await apiService.previewSparePartImport(importFile)
+      setImportPreview(result)
+      toast.success('File analyzed successfully')
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to analyze file')
+    } finally {
+      setPreviewing(false)
+    }
+  }
+
+  const handleExecuteImport = async () => {
+    if (!importFile) return
+    setImporting(true)
+    try {
+      const result = await apiService.bulkImportSpareParts(importFile)
+      setImportResult(result)
+      toast.success('Import completed successfully')
+      // Refresh parts list
+      fetchingRef.current = false
+      fetchSpareParts()
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to import spare parts')
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  const resetImport = () => {
+    setImportFile(null)
+    setImportPreview(null)
+    setImportResult(null)
+    setShowImportDialog(false)
+  }
+
   return (
     <div className="space-y-8 p-6 bg-gradient-to-br from-[#AEBFC3]/10 via-blue-50/30 to-[#96AEC2]/10/50 min-h-screen">
       {/* Premium Hero Header */}
@@ -480,6 +564,10 @@ export default function SparePartsManagement() {
             >
               <span className="w-5 h-5 mr-2 text-lg font-bold">₹</span>
               Bulk Price {selectedParts.length > 0 && `(${selectedParts.length})`}
+            </Button>
+            <Button onClick={() => setShowImportDialog(true)} className="bg-white/20 hover:bg-white/30 backdrop-blur-xl border border-white/30 text-white px-6 py-6 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg">
+              <Upload className="w-5 h-5 mr-2" />
+              Bulk Import
             </Button>
             <Button onClick={handleCreatePart} className="bg-white text-[#546A7A] hover:bg-[#96AEC2]/10 px-6 py-6 rounded-xl font-bold transition-all hover:scale-105 shadow-lg">
               <Plus className="w-5 h-5 mr-2" />
@@ -754,7 +842,7 @@ export default function SparePartsManagement() {
                 <div className="relative h-52 bg-gradient-to-br from-[#AEBFC3]/10 via-gray-100 to-gray-200 overflow-hidden">
                   {part.imageUrl ? (
                     <img 
-                      src={part.imageUrl} 
+                      src={getImageUrl(part.imageUrl)} 
                       alt={part.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
@@ -970,7 +1058,7 @@ export default function SparePartsManagement() {
                     <td className="px-6 py-4">
                       {part.imageUrl ? (
                         <img 
-                          src={part.imageUrl} 
+                          src={getImageUrl(part.imageUrl)} 
                           alt={part.name}
                           className="w-16 h-16 object-cover rounded-xl border-2 border-[#92A2A5] shadow-sm"
                         />
@@ -1164,7 +1252,7 @@ export default function SparePartsManagement() {
                   {imagePreview ? (
                     <div className="relative w-32 h-32 rounded-xl border-2 border-[#96AEC2] overflow-hidden shadow-lg">
                       <img 
-                        src={imagePreview} 
+                        src={getImageUrl(imagePreview)} 
                         alt="Preview" 
                         className="w-full h-full object-cover"
                       />
@@ -1313,7 +1401,7 @@ export default function SparePartsManagement() {
                   {imagePreview ? (
                     <div className="relative w-32 h-32 rounded-xl border-2 border-[#96AEC2] overflow-hidden shadow-lg">
                       <img 
-                        src={imagePreview} 
+                        src={getImageUrl(imagePreview)} 
                         alt="Preview" 
                         className="w-full h-full object-cover"
                       />
@@ -1615,6 +1703,238 @@ export default function SparePartsManagement() {
                 </>
               )}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Spare Parts Bulk Import Dialog */}
+      <Dialog open={showImportDialog} onOpenChange={(open) => {
+        if (!open && !importing) resetImport()
+        setShowImportDialog(open)
+      }}>
+        <DialogContent className="sm:max-w-[1000px] max-h-[95vh] flex flex-col p-0 overflow-hidden">
+          <DialogHeader className="p-6 border-b bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="flex items-center gap-3 text-2xl font-bold">
+                  <Upload className="h-7 w-7" />
+                  Bulk Import Spare Parts
+                </DialogTitle>
+                <DialogDescription className="text-[#AEBFC3] mt-1 text-base">
+                  Upload an Excel file with embedded images to bulk create or update spare parts
+                </DialogDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleDownloadTemplate}
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Template
+              </Button>
+            </div>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {!importPreview && !importResult && (
+              <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-[#AEBFC3]/30 rounded-3xl bg-[#AEBFC3]/5 transition-all hover:bg-[#AEBFC3]/10">
+                <div className="p-5 bg-white rounded-2xl shadow-xl mb-4">
+                  <FileSpreadsheet className="h-12 w-12 text-[#6F8A9D]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#546A7A] mb-2">Upload Excel File</h3>
+                <p className="text-[#5D6E73] mb-6 text-center max-w-sm">
+                  Drag and drop your file here, or click to browse. Supports .xlsx and .xls formats with embedded images.
+                </p>
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={handleImportFileChange}
+                    className="hidden"
+                    id="spare-parts-import-input"
+                  />
+                  <Label
+                    htmlFor="spare-parts-import-input"
+                    className="bg-[#6F8A9D] text-white px-8 py-3 rounded-xl font-bold cursor-pointer hover:bg-[#546A7A] transition-all shadow-lg flex items-center gap-2"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Select File
+                  </Label>
+                </div>
+                {importFile && (
+                  <p className="mt-4 font-semibold text-[#4F6A64] flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Selected: {importFile.name}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {importPreview && !importResult && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex flex-col items-center">
+                    <span className="text-2xl font-black text-[#6F8A9D]">{importPreview.totalRows}</span>
+                    <span className="text-xs font-bold text-[#6F8A9D] uppercase tracking-wider">Total Rows</span>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-2xl border border-green-100 flex flex-col items-center">
+                    <span className="text-2xl font-black text-[#426456]">{importPreview.validRows}</span>
+                    <span className="text-xs font-bold text-[#426456] uppercase tracking-wider">Valid</span>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100 flex flex-col items-center">
+                    <span className="text-2xl font-black text-[#A45D3A]">{importPreview.imagesFound}</span>
+                    <span className="text-xs font-bold text-[#A45D3A] uppercase tracking-wider">Images Found</span>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100 flex flex-col items-center">
+                    <span className="text-2xl font-black text-[#684C91]">{importPreview.updateCount}</span>
+                    <span className="text-xs font-bold text-[#684C91] uppercase tracking-wider">Updates</span>
+                  </div>
+                </div>
+
+                {/* Preview Table */}
+                <div className="border rounded-2xl overflow-hidden shadow-sm bg-white">
+                  <div className="overflow-x-auto max-h-[400px]">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-[#AEBFC3]/10 text-[#546A7A] font-bold uppercase tracking-wider text-xs">
+                        <tr>
+                          <th className="px-4 py-3">Row</th>
+                          <th className="px-4 py-3">Image</th>
+                          <th className="px-4 py-3">Part ID</th>
+                          <th className="px-4 py-3">Name</th>
+                          <th className="px-4 py-3">Status</th>
+                          <th className="px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {importPreview.preview.map((row: any, idx: number) => (
+                          <tr key={idx} className={row._isValid ? 'hover:bg-blue-50/30' : 'bg-red-50/50'}>
+                            <td className="px-4 py-3 font-medium text-[#AEBFC3]">{row.rowNumber}</td>
+                            <td className="px-4 py-2">
+                              {row.imageDataUrl ? (
+                                <img src={row.imageDataUrl} alt="Part" className="w-10 h-10 object-contain rounded border bg-white shadow-sm" />
+                              ) : (
+                                <div className="w-10 h-10 rounded border border-dashed flex items-center justify-center text-[#AEBFC3] bg-gray-50">
+                                  <Image className="h-4 w-4" />
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 font-bold text-[#546A7A]">{row.partId}</td>
+                            <td className="px-4 py-3 truncate max-w-[200px]">{row.productName}</td>
+                            <td className="px-4 py-3">
+                              {row._isValid ? (
+                                <span className="flex items-center text-green-600 font-semibold gap-1">
+                                  <CheckCircle2 className="h-4 w-4" /> Valid
+                                </span>
+                              ) : (
+                                <span className="flex items-center text-red-600 font-semibold gap-1">
+                                  <AlertCircle className="h-4 w-4" /> Error
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              {row._isUpdate ? (
+                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Update</span>
+                              ) : (
+                                <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">New</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {importPreview.invalidRows > 0 && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                    <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-red-800">Validation Errors</h4>
+                      <p className="text-sm text-red-700">
+                        {importPreview.invalidRows} row(s) contain errors and will be skipped. Please fix required fields (Product Name, Part ID) to include them.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {importResult && (
+              <div className="flex flex-col items-center justify-center p-12 animate-in zoom-in-95 duration-500">
+                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-green-100/50">
+                  <CheckCircle2 className="h-12 w-12 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-black text-[#546A7A] mb-2">Import Successful!</h3>
+                <p className="text-[#5D6E73] text-lg mb-8 text-center max-w-sm">
+                  We've successfully processed your spare parts data.
+                </p>
+                <div className="grid grid-cols-3 gap-6 w-full max-w-md">
+                  <div className="text-center p-4 bg-white rounded-2xl border-2 border-green-50 shadow-lg">
+                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Created</p>
+                    <p className="text-3xl font-black text-[#546A7A]">{importResult.created}</p>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-50 shadow-lg">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Updated</p>
+                    <p className="text-3xl font-black text-[#546A7A]">{importResult.updated}</p>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-2xl border-2 border-red-50 shadow-lg">
+                    <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Failed</p>
+                    <p className="text-3xl font-black text-[#546A7A]">{importResult.failed}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="p-6 border-t bg-gray-50 gap-3">
+            {!importResult ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={resetImport} 
+                  disabled={previewing || importing}
+                  className="h-12 px-6 rounded-xl border-[#AEBFC3]/30"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                
+                {!importPreview ? (
+                  <Button 
+                    onClick={handlePreviewImport} 
+                    disabled={!importFile || previewing}
+                    className="h-12 px-8 rounded-xl bg-[#6F8A9D] hover:bg-[#546A7A] font-bold shadow-lg"
+                  >
+                    {previewing ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Analyzing...</>
+                    ) : (
+                      'Analyze & Preview'
+                    )}
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={handleExecuteImport} 
+                    disabled={importPreview.validRows === 0 || importing}
+                    className="h-12 px-8 rounded-xl bg-gradient-to-r from-[#4F6A64] to-[#82A094] hover:from-[#426456] hover:to-[#4F6A64] font-bold shadow-lg text-white"
+                  >
+                    {importing ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Importing...</>
+                    ) : (
+                      `Import ${importPreview.validRows} Valid Records`
+                    )}
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button 
+                onClick={resetImport} 
+                className="h-12 w-full rounded-xl bg-[#6F8A9D] hover:bg-[#546A7A] font-bold"
+              >
+                Close & Finish
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

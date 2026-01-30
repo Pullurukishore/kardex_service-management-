@@ -100,7 +100,9 @@ export default function ARImportPage() {
     setError(null);
 
     try {
-      const importResult = await arApi.importExcel(file);
+      // Convert selected row indices to array and pass to import API
+      const selectedIndicesArray = Array.from(selectedRows);
+      const importResult = await arApi.importExcel(file, selectedIndicesArray);
       setResult(importResult);
       setFile(null);
       setPreview(null);

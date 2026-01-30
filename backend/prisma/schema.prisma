@@ -93,6 +93,8 @@ model User {
   // Activity Scheduling Relations
   scheduledActivities             ActivitySchedule[]       @relation("ScheduledActivities")
   createdSchedules                ActivitySchedule[]       @relation("CreatedSchedules")
+  
+  bankAccountAttachments          BankAccountAttachment[]  @relation("UserBankAccountAttachments")
 
   @@index([role])
   @@index([isActive])
@@ -666,6 +668,7 @@ model Offer {
   @@index([zoneId, stage]) // Composite index for zone-wise performance queries
   @@index([createdById, createdAt]) // Composite index for user performance queries
   @@index([customerId, stage]) // Composite index for customer performance queries
+  @@index([productType])
 }
 
 // Junction table for Offer-Asset many-to-many relationship
@@ -1256,14 +1259,19 @@ model BankAccount {
   accountNumber       String   @unique
   ifscCode            String
   emailId             String?
+  beneficiaryName     String?
   nickName            String?
   isActive            Boolean  @default(true)
   createdById         Int
   updatedById         Int
+  isMSME              Boolean  @default(false)
+  udyamRegNum         String?
+  currency            String   @default("INR")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
   changeRequests      BankAccountChangeRequest[] @relation("BankAccountRequests")
+  attachments         BankAccountAttachment[]    @relation("BankAccountToAttachments")
 
   @@index([vendorName])
   @@index([accountNumber])
@@ -1288,6 +1296,7 @@ model BankAccountChangeRequest {
   reviewNotes     String?
   
   bankAccount     BankAccount? @relation("BankAccountRequests", fields: [bankAccountId], references: [id], onDelete: Cascade)
+  attachments     BankAccountAttachment[] @relation("RequestToAttachments")
   
   @@index([status])
   @@index([requestedById])
@@ -1299,6 +1308,26 @@ enum BankAccountRequestType {
   CREATE
   UPDATE
   DELETE
+}
+
+model BankAccountAttachment {
+  id              String   @id @default(uuid())
+  filename        String
+  path            String
+  mimeType        String
+  size            Int
+  bankAccountId   String?
+  changeRequestId String?
+  uploadedById    Int
+  createdAt       DateTime @default(now())
+
+  bankAccount     BankAccount? @relation("BankAccountToAttachments", fields: [bankAccountId], references: [id], onDelete: Cascade)
+  changeRequest   BankAccountChangeRequest? @relation("RequestToAttachments", fields: [changeRequestId], references: [id], onDelete: Cascade)
+  uploadedBy      User        @relation("UserBankAccountAttachments", fields: [uploadedById], references: [id])
+
+  @@index([bankAccountId])
+  @@index([changeRequestId])
+  @@map("bank_account_attachments")
 }
 
 enum BankAccountRequestStatus {
