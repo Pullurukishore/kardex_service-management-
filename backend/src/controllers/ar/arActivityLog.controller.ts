@@ -7,6 +7,8 @@ export type ARActivityAction =
     | 'INVOICE_UPDATED'
     | 'INVOICE_DELETED'
     | 'PAYMENT_RECORDED'
+    | 'PAYMENT_UPDATED'
+    | 'PAYMENT_DELETED'
     | 'STATUS_CHANGED'
     | 'DELIVERY_UPDATED'
     | 'REMARK_ADDED'

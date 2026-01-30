@@ -28,11 +28,21 @@ export default function InvoiceViewPage() {
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
     paymentDate: new Date().toISOString().split('T')[0],
-    paymentTime: new Date().toTimeString().slice(0, 5),
-    paymentMode: '',
-    referenceNo: '',
+    paymentMode: 'TDS',
     notes: ''
   });
+  const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
+
+  const closePaymentModal = () => {
+    setShowPaymentModal(false);
+    setEditingPaymentId(null);
+    setPaymentForm({
+      amount: '',
+      paymentDate: new Date().toISOString().split('T')[0],
+      paymentMode: 'TDS',
+      notes: ''
+    });
+  };
 
   // Remarks state
   const [remarks, setRemarks] = useState<any[]>([]);
@@ -136,30 +146,56 @@ export default function InvoiceViewPage() {
     if (!invoice) return;
 
     try {
+      if (!paymentForm.amount || parseFloat(paymentForm.amount) <= 0) {
+        alert('Please enter a valid amount greater than zero');
+        return;
+      }
       setPaymentLoading(true);
-      await arApi.addPayment(invoice.id, {
+      
+      const paymentData = {
         amount: parseFloat(paymentForm.amount),
         paymentDate: paymentForm.paymentDate,
-        paymentTime: paymentForm.paymentTime,
         paymentMode: paymentForm.paymentMode,
-        referenceNo: paymentForm.referenceNo,
         notes: paymentForm.notes
-      });
+      };
+
+      if (editingPaymentId) {
+        await arApi.updatePayment(invoice.id, editingPaymentId, paymentData);
+      } else {
+        await arApi.addPayment(invoice.id, paymentData);
+      }
       
-      setShowPaymentModal(false);
-      setPaymentForm({
-        amount: '',
-        paymentDate: new Date().toISOString().split('T')[0],
-        paymentTime: new Date().toTimeString().slice(0, 5),
-        paymentMode: '',
-        referenceNo: '',
-        notes: ''
-      });
-      
+      closePaymentModal();
       await loadInvoice(invoice.id);
     } catch (err) {
       console.error('Failed to record payment:', err);
       alert('Failed to record payment');
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const handleEditPayment = (payment: ARPaymentHistory) => {
+    setEditingPaymentId(payment.id);
+    setPaymentForm({
+      amount: payment.amount.toString(),
+      paymentDate: new Date(payment.paymentDate).toISOString().split('T')[0],
+      paymentMode: payment.paymentMode,
+      notes: payment.notes || ''
+    });
+    setShowPaymentModal(true);
+  };
+
+  const handleDeletePayment = async (paymentId: string) => {
+    if (!invoice || !confirm('Are you sure you want to delete this payment record? This will update the invoice balance.')) return;
+    
+    try {
+      setPaymentLoading(true);
+      await arApi.deletePayment(invoice.id, paymentId);
+      await loadInvoice(invoice.id);
+    } catch (err) {
+      console.error('Failed to delete payment:', err);
+      alert('Failed to delete payment');
     } finally {
       setPaymentLoading(false);
     }
@@ -500,7 +536,7 @@ export default function InvoiceViewPage() {
           </div>
         </div>
 
-        {/* Tax % */}
+        {/* Tax Amount */}
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#CE9F6B] via-[#976E44] to-[#CE9F6B] p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12" />
@@ -509,9 +545,9 @@ export default function InvoiceViewPage() {
               <div className="p-2 rounded-lg bg-white/20">
                 <Receipt className="w-5 h-5 text-white" />
               </div>
-              <span className="text-white/80 text-sm font-medium">Tax %</span>
+              <span className="text-white/80 text-sm font-medium">Tax Amount</span>
             </div>
-            <p className="text-2xl font-bold text-white">{taxAmount > 0 ? `${taxAmount}%` : '0%'}</p>
+            <p className="text-2xl font-bold text-white">{formatARCurrency(taxAmount)}</p>
             <p className="text-white/60 text-xs mt-2">GST/VAT applied</p>
           </div>
         </div>
@@ -794,19 +830,55 @@ export default function InvoiceViewPage() {
                     Financial Breakdown
                   </h4>
                   <div className="space-y-3">
-                    {[
-                      { label: 'Receipts', value: formatARCurrency(receipts) },
-                      { label: 'Adjustments', value: formatARCurrency(adjustments) },
-                      { label: 'Total Receipts', value: formatARCurrency(totalReceived), bold: true },
-                      { label: 'Balance', value: formatARCurrency(balanceAmount), highlight: balanceAmount > 0 },
-                    ].map((item) => (
-                      <div key={item.label} className={`flex items-center justify-between p-3 rounded-xl ${item.bold ? 'bg-[#82A094]/10' : 'bg-[#AEBFC3]/5'}`}>
-                        <span className="text-[#5D6E73]">{item.label}</span>
-                        <span className={`font-bold ${item.highlight ? 'text-[#E17F70]' : item.bold ? 'text-[#4F6A64]' : 'text-[#546A7A]'}`}>
-                          {item.value}
-                        </span>
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-[#6F8A9D]/10">
+                      <span className="text-[#546A7A] font-bold text-sm">Total Amount</span>
+                      <span className="font-bold text-[#546A7A]">
+                        {formatARCurrency(totalAmount)}
+                      </span>
+                    </div>
+
+                    {/* Detailed Payments mapping */}
+                    {invoice.paymentHistory && invoice.paymentHistory.length > 0 ? (
+                      <div className="space-y-2 mb-4">
+                        <p className="text-[10px] uppercase tracking-wider text-[#92A2A5] font-bold ml-1">Payment Details</p>
+                        {invoice.paymentHistory.map((payment) => (
+                          <div key={payment.id} className="flex items-center justify-between p-3 rounded-xl bg-[#AEBFC3]/5 hover:bg-[#AEBFC3]/10 transition-colors group">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-1.5 h-1.5 rounded-full ${
+                                payment.paymentMode === 'TDS' ? 'bg-[#CE9F6B]' : 
+                                payment.paymentMode === 'LD' ? 'bg-[#E17F70]' : 
+                                'bg-[#82A094]'
+                              }`} />
+                              <div className="flex flex-col">
+                                <span className="text-[#546A7A] text-xs font-bold">{payment.paymentMode}</span>
+                                <span className="text-[#92A2A5] text-[10px]">{formatARDate(payment.paymentDate)}</span>
+                              </div>
+                            </div>
+                            <span className="font-bold text-[#546A7A] text-sm">
+                              {formatARCurrency(payment.amount)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-[#AEBFC3]/5 mb-4">
+                        <span className="text-[#5D6E73] text-sm italic">No payments recorded</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-[#82A094]/10">
+                      <span className="text-[#4F6A64] font-bold text-sm">Total Received</span>
+                      <span className="font-bold text-[#4F6A64]">
+                        {formatARCurrency(totalReceived)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-[#AEBFC3]/5">
+                      <span className="text-[#5D6E73] text-sm">Balance</span>
+                      <span className={`font-bold ${balanceAmount > 0 ? 'text-[#E17F70]' : 'text-[#546A7A]'}`}>
+                        {formatARCurrency(balanceAmount)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -844,7 +916,7 @@ export default function InvoiceViewPage() {
                   </h4>
                   <div className="space-y-3">
                     {[
-                      { label: 'Name', value: invoice.pocName || invoice.personInCharge || '-', icon: User },
+                      { label: 'Name', value: invoice.personInCharge || '-', icon: User },
                       { label: 'Email', value: invoice.emailId || '-', icon: Mail, copyable: true },
                       { label: 'Phone', value: invoice.contactNo || '-', icon: Phone, copyable: true },
                     ].map((item) => (
@@ -908,22 +980,14 @@ export default function InvoiceViewPage() {
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#82A094] to-[#4F6A64] flex items-center justify-center text-white font-bold shadow-lg">
                       {index + 1}
                     </div>
-                    <div className="flex-1 grid grid-cols-6 gap-4">
+                    <div className="flex-1 grid grid-cols-5 gap-4 items-center">
                       <div>
                         <p className="text-xs text-[#92A2A5]">Date</p>
                         <p className="font-medium text-[#546A7A]">{formatARDate(payment.paymentDate)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-[#92A2A5]">Time</p>
-                        <p className="font-medium text-[#546A7A] font-mono">{(payment as any).paymentTime || '-'}</p>
-                      </div>
-                      <div>
                         <p className="text-xs text-[#92A2A5]">Mode</p>
                         <p className="font-medium text-[#546A7A]">{payment.paymentMode || '-'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-[#92A2A5]">Reference</p>
-                        <p className="font-medium text-[#546A7A] font-mono text-sm">{payment.referenceNo || '-'}</p>
                       </div>
                       <div>
                         <p className="text-xs text-[#92A2A5]">Added By</p>
@@ -932,6 +996,22 @@ export default function InvoiceViewPage() {
                       <div className="text-right">
                         <p className="text-xs text-[#92A2A5]">Amount</p>
                         <p className="font-bold text-[#4F6A64] text-lg">{formatARCurrency(payment.amount)}</p>
+                      </div>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleEditPayment(payment)}
+                          className="p-2 rounded-lg bg-[#6F8A9D]/10 text-[#6F8A9D] hover:bg-[#6F8A9D]/20 transition-all"
+                          title="Edit payment"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePayment(payment.id)}
+                          className="p-2 rounded-lg bg-[#E17F70]/10 text-[#9E3B47] hover:bg-[#E17F70]/20 transition-all"
+                          title="Delete payment"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1209,7 +1289,7 @@ export default function InvoiceViewPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative animate-scale-in">
             <button 
-              onClick={() => setShowPaymentModal(false)}
+              onClick={closePaymentModal}
               className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[#AEBFC3]/20 transition-colors"
             >
               <X className="w-5 h-5 text-[#5D6E73]" />
@@ -1220,14 +1300,16 @@ export default function InvoiceViewPage() {
                 <IndianRupee className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-[#546A7A]">Record Payment</h3>
-                <p className="text-sm text-[#92A2A5]">Add a payment record for {invoice.invoiceNumber}</p>
+                <h3 className="text-xl font-bold text-[#546A7A]">{editingPaymentId ? 'Edit Payment' : 'Record Payment'}</h3>
+                <p className="text-sm text-[#92A2A5]">{editingPaymentId ? 'Update this' : 'Add a'} payment record for {invoice.invoiceNumber}</p>
               </div>
             </div>
             
             <form onSubmit={handlePaymentSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-[#5D6E73] mb-2">Amount (₹)</label>
+                <label className="block text-sm font-semibold text-[#5D6E73] mb-2">
+                  Amount (₹) <span className="text-[#E17F70]">*</span>
+                </label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -1239,7 +1321,7 @@ export default function InvoiceViewPage() {
                 />
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-[#5D6E73] mb-2">Date</label>
                   <input 
@@ -1251,36 +1333,17 @@ export default function InvoiceViewPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#5D6E73] mb-2">Time</label>
-                  <input 
-                    type="time" 
-                    required
-                    value={paymentForm.paymentTime}
-                    onChange={e => setPaymentForm({...paymentForm, paymentTime: e.target.value})}
-                    className="w-full h-12 px-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094] focus:outline-none transition-all"
-                  />
-                </div>
-                <div>
                   <label className="block text-sm font-semibold text-[#5D6E73] mb-2">Mode</label>
-                  <input 
-                    type="text"
+                  <select 
                     value={paymentForm.paymentMode}
                     onChange={e => setPaymentForm({...paymentForm, paymentMode: e.target.value})}
                     className="w-full h-12 px-3 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094] focus:outline-none transition-all"
-                    placeholder="NEFT"
-                  />
+                  >
+                    <option value="TDS">TDS</option>
+                    <option value="LD">LD</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[#5D6E73] mb-2">Reference / UTR No</label>
-                <input 
-                  type="text" 
-                  value={paymentForm.referenceNo}
-                  onChange={e => setPaymentForm({...paymentForm, referenceNo: e.target.value})}
-                  className="w-full h-12 px-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#82A094] focus:outline-none transition-all font-mono"
-                  placeholder="UTR123456789"
-                />
               </div>
               
               <div>
@@ -1296,7 +1359,7 @@ export default function InvoiceViewPage() {
               <div className="flex gap-3 pt-4">
                 <button 
                   type="button"
-                  onClick={() => setShowPaymentModal(false)}
+                  onClick={closePaymentModal}
                   className="flex-1 py-3.5 rounded-xl border-2 border-[#AEBFC3]/40 text-[#5D6E73] font-semibold hover:bg-[#AEBFC3]/10 transition-all"
                 >
                   Cancel
@@ -1307,7 +1370,7 @@ export default function InvoiceViewPage() {
                   className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-[#82A094] to-[#4F6A64] text-white font-bold hover:shadow-lg hover:shadow-[#82A094]/40 transition-all flex items-center justify-center gap-2"
                 >
                   {paymentLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle className="w-5 h-5" />}
-                  Record Payment
+                  {editingPaymentId ? 'Update Payment' : 'Record Payment'}
                 </button>
               </div>
             </form>

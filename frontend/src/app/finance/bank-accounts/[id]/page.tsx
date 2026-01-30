@@ -11,7 +11,7 @@ import {
   CreditCard, Mail, Hash, Clock, CheckCircle2, XCircle,
   AlertCircle, User, Calendar, Copy, ExternalLink, Check,
   FileText, Download, Trash, Upload, Loader2, FileIcon,
-  Eye, FileSpreadsheet, FileImage, File
+  Eye, FileSpreadsheet, FileImage, File, Landmark, BadgeCheck
 } from 'lucide-react';
 
 export default function BankAccountDetailPage() {
@@ -275,7 +275,7 @@ export default function BankAccountDetailPage() {
                 <div className="p-5 rounded-2xl bg-[#F8FAFB] border border-[#AEBFC3]/15 hover:shadow-lg hover:border-[#CE9F6B]/30 transition-all duration-300">
                   <div className="flex items-center gap-2 text-[#92A2A5] text-sm mb-3">
                     <Hash className="w-4 h-4" />
-                    IFSC Code
+                    IFSC / SWIFT Code
                   </div>
                   <div className="flex items-center gap-2">
                     <p className="text-[#CE9F6B] font-mono text-lg font-bold">{account.ifscCode}</p>
@@ -366,6 +366,22 @@ export default function BankAccountDetailPage() {
                   Email ID
                 </div>
                 <p className="text-[#546A7A] font-bold text-lg break-all">{account.emailId || '—'}</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#F8FAFB] border border-[#AEBFC3]/15 hover:shadow-lg hover:border-[#6F8A9D]/30 transition-all duration-300">
+                <div className="flex items-center gap-2 text-[#92A2A5] text-sm mb-3">
+                  <Landmark className="w-4 h-4" />
+                  GST Number
+                </div>
+                <p className="text-[#546A7A] font-mono font-bold text-lg">{account.gstNumber || '—'}</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#F8FAFB] border border-[#AEBFC3]/15 hover:shadow-lg hover:border-[#6F8A9D]/30 transition-all duration-300">
+                <div className="flex items-center gap-2 text-[#92A2A5] text-sm mb-3">
+                  <BadgeCheck className="w-4 h-4" />
+                  PAN Number
+                </div>
+                <p className="text-[#546A7A] font-mono font-bold text-lg">{account.panNumber || '—'}</p>
               </div>
 
               {account.isMSME && (

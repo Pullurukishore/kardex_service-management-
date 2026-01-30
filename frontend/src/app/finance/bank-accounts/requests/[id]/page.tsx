@@ -10,7 +10,7 @@ import {
   ArrowLeft, Sparkles, Clock, CheckCircle2, XCircle, 
   AlertCircle, Building2, Plus, Trash2, Pencil,
   ArrowRight, GitCompare, FileText, Eye, Download, FileImage, FileSpreadsheet, File, Download as DownloadIcon,
-  User, Calendar, CreditCard, Hash, Mail, MessageSquare, Loader2
+  User, Calendar, CreditCard, Hash, Mail, MessageSquare, Loader2, Shield, BadgeCheck
 } from 'lucide-react';
 
 interface FieldChange {
@@ -194,7 +194,7 @@ export default function RequestDetailPage() {
       },
       {
         field: 'ifscCode',
-        label: 'IFSC Code',
+        label: 'IFSC / SWIFT Code',
         oldValue: originalAccount?.ifscCode || null,
         newValue: request.requestedData.ifscCode || null,
         icon: <Hash className="w-4 h-4" />
@@ -219,6 +219,20 @@ export default function RequestDetailPage() {
         oldValue: (originalAccount as any)?.udyamRegNum || null,
         newValue: (request.requestedData as any).udyamRegNum || null,
         icon: <Hash className="w-4 h-4" />
+      },
+      {
+        field: 'gstNumber',
+        label: 'GST Number',
+        oldValue: (originalAccount as any)?.gstNumber || null,
+        newValue: (request.requestedData as any).gstNumber || null,
+        icon: <Shield className="w-4 h-4" />
+      },
+      {
+        field: 'panNumber',
+        label: 'PAN Number',
+        oldValue: (originalAccount as any)?.panNumber || null,
+        newValue: (request.requestedData as any).panNumber || null,
+        icon: <BadgeCheck className="w-4 h-4" />
       },
       {
         field: 'currency',

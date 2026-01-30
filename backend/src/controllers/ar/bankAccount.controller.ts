@@ -31,7 +31,17 @@ export const getAllBankAccounts = async (req: Request, res: Response) => {
         const accounts = await prisma.bankAccount.findMany({
             where,
             orderBy: { vendorName: 'asc' },
-            include: {
+            select: {
+                id: true,
+                vendorName: true,
+                beneficiaryBankName: true,
+                beneficiaryName: true,
+                nickName: true,
+                accountNumber: true,
+                ifscCode: true,
+                currency: true,
+                isActive: true,
+                isMSME: true,
                 _count: {
                     select: { changeRequests: true }
                 }
@@ -74,7 +84,7 @@ export const getBankAccountById = async (req: Request, res: Response) => {
 // Create bank account (FINANCE_ADMIN only)
 export const createBankAccount = async (req: Request, res: Response) => {
     try {
-        const { vendorName, beneficiaryBankName, beneficiaryName, accountNumber, ifscCode, emailId, nickName } = req.body;
+        const { vendorName, beneficiaryBankName, beneficiaryName, accountNumber, ifscCode, emailId, nickName, gstNumber, panNumber } = req.body;
         const userId = (req as any).user?.id || 1; // Get from auth context
 
         // Validate required fields
@@ -82,6 +92,17 @@ export const createBankAccount = async (req: Request, res: Response) => {
             return res.status(400).json({
                 error: 'Vendor Name, Beneficiary Bank Name, Account Number, and IFSC Code are required'
             });
+        }
+
+        // Smart Mandatory Validation for GST/PAN (only for INR)
+        const currency = req.body.currency || 'INR';
+        if (currency === 'INR') {
+            if (!gstNumber) {
+                return res.status(400).json({ error: 'GST Number is required for INR transactions' });
+            }
+            if (!panNumber) {
+                return res.status(400).json({ error: 'PAN Number is required for INR transactions' });
+            }
         }
 
         // Check for duplicate account number
@@ -102,6 +123,8 @@ export const createBankAccount = async (req: Request, res: Response) => {
                 ifscCode,
                 emailId: emailId || null,
                 nickName: nickName || null,
+                gstNumber: gstNumber || null,
+                panNumber: panNumber || null,
                 isMSME: req.body.isMSME || false,
                 udyamRegNum: req.body.isMSME ? req.body.udyamRegNum : null,
                 currency: req.body.currency || 'INR',

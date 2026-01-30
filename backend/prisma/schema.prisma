@@ -1096,7 +1096,7 @@ model ARInvoice {
   // ═══════════════════════════════════════════════════════════════════════════
   // PAYMENT TERMS & CALCULATIONS
   // ═══════════════════════════════════════════════════════════════════════════
-  dueDate             DateTime          // Due Date (from Payment Terms)
+  dueDate             DateTime?         // Due Date (from Payment Terms)
   actualPaymentTerms  String?           // Actual Payment Terms
   balance             Decimal?  @db.Decimal(15, 2) // Balance = TotalAmount - TotalReceipts
   riskClass           ARRiskClass @default(LOW)   // Risk Class (Calculated)
@@ -1266,6 +1266,8 @@ model BankAccount {
   updatedById         Int
   isMSME              Boolean  @default(false)
   udyamRegNum         String?
+  gstNumber           String?
+  panNumber           String?
   currency            String   @default("INR")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

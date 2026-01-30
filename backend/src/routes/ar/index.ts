@@ -67,6 +67,8 @@ router.delete('/invoices/:id', requireFinanceDelete, invoiceController.deleteInv
 router.put('/invoices/:id/delivery', requireFinanceWrite, invoiceController.updateDeliveryTracking);
 router.post('/invoices/update-overdue', requireFinanceWrite, invoiceController.updateOverdueStatus);
 router.post('/invoices/:id/payments', requireFinanceWrite, invoiceController.addPaymentRecord);
+router.put('/invoices/:id/payments/:paymentId', requireFinanceWrite, invoiceController.updatePaymentRecord);
+router.delete('/invoices/:id/payments/:paymentId', requireFinanceWrite, invoiceController.deletePaymentRecord);
 router.get('/invoices/:id/remarks', requireFinanceRead, invoiceController.getInvoiceRemarks);
 router.post('/invoices/:id/remarks', requireFinanceWrite, invoiceController.addInvoiceRemark);
 router.get('/invoices/:id/activity', requireFinanceRead, invoiceController.getInvoiceActivityLog);

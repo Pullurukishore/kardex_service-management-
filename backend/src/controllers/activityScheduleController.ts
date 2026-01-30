@@ -320,15 +320,8 @@ export const getActivitySchedules = async (req: Request, res: Response) => {
           zoneId: true,
           customerId: true,
           assetIds: true,
-          acceptedAt: true,
-          rejectedAt: true,
-          rejectionReason: true,
-          completedAt: true,
           ticketId: true,
-          notes: true,
-          metadata: true,
           createdAt: true,
-          updatedAt: true,
           servicePerson: {
             select: {
               id: true,
@@ -349,30 +342,6 @@ export const getActivitySchedules = async (req: Request, res: Response) => {
               id: true,
               title: true,
               status: true,
-              priority: true,
-              customer: {
-                select: {
-                  id: true,
-                  companyName: true,
-                  address: true,
-                },
-              },
-              contact: {
-                select: {
-                  id: true,
-                  name: true,
-                  phone: true,
-                  email: true,
-                },
-              },
-              asset: {
-                select: {
-                  id: true,
-                  serialNo: true,
-                  model: true,
-                  location: true,
-                },
-              },
             },
           },
           zone: {

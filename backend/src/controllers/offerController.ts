@@ -267,42 +267,27 @@ export class OfferController {
       const [offers, total, stats] = await Promise.all([
         prisma.offer.findMany({
           where,
-          include: {
+          select: {
+            id: true,
+            offerReferenceNumber: true,
+            title: true, // Used for search results context sometimes
+            company: true,
+            location: true,
+            productType: true,
+            stage: true,
+            offerValue: true,
+            probabilityPercentage: true,
+            createdAt: true,
             customer: {
               select: {
                 id: true,
                 companyName: true,
-                address: true,
-                industry: true,
-                timezone: true,
-                serviceZone: {
-                  select: {
-                    id: true,
-                    name: true,
-                    shortForm: true
-                  }
-                }
-              },
-            },
-            contact: {
-              select: {
-                id: true,
-                contactPersonName: true,
-                contactNumber: true,
-                email: true,
               },
             },
             zone: {
               select: {
                 id: true,
                 name: true,
-              },
-            },
-            assignedTo: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
               },
             },
             createdBy: {

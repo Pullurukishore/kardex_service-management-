@@ -30,25 +30,25 @@ import { AuthenticatedRequest } from '../types/express';
 
 export const listCustomers = async (req: AuthenticatedRequest, res: Response) => {
   const startTime = Date.now();
-  
+
   try {
     const { search = '', include, serviceZoneId } = req.query;
     const where: any = {};
-    
+
     // Add serviceZoneId filter if provided
     if (serviceZoneId) {
       where.serviceZoneId = parseInt(serviceZoneId as string, 10);
     }
-    
+
     // Parse include parameter (e.g., "contacts,assets,serviceZone")
     const includeParams = typeof include === 'string' ? include.split(',') : [];
     const shouldIncludeContacts = includeParams.includes('contacts');
     const shouldIncludeAssets = includeParams.includes('assets');
-    
+
     // Role-based filtering
     const userRole = req.user?.role;
     const userId = req.user?.id;
-    
+
     if (userRole === 'ADMIN') {
       // Admin can view all customers
     } else if (userRole === 'ZONE_USER' || userRole === 'ZONE_MANAGER') {
@@ -61,11 +61,11 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
           }
         }
       });
-      
+
       if (!userWithZones || !userWithZones.serviceZones.length) {
         return res.status(403).json({ error: 'No zones assigned to user' });
       }
-      
+
       const zoneIds = userWithZones.serviceZones.map((sz: any) => sz.serviceZoneId);
       where.serviceZoneId = { in: zoneIds };
     } else if (userRole === 'SERVICE_PERSON') {
@@ -75,7 +75,7 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
     } else {
       return res.status(403).json({ error: 'Insufficient permissions to view customers' });
     }
-    
+
     // Add search filter if provided
     if (search) {
       where.OR = [
@@ -95,20 +95,14 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
       ];
     }
 
-    
+
     // Build dynamic query based on include parameters
     const selectQuery: any = {
       id: true,
       companyName: true,
       address: true,
-      industry: true,
-      timezone: true,
       isActive: true,
       serviceZoneId: true,
-      createdAt: true,
-      updatedAt: true,
-      createdById: true,
-      updatedById: true,
       serviceZone: {
         select: { id: true, name: true }
       },
@@ -155,7 +149,7 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
       orderBy: { companyName: 'asc' },
       select: selectQuery
     });
-    
+
     const queryTime = Date.now() - startTime;
 
     // Transform the data for the frontend
@@ -164,8 +158,6 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
       // Ensure all fields are properly typed
       companyName: customer.companyName || '',
       address: customer.address || '',
-      industry: customer.industry || '',
-      timezone: customer.timezone || 'UTC',
       // Include assets and contacts if they were requested, otherwise empty arrays
       assets: shouldIncludeAssets ? (customer.assets || []) : [],
       contacts: shouldIncludeContacts ? (customer.contacts || []) : [],
@@ -173,7 +165,7 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
     }));
 
     const totalTime = Date.now() - startTime;
-    
+
     return res.json(response);
   } catch (error) {
     const totalTime = Date.now() - startTime;
@@ -183,21 +175,21 @@ export const listCustomers = async (req: AuthenticatedRequest, res: Response) =>
 
 export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
   const startTime = Date.now();
-  
+
   try {
     const id = req.params?.id ? parseInt(req.params.id, 10) : NaN;
     if (isNaN(id)) {
       return res.status(400).json({ message: 'Invalid customer ID' });
     }
-    
+
     // Get query parameters for asset pagination
     const { assetsLimit, includeAssets } = req.query;
     const assetLimit = assetsLimit ? parseInt(assetsLimit as string, 10) : (includeAssets === 'true' ? 1000 : 5);
-    
+
     // Role-based access control
     const userRole = req.user?.role;
     const userId = req.user?.id;
-    
+
     if (userRole === 'ZONE_USER' || userRole === 'ZONE_MANAGER') {
       // Allow ZONE_USER and ZONE_MANAGER to view customers in their assigned service zones
       const userWithZones = await prisma.user.findUnique({
@@ -213,8 +205,8 @@ export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
         return res.status(403).json({ error: 'Access denied to this customer' });
       }
     }
-    
-    
+
+
     const customer = await prisma.customer.findUnique({
       where: { id },
       include: {
@@ -260,7 +252,7 @@ export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
         }
       }
     });
-    
+
     const queryTime = Date.now() - startTime;
 
     if (!customer) {
@@ -268,7 +260,7 @@ export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     const totalTime = Date.now() - startTime;
-    
+
     return res.json(customer);
   } catch (error) {
     const totalTime = Date.now() - startTime;
@@ -278,12 +270,12 @@ export const getCustomer = async (req: AuthenticatedRequest, res: Response) => {
 
 export const createCustomer = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { 
-      companyName, 
-      address, 
-      industry, 
-      timezone, 
-      serviceZoneId, 
+    const {
+      companyName,
+      address,
+      industry,
+      timezone,
+      serviceZoneId,
       isActive,
       contactName,
       contactPhone,
@@ -292,8 +284,8 @@ export const createCustomer = async (req: AuthenticatedRequest, res: Response) =
 
     // Validate required fields
     if (!companyName || !contactName || !contactPhone) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: companyName, contactName, and contactPhone are required' 
+      return res.status(400).json({
+        error: 'Missing required fields: companyName, contactName, and contactPhone are required'
       });
     }
 
@@ -361,12 +353,12 @@ export const createCustomer = async (req: AuthenticatedRequest, res: Response) =
 export const updateCustomer = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { 
-      companyName, 
-      address, 
-      industry, 
-      timezone, 
-      serviceZoneId, 
+    const {
+      companyName,
+      address,
+      industry,
+      timezone,
+      serviceZoneId,
       isActive,
       contactName,
       contactPhone
@@ -376,7 +368,7 @@ export const updateCustomer = async (req: AuthenticatedRequest, res: Response) =
     if (isNaN(customerId)) {
       return res.status(400).json({ message: 'Invalid customer ID' });
     }
-    
+
     // Check if customer exists
     const existingCustomer = await prisma.customer.findUnique({
       where: { id: customerId }
@@ -389,7 +381,7 @@ export const updateCustomer = async (req: AuthenticatedRequest, res: Response) =
     // Check if company name is being changed and if it's already in use
     if (companyName && companyName !== existingCustomer.companyName) {
       const companyExists = await prisma.customer.findFirst({
-        where: { 
+        where: {
           companyName,
           id: { not: Number(id) }
         }
@@ -430,7 +422,7 @@ export const updateCustomer = async (req: AuthenticatedRequest, res: Response) =
       if (contactName || contactPhone) {
         // Check if customer already has a contact with ACCOUNT_OWNER role
         const existingContact = await tx.contact.findFirst({
-          where: { 
+          where: {
             customerId: Number(id),
             role: 'ACCOUNT_OWNER'
           }
@@ -473,7 +465,7 @@ export const deleteCustomer = async (req: AuthenticatedRequest, res: Response) =
     if (isNaN(customerId)) {
       return res.status(400).json({ message: 'Invalid customer ID' });
     }
-    
+
     // Check if customer exists
     const existingCustomer = await prisma.customer.findUnique({
       where: { id: customerId },

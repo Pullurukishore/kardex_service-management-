@@ -209,7 +209,8 @@ export default function VendorAccountImportPage() {
                     <th className="px-6 py-4">Vendor Name</th>
                     <th className="px-6 py-4">Bank Name</th>
                     <th className="px-6 py-4">Account Number</th>
-                    <th className="px-6 py-4">IFSC</th>
+                    <th className="px-6 py-4">IFSC / SWIFT</th>
+                    <th className="px-6 py-4">GST / PAN</th>
                     <th className="px-6 py-4">Beneficiary</th>
                   </tr>
                 </thead>
@@ -245,6 +246,12 @@ export default function VendorAccountImportPage() {
                       <td className="px-6 py-4 text-[#5D6E73] text-sm">{row._parsed.beneficiaryBankName || '-'}</td>
                       <td className="px-6 py-4 font-mono text-xs font-bold text-[#CE9F6B]">{row._parsed.accountNumber || '-'}</td>
                       <td className="px-6 py-4 font-mono text-xs text-[#5D6E73]">{row._parsed.ifscCode || '-'}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] text-[#92A2A5] font-bold">GST: {row._parsed.gstNumber || '-'}</span>
+                          <span className="text-[10px] text-[#92A2A5] font-bold">PAN: {row._parsed.panNumber || '-'}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-[#92A2A5] text-xs">{row._parsed.beneficiaryName || '-'}</td>
                     </tr>
                   ))}

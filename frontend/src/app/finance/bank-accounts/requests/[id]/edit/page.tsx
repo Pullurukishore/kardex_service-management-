@@ -22,6 +22,8 @@ interface FormData {
   nickName: string;
   isMSME: boolean;
   udyamRegNum: string;
+  gstNumber: string;
+  panNumber: string;
   currency: string;
   otherCurrency?: string;
 }
@@ -46,6 +48,8 @@ export default function EditRequestPage() {
     nickName: '',
     isMSME: false,
     udyamRegNum: '',
+    gstNumber: '',
+    panNumber: '',
     currency: 'INR',
     otherCurrency: ''
   });
@@ -80,6 +84,8 @@ export default function EditRequestPage() {
         nickName: data.nickName || '',
         isMSME: data.isMSME || false,
         udyamRegNum: data.udyamRegNum || '',
+        gstNumber: data.gstNumber || '',
+        panNumber: data.panNumber || '',
         currency: ['INR', 'EUR', 'USD'].includes(data.currency) ? data.currency : 'Other',
         otherCurrency: ['INR', 'EUR', 'USD'].includes(data.currency) ? '' : data.currency
       });
@@ -121,6 +127,20 @@ export default function EditRequestPage() {
         setError('Please fill in all required fields');
         setSubmitting(false);
         return;
+      }
+
+      // Smart Mandatory Validation for GST/PAN (only for INR)
+      if (formData.currency === 'INR') {
+        if (!formData.gstNumber) {
+          setError('GST Number is required for INR transactions');
+          setSubmitting(false);
+          return;
+        }
+        if (!formData.panNumber) {
+          setError('PAN Number is required for INR transactions');
+          setSubmitting(false);
+          return;
+        }
       }
       
       if (formData.accountNumber !== formData.confirmAccountNumber) {
@@ -259,6 +279,8 @@ export default function EditRequestPage() {
                   />
                 </div>
 
+
+
                 <div className="md:col-span-2 flex flex-col gap-4 p-4 rounded-xl bg-[#F8FAFB] border border-[#AEBFC3]/20">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -326,7 +348,6 @@ export default function EditRequestPage() {
                     <option value="Other">Other (Specify...)</option>
                   </select>
                 </div>
-
                 {formData.currency === 'Other' && (
                   <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
                     <label className="text-sm font-semibold text-[#5D6E73]">Specify Currency *</label>
@@ -341,6 +362,32 @@ export default function EditRequestPage() {
                     />
                   </div>
                 )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#5D6E73]">GST Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}</label>
+                  <input
+                    type="text"
+                    name="gstNumber"
+                    value={formData.gstNumber}
+                    onChange={handleChange}
+                    placeholder="22AAAAA0000A1Z5"
+                    className="w-full px-4 py-3.5 bg-[#F8FAFB] border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] uppercase"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#5D6E73]">PAN Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}</label>
+                  <input
+                    type="text"
+                    name="panNumber"
+                    value={formData.panNumber}
+                    onChange={handleChange}
+                    placeholder="ABCDE1234F"
+                    className="w-full px-4 py-3.5 bg-[#F8FAFB] border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] uppercase"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -369,7 +416,7 @@ export default function EditRequestPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#5D6E73]">IFSC Code *</label>
+                  <label className="text-sm font-semibold text-[#5D6E73]">IFSC / SWIFT Code *</label>
                   <input
                     type="text"
                     name="ifscCode"
@@ -466,8 +513,16 @@ export default function EditRequestPage() {
                   <span className="text-[#546A7A] font-mono">****{formData.accountNumber.slice(-4) || '----'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#92A2A5]">IFSC:</span>
+                  <span className="text-[#92A2A5]">IFSC/SWIFT:</span>
                   <span className="text-[#CE9F6B] font-mono">{formData.ifscCode || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#92A2A5]">GST:</span>
+                  <span className="text-[#546A7A] font-mono">{formData.gstNumber || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#92A2A5]">PAN:</span>
+                  <span className="text-[#546A7A] font-mono">{formData.panNumber || '-'}</span>
                 </div>
               </div>
             </div>

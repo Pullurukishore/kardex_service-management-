@@ -97,7 +97,22 @@ export const getAllActivities = async (req: Request, res: Response) => {
             const rawInvoiceActivities = await prisma.aRInvoiceActivityLog.findMany({
                 where: invoiceWhere,
                 orderBy: { createdAt: 'desc' },
-                take: take * 2 // Fetch more to account for combining
+                take: take * 2, // Fetch more to account for combining
+                select: {
+                    id: true,
+                    action: true,
+                    description: true,
+                    invoiceId: true,
+                    fieldName: true,
+                    oldValue: true,
+                    newValue: true,
+                    performedBy: true,
+                    performedById: true,
+                    ipAddress: true,
+                    userAgent: true,
+                    metadata: true,
+                    createdAt: true
+                }
             });
 
             // Get invoice details for each activity
@@ -157,7 +172,21 @@ export const getAllActivities = async (req: Request, res: Response) => {
             const rawSessionActivities = await prisma.aRSessionActivityLog.findMany({
                 where: sessionWhere,
                 orderBy: { createdAt: 'desc' },
-                take: take * 2
+                take: take * 2,
+                select: {
+                    id: true,
+                    action: true,
+                    userId: true,
+                    userName: true,
+                    userEmail: true,
+                    userRole: true,
+                    financeRole: true,
+                    deviceInfo: true,
+                    ipAddress: true,
+                    userAgent: true,
+                    metadata: true,
+                    createdAt: true
+                }
             });
 
             sessionActivities = rawSessionActivities.map(a => ({
@@ -299,12 +328,27 @@ export const getRecentActivities = async (req: Request, res: Response) => {
         const [invoiceActivities, sessionActivities] = await Promise.all([
             prisma.aRInvoiceActivityLog.findMany({
                 orderBy: { createdAt: 'desc' },
-                take: Number(limit)
+                take: Number(limit),
+                select: {
+                    id: true,
+                    action: true,
+                    description: true,
+                    invoiceId: true,
+                    performedBy: true,
+                    createdAt: true
+                }
             }),
             prisma.aRSessionActivityLog.findMany({
                 where: { financeRole: { not: null } },
                 orderBy: { createdAt: 'desc' },
-                take: Number(limit)
+                take: Number(limit),
+                select: {
+                    id: true,
+                    action: true,
+                    userName: true,
+                    deviceInfo: true,
+                    createdAt: true
+                }
             })
         ]);
 

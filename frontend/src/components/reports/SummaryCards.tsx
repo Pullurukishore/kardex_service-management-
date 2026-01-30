@@ -16,7 +16,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         .filter(([, value]) => ['number', 'string', 'boolean'].includes(typeof value))
         .map(([key, value]: [string, any]) => {
           const displayValue = typeof value === 'number'
-            ? value.toLocaleString()
+            ? Math.round(value).toLocaleString()
             : typeof value === 'boolean'
               ? (value ? 'Yes' : 'No')
               : String(value);

@@ -40,7 +40,7 @@ export interface ARInvoice {
     netAmount: number;
     taxAmount?: number;
     invoiceDate: string;
-    dueDate: string;
+    dueDate?: string;
     actualPaymentTerms?: string;
     balance?: number;
     riskClass: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
@@ -286,6 +286,15 @@ export const arApi = {
         return res.data;
     },
 
+    async updatePayment(invoiceId: string, paymentId: string, data: any): Promise<ARPaymentHistory> {
+        const res = await api.put(`/ar/invoices/${invoiceId}/payments/${paymentId}`, data);
+        return res.data;
+    },
+
+    async deletePayment(invoiceId: string, paymentId: string): Promise<void> {
+        await api.delete(`/ar/invoices/${invoiceId}/payments/${paymentId}`);
+    },
+
     async createInvoice(data: Partial<ARInvoice>): Promise<ARInvoice> {
         const res = await api.post('/ar/invoices', data);
         return res.data;
@@ -498,6 +507,8 @@ export interface BankAccount {
     isActive: boolean;
     isMSME: boolean;
     udyamRegNum?: string;
+    gstNumber?: string;
+    panNumber?: string;
     currency: string;
     createdById: number;
     updatedById: number;
@@ -539,17 +550,14 @@ export interface BankAccountAttachment {
 
 // Utility functions
 export const formatARCurrency = (amount: number): string => {
-    if (amount >= 10000000) {
-        return `₹${(amount / 10000000).toFixed(2)}Cr`;
-    } else if (amount >= 100000) {
-        return `₹${(amount / 100000).toFixed(2)}L`;
-    } else if (amount >= 1000) {
-        return `₹${(amount / 1000).toFixed(1)}K`;
-    }
-    return `₹${amount.toLocaleString('en-IN')}`;
+    return `₹${Number(amount || 0).toLocaleString('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    })}`;
 };
 
-export const formatARDate = (date: string): string => {
+export const formatARDate = (date?: string | null): string => {
+    if (!date) return '-';
     return new Date(date).toLocaleDateString('en-IN', {
         day: '2-digit',
         month: 'short',

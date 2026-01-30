@@ -234,8 +234,7 @@ export function Sidebar({
 
   // Animate in on mount
   React.useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 10);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
   // Read sub-module selection from localStorage (with storage event listener)
@@ -365,14 +364,9 @@ export function Sidebar({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 z-[60] flex h-screen flex-col transition-all duration-300 ease-out",
-        isVisible ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0",
-        isMobile ? "bg-white shadow-2xl border-none" : "bg-white/95 backdrop-blur-xl",
-        "border-r border-[#6F8A9D]/15",
-        "shadow-xl shadow-[#6F8A9D]/10",
-        isMobile 
-          ? "w-80"
-          : collapsed ? "w-[72px]" : "w-64",
+        "flex flex-col h-full bg-white transition-all duration-300 ease-out",
+        isVisible ? "opacity-100" : "opacity-0",
+        isMobile ? "border-none" : "backdrop-blur-xl",
         className
       )}
       role="navigation"

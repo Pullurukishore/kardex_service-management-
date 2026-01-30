@@ -99,7 +99,9 @@ export function calculateRiskClass(dueByDays: number): 'LOW' | 'MEDIUM' | 'HIGH'
  * Calculate days between two dates (today and a reference date)
  * Positive result means the reference date is in the past (overdue)
  */
-export function calculateDaysBetween(referenceDate: Date, targetDate: Date = new Date()): number {
+export function calculateDaysBetween(referenceDate: Date | null | undefined, targetDate: Date = new Date()): number {
+    if (!referenceDate || isNaN(new Date(referenceDate).getTime())) return 0;
+
     const today = new Date(targetDate);
     today.setHours(0, 0, 0, 0);
     const ref = new Date(referenceDate);

@@ -160,22 +160,12 @@ interface UserMonthlyBreakdown {
  */
 const formatCurrencyCompact = (value: number): string => {
     if (value === 0) return '-';
-    if (value >= 10000000) {
-        return `₹${(value / 10000000).toFixed(2)}Cr`;
-    } else if (value >= 100000) {
-        return `₹${(value / 100000).toFixed(2)}L`;
-    }
     return `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)}`;
 };
 
 // Keep formatInLakhs for backwards compatibility in some places
 const formatInLakhs = (value: number): string => {
     if (value === 0) return '-';
-    if (value >= 10000000) {
-        return `${(value / 10000000).toFixed(2)}Cr`;
-    } else if (value >= 100000) {
-        return `${(value / 100000).toFixed(2)}L`;
-    }
     return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value);
 };
 
@@ -253,9 +243,9 @@ const generateZoneSummarySheet = (
 
     // ALL HEADERS matching the dashboard table
     const headers = [
-        'Zone', '# Offers', 'Offers Value (₹L)', 'Orders Received (₹L)',
-        'Open Funnel (₹L)', 'Order Booking (₹L)', 'U for Booking (₹L)',
-        'Hit Rate %', 'Yearly Target (₹L)', 'Balance BU (₹L)', 'Achievement %'
+        'Zone', '# Offers', 'Offers Value', 'Orders Received',
+        'Open Funnel', 'Order Booking', 'U for Booking',
+        'Hit Rate %', 'Yearly Target', 'Balance BU', 'Achievement %'
     ];
 
     headers.forEach((h, idx) => {
@@ -574,7 +564,7 @@ const generateUserMonthlySheet = (
     // Title
     ws.mergeCells(`A${row}:L${row}`);
     const titleCell = ws.getCell(`A${row}`);
-    titleCell.value = `USER-WISE MONTHLY BREAKDOWN (${year}) - All Values in ₹ Lakhs`;
+    titleCell.value = `USER-WISE MONTHLY BREAKDOWN (${year})`;
     titleCell.font = { size: 16, bold: true, color: { argb: COLORS.headerText } };
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.headerBg } };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
@@ -608,7 +598,7 @@ const generateUserMonthlySheet = (
             // User info row
             ws.mergeCells(`A${row}:L${row}`);
             const userHeader = ws.getCell(`A${row}`);
-            userHeader.value = `👤 ${user.userName} (${user.userShortForm || 'N/A'}) | Hit Rate: ${user.hitRate}% | Target: ₹${formatInLakhs(user.yearlyTarget)}L`;
+            userHeader.value = `👤 ${user.userName} (${user.userShortForm || 'N/A'}) | Hit Rate: ${user.hitRate}% | Target: ₹${formatInLakhs(user.yearlyTarget)}`;
             userHeader.font = { size: 11, bold: true, color: { argb: COLORS.titleText } };
             userHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.titleBg } };
             userHeader.alignment = { horizontal: 'left', vertical: 'middle' };
@@ -713,7 +703,7 @@ const generateConsolidatedMonthlySheet = (
     // Title
     ws.mergeCells(`A${row}:O${row}`);
     const titleCell = ws.getCell(`A${row}`);
-    titleCell.value = `CONSOLIDATED MONTHLY COMPARISON (${year}) - All Values in ₹ Lakhs`;
+    titleCell.value = `CONSOLIDATED MONTHLY COMPARISON (${year})`;
     titleCell.font = { size: 16, bold: true, color: { argb: COLORS.headerText } };
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.headerBg } };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };

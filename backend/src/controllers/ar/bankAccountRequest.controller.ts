@@ -32,6 +32,17 @@ export const createChangeRequest = async (req: Request, res: Response) => {
                 });
             }
 
+            // Smart Mandatory Validation for GST/PAN (only for INR)
+            const currency = requestedData?.currency || 'INR';
+            if (currency === 'INR') {
+                if (!requestedData?.gstNumber) {
+                    return res.status(400).json({ error: 'GST Number is required for INR transactions' });
+                }
+                if (!requestedData?.panNumber) {
+                    return res.status(400).json({ error: 'PAN Number is required for INR transactions' });
+                }
+            }
+
             // Validate MSME/Udyam
             if (requestedData?.isMSME && !requestedData?.udyamRegNum) {
                 return res.status(400).json({ error: 'Udyam Registration Number is required for MSME vendors' });
@@ -111,8 +122,21 @@ export const getPendingRequests = async (req: Request, res: Response) => {
         const requests = await prisma.bankAccountChangeRequest.findMany({
             where,
             orderBy: { requestedAt: 'desc' },
-            include: {
-                bankAccount: true
+            select: {
+                id: true,
+                requestType: true,
+                status: true,
+                requestedAt: true,
+                requestedById: true,
+                requestedData: true,
+                reviewNotes: true,
+                bankAccount: {
+                    select: {
+                        id: true,
+                        vendorName: true,
+                        accountNumber: true
+                    }
+                }
             }
         });
 
@@ -144,8 +168,20 @@ export const getMyRequests = async (req: Request, res: Response) => {
         const requests = await prisma.bankAccountChangeRequest.findMany({
             where: { requestedById: userId },
             orderBy: { requestedAt: 'desc' },
-            include: {
-                bankAccount: true
+            select: {
+                id: true,
+                requestType: true,
+                status: true,
+                requestedAt: true,
+                requestedData: true,
+                reviewNotes: true,
+                bankAccount: {
+                    select: {
+                        id: true,
+                        vendorName: true,
+                        accountNumber: true
+                    }
+                }
             }
         });
 
@@ -237,6 +273,8 @@ export const approveRequest = async (req: Request, res: Response) => {
                     emailId: requestedData.emailId || null,
                     beneficiaryName: requestedData.beneficiaryName || requestedData.vendorName,
                     nickName: requestedData.nickName || null,
+                    gstNumber: requestedData.gstNumber || null,
+                    panNumber: requestedData.panNumber || null,
                     isMSME: requestedData.isMSME || false,
                     udyamRegNum: requestedData.isMSME ? requestedData.udyamRegNum : null,
                     currency: requestedData.currency || 'INR',

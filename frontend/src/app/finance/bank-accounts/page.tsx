@@ -459,7 +459,7 @@ export default function BankAccountsPage() {
                           <p className="font-semibold text-[#546A7A] truncate text-sm">{account.beneficiaryBankName}</p>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="shrink-0 px-2.5 py-1.5 rounded-xl bg-[#CE9F6B]/10 text-[#976E44] font-mono font-black text-xs tracking-wider">
+                          <span className="shrink-0 px-2.5 py-1.5 rounded-xl bg-[#CE9F6B]/10 text-[#976E44] font-mono font-black text-xs tracking-wider" title="IFSC / SWIFT Code">
                             {account.ifscCode}
                           </span>
                           <button 
@@ -471,7 +471,7 @@ export default function BankAccountsPage() {
                               setTimeout(() => btn.classList.remove('!bg-[#82A094]/20', '!text-[#82A094]'), 1000);
                             }}
                             className="shrink-0 p-1.5 rounded-lg bg-white border border-[#AEBFC3]/20 hover:border-[#CE9F6B]/40 text-[#92A2A5] hover:text-[#CE9F6B] transition-all"
-                            title="Copy IFSC Code"
+                            title="Copy IFSC / SWIFT Code"
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
@@ -592,7 +592,7 @@ export default function BankAccountsPage() {
                         <div className="flex flex-col">
                           <span className="text-sm font-semibold text-[#546A7A]">{account.beneficiaryBankName}</span>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[10px] font-mono font-black text-[#976E44] bg-[#CE9F6B]/10 px-1.5 py-0.5 rounded-md">
+                            <span className="text-[10px] font-mono font-black text-[#976E44] bg-[#CE9F6B]/10 px-1.5 py-0.5 rounded-md" title="IFSC / SWIFT Code">
                               {account.ifscCode}
                             </span>
                             <button 
@@ -601,6 +601,7 @@ export default function BankAccountsPage() {
                                 navigator.clipboard.writeText(account.ifscCode);
                               }}
                               className="text-[#AEBFC3] hover:text-[#CE9F6B] transition-colors"
+                              title="Copy IFSC / SWIFT Code"
                             >
                               <Copy className="w-3 h-3" />
                             </button>

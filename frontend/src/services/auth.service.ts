@@ -1,4 +1,5 @@
 import { UserRole, FinanceRole } from '@/types/user.types';
+import { isTokenExpired } from '@/lib/auth-utils';
 import api from '@/lib/api/axios';
 
 export interface LoginCredentials {
@@ -53,17 +54,6 @@ export interface AuthResponse {
   refreshToken?: string;
 }
 
-// Check if token is expired or about to expire (within 5 minutes)
-export const isTokenExpired = (token: string): boolean => {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
-    const buffer = 300; // 5 minutes in seconds
-    return payload.exp < (now + buffer);
-  } catch (e) {
-    return true; // If we can't parse the token, assume it's expired
-  }
-};
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {

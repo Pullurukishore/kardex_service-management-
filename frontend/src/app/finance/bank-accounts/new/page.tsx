@@ -35,6 +35,8 @@ interface FormData {
   nickName: string;
   isMSME: boolean;
   udyamRegNum: string;
+  gstNumber: string;
+  panNumber: string;
   currency: string;
   otherCurrency?: string;
 }
@@ -61,6 +63,8 @@ export default function NewBankAccountPage() {
     nickName: '',
     isMSME: false,
     udyamRegNum: '',
+    gstNumber: '',
+    panNumber: '',
     currency: 'INR',
     otherCurrency: ''
   });
@@ -121,6 +125,20 @@ export default function NewBankAccountPage() {
         setError('Please fill in all required fields');
         setLoading(false);
         return;
+      }
+
+      // Smart Mandatory Validation for GST/PAN (only for INR)
+      if (formData.currency === 'INR') {
+        if (!formData.gstNumber) {
+          setError('GST Number is required for INR transactions');
+          setLoading(false);
+          return;
+        }
+        if (!formData.panNumber) {
+          setError('PAN Number is required for INR transactions');
+          setLoading(false);
+          return;
+        }
       }
       
       if (formData.accountNumber !== formData.confirmAccountNumber) {
@@ -461,6 +479,8 @@ export default function NewBankAccountPage() {
                   style={{ background: '#F8FAFB', border: '2px solid #AEBFC3', color: '#546A7A' }}
                 />
               </div>
+
+
             </div>
 
             {/* MSME Toggle */}
@@ -604,6 +624,43 @@ export default function NewBankAccountPage() {
               )}
             </div>
 
+            {/* Tax Details - Conditional UI for INR */}
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 rounded-3xl border"
+              style={{ background: 'linear-gradient(135deg, rgba(206,159,107,0.08) 0%, rgba(151,110,68,0.04) 100%)', borderColor: 'rgba(206,159,107,0.2)' }}
+            >
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style={{ color: '#5D6E73' }}>
+                  <Shield className="w-4 h-4" style={{ color: '#CE9F6B' }} />
+                  GST Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}
+                </label>
+                <input
+                  type="text"
+                  name="gstNumber"
+                  value={formData.gstNumber}
+                  onChange={handleChange}
+                  placeholder="22AAAAA0000A1Z5"
+                  className="w-full px-5 py-4 rounded-2xl font-mono font-bold uppercase transition-all focus:outline-none"
+                  style={{ background: 'white', border: '2px solid #AEBFC3', color: '#546A7A' }}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider" style={{ color: '#5D6E73' }}>
+                  <BadgeCheck className="w-4 h-4" style={{ color: '#CE9F6B' }} />
+                  PAN Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}
+                </label>
+                <input
+                  type="text"
+                  name="panNumber"
+                  value={formData.panNumber}
+                  onChange={handleChange}
+                  placeholder="ABCDE1234F"
+                  className="w-full px-5 py-4 rounded-2xl font-mono font-bold uppercase transition-all focus:outline-none"
+                  style={{ background: 'white', border: '2px solid #AEBFC3', color: '#546A7A' }}
+                />
+              </div>
+            </div>
             {/* Bank Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
@@ -692,14 +749,14 @@ export default function NewBankAccountPage() {
 
                   <div className="space-y-3">
                     <label className="text-sm font-medium uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                      IFSC Code <span style={{ color: '#E17F70' }}>*</span>
+                      IFSC / SWIFT Code <span style={{ color: '#E17F70' }}>*</span>
                     </label>
                     <input
                       type="text"
                       name="ifscCode"
                       value={formData.ifscCode}
                       onChange={handleChange}
-                      placeholder="e.g., SBIN0001234"
+                      placeholder="e.g., SBIN0001234 or SWIFT-BIC"
                       className="w-full px-5 py-4 rounded-2xl font-mono font-black text-lg tracking-widest uppercase transition-all focus:outline-none"
                       style={{ 
                         background: 'rgba(255,255,255,0.1)', 

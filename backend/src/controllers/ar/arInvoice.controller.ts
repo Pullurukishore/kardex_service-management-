@@ -61,20 +61,61 @@ export const getAllInvoices = async (req: Request, res: Response) => {
                 where,
                 skip,
                 take: Number(limit),
-                orderBy: { invoiceDate: 'desc' }
+                orderBy: { invoiceDate: 'desc' },
+                select: {
+                    id: true,
+                    invoiceNumber: true,
+                    bpCode: true,
+                    customerName: true,
+                    poNo: true,
+                    totalAmount: true,
+                    invoiceDate: true,
+                    dueDate: true,
+                    balance: true,
+                    status: true,
+                    riskClass: true,
+                    region: true,
+                    invoiceType: true,
+                    totalReceipts: true,
+                    advanceReceivedDate: true,
+                    deliveryDueDate: true,
+                    prepaidStatus: true,
+                }
             }),
             prisma.aRInvoice.count({ where })
         ]);
 
-        // Calculate days overdue for each invoice
+        // Fetch payment modes for these invoices manually (since it's a loose relation)
+        const invoiceIds = invoices.map(inv => inv.id);
+        const paymentModes = await prisma.aRPaymentHistory.findMany({
+            where: { invoiceId: { in: invoiceIds } },
+            select: { invoiceId: true, paymentMode: true }
+        });
+
+        // Group payment modes by invoiceId
+        const paymentModesMap = paymentModes.reduce((acc: any, curr: any) => {
+            if (!acc[curr.invoiceId]) acc[curr.invoiceId] = [];
+            acc[curr.invoiceId].push({ paymentMode: curr.paymentMode });
+            return acc;
+        }, {});
+
+        // Calculate days overdue for each invoice and attach payment history
         const invoicesWithOverdue = invoices.map(invoice => {
             const today = new Date();
-            const daysOverdue = calculateDaysBetween(invoice.dueDate, today);
+            let dueByDays = 0;
+            let isOverdue = false;
+
+            if (invoice.dueDate) {
+                // calculateDaysBetween should handle Date objects
+                dueByDays = calculateDaysBetween(new Date(invoice.dueDate), today);
+                isOverdue = dueByDays > 0 && invoice.status !== 'PAID';
+            }
 
             return {
                 ...invoice,
-                daysOverdue: daysOverdue > 0 ? daysOverdue : 0,
-                isOverdue: daysOverdue > 0
+                paymentHistory: paymentModesMap[invoice.id] || [],
+                dueByDays: dueByDays > 0 ? dueByDays : 0,
+                isOverdue
             };
         });
 
@@ -122,8 +163,13 @@ export const getInvoiceById = async (req: Request, res: Response) => {
 
         // Calculate days dynamically: positive = overdue, negative = days remaining
         const today = new Date();
-        const dueByDays = calculateDaysBetween(invoice.dueDate, today);
-        const isOverdue = dueByDays > 0 && invoice.status !== 'PAID';
+        let dueByDays = 0;
+        let isOverdue = false;
+
+        if (invoice.dueDate) {
+            dueByDays = calculateDaysBetween(invoice.dueDate, today);
+            isOverdue = dueByDays > 0 && invoice.status !== 'PAID';
+        }
 
         res.json({
             ...invoice,
@@ -229,7 +275,184 @@ export const addPaymentRecord = async (req: Request, res: Response) => {
     }
 };
 
+// Update payment record
+export const updatePaymentRecord = async (req: Request, res: Response) => {
+    try {
+        const { id, paymentId } = req.params;
+        const { amount, paymentDate, paymentMode, notes } = req.body;
 
+        const user = getUserFromRequest(req);
+        const parsedAmount = parseFloat(amount);
+
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Fetch the payment to be updated
+            const existingPayment = await tx.aRPaymentHistory.findUnique({
+                where: { id: paymentId }
+            });
+
+            if (!existingPayment || existingPayment.invoiceId !== id) {
+                throw new Error('PAYMENT_NOT_FOUND');
+            }
+
+            // 2. Update the payment
+            const updatedPayment = await tx.aRPaymentHistory.update({
+                where: { id: paymentId },
+                data: {
+                    amount: parsedAmount,
+                    paymentDate: new Date(paymentDate),
+                    paymentMode,
+                    notes
+                }
+            });
+
+            // 3. Recalculate invoice totals
+            const invoicePayments = await tx.aRPaymentHistory.findMany({
+                where: { invoiceId: id }
+            });
+
+            const invoice = await tx.aRInvoice.findUnique({ where: { id } });
+            if (!invoice) throw new Error('INVOICE_NOT_FOUND');
+
+            let newReceipts = 0;
+            let newAdjustments = 0;
+
+            invoicePayments.forEach(p => {
+                const amt = Number(p.amount);
+                if (p.paymentMode === 'ADJUSTMENT' || p.paymentMode === 'CREDIT_NOTE') {
+                    newAdjustments += amt;
+                } else {
+                    newReceipts += amt;
+                }
+            });
+
+            const totalReceipts = newReceipts + newAdjustments;
+            const balance = Number(invoice.totalAmount) - totalReceipts;
+
+            let status = invoice.status;
+            if (balance <= 0) status = 'PAID';
+            else if (totalReceipts > 0) status = 'PARTIAL';
+            else status = 'PENDING';
+
+            await tx.aRInvoice.update({
+                where: { id },
+                data: {
+                    receipts: newReceipts,
+                    adjustments: newAdjustments,
+                    totalReceipts,
+                    balance,
+                    status
+                }
+            });
+
+            return { updatedPayment, balance, status };
+        });
+
+        // Log activity
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'PAYMENT_UPDATED',
+            description: `Payment updated: ₹${parsedAmount.toLocaleString()} via ${paymentMode}`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null,
+            metadata: { paymentId, amount: parsedAmount, paymentMode }
+        });
+
+        res.json(result.updatedPayment);
+    } catch (error: any) {
+        if (error.message === 'PAYMENT_NOT_FOUND') return res.status(404).json({ error: 'Payment not found' });
+        if (error.message === 'INVOICE_NOT_FOUND') return res.status(404).json({ error: 'Invoice not found' });
+        res.status(500).json({ error: 'Failed to update payment', message: error.message });
+    }
+};
+
+
+// Delete payment record
+export const deletePaymentRecord = async (req: Request, res: Response) => {
+    try {
+        const { id, paymentId } = req.params;
+        const user = getUserFromRequest(req);
+
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Fetch payment info before deletion
+            const payment = await tx.aRPaymentHistory.findUnique({
+                where: { id: paymentId }
+            });
+
+            if (!payment || payment.invoiceId !== id) {
+                throw new Error('PAYMENT_NOT_FOUND');
+            }
+
+            const amountDeleted = Number(payment.amount);
+            const modeDeleted = payment.paymentMode;
+
+            // 2. Delete the payment
+            await tx.aRPaymentHistory.delete({
+                where: { id: paymentId }
+            });
+
+            // 3. Recalculate invoice totals
+            const invoicePayments = await tx.aRPaymentHistory.findMany({
+                where: { invoiceId: id }
+            });
+
+            const invoice = await tx.aRInvoice.findUnique({ where: { id } });
+            if (!invoice) throw new Error('INVOICE_NOT_FOUND');
+
+            let newReceipts = 0;
+            let newAdjustments = 0;
+
+            invoicePayments.forEach(p => {
+                const amt = Number(p.amount);
+                if (p.paymentMode === 'ADJUSTMENT' || p.paymentMode === 'CREDIT_NOTE') {
+                    newAdjustments += amt;
+                } else {
+                    newReceipts += amt;
+                }
+            });
+
+            const totalReceipts = newReceipts + newAdjustments;
+            const balance = Number(invoice.totalAmount) - totalReceipts;
+
+            let status = invoice.status;
+            if (balance <= 0) status = 'PAID';
+            else if (totalReceipts > 0) status = 'PARTIAL';
+            else status = 'PENDING';
+
+            await tx.aRInvoice.update({
+                where: { id },
+                data: {
+                    receipts: newReceipts,
+                    adjustments: newAdjustments,
+                    totalReceipts,
+                    balance,
+                    status
+                }
+            });
+
+            return { amountDeleted, modeDeleted, balance, status };
+        });
+
+        // Log activity
+        await logInvoiceActivity({
+            invoiceId: id,
+            action: 'PAYMENT_DELETED',
+            description: `Payment of ₹${result.amountDeleted.toLocaleString()} via ${result.modeDeleted} deleted`,
+            performedById: user.id,
+            performedBy: user.name,
+            ipAddress: getIpFromRequest(req),
+            userAgent: req.headers['user-agent'] || null,
+            metadata: { paymentId, amount: result.amountDeleted }
+        });
+
+        res.json({ message: 'Payment deleted successfully' });
+    } catch (error: any) {
+        if (error.message === 'PAYMENT_NOT_FOUND') return res.status(404).json({ error: 'Payment not found' });
+        if (error.message === 'INVOICE_NOT_FOUND') return res.status(404).json({ error: 'Invoice not found' });
+        res.status(500).json({ error: 'Failed to delete payment', message: error.message });
+    }
+};
 
 // Create invoice
 export const createInvoice = async (req: Request, res: Response) => {
@@ -704,7 +927,18 @@ export const getInvoiceActivityLog = async (req: Request, res: Response) => {
 
         const activityLogs = await prisma.aRInvoiceActivityLog.findMany({
             where: { invoiceId: invoice.id },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                action: true,
+                description: true,
+                fieldName: true,
+                oldValue: true,
+                newValue: true,
+                performedBy: true,
+                createdAt: true,
+                metadata: true
+            }
         });
 
         res.json(activityLogs);

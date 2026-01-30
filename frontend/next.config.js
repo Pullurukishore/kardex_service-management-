@@ -26,15 +26,17 @@ const nextConfig = {
       'clsx',
       'tailwind-merge',
       'axios',
-      'zod'
+      'zod',
+      'xlsx',
+      'exceljs',
+      'jspdf',
+      'leaflet',
+      'docx'
     ],
   },
 
   // Modular imports for better tree-shaking
   modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-    },
     'date-fns': {
       transform: 'date-fns/{{member}}',
     },
@@ -63,35 +65,30 @@ const nextConfig = {
     if (!isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
-        maxInitialRequests: 25, // Increased for more granularity
-        minSize: 40000, // Slightly larger to avoid tiny files
+        maxInitialRequests: 25,
+        minSize: 20000, // Reduced to allow more granular chunks
         cacheGroups: {
           default: false,
           vendors: false,
-          framework: {
-            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|next)[\\/]/,
-            name: 'framework',
-            priority: 40,
-            chunks: 'all',
-            enforce: true,
-          },
-          // Visualization libs - let Webpack split them naturally
+          // Let Next.js handle the core framework chunk automatically
+
+          // Visualization libs
           charts: {
             test: /[\\/]node_modules[\\/](recharts|chart\.js|react-chartjs-2|d3)[\\/]/,
             priority: 35,
             chunks: 'all',
             reuseExistingChunk: true,
           },
-          // Heavy mapping/excel libs - don't force into one 'heavy_libs' chunk
+          // Heavy mapping/excel libs
           heavy_libs: {
             test: /[\\/]node_modules[\\/](xlsx|file-saver|jspdf|exceljs|docx|leaflet|react-leaflet)[\\/]/,
             priority: 30,
             chunks: 'all',
             reuseExistingChunk: true,
           },
-          // UI components - remove lucide-react and the 'name' to allow granularity
+          // UI components
           ui: {
-            test: /[\\/]node_modules[\\/](@radix-ui|@tanstack\/react-table)[\\/]/,
+            test: /[\\/]node_modules[\\/](@radix-ui|@tanstack\/react-table|lucide-react)[\\/]/,
             priority: 25,
             chunks: 'all',
             reuseExistingChunk: true,

@@ -31,9 +31,6 @@ export default function EditInvoicePage() {
     region: '',
     department: '',
     personInCharge: '',
-    pocName: '',
-    receipts: '',
-    adjustments: '',
     type: '',
     modeOfDelivery: '',
     sentHandoverDate: '',
@@ -76,9 +73,6 @@ export default function EditInvoicePage() {
         region: data.region || '',
         department: data.department || '',
         personInCharge: data.personInCharge || '',
-        pocName: data.pocName || '',
-        receipts: String(data.receipts || ''),
-        adjustments: String(data.adjustments || ''),
         type: data.type || '',
         modeOfDelivery: data.modeOfDelivery || '',
         sentHandoverDate: data.sentHandoverDate ? data.sentHandoverDate.split('T')[0] : '',
@@ -111,12 +105,6 @@ export default function EditInvoicePage() {
     try {
       setSaving(true);
       
-      const receipts = parseFloat(formData.receipts) || 0;
-      const adjustments = parseFloat(formData.adjustments) || 0;
-      const totalReceipts = receipts + adjustments;
-      const totalAmount = parseFloat(formData.totalAmount) || 0;
-      const balance = totalAmount - totalReceipts;
-      
       await arApi.updateInvoice(invoice!.id, {
         poNo: formData.poNo || undefined,
         dueDate: formData.dueDate,
@@ -127,11 +115,6 @@ export default function EditInvoicePage() {
         region: formData.region || undefined,
         department: formData.department || undefined,
         personInCharge: formData.personInCharge || undefined,
-        pocName: formData.pocName || undefined,
-        receipts: receipts || undefined,
-        adjustments: adjustments || undefined,
-        totalReceipts: totalReceipts || undefined,
-        balance: balance,
         type: formData.type || undefined,
         modeOfDelivery: formData.modeOfDelivery || undefined,
         sentHandoverDate: formData.sentHandoverDate || undefined,
@@ -239,7 +222,7 @@ export default function EditInvoicePage() {
             SAP Invoice Details
           </h3>
           <p className="text-[#92A2A5] text-sm mb-5">These fields are imported from SAP and cannot be edited</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <div>
               <label className={labelClass}>Invoice Number</label>
               <input type="text" value={formData.invoiceNumber} readOnly className={readOnlyClass} />
@@ -248,7 +231,7 @@ export default function EditInvoicePage() {
               <label className={labelClass}>BP Code</label>
               <input type="text" value={formData.bpCode} readOnly className={readOnlyClass} />
             </div>
-            <div>
+            <div className="sm:col-span-2 lg:col-span-1">
               <label className={labelClass}>Customer Name</label>
               <input type="text" value={formData.customerName} readOnly className={readOnlyClass} />
             </div>
@@ -261,8 +244,8 @@ export default function EditInvoicePage() {
               <input type="text" value={formatARCurrency(Number(formData.netAmount))} readOnly className={readOnlyClass} />
             </div>
             <div>
-              <label className={labelClass}>Tax (%)</label>
-              <input type="text" value={formData.taxAmount ? `${formData.taxAmount}%` : '-'} readOnly className={readOnlyClass} />
+              <label className={labelClass}>Tax Amount (₹)</label>
+              <input type="text" value={formatARCurrency(Number(formData.taxAmount))} readOnly className={readOnlyClass} />
             </div>
             <div>
               <label className={labelClass}>Invoice Date</label>
@@ -279,7 +262,7 @@ export default function EditInvoicePage() {
             </div>
             Payment & Status
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <div>
               <label className={labelClass}>PO Number</label>
               <input
@@ -302,15 +285,15 @@ export default function EditInvoicePage() {
                 required
               />
             </div>
-            <div>
+            <div className="sm:col-span-full">
               <label className={labelClass}>Payment Terms</label>
-              <input
-                type="text"
+              <textarea
                 name="actualPaymentTerms"
                 value={formData.actualPaymentTerms}
                 onChange={handleChange}
-                placeholder="e.g., Net 30"
-                className={inputClass}
+                placeholder="Declare detailed payment terms here..."
+                className={`${inputClass} h-auto min-h-[100px] py-4 resize-y`}
+                rows={3}
               />
             </div>
             <div>
@@ -410,62 +393,6 @@ export default function EditInvoicePage() {
                 className={inputClass}
               />
             </div>
-            <div>
-              <label className={labelClass}>POC Name</label>
-              <input
-                type="text"
-                name="pocName"
-                value={formData.pocName}
-                onChange={handleChange}
-                placeholder="Point of contact"
-                className={inputClass}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Receipts & Payments */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#82A094]/20 p-6 shadow-lg">
-          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-[#82A094] to-[#4F6A64]">
-              <IndianRupee className="w-5 h-5 text-white" />
-            </div>
-            Receipts & Payments
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-            <div>
-              <label className={labelClass}>Receipts (₹)</label>
-              <input
-                type="number"
-                name="receipts"
-                value={formData.receipts}
-                onChange={handleChange}
-                placeholder="0.00"
-                className={inputClass}
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Adjustments (₹)</label>
-              <input
-                type="number"
-                name="adjustments"
-                value={formData.adjustments}
-                onChange={handleChange}
-                placeholder="0.00"
-                className={inputClass}
-                step="0.01"
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Calculated Total Receipts</label>
-              <div className="h-12 px-4 rounded-xl bg-gradient-to-r from-[#82A094]/15 to-[#4F6A64]/15 border-2 border-[#82A094]/30 flex items-center">
-                <span className="text-[#4F6A64] font-bold">
-                  {formatARCurrency((parseFloat(formData.receipts) || 0) + (parseFloat(formData.adjustments) || 0))}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -521,45 +448,16 @@ export default function EditInvoicePage() {
           </div>
         </div>
 
-        {/* Invoice Type */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-lg">
-          <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-[#CE9F6B] to-[#976E44]">
-              <Wallet className="w-5 h-5 text-white" />
-            </div>
-            Invoice Type
-          </h3>
-          
-          {/* Type Selector */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            {[
-              { value: 'REGULAR', label: 'Regular', desc: 'Standard invoice' },
-              { value: 'PREPAID', label: 'Prepaid', desc: 'Advance payment' },
-            ].map((type) => (
-              <button
-                key={type.value}
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, invoiceType: type.value as any }))}
-                className={`relative p-4 rounded-xl border-2 transition-all text-left ${
-                  formData.invoiceType === type.value
-                    ? 'border-[#CE9F6B] bg-gradient-to-br from-[#CE9F6B]/10 to-[#E17F70]/5 shadow-lg'
-                    : 'border-[#AEBFC3]/30 hover:border-[#CE9F6B]/50 hover:bg-[#CE9F6B]/5'
-                }`}
-              >
-                {formData.invoiceType === type.value && (
-                  <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-gradient-to-br from-[#CE9F6B] to-[#E17F70]" />
-                )}
-                <p className={`font-bold ${formData.invoiceType === type.value ? 'text-[#976E44]' : 'text-[#546A7A]'}`}>
-                  {type.label}
-                </p>
-                <p className="text-xs text-[#92A2A5] mt-1">{type.desc}</p>
-              </button>
-            ))}
-          </div>
-
-          {/* Prepaid-specific fields */}
-          {formData.invoiceType === 'PREPAID' && (
-            <div className="grid grid-cols-3 gap-5 pt-4 border-t border-[#CE9F6B]/20">
+        {/* Prepaid-specific fields (Only shown if already a PREPAID invoice) */}
+        {formData.invoiceType === 'PREPAID' && (
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-[#CE9F6B]/20 p-6 shadow-lg">
+            <h3 className="text-lg font-bold text-[#546A7A] mb-5 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-[#CE9F6B] to-[#976E44]">
+                <Wallet className="w-5 h-5 text-white" />
+              </div>
+              Prepaid Delivery Management
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               <div>
                 <label className={labelClass}>Advance Received Date</label>
                 <input
@@ -591,8 +489,8 @@ export default function EditInvoicePage() {
                 </select>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-4 pt-2">

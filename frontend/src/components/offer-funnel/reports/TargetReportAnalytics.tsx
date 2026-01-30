@@ -82,17 +82,8 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
   const [selectedProductType, setSelectedProductType] = useState<string>('ALL_PRODUCTS');
   const [topN, setTopN] = useState<number>(10);
   const formatValue = useCallback((v: number) => {
-    if (valueUnit === 'INR') return formatINRFull(v);
-    if (valueUnit === 'CR') {
-      const cr = v / 10000000;
-      return `₹${cr.toFixed(2)}Cr`;
-    }
-    if (valueUnit === 'LAKH') {
-      const lakh = v / 100000;
-      return `₹${lakh.toFixed(2)}L`;
-    }
-    return formatCrLakh(v);
-  }, [valueUnit]);
+    return formatINRFull(v);
+  }, []);
   const filteredZoneTargets = useMemo(() => {
     return selectedProductType === 'ALL_PRODUCTS'
       ? zoneTargets
@@ -347,13 +338,7 @@ export default function TargetReportAnalytics({ zoneTargets, userTargets, summar
                 </div>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-xs">
-              <span className="text-[#757777]">Values:</span>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='AUTO'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('AUTO')}>Auto</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='LAKH'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('LAKH')}>Lakh</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='CR'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('CR')}>Cr</button>
-              <button className={`px-2 py-1 rounded border ${valueUnit==='INR'?'border-[#5D6E73] text-[#546A7A]':'border-[#92A2A5] text-[#5D6E73]'}`} onClick={() => setValueUnit('INR')}>Full</button>
-            </div>
+            {/* Values: Unit selector removed as full values are now enforced */}
           </CardContent>
         </Card>
 

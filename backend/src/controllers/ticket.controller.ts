@@ -618,7 +618,15 @@ export const getTickets = async (req: TicketRequest, res: Response) => {
         skip,
         take: Number(limit),
         orderBy: { createdAt: 'desc' },
-        include: {
+        select: {
+          id: true,
+          ticketNumber: true,
+          title: true,
+          description: true,
+          status: true,
+          priority: true,
+          assignmentStatus: true,
+          createdAt: true,
           customer: {
             select: {
               id: true,
@@ -626,43 +634,18 @@ export const getTickets = async (req: TicketRequest, res: Response) => {
               address: true
             }
           },
-          contact: {
+          zone: {
             select: {
               id: true,
-              name: true,
-              email: true,
-              phone: true,
-              role: true
-            }
-          },
-          asset: {
-            select: {
-              id: true,
-              serialNo: true,
-              model: true,
-              location: true
+              name: true
             }
           },
           assignedTo: {
             select: {
               id: true,
-              email: true,
               name: true,
-              role: true
-            }
-          },
-          subOwner: {
-            select: {
-              id: true,
               email: true,
-              name: true,
               role: true
-            }
-          },
-          zone: {
-            select: {
-              id: true,
-              name: true
             }
           }
         }

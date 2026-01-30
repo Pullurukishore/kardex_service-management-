@@ -71,9 +71,9 @@ export function DashboardClientWrapper({ children, userRole }: DashboardClientWr
     <div className="min-h-screen bg-white">
       {/* Animated background elements - more subtle */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none print:hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#6F8A9D]/3 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-[#96AEC2]/30/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-[#6F8A9D]/30/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#6F8A9D]/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-[#96AEC2]/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-[#6F8A9D]/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
       </div>
 
       {/* Mobile overlay - using CSS transition instead of framer-motion */}
@@ -91,18 +91,19 @@ export function DashboardClientWrapper({ children, userRole }: DashboardClientWr
       {showSidebar && (
         <div
           className={cn(
-            "print:hidden transition-transform duration-300 ease-in-out",
+            "fixed inset-y-0 left-0 z-[60] print:hidden transition-transform duration-300 ease-in-out bg-white",
             isMobile 
-              ? (sidebarOpen ? "translate-x-0" : "-translate-x-full")
-              : "hidden lg:block"
+              ? cn("w-80", sidebarOpen ? "translate-x-0" : "-translate-x-full")
+              : cn(isCollapsed ? "w-[72px]" : "w-64", "hidden lg:block")
           )}
         >
-          <Suspense fallback={<div className="fixed left-0 top-0 w-64 h-screen bg-gradient-to-b from-[#546A7A] to-[#3D4F5C] z-[60]" />}>
+          <Suspense fallback={<div className="h-full bg-white border-r border-[#6F8A9D]/15" />}>
             <Sidebar 
               userRole={userRole}
               collapsed={!isMobile && isCollapsed}
               setCollapsed={setIsCollapsed}
               onClose={() => setSidebarOpen(false)}
+              className="static h-full w-full"
             />
           </Suspense>
         </div>

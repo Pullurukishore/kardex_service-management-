@@ -23,6 +23,8 @@ interface FormData {
   nickName: string;
   isMSME: boolean;
   udyamRegNum: string;
+  gstNumber: string;
+  panNumber: string;
   currency: string;
   otherCurrency?: string;
 }
@@ -50,6 +52,8 @@ export default function EditBankAccountPage() {
     nickName: '',
     isMSME: false,
     udyamRegNum: '',
+    gstNumber: '',
+    panNumber: '',
     currency: 'INR',
     otherCurrency: ''
   });
@@ -74,6 +78,8 @@ export default function EditBankAccountPage() {
         nickName: data.nickName || '',
         isMSME: data.isMSME || false,
         udyamRegNum: data.udyamRegNum || '',
+        gstNumber: data.gstNumber || '',
+        panNumber: data.panNumber || '',
         currency: ['INR', 'EUR', 'USD'].includes(data.currency) ? data.currency : 'Other',
         otherCurrency: ['INR', 'EUR', 'USD'].includes(data.currency) ? '' : data.currency
       });
@@ -114,6 +120,20 @@ export default function EditBankAccountPage() {
         setError('Please fill in all required fields');
         setSaving(false);
         return;
+      }
+
+      // Smart Mandatory Validation for GST/PAN (only for INR)
+      if (formData.currency === 'INR') {
+        if (!formData.gstNumber) {
+          setError('GST Number is required for INR transactions');
+          setSaving(false);
+          return;
+        }
+        if (!formData.panNumber) {
+          setError('PAN Number is required for INR transactions');
+          setSaving(false);
+          return;
+        }
       }
       
       if (formData.accountNumber !== formData.confirmAccountNumber) {
@@ -273,6 +293,8 @@ export default function EditBankAccountPage() {
                   />
                 </div>
 
+
+
                 <div className={`md:col-span-2 flex flex-col gap-4 p-4 rounded-xl ${hasChanges('isMSME') || hasChanges('udyamRegNum') ? 'bg-[#CE9F6B]/5 border-[#CE9F6B]/30' : 'bg-[#F8FAFB] border-[#AEBFC3]/20'}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -377,6 +399,40 @@ export default function EditBankAccountPage() {
                 )}
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className={`space-y-2 ${hasChanges('gstNumber') ? 'ring-2 ring-[#CE9F6B]/30 rounded-xl p-3 -m-3' : ''}`}>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-[#5D6E73]">
+                    GST Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}
+                    {hasChanges('gstNumber') && (
+                      <span className="ml-auto text-xs text-[#CE9F6B] font-medium">Modified</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    name="gstNumber"
+                    value={formData.gstNumber}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3.5 bg-[#F8FAFB] border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] focus:outline-none focus:border-[#CE9F6B]/50 focus:ring-2 focus:ring-[#CE9F6B]/20 focus:bg-white transition-all uppercase"
+                  />
+                </div>
+
+                <div className={`space-y-2 ${hasChanges('panNumber') ? 'ring-2 ring-[#CE9F6B]/30 rounded-xl p-3 -m-3' : ''}`}>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-[#5D6E73]">
+                    PAN Number {formData.currency === 'INR' && <span className="text-[#E17F70]">*</span>}
+                    {hasChanges('panNumber') && (
+                      <span className="ml-auto text-xs text-[#CE9F6B] font-medium">Modified</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    name="panNumber"
+                    value={formData.panNumber}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3.5 bg-[#F8FAFB] border border-[#AEBFC3]/30 rounded-xl text-[#546A7A] focus:outline-none focus:border-[#CE9F6B]/50 focus:ring-2 focus:ring-[#CE9F6B]/20 focus:bg-white transition-all uppercase"
+                  />
+                </div>
+              </div>
+
               <div className={`space-y-2 ${hasChanges('beneficiaryBankName') ? 'ring-2 ring-[#CE9F6B]/30 rounded-xl p-3 -m-3' : ''}`}>
                 <label className="flex items-center gap-2 text-sm font-semibold text-[#5D6E73]">
                   <Building2 className="w-4 h-4 text-[#CE9F6B]" />
@@ -435,7 +491,7 @@ export default function EditBankAccountPage() {
                 <div className={`space-y-2 ${hasChanges('ifscCode') ? 'ring-2 ring-[#CE9F6B]/30 rounded-xl p-3 -m-3' : ''}`}>
                   <label className="flex items-center gap-2 text-sm font-semibold text-[#5D6E73]">
                     <Hash className="w-4 h-4 text-[#CE9F6B]" />
-                    IFSC Code <span className="text-[#E17F70]">*</span>
+                    IFSC / SWIFT Code <span className="text-[#E17F70]">*</span>
                     {hasChanges('ifscCode') && (
                       <span className="ml-auto text-xs text-[#CE9F6B] font-medium">Modified</span>
                     )}
@@ -523,7 +579,9 @@ export default function EditBankAccountPage() {
                   beneficiaryName: 'Beneficiary Name',
                   beneficiaryBankName: 'Bank Name',
                   accountNumber: 'Account No.',
-                  ifscCode: 'IFSC Code'
+                  ifscCode: 'IFSC / SWIFT Code',
+                  gstNumber: 'GST Number',
+                  panNumber: 'PAN Number'
                 };
 
                 return (
@@ -567,7 +625,7 @@ export default function EditBankAccountPage() {
                 <span className="text-[#546A7A] font-mono text-xs">****{originalAccount?.accountNumber?.slice(-4)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#92A2A5]">IFSC:</span>
+                <span className="text-[#92A2A5]">IFSC/SWIFT:</span>
                 <span className="text-[#CE9F6B] font-mono text-xs">{originalAccount?.ifscCode}</span>
               </div>
             </div>

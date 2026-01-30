@@ -208,7 +208,15 @@ export const getTicketActivityLogs = async (req: AuthenticatedRequest, res: Resp
                 skip,
                 take: limitNum,
                 orderBy: { createdAt: 'desc' },
-                include: {
+                select: {
+                    id: true,
+                    action: true,
+                    entityType: true,
+                    entityId: true,
+                    details: true,
+                    ipAddress: true,
+                    userAgent: true,
+                    createdAt: true,
                     performedBy: {
                         select: {
                             id: true,
@@ -248,7 +256,6 @@ export const getTicketActivityLogs = async (req: AuthenticatedRequest, res: Resp
             description: getActivityDescription(activity),
             details: activity.details,
             ipAddress: activity.ipAddress,
-            userAgent: activity.userAgent,
             deviceInfo: (activity as any).deviceInfo || (activity.details as any)?.deviceInfo || null,
             module: (activity as any).module || (activity.details as any)?.module || null,
             performedBy: (activity.performedBy || (activity as any).User_AuditLog_userIdToUser) ? {
@@ -451,7 +458,15 @@ export const getOfferActivityLogs = async (req: AuthenticatedRequest, res: Respo
                 skip,
                 take: limitNum,
                 orderBy: { createdAt: 'desc' },
-                include: {
+                select: {
+                    id: true,
+                    action: true,
+                    entityType: true,
+                    entityId: true,
+                    details: true,
+                    ipAddress: true,
+                    userAgent: true,
+                    createdAt: true,
                     performedBy: {
                         select: {
                             id: true,
@@ -492,7 +507,6 @@ export const getOfferActivityLogs = async (req: AuthenticatedRequest, res: Respo
             description: getActivityDescription(activity),
             details: activity.details,
             ipAddress: activity.ipAddress,
-            userAgent: activity.userAgent,
             deviceInfo: (activity as any).deviceInfo || (activity.details as any)?.deviceInfo || null,
             module: (activity as any).module || (activity.details as any)?.module || null,
             performedBy: (activity.performedBy || (activity as any).User_AuditLog_userIdToUser) ? {

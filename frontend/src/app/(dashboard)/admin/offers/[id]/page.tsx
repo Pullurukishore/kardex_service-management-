@@ -313,22 +313,23 @@ export default function OfferDetailPage() {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <div className="flex justify-between items-start">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
           <Button
             variant="outline"
             size="icon"
             onClick={() => router.push('/admin/offers')}
+            className="shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-[#546A7A]">{offer.offerReferenceNumber}</h1>
-            <p className="text-[#5D6E73] mt-1">{offer.title || offer.customer?.companyName}</p>
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#546A7A] truncate">{offer.offerReferenceNumber}</h1>
+            <p className="text-[#5D6E73] mt-1 text-sm sm:text-base truncate">{offer.title || offer.customer?.companyName}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button onClick={() => router.push(`/admin/offers/${offer.id}/edit`)}>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <Button onClick={() => router.push(`/admin/offers/${offer.id}/edit`)} className="w-full sm:w-auto">
             <Edit className="h-4 w-4 mr-2" />
             Edit Offer
           </Button>
@@ -338,60 +339,151 @@ export default function OfferDetailPage() {
       {/* Stage Progress - Modern Design */}
       <Card className="shadow-xl overflow-hidden border-0">
         <CardHeader className="bg-gradient-to-r from-[#6F8A9D] via-[#6F8A9D] to-[#6F8A9D] text-white border-b-0 pb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl font-bold text-white mb-2">Offer Progress Journey</CardTitle>
-              <CardDescription className="text-[#96AEC2]">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-white mb-2">Offer Progress Journey</CardTitle>
+              <CardDescription className="text-[#96AEC2] text-sm">
                 Track your offer through each milestone - WON or LOST outcomes after Negotiation
               </CardDescription>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-              <p className="text-sm font-semibold text-white">
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 self-start sm:self-auto">
+              <p className="text-xs sm:text-sm font-semibold text-white">
                 Stage {currentStageIndex + 1} of {STAGES.length}
               </p>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-10 pb-10 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
+        <CardContent className="pt-6 sm:pt-10 pb-6 sm:pb-10 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
           {/* Check if current stage is LOST */}
           {offer.stage === 'LOST' ? (
-            <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex flex-col items-center justify-center py-8 sm:py-12">
               <div className="relative">
-                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-red-100 to-red-200 border-4 border-[#9E3B47] flex items-center justify-center mb-6 shadow-2xl">
-                  <AlertCircle className="h-14 w-14 text-[#9E3B47]" />
+                <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-red-100 to-red-200 border-4 border-[#9E3B47] flex items-center justify-center mb-4 sm:mb-6 shadow-2xl">
+                  <AlertCircle className="h-10 w-10 sm:h-14 sm:w-14 text-[#9E3B47]" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-12 h-12 bg-[#E17F70]/100 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">❌</span>
+                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-8 h-8 sm:w-12 sm:h-12 bg-[#E17F70]/100 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-xl sm:text-2xl">❌</span>
                 </div>
               </div>
-              <h3 className="text-3xl font-bold text-[#9E3B47] mb-3">Deal Lost</h3>
-              <p className="text-[#5D6E73] text-center max-w-md mb-6 text-lg">
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#9E3B47] mb-2 sm:mb-3 text-center">Deal Lost</h3>
+              <p className="text-[#5D6E73] text-center max-w-sm sm:max-w-md mb-4 sm:mb-6 text-sm sm:text-lg">
                 This offer did not convert into a sale
               </p>
-              <Badge className="bg-gradient-to-r from-[#E17F70] to-red-600 text-white border-0 text-base px-6 py-3 shadow-lg">
+              <Badge className="bg-gradient-to-r from-[#E17F70] to-red-600 text-white border-0 text-sm sm:text-base px-5 sm:px-6 py-2 sm:py-3 shadow-lg">
                 Status: Lost
               </Badge>
             </div>
           ) : (
-            <div className="relative px-4">
-              {/* Progress Line Background */}
-              <div className="absolute top-8 left-0 right-0 h-2 bg-gradient-to-r from-[#AEBFC3]/40 to-[#AEBFC3]/60 rounded-full" style={{ zIndex: 0 }}></div>
-              
-              {/* Progress Line Active */}
-              <div 
-                className={`absolute top-8 left-0 h-2 transition-all duration-700 ease-out rounded-full ${
-                  offer.stage === 'WON' 
-                    ? 'bg-gradient-to-r from-green-400 via-[#82A094] to-[#82A094] shadow-lg shadow-green-500/50' 
-                    : 'bg-gradient-to-r from-[#96AEC2] via-[#6F8A9D] to-[#6F8A9D] shadow-lg shadow-blue-500/50'
-                }`}
-                style={{ 
-                  width: `${(currentStageIndex / (STAGES.length - 1)) * 100}%`,
-                  zIndex: 0 
-                }}
-              ></div>
-              
-              {/* Stage Steps */}
-              <div className="relative flex justify-between" style={{ zIndex: 1 }}>
+            <div className="relative px-2 sm:px-4">
+              {/* Desktop Progress View (Horizontal) */}
+              <div className="hidden md:block relative mb-16">
+                {/* Progress Line Background */}
+                <div className="absolute top-8 left-0 right-0 h-2 bg-gradient-to-r from-[#AEBFC3]/40 to-[#AEBFC3]/60 rounded-full" style={{ zIndex: 0 }}></div>
+                
+                {/* Progress Line Active */}
+                <div 
+                  className={`absolute top-8 left-0 h-2 transition-all duration-700 ease-out rounded-full ${
+                    offer.stage === 'WON' 
+                      ? 'bg-gradient-to-r from-green-400 via-[#82A094] to-[#82A094] shadow-lg shadow-green-500/50' 
+                      : 'bg-gradient-to-r from-[#96AEC2] via-[#6F8A9D] to-[#6F8A9D] shadow-lg shadow-blue-500/50'
+                  }`}
+                  style={{ 
+                    width: `${(currentStageIndex / (STAGES.length - 1)) * 100}%`,
+                    zIndex: 0 
+                  }}
+                ></div>
+                
+                {/* Stage Steps (Horizontal) */}
+                <div className="relative flex justify-between" style={{ zIndex: 1 }}>
+                  {STAGES.map((stage, index) => {
+                    const isPast = index < currentStageIndex
+                    const isCurrent = index === currentStageIndex
+                    const isWon = stage.key === 'WON' && offer.stage === 'WON'
+                    const Icon = stage.icon
+                    const stageInfo = STAGE_INFO[stage.key] || {}
+                    
+                    const stageColors = {
+                      blue: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-[#96AEC2]/50', shadow: 'shadow-blue-500/50', text: 'text-[#546A7A]', badge: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]' },
+                      indigo: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-indigo-200', shadow: 'shadow-indigo-500/50', text: 'text-[#546A7A]', badge: 'bg-[#546A7A]/20 text-[#546A7A] border-indigo-300' },
+                      amber: { bg: 'from-[#CE9F6B] to-[#976E44]', border: 'border-[#CE9F6B]', ring: 'ring-amber-200', shadow: 'shadow-amber-500/50', text: 'text-[#976E44]', badge: 'bg-[#CE9F6B]/20 text-[#976E44] border-amber-300' },
+                      purple: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-purple-200', shadow: 'shadow-purple-500/50', text: 'text-[#546A7A]', badge: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]' },
+                      green: { bg: 'from-[#82A094] to-[#82A094]', border: 'border-[#82A094]', ring: 'ring-[#A2B9AF]/50', shadow: 'shadow-green-500/50', text: 'text-[#4F6A64]', badge: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]' },
+                      teal: { bg: 'from-[#82A094] to-[#82A094]', border: 'border-teal-500', ring: 'ring-teal-200', shadow: 'shadow-teal-500/50', text: 'text-[#4F6A64]', badge: 'bg-[#82A094]/20 text-[#4F6A64] border-teal-300' },
+                      red: { bg: 'from-[#E17F70] to-red-600', border: 'border-[#9E3B47]', ring: 'ring-[#E17F70]/50', shadow: 'shadow-red-500/50', text: 'text-[#75242D]', badge: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]' }
+                    }
+                    
+                    const color = stageColors[stageInfo.color as keyof typeof stageColors] || stageColors.blue
+                    
+                    return (
+                      <div key={stage.key} className="flex flex-col items-center group" style={{ flex: 1 }}>
+                        <div className="relative">
+                          <div className={`
+                              relative w-16 h-16 rounded-full flex items-center justify-center border-4 transition-all duration-300 transform
+                              ${(isPast || isCurrent) && !isWon ? `${color.border} bg-gradient-to-br ${color.bg} shadow-lg ${color.shadow}` : ''}
+                              ${isCurrent && !isWon ? `ring-8 ${color.ring} shadow-2xl scale-110 animate-pulse` : ''}
+                              ${isWon ? 'border-[#82A094] bg-gradient-to-br from-[#82A094] to-[#82A094] ring-8 ring-[#A2B9AF]/50 shadow-2xl shadow-green-500/50 scale-110' : ''}
+                              ${!isPast && !isCurrent && !isWon ? 'border-[#92A2A5] bg-white shadow-md hover:scale-105' : ''}
+                              group-hover:scale-110
+                            `}>
+                            <Icon className={`h-7 w-7 transition-all ${(isPast || isCurrent || isWon) ? 'text-white' : 'text-[#979796]'}`} />
+                          </div>
+                          {isPast && !isCurrent && !isWon && (
+                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#A2B9AF]/100 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                              <CheckCircle className="h-4 w-4 text-white" />
+                            </div>
+                          )}
+                          {isWon && (
+                            <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#CE9F6B] rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-bounce">
+                              <span className="text-lg">🎉</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className={`mt-4 text-sm font-bold text-center max-w-[100px] transition-all
+                          ${isCurrent && !isWon ? `${color.text} scale-105` : ''}
+                          ${isWon ? 'text-[#4F6A64] scale-105' : ''}
+                          ${!isPast && !isCurrent && !isWon ? 'text-[#AEBFC3]' : color.text}
+                        `}>
+                          {stage.label}
+                        </p>
+                        {isCurrent && !isWon && (
+                          <Badge className={`mt-2 bg-gradient-to-r ${color.bg} text-white border-0 shadow-lg px-3 py-1 animate-pulse`}>
+                            ⚡ Current
+                          </Badge>
+                        )}
+                        {isWon && (
+                          <Badge className="mt-2 bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0 shadow-lg px-3 py-1">
+                            ✨ Success!
+                          </Badge>
+                        )}
+                        {isPast && !isCurrent && !isWon && (
+                          <Badge className={`mt-2 ${color.badge} border px-2 py-0.5 text-xs`}>
+                             ✓ Done
+                          </Badge>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Mobile Progress View (Vertical) */}
+              <div className="md:hidden relative space-y-8 pl-0 py-2">
+                {/* Vertical Progress Line Background */}
+                <div className="absolute left-6 top-4 bottom-4 w-1 bg-[#AEBFC3]/30 rounded-full" style={{ zIndex: 0 }}></div>
+                
+                {/* Vertical Progress Line Active */}
+                <div 
+                  className={`absolute left-6 top-4 w-1 transition-all duration-700 ease-out rounded-full ${
+                    offer.stage === 'WON' 
+                      ? 'bg-gradient-to-b from-green-400 to-[#82A094]' 
+                      : 'bg-gradient-to-b from-[#96AEC2] to-[#6F8A9D]'
+                  }`}
+                  style={{ 
+                    height: `${(currentStageIndex / (STAGES.length - 1)) * 100}%`,
+                    zIndex: 0 
+                  }}
+                ></div>
+
                 {STAGES.map((stage, index) => {
                   const isPast = index < currentStageIndex
                   const isCurrent = index === currentStageIndex
@@ -399,134 +491,59 @@ export default function OfferDetailPage() {
                   const Icon = stage.icon
                   const stageInfo = STAGE_INFO[stage.key] || {}
                   
-                  // Color mapping for each stage
                   const stageColors = {
-                    blue: { 
-                      bg: 'from-[#6F8A9D] to-[#6F8A9D]', 
-                      border: 'border-[#6F8A9D]', 
-                      ring: 'ring-[#96AEC2]/50', 
-                      shadow: 'shadow-blue-500/50',
-                      text: 'text-[#546A7A]',
-                      badge: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]'
-                    },
-                    indigo: { 
-                      bg: 'from-[#6F8A9D] to-[#6F8A9D]', 
-                      border: 'border-[#6F8A9D]', 
-                      ring: 'ring-indigo-200', 
-                      shadow: 'shadow-indigo-500/50',
-                      text: 'text-[#546A7A]',
-                      badge: 'bg-[#546A7A]/20 text-[#546A7A] border-indigo-300'
-                    },
-                    amber: { 
-                      bg: 'from-[#CE9F6B] to-[#976E44]', 
-                      border: 'border-[#CE9F6B]', 
-                      ring: 'ring-amber-200', 
-                      shadow: 'shadow-amber-500/50',
-                      text: 'text-[#976E44]',
-                      badge: 'bg-[#CE9F6B]/20 text-[#976E44] border-amber-300'
-                    },
-                    purple: { 
-                      bg: 'from-[#6F8A9D] to-[#6F8A9D]', 
-                      border: 'border-[#6F8A9D]', 
-                      ring: 'ring-purple-200', 
-                      shadow: 'shadow-purple-500/50',
-                      text: 'text-[#546A7A]',
-                      badge: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]'
-                    },
-                    green: { 
-                      bg: 'from-[#82A094] to-[#82A094]', 
-                      border: 'border-[#82A094]', 
-                      ring: 'ring-[#A2B9AF]/50', 
-                      shadow: 'shadow-green-500/50',
-                      text: 'text-[#4F6A64]',
-                      badge: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]'
-                    },
-                    teal: { 
-                      bg: 'from-[#82A094] to-[#82A094]', 
-                      border: 'border-teal-500', 
-                      ring: 'ring-teal-200', 
-                      shadow: 'shadow-teal-500/50',
-                      text: 'text-[#4F6A64]',
-                      badge: 'bg-[#82A094]/20 text-[#4F6A64] border-teal-300'
-                    },
-                    red: { 
-                      bg: 'from-[#E17F70] to-red-600', 
-                      border: 'border-[#9E3B47]', 
-                      ring: 'ring-[#E17F70]/50', 
-                      shadow: 'shadow-red-500/50',
-                      text: 'text-[#75242D]',
-                      badge: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]'
-                    }
+                    blue: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-[#96AEC2]/50', shadow: 'shadow-blue-500/50', text: 'text-[#546A7A]', badge: 'bg-[#96AEC2]/20 text-[#546A7A] border-[#96AEC2]' },
+                    indigo: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-indigo-200', shadow: 'shadow-indigo-500/50', text: 'text-[#546A7A]', badge: 'bg-[#546A7A]/20 text-[#546A7A] border-indigo-300' },
+                    amber: { bg: 'from-[#CE9F6B] to-[#976E44]', border: 'border-[#CE9F6B]', ring: 'ring-amber-200', shadow: 'shadow-amber-500/50', text: 'text-[#976E44]', badge: 'bg-[#CE9F6B]/20 text-[#976E44] border-amber-300' },
+                    purple: { bg: 'from-[#6F8A9D] to-[#6F8A9D]', border: 'border-[#6F8A9D]', ring: 'ring-purple-200', shadow: 'shadow-purple-500/50', text: 'text-[#546A7A]', badge: 'bg-[#6F8A9D]/20 text-[#546A7A] border-[#6F8A9D]' },
+                    green: { bg: 'from-[#82A094] to-[#82A094]', border: 'border-[#82A094]', ring: 'ring-[#A2B9AF]/50', shadow: 'shadow-green-500/50', text: 'text-[#4F6A64]', badge: 'bg-[#A2B9AF]/20 text-[#4F6A64] border-[#82A094]' },
+                    teal: { bg: 'from-[#82A094] to-[#82A094]', border: 'border-teal-500', ring: 'ring-teal-200', shadow: 'shadow-teal-500/50', text: 'text-[#4F6A64]', badge: 'bg-[#82A094]/20 text-[#4F6A64] border-teal-300' },
+                    red: { bg: 'from-[#E17F70] to-red-600', border: 'border-[#9E3B47]', ring: 'ring-[#E17F70]/50', shadow: 'shadow-red-500/50', text: 'text-[#75242D]', badge: 'bg-[#E17F70]/20 text-[#75242D] border-[#E17F70]' }
                   }
                   
                   const color = stageColors[stageInfo.color as keyof typeof stageColors] || stageColors.blue
-                  
+
                   return (
-                    <div key={stage.key} className="flex flex-col items-center group" style={{ flex: 1 }}>
-                      {/* Stage Circle */}
-                      <div className="relative">
-                        <div 
-                          className={`
-                            relative w-16 h-16 rounded-full flex items-center justify-center border-4 transition-all duration-300 transform
-                            ${(isPast || isCurrent) && !isWon ? `${color.border} bg-gradient-to-br ${color.bg} shadow-lg ${color.shadow}` : ''}
-                            ${isCurrent && !isWon ? `ring-8 ${color.ring} shadow-2xl scale-110 animate-pulse` : ''}
-                            ${isWon ? 'border-[#82A094] bg-gradient-to-br from-[#82A094] to-[#82A094] ring-8 ring-[#A2B9AF]/50 shadow-2xl shadow-green-500/50 scale-110' : ''}
-                            ${!isPast && !isCurrent && !isWon ? 'border-[#92A2A5] bg-white shadow-md hover:scale-105' : ''}
-                            ${isPast && !isCurrent && !isWon ? 'scale-100' : ''}
-                            group-hover:scale-110
-                          `}
-                        >
-                          <Icon 
-                            className={`h-7 w-7 transition-all ${(isPast || isCurrent || isWon) ? 'text-white' : 'text-[#979796]'}`} 
-                          />
+                    <div key={stage.key} className="flex items-center gap-4 group relative" style={{ zIndex: 1 }}>
+                      <div className="relative shrink-0">
+                        <div className={`
+                            relative w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all
+                            ${(isPast || isCurrent) && !isWon ? `${color.border} bg-gradient-to-br ${color.bg} shadow-lg` : ''}
+                            ${isCurrent && !isWon ? `ring-4 ${color.ring}` : ''}
+                            ${isWon ? 'border-[#82A094] bg-gradient-to-br from-[#82A094] to-[#82A094] ring-4 ring-[#A2B9AF]/50' : ''}
+                            ${!isPast && !isCurrent && !isWon ? 'border-[#92A2A5] bg-white' : ''}
+                          `}>
+                          <Icon className={`h-5 w-5 ${(isPast || isCurrent || isWon) ? 'text-white' : 'text-[#979796]'}`} />
                         </div>
-                        
-                        {/* Checkmark for completed stages */}
                         {isPast && !isCurrent && !isWon && (
-                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#A2B9AF]/100 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
-                            <CheckCircle className="h-4 w-4 text-white" />
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#A2B9AF] rounded-full flex items-center justify-center border-2 border-white">
+                            <CheckCircle className="h-3 w-3 text-white" />
                           </div>
                         )}
-                        
-                        {/* Success icon for WON */}
                         {isWon && (
-                          <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#CE9F6B] rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-bounce">
-                            <span className="text-lg">🎉</span>
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#CE9F6B] rounded-full flex items-center justify-center border-2 border-white">
+                            <span className="text-xs">🎉</span>
                           </div>
                         )}
                       </div>
-                      
-                      {/* Stage Label */}
-                      <p className={`
-                        mt-4 text-sm font-bold text-center max-w-[100px] transition-all
-                        ${isCurrent && !isWon ? `${color.text} scale-105` : ''}
-                        ${isWon ? 'text-[#4F6A64] scale-105' : ''}
-                        ${isPast && !isCurrent && !isWon ? color.text : ''}
-                        ${!isPast && !isCurrent && !isWon ? 'text-[#AEBFC3]0' : ''}
-                      `}>
-                        {stage.label}
-                      </p>
-                      
-                      {/* Current Badge */}
-                      {isCurrent && !isWon && (
-                        <Badge className={`mt-2 bg-gradient-to-r ${color.bg} text-white border-0 shadow-lg px-3 py-1 animate-pulse`}>
-                          ⚡ Current
-                        </Badge>
-                      )}
-                      
-                      {/* Success Badge */}
-                      {isWon && (
-                        <Badge className="mt-2 bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0 shadow-lg px-3 py-1">
-                          ✨ Success!
-                        </Badge>
-                      )}
-                      
-                      {/* Completed Badge */}
-                      {isPast && !isCurrent && !isWon && (
-                        <Badge className={`mt-2 ${color.badge} border px-2 py-0.5 text-xs`}>
-                          ✓ Done
-                        </Badge>
-                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className={`text-sm font-bold ${isCurrent && !isWon ? color.text : (!isPast && !isCurrent ? 'text-[#AEBFC3]' : color.text)}`}>
+                            {stage.label}
+                          </h4>
+                          {isCurrent && !isWon && (
+                            <Badge className={`bg-gradient-to-r ${color.bg} text-white border-0 text-[10px] px-2 py-0 animate-pulse`}>
+                              ⚡ Current
+                            </Badge>
+                          )}
+                          {isWon && (
+                            <Badge className="bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0 text-[10px] px-2 py-0">
+                              ✨ Success!
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-[#5D6E73] mt-0.5">{stageInfo.description}</p>
+                      </div>
                     </div>
                   )
                 })}
@@ -534,10 +551,10 @@ export default function OfferDetailPage() {
               
               {/* Alternative outcome indicator */}
               {currentStageIndex >= 3 && offer.stage !== 'WON' && offer.stage !== 'LOST' && (
-                <div className="mt-10 pt-6 border-t-2 border-dashed border-[#92A2A5]">
-                  <div className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border-2 border-[#CE9F6B]/40">
+                <div className="mt-8 sm:mt-10 pt-6 border-t-2 border-dashed border-[#92A2A5]">
+                  <div className="flex flex-col sm:flex-row items-center sm:justify-center gap-3 p-4 bg-gradient-to-r from-[#EEC1BF]/10 to-[#EEC1BF]/10 rounded-xl border-2 border-[#CE9F6B]/40">
                     <AlertCircle className="h-5 w-5 text-[#976E44] flex-shrink-0" />
-                    <p className="text-sm text-[#5D6E73] font-medium">
+                    <p className="text-sm text-[#5D6E73] font-medium text-center sm:text-left">
                       Deal can be marked as <span className="font-bold text-[#9E3B47] bg-[#E17F70]/20 px-2 py-0.5 rounded">LOST</span> at any stage if it doesn't close
                     </p>
                   </div>
@@ -553,54 +570,54 @@ export default function OfferDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Customer & Contact Info */}
           <Card className="shadow-xl overflow-hidden border-0">
-            <CardHeader className="bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-b-0">
-              <CardTitle className="flex items-center gap-2 text-white">
-                <Building2 className="h-6 w-6" />
+            <CardHeader className="bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-b-0 py-4 sm:py-6">
+              <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
                 Customer & Contact Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
+            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/5 to-white p-4 sm:p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl p-5 shadow-md border border-[#A2B9AF]/20 hover:shadow-lg transition-shadow">
-                  <h4 className="font-bold text-[#4F6A64] mb-4 flex items-center gap-2 text-lg">
-                    <div className="p-2 bg-[#82A094]/20 rounded-lg">
-                      <Building2 className="h-5 w-5 text-[#4F6A64]" />
+                <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#A2B9AF]/20 hover:shadow-md transition-all">
+                  <h4 className="font-bold text-[#4F6A64] mb-4 flex items-center gap-2 text-base sm:text-lg">
+                    <div className="p-2 bg-[#82A094]/10 rounded-lg">
+                      <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-[#4F6A64]" />
                     </div>
                     Company Details
                   </h4>
-                  <dl className="space-y-3">
+                  <dl className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#82A094]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Company Name</dt>
-                        <dd className="text-base font-bold text-[#546A7A] mt-1">{offer.customer?.companyName || offer.company}</dd>
+                      <div className="w-1.5 h-1.5 bg-[#82A094] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Company Name</dt>
+                        <dd className="text-sm sm:text-base font-bold text-[#546A7A] mt-0.5 break-words">{offer.customer?.companyName || offer.company}</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#82A094]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Location</dt>
-                        <dd className="text-base font-medium text-[#5D6E73] mt-1 flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-[#4F6A64]" />
-                          {offer.location || offer.customer?.city}
+                      <div className="w-1.5 h-1.5 bg-[#82A094] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Location</dt>
+                        <dd className="text-sm sm:text-base font-medium text-[#5D6E73] mt-0.5 flex items-center gap-2">
+                          <MapPin className="h-3.5 w-3.5 text-[#4F6A64] shrink-0" />
+                          <span className="truncate">{offer.location || offer.customer?.city}</span>
                         </dd>
                       </div>
                     </div>
                     {offer.department && (
                       <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-[#82A094]/100 rounded-full mt-2"></div>
-                        <div className="flex-1">
-                          <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Department</dt>
-                          <dd className="text-base font-medium text-[#5D6E73] mt-1">{offer.department}</dd>
+                        <div className="w-1.5 h-1.5 bg-[#82A094] rounded-full mt-2 shrink-0"></div>
+                        <div className="min-w-0 flex-1">
+                          <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Department</dt>
+                          <dd className="text-sm sm:text-base font-medium text-[#5D6E73] mt-0.5">{offer.department}</dd>
                         </div>
                       </div>
                     )}
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#82A094]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Zone</dt>
-                        <dd className="text-base font-medium text-[#5D6E73] mt-1">
-                          <Badge className="bg-[#82A094]/20 text-[#4F6A64] border-emerald-300 border">
+                      <div className="w-1.5 h-1.5 bg-[#82A094] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Zone</dt>
+                        <dd className="text-sm sm:text-base font-medium text-[#5D6E73] mt-1">
+                          <Badge className="bg-[#82A094]/10 text-[#4F6A64] border-[#82A094]/30 border text-[10px] sm:text-xs">
                             {offer.zone?.name}
                           </Badge>
                         </dd>
@@ -608,38 +625,38 @@ export default function OfferDetailPage() {
                     </div>
                   </dl>
                 </div>
-                <div className="bg-white rounded-xl p-5 shadow-md border border-[#96AEC2]/30 hover:shadow-lg transition-shadow">
-                  <h4 className="font-bold text-[#546A7A] mb-4 flex items-center gap-2 text-lg">
-                    <div className="p-2 bg-[#96AEC2]/20 rounded-lg">
-                      <User className="h-5 w-5 text-[#546A7A]" />
+                <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#96AEC2]/20 hover:shadow-md transition-all">
+                  <h4 className="font-bold text-[#546A7A] mb-4 flex items-center gap-2 text-base sm:text-lg">
+                    <div className="p-2 bg-[#96AEC2]/10 rounded-lg">
+                      <User className="h-4 w-4 sm:h-5 sm:w-5 text-[#546A7A]" />
                     </div>
                     Contact Person
                   </h4>
-                  <dl className="space-y-3">
+                  <dl className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Name</dt>
-                        <dd className="text-base font-bold text-[#546A7A] mt-1">{offer.contactPersonName || offer.contact?.contactPersonName}</dd>
+                      <div className="w-1.5 h-1.5 bg-[#96AEC2] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Name</dt>
+                        <dd className="text-sm sm:text-base font-bold text-[#546A7A] mt-0.5 break-words">{offer.contactPersonName || offer.contact?.contactPersonName}</dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Phone</dt>
-                        <dd className="text-base font-medium text-[#5D6E73] mt-1 flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-[#546A7A]" />
-                          {offer.contactNumber || offer.contact?.contactNumber}
+                      <div className="w-1.5 h-1.5 bg-[#96AEC2] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Phone</dt>
+                        <dd className="text-sm sm:text-base font-medium text-[#5D6E73] mt-0.5 flex items-center gap-2">
+                          <Phone className="h-3.5 w-3.5 text-[#546A7A] shrink-0" />
+                          <span className="truncate">{offer.contactNumber || offer.contact?.contactNumber}</span>
                         </dd>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#96AEC2]/100 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Email</dt>
-                        <dd className="text-base font-medium text-[#5D6E73] mt-1 flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-[#546A7A]" />
-                          {offer.email || offer.contact?.email}
+                      <div className="w-1.5 h-1.5 bg-[#96AEC2] rounded-full mt-2 shrink-0"></div>
+                      <div className="min-w-0 flex-1">
+                        <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Email</dt>
+                        <dd className="text-sm sm:text-base font-medium text-[#5D6E73] mt-0.5 flex items-center gap-2">
+                          <Mail className="h-3.5 w-3.5 text-[#546A7A] shrink-0" />
+                          <span className="truncate break-all">{offer.email || offer.contact?.email}</span>
                         </dd>
                       </div>
                     </div>
@@ -651,46 +668,46 @@ export default function OfferDetailPage() {
 
           {/* Financial Information */}
           <Card className="shadow-xl overflow-hidden border-0">
-            <CardHeader className="bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47] text-white border-b-0">
-              <CardTitle className="flex items-center gap-2 text-white">
-                <IndianRupee className="h-6 w-6" />
+            <CardHeader className="bg-gradient-to-r from-[#6F8A9D] to-[#9E3B47] text-white border-b-0 py-4 sm:py-6">
+              <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                <IndianRupee className="h-5 w-5 sm:h-6 sm:w-6" />
                 Financial Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
+            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white p-4 sm:p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="relative overflow-hidden p-6 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+                <div className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-[#6F8A9D] to-[#6F8A9D] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
                   <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
                   <div className="relative">
                     <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="h-5 w-5 text-[#96AEC2]" />
-                      <p className="text-sm text-[#96AEC2] font-semibold">Offer Value</p>
+                      <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-[#96AEC2]" />
+                      <p className="text-xs sm:text-sm text-[#96AEC2] font-semibold">Offer Value</p>
                     </div>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-2xl sm:text-3xl font-bold text-white truncate">
                       {offer.offerValue ? formatCurrency(Number(offer.offerValue)) : 'TBD'}
                     </p>
                   </div>
                 </div>
-                <div className="relative overflow-hidden p-6 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+                <div className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-[#82A094] to-[#82A094] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
                   <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
                   <div className="relative">
                     <div className="flex items-center gap-2 mb-2">
-                      <Package className="h-5 w-5 text-[#A2B9AF]" />
-                      <p className="text-sm text-[#A2B9AF] font-semibold">PO Value</p>
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-[#A2B9AF]" />
+                      <p className="text-xs sm:text-sm text-[#A2B9AF] font-semibold">PO Value</p>
                     </div>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-2xl sm:text-3xl font-bold text-white truncate">
                       {offer.poValue ? formatCurrency(Number(offer.poValue)) : '-'}
                     </p>
                   </div>
                 </div>
-                <div className="relative overflow-hidden p-6 bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
+                <div className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-[#6F8A9D] to-[#9E3B47] rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105">
                   <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
                   <div className="relative">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-5 w-5 text-[#6F8A9D]" />
-                      <p className="text-sm text-[#6F8A9D] font-semibold">Win Probability</p>
+                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-[#6F8A9D]" />
+                      <p className="text-xs sm:text-sm text-[#6F8A9D] font-semibold">Win Probability</p>
                     </div>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-2xl sm:text-3xl font-bold text-white">
                       {offer.probabilityPercentage ? `${offer.probabilityPercentage}%` : '-'}
                     </p>
                   </div>
@@ -699,29 +716,29 @@ export default function OfferDetailPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-white rounded-lg p-4 shadow-md border border-[#92A2A5]">
-                  <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide mb-2">Offer Month</dt>
-                  <dd className="text-base font-bold text-[#546A7A] flex items-center gap-2">
+                  <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider mb-2">Offer Month</dt>
+                  <dd className="text-sm sm:text-base font-bold text-[#546A7A] flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-[#546A7A]" />
                     {offer.offerMonth || '-'}
                   </dd>
                 </div>
                 <div className="bg-white rounded-lg p-4 shadow-md border border-[#92A2A5]">
-                  <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide mb-2">PO Expected Month</dt>
-                  <dd className="text-base font-bold text-[#546A7A] flex items-center gap-2">
+                  <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider mb-2">PO Expected Month</dt>
+                  <dd className="text-sm sm:text-base font-bold text-[#546A7A] flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-[#4F6A64]" />
                     {offer.poExpectedMonth || '-'}
                   </dd>
                 </div>
                 <div className="bg-white rounded-lg p-4 shadow-md border border-[#92A2A5]">
-                  <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide mb-2">PO Number</dt>
-                  <dd className="text-base font-bold text-[#546A7A]">{offer.poNumber || '-'}</dd>
+                  <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider mb-2">PO Number</dt>
+                  <dd className="text-sm sm:text-base font-bold text-[#546A7A]">{offer.poNumber || '-'}</dd>
                 </div>
               </div>
 
               {offer.poDate && (
                 <div className="mt-4 bg-white rounded-lg p-4 shadow-md border border-[#92A2A5]">
-                  <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide mb-2">PO Date</dt>
-                  <dd className="text-base font-bold text-[#546A7A] flex items-center gap-2">
+                  <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider mb-2">PO Date</dt>
+                  <dd className="text-sm sm:text-base font-bold text-[#546A7A] flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-[#546A7A]" />
                     {new Date(offer.poDate).toLocaleDateString('en-IN')}
                   </dd>
@@ -732,150 +749,161 @@ export default function OfferDetailPage() {
 
           {/* Product & Assets */}
           <Card className="shadow-xl overflow-hidden border-0">
-            <CardHeader className="bg-gradient-to-r from-[#976E44] to-red-600 text-white border-b-0">
-              <CardTitle className="flex items-center gap-2 text-white">
-                <Package className="h-6 w-6" />
+            <CardHeader className="bg-gradient-to-r from-[#976E44] to-[#976E44] text-white border-b-0 py-4 sm:py-6">
+              <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                <Package className="h-5 w-5 sm:h-6 sm:w-6" />
                 Product & Asset Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
+            <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/5 to-white p-4 sm:p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white rounded-xl p-5 shadow-md border border-[#EEC1BF]/20 hover:shadow-lg transition-shadow">
+                <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#CE9F6B]/20 hover:shadow-md transition-all">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-[#CE9F6B]/20 rounded-lg">
-                      <Package className="h-5 w-5 text-[#976E44]" />
+                    <div className="p-2 bg-[#CE9F6B]/10 rounded-lg">
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-[#976E44]" />
                     </div>
-                    <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Product Type</dt>
+                    <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Product Type</dt>
                   </div>
                   <dd>
                     <Badge className={`
-                      text-sm px-3 py-1.5 font-bold
-                      ${offer.productType === 'SPP' ? 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'CONTRACT' ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'RELOCATION' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'UPGRADE_KIT' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'SOFTWARE' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'RETROFIT_KIT' ? 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'BD_CHARGES' ? 'bg-gradient-to-r from-[#6F8A9D] to-cyan-600 text-white border-0 shadow-lg' : ''}
-                      ${offer.productType === 'BD_SPARE' ? 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white border-0 shadow-lg' : ''}
+                      text-xs sm:text-sm px-3 py-1.5 font-bold shadow-sm
+                      ${offer.productType === 'SPP' ? 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white border-0' : ''}
+                      ${offer.productType === 'CONTRACT' ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0' : ''}
+                      ${offer.productType === 'RELOCATION' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0' : ''}
+                      ${offer.productType === 'UPGRADE_KIT' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0' : ''}
+                      ${offer.productType === 'SOFTWARE' ? 'bg-gradient-to-r from-[#6F8A9D] to-[#6F8A9D] text-white border-0' : ''}
+                      ${offer.productType === 'MIDLIFE_UPGRADE' ? 'bg-gradient-to-r from-[#82A094] to-[#82A094] text-white border-0' : ''}
+                      ${offer.productType === 'RETROFIT_KIT' ? 'bg-gradient-to-r from-[#E17F70] to-[#9E3B47] text-white border-0' : ''}
+                      ${offer.productType === 'BD_CHARGES' ? 'bg-gradient-to-r from-[#6F8A9D] to-cyan-600 text-white border-0' : ''}
+                      ${offer.productType === 'BD_SPARE' ? 'bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white border-0' : ''}
                     `}>
                       {offer.productType?.replace(/_/g, ' ')}
                     </Badge>
                   </dd>
                 </div>
                 {offer.title && (
-                  <div className="bg-white rounded-xl p-5 shadow-md border border-[#96AEC2]/20 hover:shadow-lg transition-shadow">
+                  <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#96AEC2]/20 hover:shadow-md transition-all">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="p-2 bg-[#6F8A9D]/20 rounded-lg">
-                        <FileText className="h-5 w-5 text-[#546A7A]" />
+                      <div className="p-2 bg-[#6F8A9D]/10 rounded-lg">
+                        <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-[#546A7A]" />
                       </div>
-                      <dt className="text-xs text-[#AEBFC3]0 font-semibold uppercase tracking-wide">Offer Title</dt>
+                      <dt className="text-[10px] sm:text-xs text-[#AEBFC3] font-semibold uppercase tracking-wider">Offer Title</dt>
                     </div>
-                    <dd className="text-base font-bold text-[#546A7A]">{offer.title}</dd>
+                    <dd className="text-sm sm:text-base font-bold text-[#546A7A] line-clamp-2">{offer.title}</dd>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Linked Machines - Show if assets exist */}
+          {/* Linked Assets Section */}
           {offer.offerAssets && offer.offerAssets.length > 0 && (
             <Card className="shadow-xl overflow-hidden border-0">
-              <CardHeader className="bg-gradient-to-r from-cyan-600 to-[#82A094] text-white border-b-0">
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Wrench className="h-6 w-6" />
-                  Linked Machines
-                  <Badge className="bg-white/20 text-white border-0 ml-2">
-                    {offer.offerAssets.length} {offer.offerAssets.length === 1 ? 'Machine' : 'Machines'}
+              <CardHeader className="bg-gradient-to-r from-cyan-600 to-[#6F8A9D] text-white border-b-0 py-4 sm:py-6">
+                <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                  <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
+                  Linked Assets
+                  <Badge className="bg-white/20 text-white border-white/30 ml-2 text-[10px] sm:text-xs">
+                    {offer.offerAssets.length} {offer.offerAssets.length === 1 ? 'Asset' : 'Assets'}
                   </Badge>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/10 to-white">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {offer.offerAssets.map((oa: any, index: number) => (
-                    <div 
-                      key={oa.id || index} 
-                      className="bg-white rounded-xl p-5 shadow-sm border border-[#E2E8F0] hover:shadow-md transition-all relative overflow-hidden group"
-                    >
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-[#6F8A9D]/10 to-transparent rounded-bl-full translate-x-4 -translate-y-4"></div>
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-gradient-to-br from-[#6F8A9D] to-[#546A7A] rounded-xl flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                          <Wrench className="h-6 w-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-[#546A7A] text-lg mb-1">
-                            {oa.asset?.serialNo || 'Serial Not Available'}
-                          </h4>
-                          <div className="space-y-1.5">
-                            {oa.asset?.model && (
-                              <p className="text-sm font-medium text-[#5D6E73] flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
-                                {oa.asset.model}
-                              </p>
-                            )}
-                            {oa.asset?.location && (
-                              <p className="text-sm text-[#5D6E73] flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-[#96AEC2]" />
-                                {oa.asset.location}
-                              </p>
-                            )}
-                            {oa.asset?.customer?.companyName && (
-                              <p className="text-xs text-[#5D6E73] flex items-center gap-2 mt-2 bg-[#AEBFC3]/10 px-2.5 py-1 rounded-full w-fit">
-                                <Building2 className="h-3 w-3 text-[#546A7A]" />
-                                {oa.asset.customer.companyName}
-                              </p>
-                            )}
+              <CardContent className="pt-6 bg-gradient-to-br from-[#AEBFC3]/5 to-white p-4 sm:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {offer.offerAssets.map((oa: any, index: number) => {
+                    const asset = oa.asset;
+                    return (
+                      <div 
+                        key={oa.id || index} 
+                        className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#E2E8F0] hover:shadow-md transition-all relative overflow-hidden group border-l-4 border-l-cyan-600"
+                      >
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-600/5 to-transparent rounded-bl-full translate-x-4 -translate-y-4"></div>
+                        <div className="flex items-start gap-4">
+                          <div className="p-2.5 sm:p-3 bg-gradient-to-br from-cyan-600 to-[#6F8A9D] rounded-xl flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                            <Wrench className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1 gap-2">
+                              <h4 className="font-bold text-[#546A7A] text-base sm:text-lg truncate">
+                                {asset?.serialNo || 'Serial Not Available'}
+                              </h4>
+                              {asset?.status && (
+                                <Badge 
+                                  className={`text-[9px] sm:text-[10px] px-2 py-0 h-4 sm:h-5 shrink-0 ${
+                                    asset.status === 'ACTIVE' 
+                                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                      : 'bg-gray-50 text-gray-600 border-gray-200'
+                                  }`}
+                                  variant="outline"
+                                >
+                                  {asset.status}
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="space-y-1.5 mt-2">
+                              {asset?.model && (
+                                <p className="text-xs sm:text-sm font-medium text-[#5D6E73] flex items-center gap-2">
+                                  <span className="text-gray-400 font-bold text-[10px] uppercase">Model:</span> 
+                                  <span className="truncate">{asset.model}</span>
+                                </p>
+                              )}
+                              {asset?.location && (
+                                <p className="text-xs sm:text-sm text-[#5D6E73] flex items-center gap-2">
+                                  <MapPin className="h-3.5 w-3.5 text-cyan-600 shrink-0" />
+                                  <span className="truncate">{asset.location}</span>
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
           )}
           {/* Spare Parts - Show for SPP or if parts exist */}
           {(offer.productType === 'SPP' || (offer.offerSpareParts && offer.offerSpareParts.length > 0)) && (
-            <Card className={`shadow-lg ${offer.productType === 'SPP' ? 'ring-2 ring-amber-200' : ''}`}>
-              <CardHeader className="bg-gradient-to-r from-[#EEC1BF]/10 via-yellow-50 to-[#EEC1BF]/10">
-                <div className="flex items-center justify-between">
+            <Card className={`shadow-xl overflow-hidden border-0 ${offer.productType === 'SPP' ? 'ring-2 ring-[#CE9F6B]/50' : ''}`}>
+              <CardHeader className="bg-gradient-to-r from-[#CE9F6B] to-[#976E44] text-white border-b-0 py-4 sm:py-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Wrench className="h-5 w-5 text-[#976E44]" />
+                    <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                      <Wrench className="h-5 w-5 sm:h-6 sm:w-6" />
                       Spare Parts
                       {offer.offerSpareParts && offer.offerSpareParts.length > 0 && (
-                        <Badge className="bg-[#976E44] text-white">
+                        <Badge className="bg-white/20 text-white border-white/30 text-[10px] sm:text-xs">
                           {offer.offerSpareParts.length} {offer.offerSpareParts.length === 1 ? 'Item' : 'Items'}
                         </Badge>
                       )}
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-white/70 text-xs sm:text-sm mt-1">
                       {offer.productType === 'SPP' 
                         ? 'Spare parts configured for this SPP offer' 
                         : 'Items included in this offer'}
                     </CardDescription>
                   </div>
                   {offer.productType === 'SPP' && (
-                    <Badge variant="outline" className="bg-[#CE9F6B]/20 text-[#976E44] border-[#CE9F6B]">
+                    <Badge className="bg-white text-[#976E44] border-0 self-start sm:self-center font-bold text-[10px] sm:text-xs px-3 py-1">
                       SPP Product
                     </Badge>
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 pb-6 sm:pb-8 bg-gradient-to-br from-[#AEBFC3]/5 to-white p-4 sm:p-6">
                 {(!offer.offerSpareParts || offer.offerSpareParts.length === 0) && offer.productType === 'SPP' ? (
-                  <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#CE9F6B]/20 mb-4">
-                      <Wrench className="h-8 w-8 text-[#976E44]" />
+                  <div className="text-center py-10 sm:py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#CE9F6B]/10 mb-4 sm:mb-6">
+                      <Wrench className="h-8 w-8 sm:h-10 sm:w-10 text-[#976E44]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#546A7A] mb-2">No Spare Parts Added Yet</h3>
-                    <p className="text-[#5D6E73] mb-6 max-w-md mx-auto">
-                      This is an SPP (Spare Parts) offer. Add spare parts to complete the offer details.
+                    <h3 className="text-lg sm:text-xl font-bold text-[#546A7A] mb-2">No Spare Parts Added Yet</h3>
+                    <p className="text-[#5D6E73] mb-8 max-w-sm mx-auto text-sm">
+                      This is an SPP (Spare Parts) offer. Please add spare parts to complete the offer details.
                     </p>
                     <Button 
                       onClick={() => router.push(`/admin/offers/${offer.id}/edit`)}
-                      className="bg-[#976E44] hover:bg-[#976E44]"
+                      className="bg-[#976E44] hover:bg-[#754E29] text-white shadow-lg px-6"
                     >
                       <Wrench className="h-4 w-4 mr-2" />
                       Add Spare Parts
@@ -883,118 +911,119 @@ export default function OfferDetailPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {offer.offerSpareParts?.map((offerPart: any, index: number) => {
                         const part = offerPart.sparePart;
                         return (
                           <div 
                             key={offerPart.id || index} 
-                            className="border border-[#92A2A5] rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                            className="bg-white rounded-xl overflow-hidden border border-[#AEBFC3]/30 hover:shadow-xl transition-all group flex flex-col h-full"
                           >
-                        {/* Image */}
-                        <div className="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
-                          {part?.imageUrl ? (
-                            <img 
-                              src={part.imageUrl} 
-                              alt={part.name || 'Spare Part'}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : null}
-                          <div className={part?.imageUrl ? 'hidden' : 'flex flex-col items-center justify-center text-[#979796]'}>
-                            <ImageIcon className="h-12 w-12 mb-2" />
-                            <span className="text-xs">No Image</span>
-                          </div>
-                        </div>
-
-                        {/* Part Details */}
-                        <div className="space-y-2">
-                          {/* Part Name */}
-                          <h4 className="font-semibold text-[#546A7A] text-base line-clamp-2">
-                            {part?.name || 'Unnamed Part'}
-                          </h4>
-
-                          {/* Part Number */}
-                          {part?.partNumber && (
-                            <p className="text-xs text-[#AEBFC3]0">
-                              Part #: {part.partNumber}
-                            </p>
-                          )}
-
-                          {/* Category */}
-                          {part?.category && (
-                            <Badge variant="outline" className="text-xs">
-                              {part.category}
-                            </Badge>
-                          )}
-
-                          {/* Quantity */}
-                          {offerPart.quantity && (
-                            <p className="text-sm text-[#5D6E73]">
-                              Qty: <span className="font-medium">{offerPart.quantity}</span>
-                            </p>
-                          )}
-
-                          {/* Price */}
-                          <div className="pt-2 border-t border-[#AEBFC3]/30">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-[#AEBFC3]0">Unit Price</span>
-                              <div className="flex items-center gap-1">
-                                <IndianRupee className="h-4 w-4 text-[#4F6A64]" />
-                                <span className="text-lg font-bold text-[#4F6A64]">
-                                  {offerPart.unitPrice ? 
-                                    formatCurrency(Number(offerPart.unitPrice)) : 
-                                    <span className="text-sm text-[#979796]">TBD</span>
-                                  }
-                                </span>
+                            {/* Image Container */}
+                            <div className="relative w-full aspect-video bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100">
+                              {part?.imageUrl ? (
+                                <img 
+                                  src={part.imageUrl} 
+                                  alt={part.name || 'Spare Part'}
+                                  className="w-full h-full object-contain p-2 transition-transform group-hover:scale-110"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                />
+                              ) : null}
+                              <div className={part?.imageUrl ? 'hidden' : 'flex flex-col items-center justify-center text-gray-300'}>
+                                <ImageIcon className="h-10 w-10 sm:h-12 sm:w-12 mb-2" />
+                                <span className="text-[10px] sm:text-xs font-medium">No Image Available</span>
+                              </div>
+                              {/* Quantity Badge Over Image */}
+                              <div className="absolute top-2 right-2 bg-[#546A7A] text-white px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shadow-md">
+                                Qty: {offerPart.quantity}
                               </div>
                             </div>
-                            
-                            {/* Total Price */}
-                            {offerPart.totalPrice && (
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="text-xs text-[#AEBFC3]0">Total</span>
-                                <span className="text-sm font-semibold text-[#546A7A]">
-                                  {formatCurrency(Number(offerPart.totalPrice))}
-                                </span>
+
+                            {/* Part Content */}
+                            <div className="p-4 flex-1 flex flex-col justify-between">
+                              <div className="space-y-2">
+                                <h4 className="font-bold text-[#546A7A] text-sm sm:text-base line-clamp-2 leading-snug h-10 sm:h-12">
+                                  {part?.name || 'Unnamed Part'}
+                                </h4>
+
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {part?.partNumber && (
+                                    <Badge variant="outline" className="text-[10px] bg-gray-50 text-[#546A7A] border-gray-200">
+                                      #{part.partNumber}
+                                    </Badge>
+                                  )}
+                                  {part?.category && (
+                                    <Badge variant="secondary" className="text-[10px] bg-[#96AEC2]/10 text-[#546A7A] border-0">
+                                      {part.category}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                          </div>
 
-                          {/* Notes if available */}
-                          {offerPart.notes && (
-                            <p className="text-xs text-[#5D6E73] line-clamp-2 pt-2">
-                              {offerPart.notes}
-                            </p>
-                          )}
+                              <div className="mt-4 pt-4 border-t border-gray-100">
+                                <div className="flex items-end justify-between">
+                                  <div>
+                                    <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-1">Total Value</p>
+                                    <div className="flex items-center gap-1 font-bold text-[#4F6A64]">
+                                      <IndianRupee className="h-4 w-4 shrink-0" />
+                                      <span className="text-base sm:text-xl truncate max-w-[120px]">
+                                        {offerPart.totalPrice ? 
+                                          formatCurrency(Number(offerPart.totalPrice)) : 
+                                          <span className="text-gray-300">TBD</span>
+                                        }
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-[10px] text-gray-400 font-medium">Unit: {offerPart.unitPrice ? formatCurrency(Number(offerPart.unitPrice)) : 'TBD'}</p>
+                                  </div>
+                                </div>
 
-                          {/* Description if available */}
-                          {part?.description && (
-                            <p className="text-xs text-[#AEBFC3]0 line-clamp-2 pt-1">
-                              {part.description}
-                            </p>
-                            )}
+                                {offerPart.notes && (
+                                  <div className="mt-3 flex items-start gap-1.5 p-2 bg-amber-50 rounded-md border border-amber-100">
+                                    <AlertCircle className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
+                                    <p className="text-[10px] text-amber-700 line-clamp-2 leading-tight">
+                                      {offerPart.notes}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
                         );
                       })}
                     </div>
 
                     {/* Total Summary */}
                     {offer.offerSpareParts && offer.offerSpareParts.some((op: any) => op.totalPrice) && (
-                      <div className="mt-6 p-4 bg-gradient-to-r from-[#A2B9AF]/10 to-[#A2B9AF]/10 rounded-lg border border-[#A2B9AF]">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-[#5D6E73]">Total Parts Value</span>
-                          <span className="text-xl font-bold text-[#4F6A64]">
-                            {formatCurrency(
-                              offer.offerSpareParts.reduce((sum: number, offerPart: any) => {
-                                return sum + Number(offerPart.totalPrice || 0);
-                              }, 0)
-                            )}
-                          </span>
+                      <div className="mt-8 p-5 bg-gradient-to-r from-[#546A7A] to-[#6F8A9D] rounded-xl shadow-lg border-0 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700"></div>
+                        <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+                              <DollarSign className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Total Combined Parts Value</p>
+                              <h3 className="text-white text-xl sm:text-2xl font-black mt-0.5">Summary</h3>
+                            </div>
+                          </div>
+                          <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 text-center sm:text-right w-full sm:w-auto">
+                            <p className="text-white/60 text-[10px] font-bold uppercase mb-1">Grand Total</p>
+                            <div className="flex items-center justify-center sm:justify-end gap-2 text-white">
+                              <IndianRupee className="h-6 w-6" />
+                              <span className="text-2xl sm:text-3xl font-black tracking-tight">
+                                {formatCurrency(
+                                  offer.offerSpareParts.reduce((sum: number, offerPart: any) => {
+                                    return sum + Number(offerPart.totalPrice || 0);
+                                  }, 0)
+                                )}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1005,96 +1034,81 @@ export default function OfferDetailPage() {
           )}
 
           {/* Stage-wise Remarks History - Timeline Design */}
-          {offer.stageRemarks && offer.stageRemarks.filter((r: any) => {
-            // Filter out JSON quoteData entries - only show human-readable remarks
-            try {
-              const parsed = JSON.parse(r.remarks);
-              if (parsed.quoteData) return false; // Skip quoteData JSON
-            } catch (e) {
-              // Not JSON, include it
-            }
-            return true;
-          }).length > 0 && (
-            <Card className="shadow-lg overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-[#96AEC2]/10 via-purple-50 to-[#EEC1BF]/10 border-b border-[#96AEC2]/20">
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-[#546A7A]" />
+          {offer.stageRemarks && offer.stageRemarks.length > 0 && (
+            <Card className="shadow-xl overflow-hidden border-0">
+              <CardHeader className="bg-gradient-to-r from-[#6F8A9D] to-[#546A7A] text-white border-b-0 py-4 sm:py-6">
+                <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
+                  <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
                   Stage Activity Timeline
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-white/70 text-xs sm:text-sm">
                   Complete history of remarks and notes across all stages
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-6 pb-8">
+              <CardContent className="pt-6 pb-8 bg-gradient-to-br from-[#AEBFC3]/5 to-white p-4 sm:p-6">
                 <div className="relative">
                   {/* Timeline vertical line */}
-                  <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-200 via-purple-200 to-pink-200"></div>
+                  <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#6F8A9D]/30 via-[#82A094]/30 to-[#9E3B47]/30"></div>
                   
-                  <div className="space-y-6">
-                    {offer.stageRemarks.filter((r: any) => {
-                      // Filter out JSON quoteData entries
-                      try {
-                        const parsed = JSON.parse(r.remarks);
-                        if (parsed.quoteData) return false;
-                      } catch (e) {
-                        // Not JSON, include it
-                      }
-                      return true;
-                    }).map((remark: any, index: number) => {
+                  <div className="space-y-8">
+                    {offer.stageRemarks.map((remark: any, index: number) => {
                       const stageInfo = STAGE_INFO[remark.stage] || {};
                       const stageName = ALL_STAGES.find(s => s.key === remark.stage)?.label || remark.stage;
                       
-                      // Color mapping for stages
                       const colorClasses = {
-                        blue: 'bg-[#96AEC2]/100 ring-[#96AEC2]/50',
-                        indigo: 'bg-[#546A7A]/100 ring-indigo-200',
-                        amber: 'bg-[#CE9F6B]/100 ring-amber-200',
-                        purple: 'bg-[#6F8A9D]/100 ring-purple-200',
-                        green: 'bg-[#A2B9AF]/100 ring-[#A2B9AF]/50',
-                        teal: 'bg-[#82A094]/100 ring-teal-200',
-                        red: 'bg-[#E17F70]/100 ring-[#E17F70]/50'
+                        blue: 'bg-[#6F8A9D] ring-[#6F8A9D]/30',
+                        indigo: 'bg-[#546A7A] ring-[#546A7A]/30',
+                        amber: 'bg-[#CE9F6B] ring-[#CE9F6B]/30',
+                        purple: 'bg-[#6F8A9D] ring-[#6F8A9D]/30',
+                        green: 'bg-[#82A094] ring-[#82A094]/30',
+                        teal: 'bg-[#82A094] ring-[#82A094]/30',
+                        red: 'bg-[#E17F70] ring-[#E17F70]/30'
                       };
                       
                       const bgClasses = {
-                        blue: 'from-[#96AEC2]/10 to-[#96AEC2]/20/50',
-                        indigo: 'from-[#96AEC2]/10 to-[#96AEC2]/20/50',
-                        amber: 'from-[#EEC1BF]/10 to-[#EEC1BF]/20/50',
-                        purple: 'from-[#96AEC2]/10 to-[#96AEC2]/20/50',
-                        green: 'from-[#A2B9AF]/10 to-[#A2B9AF]/20/50',
-                        teal: 'from-[#A2B9AF]/10 to-[#A2B9AF]/20/50',
-                        red: 'from-[#E17F70]/10 to-red-100/50'
+                        blue: 'from-[#6F8A9D]/5 to-white',
+                        indigo: 'from-[#546A7A]/5 to-white',
+                        amber: 'from-[#CE9F6B]/5 to-white',
+                        purple: 'from-[#6F8A9D]/5 to-white',
+                        green: 'from-[#82A094]/5 to-white',
+                        teal: 'from-[#82A094]/5 to-white',
+                        red: 'from-[#E17F70]/5 to-white'
                       };
                       
                       const textClasses = {
-                        blue: 'text-[#546A7A]',
+                        blue: 'text-[#6F8A9D]',
                         indigo: 'text-[#546A7A]',
                         amber: 'text-[#976E44]',
-                        purple: 'text-[#546A7A]',
+                        purple: 'text-[#6F8A9D]',
                         green: 'text-[#4F6A64]',
                         teal: 'text-[#4F6A64]',
-                        red: 'text-[#75242D]'
+                        red: 'text-[#9E3B47]'
                       };
                       
                       const color = stageInfo.color || 'blue';
                       
                       return (
-                        <div key={remark.id} className="relative pl-16">
+                        <div key={remark.id} className="relative pl-12 sm:pl-16 group">
                           {/* Timeline dot */}
-                          <div className={`absolute left-3.5 top-3 w-5 h-5 rounded-full ${colorClasses[color as keyof typeof colorClasses] || 'bg-[#AEBFC3]/100 ring-gray-200'} ring-4 shadow-md`}></div>
+                          <div className={`absolute left-[1.375rem] top-4 w-4 h-4 rounded-full ${colorClasses[color as keyof typeof colorClasses] || 'bg-[#AEBFC3] ring-gray-200'} ring-4 shadow-sm z-10 transition-transform group-hover:scale-125`}></div>
                           
                           {/* Content card */}
-                          <div className={`bg-gradient-to-br ${bgClasses[color as keyof typeof bgClasses] || 'from-[#AEBFC3]/10 to-[#AEBFC3]/20/50'} rounded-lg p-4 shadow-sm border border-[#92A2A5] hover:shadow-md transition-shadow`}>
+                          <div className={`bg-white rounded-xl p-4 shadow-sm border border-[#AEBFC3]/30 hover:shadow-md transition-all relative overflow-hidden`}>
+                            <div className={`absolute top-0 left-0 w-1 h-full ${colorClasses[color as keyof typeof colorClasses]?.split(' ')[0]}`}></div>
+                            
                             {/* Header */}
-                            <div className="flex items-start justify-between mb-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                               <div className="flex items-center gap-3">
-                                <span className="text-2xl">{stageInfo.icon || '📝'}</span>
+                                <div className={`p-2 rounded-lg bg-gradient-to-br ${bgClasses[color as keyof typeof bgClasses]}`}>
+                                  <span className="text-xl">{stageInfo.icon || '📝'}</span>
+                                </div>
                                 <div>
-                                  <h4 className={`font-bold text-base ${textClasses[color as keyof typeof textClasses] || 'text-[#5D6E73]'}`}>
+                                  <h4 className={`font-bold text-sm sm:text-base ${textClasses[color as keyof typeof textClasses] || 'text-[#5D6E73]'}`}>
                                     {stageName}
                                   </h4>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Calendar className="h-3 w-3 text-[#AEBFC3]0" />
-                                    <p className="text-xs text-[#5D6E73] font-medium">
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    <Calendar className="h-3 w-3 text-[#AEBFC3]" />
+                                    <p className="text-[10px] sm:text-xs text-[#5D6E73] font-medium">
                                       {new Date(remark.createdAt).toLocaleDateString('en-IN', {
                                         day: 'numeric',
                                         month: 'short',
@@ -1107,9 +1121,9 @@ export default function OfferDetailPage() {
                                 </div>
                               </div>
                               {remark.createdBy?.name && (
-                                <div className="flex items-center gap-1.5 bg-white/80 px-3 py-1.5 rounded-full border border-[#92A2A5]">
-                                  <User className="h-3 w-3 text-[#AEBFC3]0" />
-                                  <span className="text-xs font-medium text-[#5D6E73]">
+                                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1 rounded-full border border-gray-100 self-start sm:self-center">
+                                  <User className="h-3 w-3 text-[#AEBFC3]" />
+                                  <span className="text-[10px] sm:text-xs font-semibold text-[#546A7A]">
                                     {remark.createdBy.name}
                                   </span>
                                 </div>
@@ -1117,8 +1131,8 @@ export default function OfferDetailPage() {
                             </div>
                             
                             {/* Remarks content */}
-                            <div className="bg-white rounded-md p-4 shadow-sm border border-[#92A2A5]">
-                              <p className="text-sm text-[#546A7A] leading-relaxed whitespace-pre-wrap">
+                            <div className="bg-gray-50/50 rounded-lg p-3 sm:p-4 border border-gray-100">
+                              <p className="text-xs sm:text-sm text-[#546A7A] leading-relaxed whitespace-pre-wrap">
                                 {remark.remarks}
                               </p>
                             </div>

@@ -193,7 +193,7 @@ interface LogoProps {
   className?: string
 }
 
-const KardexLogo = ({ className = 'h-6' }: LogoProps) => (
+const KardexLogo = ({ className = 'h-7' }: LogoProps) => (
   <div className="mb-4">
     <img 
       src="/kardex.png" 
@@ -580,52 +580,85 @@ export default function QuoteGenerationPage() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Action Buttons - Hidden on print */}
-      <div className="container mx-auto py-4 print:hidden">
-        <div className="flex items-center justify-between mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push(`/expert/offers/${offerId}`)}
-            aria-label="Go back to offer details"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Offer
-          </Button>
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0] px-4 py-3 print:hidden">
+        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push(`/expert/offers/${offerId}`)}
+              className="text-[#546A7A] hover:bg-[#F1F5F9]"
+              aria-label="Go back to offer details"
+            >
+              <ArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Offer</span>
+            </Button>
+            <div className="h-6 w-[1px] bg-[#E2E8F0] hidden sm:block"></div>
+            <div>
+              <h1 className="text-sm sm:text-base font-bold text-[#1E293B] line-clamp-1">
+                {editableData.title || 'Quotation Generation'}
+              </h1>
+              <p className="text-[10px] sm:text-xs text-[#64748B]">
+                Ref: {offer.offerReferenceNumber}
+              </p>
+            </div>
+          </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
             <Button 
               onClick={handleToggleEditMode}
               variant={isEditMode ? "default" : "outline"}
+              size="sm"
+              className={isEditMode ? "bg-cyan-600 hover:bg-cyan-700 text-white shadow-md transition-all shrink-0" : "border-[#E2E8F0] text-[#546A7A] shrink-0"}
             >
               {isEditMode ? (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  <Save className="h-4 w-4 mr-1.5" />
+                  Save
                 </>
               ) : (
                 <>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Quote
+                  <Edit className="h-4 w-4 mr-1.5" />
+                  Edit
                 </>
               )}
             </Button>
-            <Button onClick={handlePrint} variant="outline" disabled={isEditMode}>
-              <Printer className="h-4 w-4 mr-2" />
-              Print
+            
+            <div className="h-6 w-[1px] bg-[#E2E8F0] mx-1 shrink-0"></div>
+
+            <Button 
+              onClick={handlePrint} 
+              variant="outline" 
+              size="sm"
+              disabled={isEditMode}
+              className="border-[#E2E8F0] text-[#546A7A] shrink-0"
+            >
+              <Printer className="h-4 w-4 mr-1.5" />
+              <span className="hidden xs:inline">Print</span>
             </Button>
-            <Button onClick={handleDownloadPDF} variant="outline" disabled={isEditMode}>
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
+            
+            <Button 
+              onClick={handleDownloadPDF} 
+              variant="outline" 
+              size="sm"
+              disabled={isEditMode}
+              className="border-[#E2E8F0] text-[#546A7A] shrink-0"
+            >
+              <Download className="h-4 w-4 mr-1.5" />
+              <span className="hidden xs:inline">PDF</span>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Quotation Document */}
-      <div ref={printRef} className="quotation-document">
-        <div className="document-container">
+      {/* Main Content Area */}
+      <div className="container mx-auto py-6 sm:py-10 px-4">
+        {/* Quotation Document */}
+        <div>
+          <div ref={printRef} className="quotation-document shadow-2xl rounded-sm ring-1 ring-black/5">
+            <div className="document-container">
           {/* Page 1 - Main Quote */}
           <div className="page page-1">
             {/* Logo */}
@@ -869,148 +902,128 @@ export default function QuoteGenerationPage() {
             </div>
           </div>
 
-          {/* Page 2 - Terms and Conditions */}
-          <div className="page page-2">
+          {/* Page 2 - Terms and Conditions - ENHANCED */}
+          <div className="page page-2 shadow-2xl print:shadow-none mb-10 print:mb-0">
             <KardexLogo />
 
             <div className="page-content">
               {/* TERMS AND CONDITIONS */}
-              <div className="terms-section">
-                <h3>TERMS AND CONDITIONS</h3>
-                <ul className="terms-list">
-                  <li>GST ({editableData.gstRate}%) to be paid extra</li>
-                  <li>Quotation validity up to 30 days</li>
-                  <li>Delivery - Ex-Works Bangalore, within 14 to 18 weeks from the date of Purchase Order, packing included.</li>
-                  <li>Warranty: 3 months from the date of delivery for Electronics parts only.</li>
-                  <li>Payment: N30. Within 30 days of delivery.</li>
-              </ul>
-            </div>
+              <div className="page2-terms-section">
+                <h3 className="premium-section-header">
+                  <span className="header-icon text-[#4472C4]">📋</span>
+                  Terms and Conditions
+                </h3>
+                <div className="terms-card-premium">
+                  <ul className="terms-grid-premium">
+                    <li><span className="bullet">■</span> <strong>GST:</strong> {editableData.gstRate}% to be paid extra on all items.</li>
+                    <li><span className="bullet">■</span> <strong>Validity:</strong> Quotation validity is 30 days from the date of issue.</li>
+                    <li><span className="bullet">■</span> <strong>Delivery:</strong> Ex-Works Bangalore, within 14 to 18 weeks from PO date.</li>
+                    <li><span className="bullet">■</span> <strong>Warranty:</strong> 3 months for Electronic parts from the date of delivery.</li>
+                    <li><span className="bullet">■</span> <strong>Payment:</strong> N30 (Net 30 days) from the date of delivery.</li>
+                  </ul>
+                </div>
+              </div>
 
               {/* OTHER TERMS & CONDITIONS */}
-              <div className="other-terms">
-                <p className="section-subtitle">OTHER TERMS & CONDITIONS AS PER THE ANNEXURE ATTACHED</p>
+              <div className="other-terms-highlight">
+                <p><strong>NOTE:</strong> OTHER TERMS & CONDITIONS AS PER THE ANNEXURE ATTACHED</p>
               </div>
 
               {/* Please Note Section */}
-              <div className="please-note-section">
-                <h3>Please Note: -</h3>
-                <ul className="note-list">
-                <li>PO should contain Customer GST number of the place where delivery/services are requesting.</li>
-                <li>If delivery address is different than the Invoice address, then we need Delivery address GST details, HSN codes</li>
-                <li>PO should be on address as mentioned in quotation.</li>
-                <li>PO should contain Quotation reference i.e, {offer.offerReferenceNumber}.</li>
-                <li>PO should contain Kardex Ident Number as per the quotation: <span className="font-bold bg-[#CE9F6B]/30 px-1">KRIND/S/REL/AU00004</span></li>
-                <li>PO should contain all line items mention in quotation, if more than one item.</li>
-                <li>PO should contain delivery address and contact person's details.</li>
-                <li>PO should have company seal signature.</li>
-              </ul>
-            </div>
+              <div className="important-notes-section">
+                <h3 className="premium-section-header">
+                  <span className="header-icon text-[#d97706]">💡</span>
+                  Please Note
+                </h3>
+                <div className="notes-grid-premium">
+                  <div className="note-item-premium">
+                    <span className="note-num">1</span>
+                    <p>PO should contain Customer GST number of the place where delivery/services are requesting.</p>
+                  </div>
+                  <div className="note-item-premium text-slate-600">
+                    <span className="note-num">2</span>
+                    <p>If delivery address is different than the Invoice address, then we need Delivery address GST details.</p>
+                  </div>
+                  <div className="note-item-premium">
+                    <span className="note-num">3</span>
+                    <p>PO should be on address as mentioned in quotation and contain reference <strong>{offer.offerReferenceNumber}</strong>.</p>
+                  </div>
+                  <div className="note-item-premium">
+                    <span className="note-num">4</span>
+                    <p>PO should contain Kardex Ident Number and all line items as per the quotation.</p>
+                  </div>
+                   <div className="note-item-premium">
+                    <span className="note-num">5</span>
+                    <p>PO should contain delivery address, contact person's details, and company seal signature.</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Company Assurance */}
-              <div className="company-assurance">
-              <p>We assure you of our best services at all times and we shall not give you any room for Complaint on service.</p>
-              <p>We shall spare no effort to ensure a professional first-class after-sales service.</p>
-              
-              <p>We request you kindly release the order on</p>
-              <p className="font-semibold">M/s, {editableData.companyName.toUpperCase()}.</p>
-              <p>{editableData.companyAddress},</p>
-              <p>{editableData.companyCity}</p>
-              <p>
-                Tel   : {editableData.companyPhone} 
-                {editableData.companyFax && <> Fax  : {editableData.companyFax}</>}
-              </p>
-              <p>Website : <a href={`https://${editableData.companyWebsite}`} target="_blank" rel="noopener noreferrer" className="text-[#546A7A] hover:underline">{editableData.companyWebsite}</a></p>
-              
-              <p>If you need any clarifications/ information, please do contact the undersigned.</p>
-              <p className="font-semibold">Yours faithfully</p>
-            </div>
+              <div className="assurance-card-premium">
+                <div className="assurance-icon">🤝</div>
+                <div className="assurance-text">
+                  <p>We assure you of our best services at all times and we shall not give you any room for complaint. We shall spare no effort to ensure a professional first-class after-sales service.</p>
+                </div>
+              </div>
+              {/* Order Release Box */}
+              <div className="order-release-premium">
+                <p className="release-title">Kindly release the purchase order to:</p>
+                <div className="company-info-premium">
+                  <p className="company-name-large">M/s. {editableData.companyName.toUpperCase()}</p>
+                  <p className="company-address-text">{editableData.companyAddress}, {editableData.companyCity}</p>
+                  <div className="company-contact-row">
+                    <span><strong>Tel:</strong> {editableData.companyPhone}</span>
+                    {editableData.companyFax && <span><strong>Fax:</strong> {editableData.companyFax}</span>}
+                    <span><strong>Web:</strong> <a href={`https://${editableData.companyWebsite}`} className="text-[#4472C4]">{editableData.companyWebsite}</a></span>
+                  </div>
+                </div>
+              </div>
 
               {/* Signature Section - Contact Person */}
-              <div className="signature-section">
-              {isEditMode ? (
-                <div className="space-y-2">
-                  <Input
-                    value={editableData.contactPersonName}
-                    onChange={(e) => setEditableData({...editableData, contactPersonName: e.target.value})}
-                    placeholder="Contact Person Name"
-                    className="h-8 text-xs"
-                  />
-                  <Input
-                    value={editableData.contactPersonPhone}
-                    onChange={(e) => setEditableData({...editableData, contactPersonPhone: e.target.value})}
-                    placeholder="Contact Person Phone"
-                    className="h-8 text-xs"
-                  />
-                  <Input
-                    value={editableData.contactPersonEmail}
-                    onChange={(e) => setEditableData({...editableData, contactPersonEmail: e.target.value})}
-                    placeholder="Contact Person Email"
-                    className="h-8 text-xs"
-                  />
-                  
-                    {/* Signature Upload Section */}
-                    <div className="signature-upload print:hidden">
-                      <label className="upload-label">Signature Image</label>
-                    
-                      {editableData.signatureImage ? (
-                        <div className="signature-preview">
-                          <img 
-                            src={editableData.signatureImage} 
-                            alt="Signature" 
-                            className="signature-image"
-                          />
-                          <Button
-                            onClick={removeSignature}
-                            size="sm"
-                            variant="ghost"
-                            className="remove-signature"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
+              <div className="signature-footer-premium">
+                <p className="undertime-text">If you need any clarifications, please contact the undersigned.</p>
+                <p className="faithfully-text">Yours faithfully,</p>
+                
+                {isEditMode ? (
+                  <div className="edit-signature-controls print:hidden mt-4">
+                     <div className="flex gap-4">
+                        <div className="flex-1 space-y-2">
+                           <Input value={editableData.contactPersonName} onChange={(e) => setEditableData({...editableData, contactPersonName: e.target.value})} placeholder="Name" />
+                           <Input value={editableData.contactPersonPhone} onChange={(e) => setEditableData({...editableData, contactPersonPhone: e.target.value})} placeholder="Phone" />
+                           <Input value={editableData.contactPersonEmail} onChange={(e) => setEditableData({...editableData, contactPersonEmail: e.target.value})} placeholder="Email" />
                         </div>
-                      ) : (
-                        <div className="upload-controls">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleSignatureUpload}
-                            className="hidden"
-                            id="signature-upload"
-                          />
-                          <label
-                            htmlFor="signature-upload"
-                            className="upload-button"
-                          >
-                            <Upload className="h-3 w-3" />
-                            <span>Upload Signature</span>
-                          </label>
-                          <span className="upload-hint">Max 2MB (JPG, PNG, GIF)</span>
+                        <div className="w-1/3">
+                           {editableData.signatureImage ? (
+                             <div className="relative border rounded p-2">
+                               <img src={editableData.signatureImage} className="h-20 object-contain mx-auto" />
+                               <Button onClick={removeSignature} variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6"><X className="h-3 w-3"/></Button>
+                             </div>
+                           ) : (
+                             <div className="flex flex-col items-center justify-center border-2 border-dashed h-full rounded p-4 text-slate-400">
+                               <input type="file" id="sig-up" className="hidden" onChange={handleSignatureUpload} />
+                               <label htmlFor="sig-up" className="cursor-pointer text-center">
+                                 <Upload className="mx-auto h-6 w-6 mb-1" />
+                                 <span className="text-[10px]">Upload Sign</span>
+                               </label>
+                             </div>
+                           )}
                         </div>
-                      )}
-                    </div>
+                     </div>
                   </div>
                 ) : (
-                  <div className="signature-display">
-                    {/* Signature Image Display */}
-                    <div className="signature-container">
+                  <div className="signature-display-premium">
+                    <div className="sig-image-container">
                       {editableData.signatureImage ? (
-                        <img 
-                          src={editableData.signatureImage} 
-                          alt="Signature" 
-                          className="signature-image"
-                        />
+                        <img src={editableData.signatureImage} alt="Signature" className="sig-img" />
                       ) : (
-                        <div className="signature-placeholder">
-                          <span>[Signature]</span>
-                        </div>
+                        <div className="sig-placeholder">Please Sign Here</div>
                       )}
                     </div>
-                    
-                    {/* Contact Information - Always Display */}
-                    <div className="contact-info mt-3">
-                      <p className="contact-name font-semibold">{editableData.contactPersonName || '[Name]'}</p>
-                      <p>{editableData.contactPersonPhone || '[Phone Number]'}</p>
-                      <p className="contact-email">{editableData.contactPersonEmail || '[Email]'}</p>
+                    <div className="sig-details">
+                      <p className="sig-name">{editableData.contactPersonName || '[Name]'}</p>
+                      <p className="sig-contact">{editableData.contactPersonPhone}</p>
+                      <p className="sig-email">{editableData.contactPersonEmail}</p>
                     </div>
                   </div>
                 )}
@@ -1021,129 +1034,155 @@ export default function QuoteGenerationPage() {
             <PageFooter pageNumber={2} />
           </div>
 
-          {/* Page 3 - Service Products */}
-          <div className="page page-3">
+          {/* Page 3 - Service Products - ENHANCED */}
+          <div className="page page-3-premium">
             <KardexLogo />
 
             <div className="page-content">
-              <h2 className="page-title-secondary">KARDEX Service Products</h2>
+              <div className="premium-page-header mb-8">
+                <h2 className="premium-main-title">KARDEX Service Products</h2>
+                <div className="premium-title-underline"></div>
+              </div>
             
-              {/* 1) VLM Box */}
-              <div className="service-product">
-                <h3>1) VLM Box</h3>
-              
-                {/* VLM Box Banner Image */}
-                <div className="service-image">
-                  <img 
-                    src="/Picture1.jpg" 
-                    alt="Kardex VLM Box - Industrial Storage Solutions" 
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                      console.error('VLM Box image not found')
-                    }}
-                  />
+              <div className="service-products-container">
+                {/* 1) VLM Box */}
+                <div className="service-product-card-premium">
+                   <div className="service-card-image">
+                     <img 
+                       src="/Picture1.jpg" 
+                       alt="Kardex VLM Box" 
+                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                     />
+                     <div className="service-card-badge">Capacity +25%</div>
+                   </div>
+                   <div className="service-card-content">
+                      <h3 className="service-card-title">1) VLM Box</h3>
+                      <p className="service-card-intro">Increase your stock capacity by 20-25% while maintaining a tidy and organized environment.</p>
+                      <p className="service-card-description">
+                        Our Kardex VLM BOX is an adjustable bin system designed for the Vertical Lift Module Kardex Remstar XP. 
+                        It provides extreme flexibility in height, width, and depth to create over 300 location types from just one box.
+                      </p>
+                   </div>
                 </div>
-              
-                <p>
-                  Are you looking forward to increasing your stock capacity by 20-25% by placing the things in tidy, clean and organized manner?
-                </p>
-                <p>
-                  Our Kardex VLM BOX can help. It's an adjustable bin system designed for the Vertical Lift Module Kardex Remstar XP. 
-                  It can increase the stock capacity by 20 – 25 %. The Kardex VLM BOX is flexible in height, width and depth to create 
-                  over 300 location types – from just one box.
-                </p>
-              </div>
 
-              {/* 2) Relocations, Upgrades & Retrofits */}
-              <div className="service-product">
-                <h3>2) Relocations, Upgrades & Retrofits</h3>
-              
-                {/* Relocations & Retrofits Banner Image */}
-                <div className="service-image">
-                  <img 
-                    src="/Picture2.jpg" 
-                    alt="Kardex Relocations, Upgrades & Retrofits Services" 
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                      console.error('Relocations & Retrofits image not found')
-                    }}
-                  />
+                {/* 2) Relocations, Upgrades & Retrofits */}
+                <div className="service-product-card-premium">
+                   <div className="service-card-image">
+                     <img 
+                       src="/Picture2.jpg" 
+                       alt="Kardex Relocations & Upgrades" 
+                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                     />
+                     <div className="service-card-badge">Life Cycle</div>
+                   </div>
+                   <div className="service-card-content">
+                      <h3 className="service-card-title">2) Relocations, Upgrades & Retrofits</h3>
+                      <p className="service-card-intro">Optimize or modernize your existing Kardex Storage and Retrieval systems for peak performance.</p>
+                      
+                      <div className="services-list-premium">
+                        <div className="service-list-item"><span>•</span> Height changes & Capacity improvement</div>
+                        <div className="service-list-item"><span>•</span> Relocation & Work opening adjustments</div>
+                        <div className="service-list-item"><span>•</span> Security upgrades & Picking device replacement</div>
+                        <div className="service-list-item"><span>•</span> Full system Modernizations</div>
+                      </div>
+                   </div>
                 </div>
-              
-                <p>
-                  Do you have a Kardex Storage and Retrieval system that is no longer used optimally or may be in need of modernization?
-                </p>
-                <p>Here is an overview of the services we offer at Kardex:</p>
-                <div className="services-grid">
-                  <div>
-                    <p>• Height changes</p>
-                    <p>• Improve storage capacity</p>
-                    <p>• Replacement of picking devices</p>
-                  </div>
-                  <div>
-                    <p>• Relocation of Kardex System</p>
-                    <p>• Additional or relocation of existing work openings</p>
-                    <p>• Security and component upgrades</p>
-                  </div>
-                </div>
-                <p>• Modernizations</p>
-              </div>
 
-              {/* 3) Remote Support */}
-              <div className="service-product">
-                <h3>3) Remote Support</h3>
-              
-                {/* Remote Support Banner Image */}
-                <div className="service-image">
-                  <img 
-                    src="/Picture3.jpg" 
-                    alt="Kardex Remote Support - Industrial Equipment Monitoring" 
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                      console.error('Remote Support image not found')
-                    }}
-                  />
+                {/* 3) Remote Support */}
+                <div className="service-product-card-premium">
+                   <div className="service-card-image">
+                     <img 
+                       src="/Picture3.jpg" 
+                       alt="Kardex Remote Support" 
+                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                     />
+                     <div className="service-card-badge">24/7 Connectivity</div>
+                   </div>
+                   <div className="service-card-content">
+                      <h3 className="service-card-title">3) Remote Support</h3>
+                      <p className="service-card-intro">Prevent unplanned downtime with proactive monitoring and remote fault resolution.</p>
+                      <p className="service-card-description">
+                        Operator-requested technical help directly from the equipment's panel. Send diagnostic information 
+                        instantly to get expert assistance and resolve breakdowns without waiting for a technician's arrival.
+                      </p>
+                   </div>
                 </div>
-              
-                <p>
-                  How much equipment downtime is costing your workplace?
-                </p>
-                <p>
-                  You can't afford to let unplanned equipment downtime cost your company money - especially if you can prevent it. 
-                  With our Remote Support solution, we can access machines and perform proactive maintenance and even resolve the breakdowns. 
-                  The operator can request technical help directly from the equipment's panel, send all the necessary information and get assistance.
-                </p>
               </div>
             </div>
 
-            {/* Page 3 Footer */}
             <PageFooter pageNumber={3} />
           </div>
 
-          {/* Page 4 - Service Package */}
-          <div className="page page-4">
+          {/* Page 4 - Service Package - ENHANCED */}
+          <div className="page page-4-premium">
             <KardexLogo />
 
             <div className="page-content">
-              <h2 className="service-package-title">Find the best service package for your requirements</h2>
-              <p className="service-package-subtitle">
-                The following range of support services provide everything your business needs to make the most of your Kardex solution.
-              </p>
+              <div className="premium-page-header mb-6">
+                <h2 className="premium-main-title">Tailored Service Packages</h2>
+                <p className="premium-subtitle">Everything your business needs to make the most of your Kardex solution.</p>
+                <div className="premium-title-underline"></div>
+              </div>
             
-              {/* Service Package Circular Diagram */}
-              <div className="service-package-diagram">
-                <img 
-                  src="/Picture4.jpg" 
-                  alt="Kardex Service Package - Productivity, Reliability & Safety, Sustainability" 
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    console.error('Service Package Diagram image not found')
-                  }}
-                />
+              <div className="package-hero-section">
+                <div className="package-diagram-container">
+                  <div className="diagram-wrapper">
+                    <img 
+                      src="/Picture4.jpg" 
+                      alt="Kardex Service Packages" 
+                      className="main-diagram-img"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="package-highlights">
+                  <div className="highlight-item productivity">
+                    <div className="highlight-number">01</div>
+                    <div className="highlight-text">
+                      <span className="highlight-title">Productivity</span>
+                      <p>Maximize throughput with optimized processes.</p>
+                    </div>
+                  </div>
+                  <div className="highlight-item reliability">
+                    <div className="highlight-number">02</div>
+                    <div className="highlight-text">
+                      <span className="highlight-title">Reliability</span>
+                      <p>Uptime guaranteed with professional care.</p>
+                    </div>
+                  </div>
+                  <div className="highlight-item sustainability">
+                    <div className="highlight-number">03</div>
+                    <div className="highlight-text">
+                      <span className="highlight-title">Sustainability</span>
+                      <p>Extend lifecycle with modern upgrades.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="package-features-grid-premium">
+                <div className="feature-card-premium productivity">
+                  <div className="feature-icon-wrapper">🚀</div>
+                  <h4>Productivity</h4>
+                  <div className="card-divider"></div>
+                  <p>Maximize your operational throughput with optimized picking processes and significantly reduced equipment downtime.</p>
+                </div>
+                <div className="feature-card-premium reliability">
+                  <div className="feature-icon-wrapper">🛡️</div>
+                  <h4>Reliability & Safety</h4>
+                  <div className="card-divider"></div>
+                  <p>Ensure maximum uptime and safe operation of your equipment with regular professional maintenance and safety tests.</p>
+                </div>
+                <div className="feature-card-premium sustainability">
+                  <div className="feature-icon-wrapper">🌱</div>
+                  <h4>Sustainability</h4>
+                  <div className="card-divider"></div>
+                  <p>Extend the lifecycle of your storage systems and reduce energy consumption through modern upgrades and retrofits.</p>
+                </div>
               </div>
             </div>
 
-            {/* Page 4 Footer */}
             <PageFooter pageNumber={4} />
           </div>
 
@@ -1152,7 +1191,9 @@ export default function QuoteGenerationPage() {
             <KardexLogo />
 
             <div className="page-content terms-page">
-              <h2 className="page-title-secondary">General Terms and Conditions</h2>
+              <h2 className="terms-main-title">
+                <span className="terms-header-badge">General Terms and Conditions</span>
+              </h2>
               
               <div className="terms-content">
               <p className="mb-4">These Terms and Conditions (T&C) are structured as follows:</p>
@@ -1167,7 +1208,9 @@ export default function QuoteGenerationPage() {
               </p>
 
               {/* Part A: General Provisions */}
-              <h3 className="text-sm font-bold text-[#546A7A] mt-6 mb-3">A. General Provisions</h3>
+              <div className="terms-part-header part-a">
+                <h3>PART A: GENERAL PROVISIONS</h3>
+              </div>
               
               <div className="mb-4">
                 <h4 className="font-semibold mb-2">1. Scope of the T&C</h4>
@@ -1285,7 +1328,9 @@ export default function QuoteGenerationPage() {
             <div className="page-content terms-page">
               <div className="terms-content grid grid-cols-2 gap-4">
               {/* Part B */}
-              <h3 className="text-sm font-bold text-[#546A7A] mt-6 mb-3">B. Specific Provisions for Deliveries</h3>
+              <div className="terms-part-header part-b mt-6">
+                <h3>PART B: SPECIFIC PROVISIONS FOR DELIVERIES</h3>
+              </div>
               
               <div className="mb-4">
                 <h4 className="font-semibold mb-2">1. Delivery</h4>
@@ -1578,8 +1623,6 @@ export default function QuoteGenerationPage() {
             {/* Page 11 Footer */}
             <PageFooter pageNumber={11} />
           </div>
-        </div>
-      </div>
 
       {/* Modern PDF/Word-friendly Styles */}
       <style jsx global>{`
@@ -1609,6 +1652,11 @@ export default function QuoteGenerationPage() {
           page-break-after: always;
           break-after: page;
           position: relative;
+        }
+
+        /* Full-width for premium pages */
+        .page-2, .page-3-premium, .page-4-premium {
+          padding: 12mm 8mm !important;
         }
 
         .page:last-child {
@@ -1779,151 +1827,437 @@ export default function QuoteGenerationPage() {
           line-height: 1.25;
         }
 
-        .terms-list li::before {
-          content: "•";
-          position: absolute;
-          left: 0;
-          color: #4a5568;
-          font-size: 12px;
+        /* ==================== PREMIUM REDESIGN STYLES ==================== */
+        .premium-section-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 15px;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 20px 0 12px 0;
+          border-bottom: 2px solid #e2e8f0;
+          padding-bottom: 6px;
         }
 
-        .note-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
+        .header-icon {
+          font-size: 18px;
         }
 
-        .note-list li {
-          font-size: 12px;
-          color: #4a5568;
-          margin-bottom: 2px;
-          line-height: 1.25;
+        .notes-grid-premium {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          margin-bottom: 24px;
         }
 
-        .other-terms {
-          margin-bottom: 4px;
+        .note-item-premium {
+          display: flex;
+          gap: 10px;
+          padding: 10px;
+          border-radius: 6px;
+          background: #f8fafc;
+          border-left: 3px solid #d1d5db;
+          font-size: 11px;
+          line-height: 1.4;
         }
 
-        .other-terms .section-subtitle {
-          font-size: 12px;
-          font-weight: 600;
-          color: #2d3748;
-          margin-bottom: 4px;
+        .note-item-premium:nth-child(even) {
+          background: #f1f5f9;
         }
 
-        .please-note-section {
-          margin-bottom: 6px;
-        }
-
-        .please-note-section h3 {
-          font-size: 14px;
-          font-weight: 600;
-          color: #2d3748;
-          margin-bottom: 4px;
-        }
-
-        .company-assurance {
-          font-size: 12px;
-          color: #4a5568;
-          margin-bottom: 4px;
-          line-height: 1.2;
-        }
-
-        .company-assurance p {
-          margin-bottom: 0.1rem;
-        }
-
-        /* ==================== SERVICE PRODUCTS ==================== */
-        .service-product {
-          margin-bottom: 16px;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        /* Page 3 specific - more compact layout */
-        .page-3 .service-product {
-          margin-bottom: 12px;
-        }
-
-        .service-product h3 {
-          font-size: 14px;
-          font-weight: 600;
-          color: #2d3748;
-          margin-bottom: 8px;
-        }
-
-        .service-image {
-          width: 100%;
-          height: 100px;
-          margin-bottom: 8px;
-          border-radius: 4px;
-          overflow: hidden;
+        .note-num {
+          background: #4472C4;
+          color: white;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: #f7fafc;
+          font-size: 10px;
+          font-weight: bold;
+          flex-shrink: 0;
+          margin-top: 1px;
         }
 
-        .service-image img {
+        .assurance-card-premium {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 16px;
+          background: linear-gradient(to right, #f0f7ff, #ffffff);
+          border: 1px solid #e0e7ff;
+          border-radius: 10px;
+          margin: 15px 0 25px 0;
+        }
+
+        .assurance-icon {
+          font-size: 28px;
+        }
+
+        .assurance-text p {
+          margin: 0;
+          font-size: 12px;
+          color: #334155;
+          font-style: italic;
+          line-height: 1.5;
+        }
+
+        .order-release-premium {
+          margin-bottom: 25px;
+        }
+
+        .release-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: #64748b;
+          margin-bottom: 8px;
+        }
+
+        .company-info-premium {
+          padding: 15px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+        }
+
+        .company-name-large {
+          font-size: 14px;
+          font-weight: 800;
+          color: #1e293b;
+          margin-bottom: 4px;
+        }
+
+        .company-address-text {
+          font-size: 12px;
+          color: #475569;
+          margin-bottom: 8px;
+        }
+
+        .company-contact-row {
+          display: flex;
+          gap: 20px;
+          font-size: 11px;
+          color: #64748b;
+        }
+
+        .signature-footer-premium {
+          margin-top: 25px;
+          border-top: 1px dashed #ced4da;
+          padding-top: 15px;
+        }
+
+        .undertime-text {
+          font-size: 12px;
+          margin-bottom: 8px;
+          color: #475569;
+        }
+
+        .faithfully-text {
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 40px;
+        }
+
+        .signature-display-premium {
+          display: flex;
+          align-items: center;
+          gap: 30px;
+        }
+
+        .sig-image-container {
+          width: 150px;
+          height: 60px;
+          border-bottom: 1px solid #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .sig-img {
+          max-height: 55px;
+          max-width: 140px;
+          object-fit: contain;
+        }
+
+        .sig-placeholder {
+          font-size: 10px;
+          color: #cbd5e1;
+          font-style: italic;
+        }
+
+        .sig-details p {
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .sig-name {
+          font-size: 14px;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        .sig-contact, .sig-email {
+          font-size: 11px;
+          color: #64748b;
+        }
+
+        /* ==================== TERMS & CONDITIONS ==================== */
+        /* ==================== PAGE 3 & 4 PREMIUM REDESIGN ==================== */
+        .premium-page-header {
+          text-align: center;
+          position: relative;
+        }
+
+        .premium-main-title {
+          font-size: 22px;
+          font-weight: 800;
+          color: #1e293b;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 8px;
+        }
+
+        .premium-subtitle {
+          font-size: 13px;
+          color: #64748b;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .premium-title-underline {
+          width: 60px;
+          height: 4px;
+          background: #4472C4;
+          margin: 12px auto 0;
+          border-radius: 2px;
+        }
+
+        /* Page 3 Styles */
+        .service-products-container {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .service-product-card-premium {
+          display: grid;
+          grid-template-columns: 320px 1fr;
+          gap: 40px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+          page-break-inside: avoid;
+        }
+
+        .service-card-image {
+          position: relative;
+          height: 100%;
+          min-height: 160px;
+          background: #f1f5f9;
+        }
+
+        .service-card-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+
+        .service-card-badge {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          background: rgba(30, 41, 59, 0.8);
+          backdrop-filter: blur(4px);
+          color: white;
+          padding: 4px 10px;
           border-radius: 4px;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
         }
 
-        .service-product p {
+        .service-card-content {
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .service-card-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 8px;
+        }
+
+        .service-card-intro {
+          font-size: 13px;
+          font-weight: 600;
+          color: #4472C4;
+          margin-bottom: 8px;
+          line-height: 1.4;
+        }
+
+        .service-card-description {
           font-size: 12px;
-          color: #4a5568;
-          margin-bottom: 6px;
-          line-height: 1.35;
+          color: #64748b;
+          line-height: 1.5;
         }
 
-        .services-grid {
+        .services-list-premium {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
-          margin: 8px 0;
-          font-size: 12px;
-          color: #4a5568;
+          margin-top: 10px;
         }
 
-        .services-grid p {
-          margin-bottom: 2px;
+        .service-list-item {
+          font-size: 11px;
+          color: #475569;
+          display: flex;
+          gap: 6px;
+          align-items: flex-start;
         }
 
-        /* ==================== SERVICE PACKAGE ==================== */
-        .service-package-title {
-          font-size: 16px;
-          font-weight: normal;
-          color: #4a5568;
-          margin-bottom: 16px;
+        .service-list-item span {
+          color: #4472C4;
+          font-weight: bold;
         }
 
-        .service-package-subtitle {
-          font-size: 12px;
-          color: #4a5568;
-          margin-bottom: 20px;
+        /* Page 4 Styles */
+        .package-hero-section {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 40px;
+          align-items: center;
+          margin-bottom: 30px;
+          background: #f1f5f9;
+          padding: 30px;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
         }
 
-        .service-package-diagram {
+        .package-diagram-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .diagram-wrapper {
           width: 100%;
-          height: 500px;
+          max-width: 520px;
+          background: white;
+          padding: 15px;
+          border-radius: 50%;
+          box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-diagram-img {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+
+        .package-highlights {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .highlight-item {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          padding: 12px;
+          background: white;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .highlight-number {
+          font-size: 20px;
+          font-weight: 800;
+          color: #cbd5e1;
+        }
+
+        .highlight-text {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .highlight-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        .highlight-text p {
+          margin: 0;
+          font-size: 11px;
+          color: #64748b;
+        }
+
+        .highlight-item.productivity { border-left: 4px solid #f59e0b; }
+        .highlight-item.reliability { border-left: 4px solid #3b82f6; }
+        .highlight-item.sustainability { border-left: 4px solid #10b981; }
+
+        .package-features-grid-premium {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+
+        .feature-card-premium {
+          padding: 24px;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-icon-wrapper {
+          width: 48px;
+          height: 48px;
+          background: #f1f5f9;
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 10px;
+          font-size: 24px;
+          margin: 0 auto 16px;
         }
 
-        /* Page 4 specific - reduce padding */
-        .page-4 .page-content {
-          padding-bottom: 2mm;
+        .feature-card-premium h4 {
+          font-size: 14px;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 12px;
         }
 
-        .service-package-diagram img {
-          max-width: 100%;
-          max-height: 100%;
-          object-fit: contain;
+        .card-divider {
+          width: 30px;
+          height: 2px;
+          background: #e2e8f0;
+          margin: 0 auto 12px;
         }
+
+        .feature-card-premium p {
+          font-size: 11px;
+          color: #64748b;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .feature-card-premium.productivity .feature-icon-wrapper { background: #fffbeb; color: #d97706; }
+        .feature-card-premium.reliability .feature-icon-wrapper { background: #eff6ff; color: #2563eb; }
+        .feature-card-premium.sustainability .feature-icon-wrapper { background: #f0fdf4; color: #16a34a; }
 
         /* ==================== SIGNATURE SECTION ==================== */
         .signature-section {
@@ -2032,233 +2366,95 @@ export default function QuoteGenerationPage() {
           color: #9ca3af;
         }
 
-        /* ==================== TERMS PAGES LAYOUT ==================== */
+        /* ==================== TERMS PAGES LAYOUT - CLEAN & PREMIUM ==================== */
+        .terms-main-title {
+          text-align: center;
+          margin: 0 0 15px 0;
+        }
+
+        .terms-header-badge {
+          display: inline-block;
+          background: linear-gradient(135deg, #1e5f8b 0%, #2c7da0 100%);
+          color: white;
+          padding: 8px 32px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 14px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 10px rgba(30, 95, 139, 0.2);
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
         .terms-page .terms-content {
-          font-size: 9px;
-          color: #4a5568;
-          line-height: 1.2;
+          column-count: 2 !important;
+          column-gap: 24px !important;
+          column-rule: 1px solid #edf2f7 !important;
+          font-size: 8.2px !important;
+          line-height: 1.35 !important;
           text-align: justify;
+          display: block !important;
+          color: #4a5568;
         }
 
-        /* Page 5 specific - two column layout */
-        .page-5 .terms-content {
-          column-count: 2;
-          column-gap: 16px;
-          column-fill: balance;
-        }
-
-        .page-5 .page-title-secondary {
-          margin: 0 0 6px 0;
-          font-size: 13px;
-        }
-
-        .page-5 .terms-content h3 {
+        .terms-part-header {
           column-span: all;
-          break-after: avoid;
-          margin: 8px 0 4px 0 !important;
+          margin: 15px 0 10px 0;
+          padding: 6px 15px;
+          border-radius: 4px;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
         }
 
-        .page-5 .terms-content .mb-4 {
-          margin-bottom: 4px;
+        .terms-part-header h3 {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: none !important;
+          border: none !important;
+          font-size: 11px !important;
+          font-weight: 800 !important;
+          color: white !important;
+          letter-spacing: 1px !important;
+          text-transform: uppercase !important;
+          text-align: center !important;
         }
 
-        .page-5 .terms-content p.mb-4 {
-          margin-bottom: 3px;
+        /* Part Specific Header Colors */
+        .part-a { background: linear-gradient(135deg, #4472C4 0%, #2e5aa8 100%); }
+        .part-b { background: linear-gradient(135deg, #1e5f8b 0%, #154566 100%); }
+        .part-c { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); }
+        
+        .part-c-sub { 
+          background: #f1f5f9; 
+          color: #1e5f8b; 
+          border-left: 4px solid #1e5f8b;
+          text-align: left;
+        }
+        .part-c-sub h3 { 
+          color: #1e5f8b !important; 
+          text-align: left !important;
+          letter-spacing: 0.5px !important;
         }
 
-        .page-5 .terms-content ul {
-          margin: 3px 0;
-        }
-
-        .page-5 .terms-content .space-y-1 {
-          gap: 0;
-        }
-
-        .page-5 .terms-content .space-y-1 li {
-          margin-bottom: 1px;
-        }
-
-        .terms-content h3 {
-          font-size: 11px;
-          font-weight: bold;
-          color: #2d3748;
-          margin: 10px 0 5px 0;
-        }
-
-        .terms-content h4 {
+        .terms-page h4 {
           font-size: 9px;
-          font-weight: 600;
+          font-weight: 700;
           color: #2d3748;
-          margin: 6px 0 3px 0;
+          margin: 8px 0 4px 0;
           break-after: avoid;
         }
 
-        .terms-content p {
-          margin-bottom: 3px;
-        }
-
-        .page-5 .terms-content p {
-          margin-bottom: 2px;
-        }
-
-        .terms-content ul {
-          margin: 8px 0;
-          padding-left: 20px;
-        }
-
-        .terms-content li {
+        .terms-page p {
           margin-bottom: 4px;
         }
 
-        .page-5 .terms-content li {
-          margin-bottom: 1px;
+        .terms-page ul {
+          margin: 4px 0;
+          padding-left: 15px;
         }
 
-        .page-5 .terms-content ul {
-          padding-left: 16px;
-        }
-
-        /* Pages 6-9 specific - SINGLE COLUMN COMPACT layout */
-        .page-6 .terms-content,
-        .page-7 .terms-content,
-        .page-8 .terms-content,
-        .page-9 .terms-content {
-          font-size: 8.5px;
-          line-height: 1.25;
-          display: block;
-        }
-
-        /* Pages 10-11 specific - TWO COLUMN layout for structured look */
-        .page-10 .terms-content,
-        .page-11 .terms-content {
-          font-size: 7.5px;
-          line-height: 1.2;
-          column-count: 2;
-          column-gap: 16px;
-          display: block;
-        }
-
-        .page-6 .terms-content h3,
-        .page-7 .terms-content h3,
-        .page-8 .terms-content h3,
-        .page-9 .terms-content h3,
-        .page-10 .terms-content h3,
-        .page-11 .terms-content h3 {
-          grid-column: 1 / -1;
-          font-size: 11px;
-          margin: 4px 0 3px 0;
-          font-weight: bold;
-        }
-
-        .page-6 .terms-content h4,
-        .page-7 .terms-content h4,
-        .page-8 .terms-content h4,
-        .page-9 .terms-content h4,
-        .page-10 .terms-content h4,
-        .page-11 .terms-content h4 {
-          font-size: 9.5px;
-          margin: 3px 0 2px 0;
-          font-weight: 600;
-        }
-
-        .page-6 .terms-content .mb-4,
-        .page-7 .terms-content .mb-4,
-        .page-8 .terms-content .mb-4,
-        .page-9 .terms-content .mb-4,
-        .page-10 .terms-content .mb-4,
-        .page-11 .terms-content .mb-4 {
-          margin-bottom: 4px;
-        }
-
-        .page-6 .terms-content p,
-        .page-7 .terms-content p,
-        .page-8 .terms-content p,
-        .page-9 .terms-content p,
-        .page-10 .terms-content p,
-        .page-11 .terms-content p {
+        .terms-page li {
           margin-bottom: 2px;
-        }
-
-        .page-6 .terms-content .mb-1,
-        .page-7 .terms-content .mb-1,
-        .page-8 .terms-content .mb-1,
-        .page-9 .terms-content .mb-1,
-        .page-10 .terms-content .mb-1,
-        .page-11 .terms-content .mb-1 {
-          margin-bottom: 1.5px;
-        }
-
-        .page-6 .terms-content .mb-2,
-        .page-7 .terms-content .mb-2,
-        .page-8 .terms-content .mb-2,
-        .page-9 .terms-content .mb-2,
-        .page-10 .terms-content .mb-2,
-        .page-11 .terms-content .mb-2 {
-          margin-bottom: 2px;
-        }
-
-        .page-6 .terms-content .mt-4,
-        .page-7 .terms-content .mt-4,
-        .page-8 .terms-content .mt-4,
-        .page-9 .terms-content .mt-4,
-        .page-10 .terms-content .mt-4,
-        .page-11 .terms-content .mt-4 {
-          margin-top: 3px;
-        }
-
-        .page-6 .terms-content .mt-6,
-        .page-7 .terms-content .mt-6,
-        .page-8 .terms-content .mt-6,
-        .page-9 .terms-content .mt-6,
-        .page-10 .terms-content .mt-6,
-        .page-11 .terms-content .mt-6 {
-          margin-top: 4px;
-        }
-
-        .page-6 .terms-content ul,
-        .page-7 .terms-content ul,
-        .page-8 .terms-content ul,
-        .page-9 .terms-content ul,
-        .page-10 .terms-content ul,
-        .page-11 .terms-content ul {
-          margin: 2px 0;
-          padding-left: 16px;
-        }
-
-        .page-6 .terms-content li,
-        .page-7 .terms-content li,
-        .page-8 .terms-content li,
-        .page-9 .terms-content li,
-        .page-10 .terms-content li,
-        .page-11 .terms-content li {
-          margin-bottom: 1.5px;
-        }
-
-        .page-6 .page-content,
-        .page-7 .page-content,
-        .page-8 .page-content,
-        .page-9 .page-content,
-        .page-10 .page-content,
-        .page-11 .page-content {
-          padding-bottom: 8mm;
-        }
-
-        .page-6 .terms-content .space-y-1,
-        .page-7 .terms-content .space-y-1,
-        .page-8 .terms-content .space-y-1,
-        .page-9 .terms-content .space-y-1,
-        .page-10 .terms-content .space-y-1,
-        .page-11 .terms-content .space-y-1 {
-          gap: 0;
-        }
-
-        .page-6 .terms-content .space-y-1 li,
-        .page-7 .terms-content .space-y-1 li,
-        .page-8 .terms-content .space-y-1 li,
-        .page-9 .terms-content .space-y-1 li,
-        .page-10 .terms-content .space-y-1 li,
-        .page-11 .terms-content .space-y-1 li {
-          margin-bottom: 1px;
         }
 
         /* ==================== PAGE FOOTER ==================== */
@@ -2294,11 +2490,166 @@ export default function QuoteGenerationPage() {
           text-align: right;
         }
 
+        /* ==================== MOBILE RESPONSIVENESS ==================== */
+        @media (max-width: 768px) {
+          .container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            padding-top: 1rem !important;
+          }
+
+          .quotation-document {
+            padding: 0 !important;
+            width: 100% !important;
+            box-shadow: none !important;
+          }
+
+          .document-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+          }
+
+          .page {
+            width: 100% !important;
+            min-height: auto !important;
+            padding: 1.5rem 1rem !important;
+            margin-bottom: 1rem !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            border-radius: 0.5rem !important;
+          }
+
+          .page-content {
+            padding: 0 !important;
+          }
+
+          .header-info {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+
+          .header-info div:last-child {
+            text-align: left !important;
+          }
+
+          .machine-details-section,
+          .items-section {
+            width: 100% !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+
+          .data-table {
+            min-width: 600px !important; 
+          }
+
+          .terms-content {
+            grid-template-columns: 1fr !important;
+          }
+
+          .services-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .service-image {
+            height: auto !important;
+            max-height: 200px !important;
+          }
+
+          .service-package-diagram img {
+            width: 100% !important;
+            height: auto !important;
+          }
+
+          .signature-section {
+            flex-direction: column !important;
+            gap: 1.5rem !important;
+          }
+
+          .signature-display {
+            text-align: left !important;
+          }
+
+          .page-footer {
+            position: relative !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            margin-top: 2rem !important;
+            padding: 1rem 0 !important;
+            width: 100% !important;
+          }
+
+          .document-viewport-wrapper {
+            padding-bottom: 1rem !important;
+          }
+        }
+
         /* ==================== PRINT STYLES ==================== */
         @media print {
           @page {
             size: A4;
             margin: 0;
+          }
+
+          /* Global Page Setup - FULL WIDTH FIX */
+          html, body {
+            width: 210mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+          }
+
+          .quotation-document {
+            width: 210mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
+          .document-container {
+            width: 210mm !important;
+            max-width: 210mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
+          .page {
+            width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            padding: 15mm 20mm 20mm 20mm !important; /* Standardized margins */
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+            background: white !important;
+            page-break-after: always !important;
+          }
+
+          /* Ensure content uses full width within page */
+          .page-content {
+            width: 100% !important;
+            flex: 1 !important;
+            padding-bottom: 25mm !important; /* Space for footer */
+          }
+
+          /* Targeted reset for Dashboard Layout wrappers to prevent gaps */
+          #__next, .min-h-screen, 
+          [class*="flex flex-col h-screen"], 
+          [class*="flex-1 overflow-y-auto"],
+          main, .flex-1 {
+            overflow: visible !important;
+            height: auto !important;
+            position: static !important;
+            display: block !important;
+            width: 210mm !important;
           }
 
           body {
@@ -2310,42 +2661,12 @@ export default function QuoteGenerationPage() {
             width: 210mm !important;
           }
 
+          /* Hide sidebar and other unwanted elements */
+          aside, header, nav, footer,
+          .sidebar, .header, .sticky, .fixed,
+          [data-sidebar], [role="navigation"], [role="banner"],
           .print\:hidden {
             display: none !important;
-          }
-
-          .quotation-document {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 210mm !important;
-            background: white !important;
-          }
-
-          .document-container {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 210mm !important;
-            max-width: 210mm !important;
-            overflow: visible !important;
-            background: white !important;
-          }
-
-          .page {
-            margin: 0 !important;
-            padding: 15mm 20mm 20mm 20mm !important;
-            width: 210mm !important;
-            height: 297mm !important;
-            min-height: 297mm !important;
-            max-height: 297mm !important;
-            position: relative !important;
-            background: white !important;
-            box-shadow: none !important;
-            overflow: hidden !important;
-          }
-
-          .page + .page {
-            page-break-before: always !important;
-            break-before: page !important;
           }
 
           /* Footer positioning */
@@ -2361,39 +2682,11 @@ export default function QuoteGenerationPage() {
             padding-top: 8px !important;
           }
         }
-
-        /* ==================== RESPONSIVE DESIGN ==================== */
-        @media screen and (max-width: 768px) {
-          .document-container {
-            max-width: 100%;
-            padding: 0 16px;
-          }
-
-          .page {
-            padding: 16px;
-            min-height: auto;
-          }
-
-          .header-info {
-            grid-template-columns: 1fr;
-            gap: 12px;
-          }
-
-          .services-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .data-table {
-            font-size: 11px;
-          }
-
-          .data-table th,
-          .data-table td {
-            padding: 6px;
-          }
-        }
       `}</style>
+          </div>
+        </div>
+      </div>
     </div>
-    
-  )
+  </div>
+)
 }

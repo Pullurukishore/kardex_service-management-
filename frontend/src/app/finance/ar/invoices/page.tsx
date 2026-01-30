@@ -150,6 +150,14 @@ export default function ARInvoicesPage() {
     }
   };
 
+  const getPaymentModeStyle = (mode: string) => {
+    switch (mode) {
+      case 'TDS': return 'bg-[#CE9F6B]/15 text-[#976E44] border border-[#CE9F6B]/30';
+      case 'LD': return 'bg-[#E17F70]/15 text-[#9E3B47] border border-[#E17F70]/30';
+      default: return 'bg-[#6F8A9D]/15 text-[#546A7A] border border-[#6F8A9D]/30'; // Style for 'Other'
+    }
+  };
+
   // Calculate days until/overdue delivery for prepaid invoices
   const getDeliveryDueDays = (invoice: ARInvoice) => {
     if (!invoice.deliveryDueDate) return null;
@@ -356,7 +364,7 @@ export default function ARInvoicesPage() {
                 <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
                   <div className="flex items-center gap-2">
                     <FileText className="w-3.5 h-3.5 opacity-80" />
-                    Invoice
+                    Invoice Details
                   </div>
                 </th>
                 <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
@@ -365,55 +373,36 @@ export default function ARInvoicesPage() {
                     Customer
                   </div>
                 </th>
-                {isPrepaidView ? (
-                  <>
-                    <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                      <div className="flex items-center gap-2">
-                        <Wallet className="w-3.5 h-3.5 opacity-80" />
-                        Advance Received
-                      </div>
-                    </th>
-                    <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                      <div className="flex items-center gap-2">
-                        <Truck className="w-3.5 h-3.5 opacity-80" />
-                        Delivery Due
-                      </div>
-                    </th>
-                  </>
-                ) : (
-                  <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 opacity-80" />
-                      Dates
-                    </div>
-                  </th>
-                )}
+                <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-3.5 h-3.5 opacity-80" />
+                    {isPrepaidView ? 'Advance Received' : 'Invoice Date'}
+                  </div>
+                </th>
+                <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 opacity-80" />
+                    {isPrepaidView ? 'Delivery Due Date' : 'Due Date'}
+                  </div>
+                </th>
                 <th className="text-right py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
                   <div className="flex items-center gap-2 justify-end">
                     <DollarSign className="w-3.5 h-3.5 opacity-80" />
-                    Amount
+                    Total Amount
                   </div>
                 </th>
-                {isPrepaidView ? (
-                  <th className="text-center py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                    <div className="flex items-center gap-2 justify-center">
-                      <Package className="w-3.5 h-3.5 opacity-80" />
-                      Delivery Status
-                    </div>
-                  </th>
-                ) : (
-                  <>
-                    <th className="text-center py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                      <div className="flex items-center gap-2 justify-center">
-                        <Shield className="w-3.5 h-3.5 opacity-80" />
-                        Risk
-                      </div>
-                    </th>
-                    <th className="text-center py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
-                      Delivery
-                    </th>
-                  </>
-                )}
+                <th className="text-right py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">
+                  Amount Received
+                </th>
+                <th className="text-right py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">
+                  Balance Amount
+                </th>
+                <th className="text-left py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
+                  Payment Mode
+                </th>
+                <th className="text-center py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
+                  {isPrepaidView ? 'Delivery Status' : 'Risk'}
+                </th>
                 <th className="text-center py-4 px-5 text-xs font-semibold text-white uppercase tracking-wide">
                   Status
                 </th>
@@ -425,7 +414,7 @@ export default function ARInvoicesPage() {
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i} className="border-b border-[#AEBFC3]/15">
-                    {Array.from({ length: isPrepaidView ? 7 : 7 }).map((_, j) => (
+                    {Array.from({ length: 10 }).map((_, j) => (
                       <td key={j} className="py-4 px-5">
                         <div className="h-4 bg-gradient-to-r from-[#AEBFC3]/20 to-[#96AEC2]/10 rounded animate-pulse" style={{ width: `${50 + Math.random() * 50}%` }} />
                       </td>
@@ -434,7 +423,7 @@ export default function ARInvoicesPage() {
                 ))
               ) : invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={isPrepaidView ? 7 : 7} className="py-16 text-center">
+                  <td colSpan={10} className="py-16 text-center">
                     {isPrepaidView ? (
                       <>
                         <Wallet className="w-12 h-12 text-[#CE9F6B]/40 mx-auto mb-3" />
@@ -453,6 +442,16 @@ export default function ARInvoicesPage() {
               ) : (
                 invoices.map((invoice, index) => {
                   const deliveryDays = getDeliveryDueDays(invoice);
+                  const paymentHistory = invoice.paymentHistory || [];
+                  const paymentCount = paymentHistory.length;
+                  
+                  // Categorize modes: TDS, LD, or Other
+                  const categorizedModes = Array.from(new Set(paymentHistory.map(p => {
+                    const mode = p.paymentMode?.toUpperCase();
+                    if (mode === 'TDS') return 'TDS';
+                    if (mode === 'LD') return 'LD';
+                    return 'Other';
+                  })));
                   
                   return (
                     <tr 
@@ -460,7 +459,7 @@ export default function ARInvoicesPage() {
                       onClick={() => window.location.href = `/finance/ar/invoices/${encodeURIComponent(invoice.invoiceNumber)}`}
                       className={`group cursor-pointer border-b border-[#AEBFC3]/15 transition-all ${getRowStyle(invoice, index)}`}
                     >
-                      {/* Invoice & PO - Highlighted */}
+                      {/* Invoice Details */}
                       <td className="py-4 px-5">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
@@ -472,8 +471,7 @@ export default function ARInvoicesPage() {
                               {invoice.invoiceNumber}
                               <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </Link>
-                            {/* Prepaid Badge */}
-                            {invoice.invoiceType === 'PREPAID' && !isPrepaidView && (
+                            {invoice.invoiceType === 'PREPAID' && (
                               <span className="text-[8px] font-bold text-white bg-gradient-to-r from-[#CE9F6B] to-[#E17F70] px-1.5 py-0.5 rounded uppercase shadow-sm">
                                 PREPAID
                               </span>
@@ -494,162 +492,125 @@ export default function ARInvoicesPage() {
                           <p className="text-sm text-[#546A7A] font-semibold truncate" title={invoice.customerName}>
                             {invoice.customerName || '-'}
                           </p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex gap-2 mt-1">
                             <span className="text-[10px] font-mono font-bold text-[#6F8A9D] bg-[#96AEC2]/20 px-1.5 py-0.5 rounded border border-[#96AEC2]/30">
                               {invoice.bpCode}
                             </span>
-                            {invoice.pocName && (
-                              <span className="text-xs text-[#92A2A5] truncate" title={invoice.pocName}>
-                                {invoice.pocName}
-                              </span>
+                            {invoice.region && (
+                              <span className="text-[10px] text-[#92A2A5]">{invoice.region}</span>
                             )}
                           </div>
                         </div>
                       </td>
 
-                      {/* Dates - Different for Prepaid vs Regular */}
-                      {isPrepaidView ? (
-                        <>
-                          {/* Advance Received Date */}
-                          <td className="py-4 px-5">
-                            <div className="space-y-1">
-                              {invoice.advanceReceivedDate ? (
-                                <>
-                                  <div className="flex items-center gap-1.5">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-[#82A094]" />
-                                    <span className="text-sm font-medium text-[#4F6A64]">
-                                      {formatARDate(invoice.advanceReceivedDate)}
+                      {/* Invoice Date / Advance Received */}
+                      <td className="py-4 px-5">
+                        <div className="text-sm text-[#5D6E73] font-medium">
+                          {isPrepaidView 
+                            ? (invoice.advanceReceivedDate ? formatARDate(invoice.advanceReceivedDate) : '-')
+                            : formatARDate(invoice.invoiceDate)
+                          }
+                        </div>
+                      </td>
+
+                      {/* Due Date / Delivery Due */}
+                      <td className="py-4 px-5">
+                        <div className="space-y-1.5">
+                          {isPrepaidView ? (
+                            invoice.deliveryDueDate ? (
+                              <div className="space-y-1">
+                                <span className={`text-sm font-medium ${
+                                  deliveryDays !== null && deliveryDays < 0 ? 'text-[#E17F70] font-bold' : 'text-[#546A7A]'
+                                }`}>
+                                  {formatARDate(invoice.deliveryDueDate)}
+                                </span>
+                                {deliveryDays !== null && (
+                                  <div>
+                                    <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                      deliveryDays < 0 ? 'text-white bg-[#9E3B47] animate-pulse' : 'text-[#5D6E73] bg-[#AEBFC3]/20'
+                                    }`}>
+                                      {deliveryDays < 0 ? `${Math.abs(deliveryDays)}d overdue` : `${deliveryDays}d left`}
                                     </span>
                                   </div>
-                                  <span className="text-[10px] text-[#82A094] font-medium bg-[#82A094]/10 px-1.5 py-0.5 rounded">
-                                    Payment Received
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-sm text-[#92A2A5]">Not recorded</span>
-                              )}
-                            </div>
-                          </td>
-                          
-                          {/* Delivery Due Date */}
-                          <td className="py-4 px-5">
-                            <div className="space-y-1.5">
-                              {invoice.deliveryDueDate ? (
-                                <>
-                                  <span className={`text-sm font-medium ${
-                                    deliveryDays !== null && deliveryDays < 0 
-                                      ? 'text-[#E17F70] font-bold' 
-                                      : deliveryDays !== null && deliveryDays <= 3
-                                      ? 'text-[#CE9F6B] font-bold'
-                                      : 'text-[#546A7A]'
-                                  }`}>
-                                    {formatARDate(invoice.deliveryDueDate)}
-                                  </span>
-                                  {deliveryDays !== null && (
-                                    <div>
-                                      {deliveryDays < 0 ? (
-                                        <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-white bg-[#9E3B47] px-1.5 py-0.5 rounded animate-pulse">
-                                          <Zap className="w-2.5 h-2.5" />
-                                          {Math.abs(deliveryDays)}d overdue
-                                        </span>
-                                      ) : deliveryDays === 0 ? (
-                                        <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-white bg-[#E17F70] px-1.5 py-0.5 rounded">
-                                          <Timer className="w-2.5 h-2.5" />
-                                          Due Today
-                                        </span>
-                                      ) : deliveryDays <= 3 ? (
-                                        <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#976E44] bg-[#CE9F6B]/20 px-1.5 py-0.5 rounded">
-                                          <Timer className="w-2.5 h-2.5" />
-                                          {deliveryDays}d left
-                                        </span>
-                                      ) : (
-                                        <span className="inline-flex items-center gap-0.5 text-[9px] text-[#5D6E73] bg-[#AEBFC3]/20 px-1.5 py-0.5 rounded">
-                                          <Timer className="w-2.5 h-2.5" />
-                                          {deliveryDays}d left
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                <span className="text-sm text-[#92A2A5]">Not set</span>
-                              )}
-                            </div>
-                          </td>
-                        </>
-                      ) : (
-                        /* Regular invoice dates */
-                        <td className="py-4 px-5">
-                          <div className="space-y-1.5 text-sm">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-[#92A2A5] w-11">Issued</span>
-                              <span className="text-[#5D6E73]">{formatARDate(invoice.invoiceDate)}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-[10px] w-11 ${invoice.dueByDays && invoice.dueByDays > 0 ? 'text-[#E17F70] font-bold' : 'text-[#92A2A5]'}`}>Due</span>
-                              <span className={`font-medium ${invoice.dueByDays && invoice.dueByDays > 0 ? 'text-[#E17F70] font-bold' : 'text-[#4F6A64]'}`}>
+                                )}
+                              </div>
+                            ) : '-'
+                          ) : (
+                            <div className="space-y-1">
+                              <span className={`text-sm font-medium ${invoice.dueByDays && invoice.dueByDays > 0 ? 'text-[#E17F70] font-bold' : 'text-[#4F6A64]'}`}>
                                 {formatARDate(invoice.dueDate)}
                               </span>
                               {invoice.dueByDays && invoice.dueByDays > 0 && (
-                                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-white bg-[#9E3B47] px-1.5 py-0.5 rounded animate-pulse">
-                                  <Zap className="w-2.5 h-2.5" />
-                                  +{invoice.dueByDays}d
-                                </span>
+                                <div>
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-white bg-[#9E3B47] px-1.5 py-0.5 rounded animate-pulse">
+                                    <Zap className="w-2.5 h-2.5" />
+                                    +{invoice.dueByDays}d
+                                  </span>
+                                </div>
                               )}
                             </div>
-                          </div>
-                        </td>
-                      )}
-
-                      {/* Amount & Balance - Highlighted */}
-                      <td className="py-4 px-5 text-right">
-                        <div className="space-y-1">
-                          <p className="text-[#546A7A] font-bold text-base">
-                            {formatARCurrency(Number(invoice.totalAmount) || 0)}
-                          </p>
-                          {invoice.balance && Number(invoice.balance) > 0 ? (
-                            <div className="inline-flex items-center gap-1 bg-[#E17F70]/10 px-2 py-0.5 rounded border border-[#E17F70]/30">
-                              <span className="text-[10px] text-[#92A2A5]">Bal:</span>
-                              <span className="text-xs text-[#E17F70] font-bold">{formatARCurrency(Number(invoice.balance))}</span>
-                            </div>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] text-white bg-[#82A094] px-2 py-0.5 rounded font-semibold">
-                              <CheckCircle2 className="w-3 h-3" />
-                              Paid
-                            </span>
                           )}
                         </div>
                       </td>
 
-                      {/* Prepaid Delivery Status OR Risk/Delivery for Regular */}
-                      {isPrepaidView ? (
-                        <td className="py-4 px-5 text-center">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${getPrepaidStatusStyle(invoice.prepaidStatus)}`}>
-                            {getPrepaidStatusIcon(invoice.prepaidStatus)}
+                      {/* Total Amount */}
+                      <td className="py-4 px-5 text-right font-bold text-[#546A7A]">
+                        {formatARCurrency(Number(invoice.totalAmount) || 0)}
+                      </td>
+
+                      {/* Amount Received */}
+                      <td className="py-4 px-5 text-right text-[#4F6A64] font-semibold">
+                        {formatARCurrency(Number(invoice.totalReceipts) || 0)}
+                      </td>
+
+                      {/* Balance Amount */}
+                      <td className="py-4 px-5 text-right">
+                        <span className={`font-bold ${invoice.balance && Number(invoice.balance) > 0 ? 'text-[#E17F70]' : 'text-[#82A094]'}`}>
+                          {formatARCurrency(Number(invoice.balance) || 0)}
+                        </span>
+                      </td>
+
+                      {/* Payment Mode */}
+                      <td className="py-4 px-5">
+                        <div className="flex flex-wrap gap-1">
+                          {categorizedModes.length > 0 ? (
+                            <>
+                              {categorizedModes.map((mode) => (
+                                <span 
+                                  key={mode} 
+                                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase transition-transform hover:scale-105 ${getPaymentModeStyle(mode)}`}
+                                >
+                                  {mode}
+                                </span>
+                              ))}
+                              {paymentCount > 1 && (
+                                <span className="px-1 py-0.5 rounded bg-white border border-[#AEBFC3]/30 text-[9px] text-[#92A2A5] font-bold flex items-center justify-center">
+                                  {paymentCount}x
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-xs text-[#92A2A5]">-</span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Multi-purpose column: Risk/Delivery */}
+                      <td className="py-4 px-5 text-center">
+                        {isPrepaidView ? (
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold ${getPrepaidStatusStyle(invoice.prepaidStatus)}`}>
                             {getPrepaidStatusLabel(invoice.prepaidStatus)}
                           </span>
-                        </td>
-                      ) : (
-                        <>
-                          {/* Risk - Full color badges */}
-                          <td className="py-4 px-5 text-center">
-                            <span className={`inline-flex px-3 py-1.5 rounded-md text-[10px] font-bold shadow-sm ${getRiskStyle(invoice.riskClass)}`}>
-                              {invoice.riskClass || 'N/A'}
-                            </span>
-                          </td>
+                        ) : (
+                          <span className={`inline-flex px-3 py-1.5 rounded-md text-[10px] font-bold shadow-sm ${getRiskStyle(invoice.riskClass)}`}>
+                            {invoice.riskClass || 'N/A'}
+                          </span>
+                        )}
+                      </td>
 
-                          {/* Delivery - Bordered badges */}
-                          <td className="py-4 px-5 text-center">
-                            <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-semibold ${getDeliveryStyle(invoice.deliveryStatus)}`}>
-                              {invoice.deliveryStatus || '-'}
-                            </span>
-                          </td>
-                        </>
-                      )}
-
-                      {/* Status - Highlighted */}
+                      {/* Status */}
                       <td className="py-4 px-5">
-                        <div className="flex flex-col items-center gap-1.5">
+                        <div className="flex justify-center">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold shadow-sm ${getStatusStyle(invoice.status)}`}>
                             {getStatusIcon(invoice.status)}
                             {invoice.status}
@@ -775,15 +736,43 @@ export default function ARInvoicesPage() {
                 </div>
                 
                 {/* Amount Row */}
-                <div className="flex items-center justify-between py-2 border-t border-b border-[#AEBFC3]/20">
-                  <div>
-                    <p className="text-xs text-[#92A2A5]">Amount</p>
-                    <p className="text-lg font-bold text-[#546A7A]">{formatARCurrency(Number(invoice.totalAmount) || 0)}</p>
-                  </div>
-                  {invoice.balance && Number(invoice.balance) > 0 && (
+                <div className="flex flex-col gap-2 py-3 border-t border-b border-[#AEBFC3]/20">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-[#92A2A5] uppercase font-bold">Total Amount</p>
+                      <p className="text-lg font-extrabold text-[#546A7A]">{formatARCurrency(Number(invoice.totalAmount) || 0)}</p>
+                    </div>
                     <div className="text-right">
-                      <p className="text-xs text-[#92A2A5]">Balance</p>
+                      <p className="text-[10px] text-[#4F6A64] uppercase font-bold">Amount Received</p>
+                      <p className="text-base font-bold text-[#4F6A64]">{formatARCurrency(Number(invoice.totalReceipts) || 0)}</p>
+                    </div>
+                  </div>
+                  
+                  {invoice.balance && Number(invoice.balance) > 0 && (
+                    <div className="flex items-center justify-between pt-2 border-t border-[#AEBFC3]/10">
+                      <p className="text-[10px] text-[#E17F70] uppercase font-bold">Balance Amount</p>
                       <p className="text-base font-bold text-[#E17F70]">{formatARCurrency(Number(invoice.balance))}</p>
+                    </div>
+                  )}
+
+                  {invoice.paymentHistory && invoice.paymentHistory.length > 0 && (
+                    <div className="flex flex-col gap-1.5 pt-1">
+                      <p className="text-[10px] text-[#92A2A5] uppercase font-bold">Payment Modes</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Array.from(new Set(invoice.paymentHistory.map(p => {
+                          const mode = p.paymentMode?.toUpperCase();
+                          return (mode === 'TDS' || mode === 'LD') ? mode : 'Other';
+                        }))).map(mode => (
+                          <span key={mode} className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getPaymentModeStyle(mode)}`}>
+                            {mode}
+                          </span>
+                        ))}
+                        {invoice.paymentHistory.length > 1 && (
+                          <span className="text-[10px] text-[#92A2A5] font-bold self-center ml-1">
+                            ({invoice.paymentHistory.length} payments)
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -800,7 +789,7 @@ export default function ARInvoicesPage() {
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-[#5D6E73]">Due: {formatARDate(invoice.dueDate)}</span>
+                  <span className="text-xs text-[#5D6E73] font-semibold">Due Date: {formatARDate(invoice.dueDate)}</span>
                 </div>
               </Link>
             );

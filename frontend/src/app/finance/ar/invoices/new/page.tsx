@@ -25,6 +25,7 @@ export default function NewInvoicePage() {
     invoiceType: 'REGULAR' as 'REGULAR' | 'PREPAID',
     advanceReceivedDate: '',
     deliveryDueDate: '',
+    actualPaymentTerms: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -36,9 +37,9 @@ export default function NewInvoicePage() {
     e.preventDefault();
     setError(null);
 
-    // Required fields: invoiceNumber, customerId, invoiceDate, dueDate, totalAmount
-    if (!formData.invoiceNumber || !formData.bpCode || !formData.invoiceDate || !formData.dueDate || !formData.totalAmount) {
-      setError('Please fill in all required fields: Doc. No., Customer Code, Document Date, Due Date, and Amount');
+    // Required fields: invoiceNumber, bpCode, invoiceDate, totalAmount
+    if (!formData.invoiceNumber || !formData.bpCode || !formData.invoiceDate || !formData.totalAmount) {
+      setError('Please fill in all required fields: Doc. No., Customer Code, Document Date, and Amount');
       return;
     }
 
@@ -59,11 +60,12 @@ export default function NewInvoicePage() {
         netAmount: formData.netAmount ? parseFloat(formData.netAmount) : parseFloat(formData.totalAmount),
         taxAmount: formData.taxAmount ? parseFloat(formData.taxAmount) : undefined,
         invoiceDate: formData.invoiceDate,
-        dueDate: formData.dueDate,
+        dueDate: formData.dueDate || undefined,
         // Prepaid fields
         invoiceType: formData.invoiceType,
         advanceReceivedDate: formData.advanceReceivedDate || undefined,
         deliveryDueDate: formData.deliveryDueDate || undefined,
+        actualPaymentTerms: (formData as any).actualPaymentTerms || undefined,
       } as any);
       router.push('/finance/ar/invoices');
     } catch (err: any) {
@@ -132,7 +134,7 @@ export default function NewInvoicePage() {
           </div>
           <div>
             <p className="text-[#546A7A] font-semibold text-sm">Fields marked with <span className="text-[#E17F70]">*</span> are mandatory</p>
-            <p className="text-[#92A2A5] text-xs mt-1">Required: Doc. No., Customer Code, Document Date, Due Date, and Amount</p>
+            <p className="text-[#92A2A5] text-xs mt-1">Required: Doc. No., Customer Code, Document Date, and Amount</p>
           </div>
         </div>
 
@@ -300,7 +302,7 @@ export default function NewInvoicePage() {
             {/* Due Date */}
             <div>
               <label className="block text-[#5D6E73] text-sm font-semibold mb-2">
-                Due Date <span className="text-[#E17F70]">*</span>
+                Due Date
               </label>
               <div className="relative">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#E17F70]" />
@@ -310,9 +312,23 @@ export default function NewInvoicePage() {
                   value={formData.dueDate}
                   onChange={handleChange}
                   className="w-full h-12 pl-11 pr-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] focus:border-[#E17F70]/50 focus:outline-none focus:ring-4 focus:ring-[#E17F70]/10 transition-all font-medium"
-                  required
                 />
               </div>
+            </div>
+
+            {/* Payment Terms */}
+            <div className="col-span-2">
+              <label className="block text-[#5D6E73] text-sm font-semibold mb-2">
+                Payment Terms
+              </label>
+              <textarea
+                name="actualPaymentTerms"
+                value={(formData as any).actualPaymentTerms}
+                onChange={handleChange as any}
+                className={`${inputClass} h-auto min-h-[80px] py-3 resize-y`}
+                placeholder="Declare detailed payment terms..."
+                rows={2}
+              />
             </div>
           </div>
         </div>
@@ -369,20 +385,19 @@ export default function NewInvoicePage() {
             {/* Tax (Optional) */}
             <div>
               <label className="block text-[#5D6E73] text-sm font-semibold mb-2">
-                Tax (%)
+                Tax Amount (₹)
               </label>
               <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#CE9F6B] font-semibold">₹</span>
                 <input
                   type="number"
                   name="taxAmount"
                   value={formData.taxAmount}
                   onChange={handleChange}
-                  className="w-full h-12 pl-4 pr-10 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/10 transition-all font-medium"
-                  placeholder="18 (Optional)"
+                  className="w-full h-12 pl-8 pr-4 rounded-xl bg-[#AEBFC3]/10 border-2 border-[#AEBFC3]/30 text-[#546A7A] placeholder:text-[#92A2A5] focus:border-[#82A094]/50 focus:outline-none focus:ring-4 focus:ring-[#82A094]/10 transition-all font-medium"
+                  placeholder="Tax Amount (Optional)"
                   min="0"
-                  max="100"
                   step="0.01"                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CE9F6B] font-semibold">%</span>
               </div>
             </div>
           </div>

@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
-import { Toaster } from "sonner";
+import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
 import AuthProvider from "@/contexts/AuthContext";
 import PinGuard from "@/components/PinGuard";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+const Toaster = dynamic(() => import("sonner").then((mod) => mod.Toaster), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Kardex Ticket Management",
@@ -27,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className={`${inter.variable} font-sans antialiased text-[#2D3132]`}>
         <AuthProvider>
           <PinGuard>
             {children}

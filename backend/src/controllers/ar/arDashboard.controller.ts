@@ -372,7 +372,15 @@ export const getRecentPayments = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const payments = await safeFindMany(prisma.aRPaymentHistory.findMany({
             orderBy: { createdAt: 'desc' },
-            take: limit
+            take: limit,
+            select: {
+                id: true,
+                invoiceId: true,
+                amount: true,
+                paymentMode: true,
+                paymentDate: true,
+                createdAt: true
+            }
         }));
 
         // Fetch related invoices in one batch query to avoid N+1

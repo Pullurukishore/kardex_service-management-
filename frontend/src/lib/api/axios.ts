@@ -8,7 +8,7 @@ const COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === 'production'
 };
 
-import { isTokenExpired } from '@/services/auth.service';
+import { isTokenExpired } from '../auth-utils';
 import { API_BASE_URL } from '../constants';
 
 export class ApiError extends Error {

@@ -232,33 +232,28 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
       select: {
         id: true,
         title: true,
-        description: true,
         status: true,
         priority: true,
-        callType: true,
         isEscalated: true,
+        slaDueAt: true,
         createdAt: true,
         updatedAt: true,
-        dueDate: true,
-        errorDetails: true,
-        actualResolutionTime: true,
-        totalTimeOpen: true,
-        visitPlannedDate: true,
-        visitCompletedDate: true,
         visitStartedAt: true,
         visitReachedAt: true,
         visitInProgressAt: true,
-        visitResolvedAt: true,
-        customer: true,
-        assignedTo: true,
-        zone: true,
-        asset: true,
+        customerId: true,
+        zoneId: true,
+        assignedToId: true,
+        assetId: true,
+        customer: { select: { id: true, companyName: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
+        zone: { select: { id: true, name: true } },
         statusHistory: {
+          select: { status: true, changedAt: true },
           orderBy: { changedAt: 'desc' }
         },
-        feedbacks: true,
-        rating: true,
-        reports: true
+        feedbacks: { select: { id: true } },
+        rating: { select: { rating: true } }
       }
     }),
     // Status distribution
@@ -401,7 +396,7 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
   // Calculate customer satisfaction metrics
   const ratingsData = tickets.filter((t: any) => t.rating?.rating).map((t: any) => t.rating.rating);
   const avgCustomerRating = ratingsData.length > 0
-    ? Math.round((ratingsData.reduce((sum: number, rating: number) => sum + rating, 0) / ratingsData.length) * 100) / 100
+    ? Math.round(ratingsData.reduce((sum: number, rating: number) => sum + rating, 0) / ratingsData.length)
     : 0;
 
   // Calculate first response time
@@ -462,12 +457,12 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
 
   // Calculate resolution rate
   const resolutionRate = tickets.length > 0
-    ? Math.round((resolvedTickets.length / tickets.length) * 100 * 100) / 100
+    ? Math.round((resolvedTickets.length / tickets.length) * 100)
     : 0;
 
   // Calculate escalation rate
   const escalationRate = tickets.length > 0
-    ? Math.round((tickets.filter((t: any) => t.isEscalated).length / tickets.length) * 100 * 100) / 100
+    ? Math.round((tickets.filter((t: any) => t.isEscalated).length / tickets.length) * 100)
     : 0;
 
   // Calculate customer performance metrics (more tickets = machine issues)
@@ -555,7 +550,7 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
       avgOnsiteTravelTime = Math.round(
         travelTimes.reduce((sum: number, time: number) => sum + time, 0) / travelTimes.length
       );
-      avgOnsiteTravelTimeHours = Math.round((avgOnsiteTravelTime / 60) * 100) / 100;
+      avgOnsiteTravelTimeHours = Math.round(avgOnsiteTravelTime / 60);
     }
   }
 
@@ -585,10 +580,10 @@ async function generateTicketSummaryReport(res: Response, whereClause: any, star
 
         // Time-based metrics
         averageResolutionTime: avgResolutionTime,
-        averageResolutionTimeHours: avgResolutionTime > 0 ? Math.round((avgResolutionTime / 60) * 100) / 100 : 0,
-        averageResolutionTimeDays: avgResolutionTime > 0 ? Math.round((avgResolutionTime / (60 * 24)) * 100) / 100 : 0,
+        averageResolutionTimeHours: avgResolutionTime > 0 ? Math.round(avgResolutionTime / 60) : 0,
+        averageResolutionTimeDays: avgResolutionTime > 0 ? Math.round(avgResolutionTime / (60 * 24)) : 0,
         averageFirstResponseTime: avgFirstResponseTime,
-        averageFirstResponseTimeHours: avgFirstResponseTime > 0 ? Math.round((avgFirstResponseTime / 60) * 100) / 100 : 0,
+        averageFirstResponseTimeHours: avgFirstResponseTime > 0 ? Math.round(avgFirstResponseTime / 60) : 0,
 
         // Customer satisfaction metrics
         ticketsWithFeedback: ticketsWithFeedback.length,
@@ -1150,8 +1145,18 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
   // Get ALL assets (with or without issues)
   const allAssets = await prisma.asset.findMany({
     where: assetWhere,
-    include: {
-      customer: true
+    select: {
+      id: true,
+      machineId: true,
+      model: true,
+      serialNo: true,
+      customerId: true,
+      customer: {
+        select: {
+          id: true,
+          companyName: true
+        }
+      }
     }
   });
 
@@ -1180,14 +1185,38 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
   // Get machine downtime data (only tickets with issues)
   const ticketsWithDowntime = await prisma.ticket.findMany({
     where: ticketFilters,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      priority: true,
+      createdAt: true,
+      updatedAt: true,
+      assetId: true,
       asset: {
-        include: {
-          customer: true
+        select: {
+          machineId: true,
+          model: true,
+          serialNo: true,
+          location: true,
+          customerId: true,
+          customer: {
+            select: {
+              companyName: true
+            }
+          }
         }
       },
-      zone: true,
-      assignedTo: true
+      zone: {
+        select: {
+          name: true
+        }
+      },
+      assignedTo: {
+        select: {
+          name: true
+        }
+      }
     }
   });
 
@@ -1270,9 +1299,9 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
         incidents: downtimeData.incidents,
         openIncidents: downtimeData.openIncidents,
         resolvedIncidents: downtimeData.resolvedIncidents,
-        totalDowntimeHours: Math.round((downtimeData.totalDowntimeMinutes / 60) * 100) / 100,
+        totalDowntimeHours: Math.round(downtimeData.totalDowntimeMinutes / 60),
         avgDowntimeHours: downtimeData.incidents > 0
-          ? Math.round((downtimeData.totalDowntimeMinutes / downtimeData.incidents / 60) * 100) / 100
+          ? Math.round(downtimeData.totalDowntimeMinutes / downtimeData.incidents / 60)
           : 0
       };
     } else {
@@ -1336,9 +1365,9 @@ async function generateIndustrialDataReport(res: Response, whereClause: any, sta
       totalMachines: allAssets.length,
       totalMachinesWithDowntime: machinesWithIssues.length,
       totalMachinesWithoutIssues: allAssets.length - machinesWithIssues.length,
-      totalDowntimeHours: Math.round(totalDowntimeHours * 100) / 100,
+      totalDowntimeHours: Math.round(totalDowntimeHours),
       averageDowntimePerMachine: machinesWithIssues.length > 0
-        ? Math.round((totalDowntimeHours / machinesWithIssues.length) * 100) / 100
+        ? Math.round(totalDowntimeHours / machinesWithIssues.length)
         : 0,
       totalIncidents: machinesWithIssues.reduce((sum: number, m: any) => sum + m.incidents, 0),
       totalOpenIncidents: machinesWithIssues.reduce((sum: number, m: any) => sum + m.openIncidents, 0),
@@ -1686,18 +1715,27 @@ async function getTicketSummaryData(whereClause: any, startDate: Date, endDate: 
   // Now get the actual tickets with the provided filters
   const tickets = await prisma.ticket.findMany({
     where: whereClause,
-    include: {
-      customer: true,
-      contact: true,
-      assignedTo: true,
-      zone: true,
-      asset: true,
+    select: {
+      id: true,
+      ticketNumber: true,
+      title: true,
+      status: true,
+      priority: true,
+      createdAt: true,
+      updatedAt: true,
+      customerId: true,
+      zoneId: true,
+      assignedToId: true,
+      isEscalated: true,
+      callType: true,
+      customer: { select: { id: true, companyName: true } },
+      zone: { select: { id: true, name: true } },
+      assignedTo: { select: { id: true, name: true } },
       statusHistory: {
+        select: { status: true, changedAt: true },
         orderBy: { changedAt: 'desc' }
       },
-      feedbacks: true,
-      rating: true,
-      reports: true
+      reports: { select: { id: true } }
     },
     orderBy: {
       createdAt: 'desc'
@@ -3293,39 +3331,20 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
         offerReferenceNumber: true,
         offerReferenceDate: true,
         title: true,
-        description: true,
         productType: true,
-        lead: true,
         company: true,
         location: true,
-        department: true,
-        registrationDate: true,
         contactPersonName: true,
         contactNumber: true,
-        email: true,
-        machineSerialNumber: true,
         status: true,
         stage: true,
-        priority: true,
         offerValue: true,
-        offerMonth: true,
-        poExpectedMonth: true,
-        probabilityPercentage: true,
         poNumber: true,
-        poDate: true,
         poValue: true,
-        poReceivedMonth: true,
-        openFunnel: true,
-        remarks: true,
-        bookingDateInSap: true,
-        offerEnteredInCrm: true,
-        offerClosedInCrm: true,
         customer: {
           select: {
             id: true,
             companyName: true,
-            address: true,
-            industry: true,
           },
         },
         contact: {
@@ -3343,18 +3362,10 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
             shortForm: true,
           },
         },
-        assignedTo: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
         createdBy: {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         updatedBy: {
@@ -3454,13 +3465,13 @@ const generateOfferSummaryReport = async (res: Response, whereClause: any, start
         },
         summary: {
           totalOffers: summary._count.id,
-          totalOfferValue: Number(summary._sum.offerValue || 0),
-          totalPoValue: Number(summary._sum.poValue || 0),
+          totalOfferValue: Math.round(Number(summary._sum.offerValue || 0)),
+          totalPoValue: Math.round(Number(summary._sum.poValue || 0)),
           wonOffers: wonOffers._count.id,
-          wonOfferValue: Number(wonOffers._sum.offerValue || 0),
-          wonPoValue: Number(wonOffers._sum.poValue || 0),
-          successRate: summary._count.id > 0 ? (wonOffers._count.id / summary._count.id) * 100 : 0,
-          conversionRate: summary._sum.offerValue ? (Number(summary._sum.poValue || 0) / Number(summary._sum.offerValue || 1)) * 100 : 0,
+          wonOfferValue: Math.round(Number(wonOffers._sum.offerValue || 0)),
+          wonPoValue: Math.round(Number(wonOffers._sum.poValue || 0)),
+          successRate: summary._count.id > 0 ? Math.round((wonOffers._count.id / summary._count.id) * 100) : 0,
+          conversionRate: summary._sum.offerValue ? Math.round((Number(summary._sum.poValue || 0) / Number(summary._sum.offerValue || 1)) * 100) : 0,
         },
         statusDistribution: statusDist,
         stageDistribution: stageDist,

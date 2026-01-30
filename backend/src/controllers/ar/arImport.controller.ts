@@ -43,11 +43,11 @@ export const upload = multer({
  * A: Doc. No.        → invoiceNumber
  * C: Customer Code   → bpCode
  * D: Customer Name   → customerName
- * F: Customer Ref No → poNo
- * H: Amount          → totalAmount
- * I: Net             → netAmount
- * J: Tax             → taxAmount
- * M: Document Date   → invoiceDate
+ * F: Customer Ref No → poNo (Mandatory)
+ * H: Amount          → totalAmount (Mandatory)
+ * I: Net             → netAmount (Mandatory)
+ * J: Tax             → taxAmount (Mandatory)
+ * M: Document Date   → invoiceDate (Mandatory)
  */
 interface SAPImportRow {
     [key: string]: any;
@@ -68,20 +68,35 @@ function parseExcelDate(value: any): Date | null {
 
     // If it's a string, try to parse it
     if (typeof value === 'string') {
-        const parsed = new Date(value);
-        if (!isNaN(parsed.getTime())) return parsed;
+        const trimmed = value.trim();
 
-        // Try DD/MM/YYYY format
-        const ddmmyyyy = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        // 1. Try DD/MM/YYYY format
+        const ddmmyyyy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
         if (ddmmyyyy) {
-            return new Date(parseInt(ddmmyyyy[3]), parseInt(ddmmyyyy[2]) - 1, parseInt(ddmmyyyy[1]));
+            const day = parseInt(ddmmyyyy[1]);
+            const month = parseInt(ddmmyyyy[2]) - 1;
+            const year = parseInt(ddmmyyyy[3]);
+            return new Date(year, month, day);
         }
 
-        // Try YYYY-MM-DD format
-        const yyyymmdd = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        // 2. Try DD.MM.YYYY format (Common in SAP)
+        const ddmmyyyyDot = trimmed.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if (ddmmyyyyDot) {
+            const day = parseInt(ddmmyyyyDot[1]);
+            const month = parseInt(ddmmyyyyDot[2]) - 1;
+            const year = parseInt(ddmmyyyyDot[3]);
+            return new Date(year, month, day);
+        }
+
+        // 3. Try YYYY-MM-DD format
+        const yyyymmdd = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
         if (yyyymmdd) {
             return new Date(parseInt(yyyymmdd[1]), parseInt(yyyymmdd[2]) - 1, parseInt(yyyymmdd[3]));
         }
+
+        // 4. Fallback to generic parsing for other formats
+        const parsed = new Date(trimmed);
+        if (!isNaN(parsed.getTime())) return parsed;
     }
 
     return null;
@@ -123,8 +138,10 @@ function validateRow(row: SAPImportRow, rowNumber: number): { isValid: boolean; 
     const invoiceNumber = getValue(row, 'Doc. No.', 'Doc No', 'DocNo', 'Invoice No', 'InvoiceNo')?.toString()?.trim();
     const bpCode = getValue(row, 'Customer Code', 'CustomerCode', 'BP Code', 'BPCode')?.toString()?.trim();
     const customerName = getValue(row, 'Customer Name', 'CustomerName')?.toString()?.trim();
-    const totalAmount = getValue(row, 'Amount', 'Total Amount', 'TotalAmount');
+    const totalAmount = getValue(row, 'Amount', 'Total Amount', 'TotalAmount', 'Original Amount', 'OriginalAmount');
+    const poNo = getValue(row, 'Customer Ref. No.', 'Customer Ref No', 'CustomerRefNo', 'PO No', 'PONo')?.toString()?.trim();
     const netAmount = getValue(row, 'Net', 'Net Amount', 'NetAmount');
+    const taxAmountValue = getValue(row, 'Tax', 'Tax Amount', 'TaxAmount');
     const invoiceDate = getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate');
 
     if (!invoiceNumber) {
@@ -139,6 +156,10 @@ function validateRow(row: SAPImportRow, rowNumber: number): { isValid: boolean; 
         errors.push({ field: 'Customer Name', message: 'Missing customer name' });
     }
 
+    if (!poNo) {
+        errors.push({ field: 'Customer Ref. No.', message: 'Missing Customer Ref. No. (PO No)' });
+    }
+
     if (totalAmount === null || totalAmount === undefined || totalAmount === '') {
         errors.push({ field: 'Amount', message: 'Missing total amount' });
     } else if (isNaN(parseDecimal(totalAmount))) {
@@ -149,6 +170,12 @@ function validateRow(row: SAPImportRow, rowNumber: number): { isValid: boolean; 
         errors.push({ field: 'Net', message: 'Missing net amount' });
     } else if (isNaN(parseDecimal(netAmount))) {
         errors.push({ field: 'Net', message: 'Invalid net amount format' });
+    }
+
+    if (taxAmountValue === null || taxAmountValue === undefined || taxAmountValue === '') {
+        errors.push({ field: 'Tax', message: 'Missing tax amount' });
+    } else if (isNaN(parseDecimal(taxAmountValue))) {
+        errors.push({ field: 'Tax', message: 'Invalid tax amount format' });
     }
 
     if (!invoiceDate) {
@@ -243,13 +270,15 @@ export const previewExcel = async (req: Request, res: Response) => {
         const headers = Object.keys(rows[0]);
 
         // Check for required columns
-        const requiredColumns = ['Doc. No.', 'Customer Code', 'Customer Name', 'Amount', 'Net', 'Document Date'];
+        const requiredColumns = ['Doc. No.', 'Customer Code', 'Customer Name', 'Customer Ref. No.', 'Amount', 'Net', 'Tax', 'Document Date'];
         const possibleHeaders: { [key: string]: string[] } = {
             'Doc. No.': ['Doc. No.', 'Doc No', 'DocNo', 'Invoice No', 'InvoiceNo'],
             'Customer Code': ['Customer Code', 'CustomerCode', 'BP Code', 'BPCode'],
             'Customer Name': ['Customer Name', 'CustomerName'],
-            'Amount': ['Amount', 'Total Amount', 'TotalAmount'],
+            'Customer Ref. No.': ['Customer Ref. No.', 'Customer Ref No', 'CustomerRefNo', 'PO No', 'PONo'],
+            'Amount': ['Amount', 'Total Amount', 'TotalAmount', 'Original Amount', 'OriginalAmount'],
             'Net': ['Net', 'Net Amount', 'NetAmount'],
+            'Tax': ['Tax', 'Tax Amount', 'TaxAmount'],
             'Document Date': ['Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate']
         };
 
@@ -265,8 +294,16 @@ export const previewExcel = async (req: Request, res: Response) => {
         // Validate ALL rows and add validation info
         const validatedRows = rows.map((row, index) => {
             const validation = validateRow(row, index + 2);
+
+            // Extract only mandatory fields for preview (ignore others like Due Date)
+            const cleanRow: any = {};
+            requiredColumns.forEach(reqCol => {
+                const possibleNames = possibleHeaders[reqCol];
+                cleanRow[reqCol] = getValue(row, ...possibleNames);
+            });
+
             return {
-                ...row,
+                ...cleanRow,
                 _rowNumber: index + 2, // Excel row number (1-indexed + header)
                 _isValid: validation.isValid,
                 _errors: validation.errors
@@ -276,10 +313,10 @@ export const previewExcel = async (req: Request, res: Response) => {
         const validRowsCount = validatedRows.filter(r => r._isValid).length;
         const invalidRowsCount = validatedRows.filter(r => !r._isValid).length;
 
-        // Return ALL rows for full preview
+        // Return ALL rows for full preview, but only showing required columns
         return res.status(200).json({
             success: true,
-            headers,
+            headers: requiredColumns,
             preview: validatedRows,
             totalRows: rows.length,
             validRows: validRowsCount,
@@ -365,8 +402,8 @@ export const importFromExcel = async (req: Request, res: Response) => {
             netAmount: number;
             taxAmount: number;
             invoiceDate: Date;
-            finalDueDate: Date;
-            dueByDays: number;
+            finalDueDate: Date | null;
+            dueByDays: number | null;
             riskClass: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
             balance: number;
         }> = [];
@@ -386,12 +423,15 @@ export const importFromExcel = async (req: Request, res: Response) => {
             const bpCode = getValue(row, 'Customer Code', 'CustomerCode', 'BP Code', 'BPCode')?.toString()?.trim();
             const customerName = getValue(row, 'Customer Name', 'CustomerName')?.toString()?.trim();
             const poNo = getValue(row, 'Customer Ref. No.', 'Customer Ref No', 'CustomerRefNo', 'PO No', 'PONo')?.toString()?.trim();
-            const totalAmount = parseDecimal(getValue(row, 'Amount', 'Total Amount', 'TotalAmount'));
-            const netAmount = parseDecimal(getValue(row, 'Net', 'Net Amount', 'NetAmount'));
-            const taxAmount = parseDecimal(getValue(row, 'Tax', 'Tax Amount', 'TaxAmount'));
+            const totalAmount = parseDecimal(getValue(row, 'Amount', 'Total Amount', 'TotalAmount', 'Original Amount', 'OriginalAmount'));
+            const netAmountValue = getValue(row, 'Net', 'Net Amount', 'NetAmount');
+            const netAmount = parseDecimal(netAmountValue);
+            const taxAmountValue = getValue(row, 'Tax', 'Tax Amount', 'TaxAmount');
+            const taxAmount = parseDecimal(taxAmountValue);
             const invoiceDate = parseExcelDate(getValue(row, 'Document Date', 'DocumentDate', 'Invoice Date', 'InvoiceDate'));
-            // Parse Due Date from Excel if provided
-            const dueDateFromExcel = parseExcelDate(getValue(row, 'Due Date', 'DueDate', 'Due'));
+
+            // Ignore Due Date from Excel even if provided - user adds it manually
+            const dueDateFromExcel = null;
 
             // Validate mandatory fields
             if (!invoiceNumber) {
@@ -406,15 +446,27 @@ export const importFromExcel = async (req: Request, res: Response) => {
                 errors.push(`Row ${rowNumber}: Missing Customer Name`);
                 continue;
             }
+            if (!poNo) {
+                errors.push(`Row ${rowNumber}: Missing Customer Ref. No. (PO No)`);
+                continue;
+            }
+            if (netAmountValue === null || netAmountValue === undefined || netAmountValue === '') {
+                errors.push(`Row ${rowNumber}: Missing Net Amount`);
+                continue;
+            }
+            if (taxAmountValue === null || taxAmountValue === undefined || taxAmountValue === '') {
+                errors.push(`Row ${rowNumber}: Missing Tax Amount`);
+                continue;
+            }
             if (!invoiceDate) {
                 errors.push(`Row ${rowNumber}: Missing or invalid Document Date`);
                 continue;
             }
 
-            // Use due date from Excel if provided, otherwise calculate (30 days from invoice date)
-            const finalDueDate = dueDateFromExcel || new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-            const dueByDays = calculateDaysBetween(finalDueDate);
-            const riskClass = calculateRiskClass(dueByDays);
+            // Do not default to 30 days if not provided - user will add manually
+            const finalDueDate = dueDateFromExcel;
+            const dueByDays = finalDueDate ? calculateDaysBetween(finalDueDate) : null;
+            const riskClass = dueByDays !== null ? calculateRiskClass(dueByDays) : 'LOW';
             const balance = totalAmount;
 
             validRows.push({
@@ -472,7 +524,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
                                 balance: row.balance,
                                 riskClass: row.riskClass,
                                 dueByDays: row.dueByDays,
-                                status: row.dueByDays > 0 ? 'OVERDUE' : 'PENDING'
+                                status: (row.dueByDays !== null && row.dueByDays > 0) ? 'OVERDUE' : 'PENDING'
                             },
                             update: {
                                 bpCode: row.bpCode,
@@ -490,7 +542,7 @@ export const importFromExcel = async (req: Request, res: Response) => {
                                 totalReceipts: 0,
                                 riskClass: row.riskClass,
                                 dueByDays: row.dueByDays,
-                                status: row.dueByDays > 0 ? 'OVERDUE' : 'PENDING'
+                                status: (row.dueByDays !== null && row.dueByDays > 0) ? 'OVERDUE' : 'PENDING'
                             }
                         });
                         importedInvoices.push({
@@ -666,7 +718,7 @@ export const recalculateAll = async (req: Request, res: Response) => {
                 receipts: any;
                 adjustments: any;
                 totalAmount: any;
-                dueDate: Date;
+                dueDate: Date | null;
             }[] = await prisma.aRInvoice.findMany({
                 take: FETCH_BATCH_SIZE,
                 ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
@@ -695,7 +747,10 @@ export const recalculateAll = async (req: Request, res: Response) => {
                 const adjustments = Number(invoice.adjustments) || 0;
                 const totalReceipts = receipts + adjustments;
                 const balance = Number(invoice.totalAmount) - totalReceipts;
-                const dueByDays = calculateDaysBetween(invoice.dueDate);
+                let dueByDays = 0;
+                if (invoice.dueDate) {
+                    dueByDays = calculateDaysBetween(invoice.dueDate);
+                }
                 const riskClass = calculateRiskClass(dueByDays);
 
                 // Determine status
